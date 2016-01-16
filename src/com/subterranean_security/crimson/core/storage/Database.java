@@ -25,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.sql.rowset.serial.SerialException;
@@ -159,6 +160,33 @@ public abstract class Database extends Thread implements AutoCloseable {
 		} else {
 			Logger.debug("Returning: " + rs.getString("Data") + " for key: " + key);
 			return rs.getString("Data");
+		}
+
+	}
+
+	/**
+	 * Get Date from map
+	 * 
+	 * @param key
+	 * @return
+	 * @throws Exception
+	 */
+	public Date getDate(String key) throws Exception {
+
+		if (map.containsKey(key)) {
+			return (Date) map.get(key);
+		}
+
+		// get the string from the database
+		PreparedStatement stmt = db.prepareStatement("SELECT * FROM map WHERE `Name`=?");
+		stmt.setString(1, key);
+
+		ResultSet rs = stmt.executeQuery();
+		if (!rs.next()) {
+			Logger.error("Could not query key: " + key);
+			throw new Exception();
+		} else {
+			return (Date) rs.getObject("Data");
 		}
 
 	}

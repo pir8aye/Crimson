@@ -35,8 +35,7 @@ public enum ServerStore {
 
 	public static class Databases {
 		public static ServerDB system;
-		public static HashMap<String, LocalClientDB> loaded_users = new HashMap<String, LocalClientDB>();// UID,
-		// DB
+		public static HashMap<String, LocalClientDB> loaded_users = new HashMap<String, LocalClientDB>();// UID
 
 	}
 

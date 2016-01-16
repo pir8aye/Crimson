@@ -1368,15 +1368,24 @@ public final class Login {
     boolean getServerStatus();
 
     /**
-     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+     * <code>optional int64 last_login = 2;</code>
+     */
+    boolean hasLastLogin();
+    /**
+     * <code>optional int64 last_login = 2;</code>
+     */
+    long getLastLogin();
+
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
      */
     boolean hasUserPerm();
     /**
-     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
      */
     com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions getUserPerm();
     /**
-     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
      */
     com.subterranean_security.crimson.core.proto.msg.Login.UserPermissionsOrBuilder getUserPermOrBuilder();
   }
@@ -1437,9 +1446,14 @@ public final class Login {
               serverStatus_ = input.readBool();
               break;
             }
-            case 18: {
+            case 16: {
+              bitField0_ |= 0x00000002;
+              lastLogin_ = input.readInt64();
+              break;
+            }
+            case 26: {
               com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000002) == 0x00000002)) {
+              if (((bitField0_ & 0x00000004) == 0x00000004)) {
                 subBuilder = userPerm_.toBuilder();
               }
               userPerm_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.PARSER, extensionRegistry);
@@ -1447,7 +1461,7 @@ public final class Login {
                 subBuilder.mergeFrom(userPerm_);
                 userPerm_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000002;
+              bitField0_ |= 0x00000004;
               break;
             }
           }
@@ -1505,22 +1519,37 @@ public final class Login {
       return serverStatus_;
     }
 
-    public static final int USER_PERM_FIELD_NUMBER = 2;
-    private com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions userPerm_;
+    public static final int LAST_LOGIN_FIELD_NUMBER = 2;
+    private long lastLogin_;
     /**
-     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+     * <code>optional int64 last_login = 2;</code>
      */
-    public boolean hasUserPerm() {
+    public boolean hasLastLogin() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+     * <code>optional int64 last_login = 2;</code>
+     */
+    public long getLastLogin() {
+      return lastLogin_;
+    }
+
+    public static final int USER_PERM_FIELD_NUMBER = 3;
+    private com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions userPerm_;
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
+     */
+    public boolean hasUserPerm() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
      */
     public com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions getUserPerm() {
       return userPerm_;
     }
     /**
-     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
      */
     public com.subterranean_security.crimson.core.proto.msg.Login.UserPermissionsOrBuilder getUserPermOrBuilder() {
       return userPerm_;
@@ -1528,6 +1557,7 @@ public final class Login {
 
     private void initFields() {
       serverStatus_ = false;
+      lastLogin_ = 0L;
       userPerm_ = com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
@@ -1553,7 +1583,10 @@ public final class Login {
         output.writeBool(1, serverStatus_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeMessage(2, userPerm_);
+        output.writeInt64(2, lastLogin_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(3, userPerm_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1570,7 +1603,11 @@ public final class Login {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, userPerm_);
+          .computeInt64Size(2, lastLogin_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, userPerm_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1692,12 +1729,14 @@ public final class Login {
         super.clear();
         serverStatus_ = false;
         bitField0_ = (bitField0_ & ~0x00000001);
+        lastLogin_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
         if (userPermBuilder_ == null) {
           userPerm_ = com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.getDefaultInstance();
         } else {
           userPermBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -1733,6 +1772,10 @@ public final class Login {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
+        result.lastLogin_ = lastLogin_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
         if (userPermBuilder_ == null) {
           result.userPerm_ = userPerm_;
         } else {
@@ -1756,6 +1799,9 @@ public final class Login {
         if (other == com.subterranean_security.crimson.core.proto.msg.Login.ServerInfoDelta_EV.getDefaultInstance()) return this;
         if (other.hasServerStatus()) {
           setServerStatus(other.getServerStatus());
+        }
+        if (other.hasLastLogin()) {
+          setLastLogin(other.getLastLogin());
         }
         if (other.hasUserPerm()) {
           mergeUserPerm(other.getUserPerm());
@@ -1825,17 +1871,49 @@ public final class Login {
         return this;
       }
 
+      private long lastLogin_ ;
+      /**
+       * <code>optional int64 last_login = 2;</code>
+       */
+      public boolean hasLastLogin() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional int64 last_login = 2;</code>
+       */
+      public long getLastLogin() {
+        return lastLogin_;
+      }
+      /**
+       * <code>optional int64 last_login = 2;</code>
+       */
+      public Builder setLastLogin(long value) {
+        bitField0_ |= 0x00000002;
+        lastLogin_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 last_login = 2;</code>
+       */
+      public Builder clearLastLogin() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        lastLogin_ = 0L;
+        onChanged();
+        return this;
+      }
+
       private com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions userPerm_ = com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions, com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.Builder, com.subterranean_security.crimson.core.proto.msg.Login.UserPermissionsOrBuilder> userPermBuilder_;
       /**
-       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
        */
       public boolean hasUserPerm() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
        */
       public com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions getUserPerm() {
         if (userPermBuilder_ == null) {
@@ -1845,7 +1923,7 @@ public final class Login {
         }
       }
       /**
-       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
        */
       public Builder setUserPerm(com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions value) {
         if (userPermBuilder_ == null) {
@@ -1857,11 +1935,11 @@ public final class Login {
         } else {
           userPermBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
-       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
        */
       public Builder setUserPerm(
           com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.Builder builderForValue) {
@@ -1871,15 +1949,15 @@ public final class Login {
         } else {
           userPermBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
-       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
        */
       public Builder mergeUserPerm(com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions value) {
         if (userPermBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
               userPerm_ != com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.getDefaultInstance()) {
             userPerm_ =
               com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.newBuilder(userPerm_).mergeFrom(value).buildPartial();
@@ -1890,11 +1968,11 @@ public final class Login {
         } else {
           userPermBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
-       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
        */
       public Builder clearUserPerm() {
         if (userPermBuilder_ == null) {
@@ -1903,19 +1981,19 @@ public final class Login {
         } else {
           userPermBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       /**
-       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
        */
       public com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.Builder getUserPermBuilder() {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return getUserPermFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
        */
       public com.subterranean_security.crimson.core.proto.msg.Login.UserPermissionsOrBuilder getUserPermOrBuilder() {
         if (userPermBuilder_ != null) {
@@ -1925,7 +2003,7 @@ public final class Login {
         }
       }
       /**
-       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 2;</code>
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.UserPermissions user_perm = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions, com.subterranean_security.crimson.core.proto.msg.Login.UserPermissions.Builder, com.subterranean_security.crimson.core.proto.msg.Login.UserPermissionsOrBuilder> 
@@ -2667,17 +2745,18 @@ public final class Login {
       "\020\n\010username\030\001 \002(\t\022\014\n\004hash\030\002 \002(\t\"x\n\010Login" +
       "_RS\022\020\n\010response\030\001 \002(\010\022Z\n\014initial_info\030\002 " +
       "\001(\0132D.com.subterranean_security.crimson." +
-      "core.proto.msg.ServerInfoDelta_EV\"\201\001\n\022Se" +
+      "core.proto.msg.ServerInfoDelta_EV\"\225\001\n\022Se" +
       "rverInfoDelta_EV\022\025\n\rserver_status\030\001 \001(\010\022" +
-      "T\n\tuser_perm\030\002 \001(\0132A.com.subterranean_se" +
-      "curity.crimson.core.proto.msg.UserPermis" +
-      "sions\"\344\001\n\017UserPermissions\022\021\n\tgenerator\030\001",
-      " \002(\010\022\024\n\014server_power\030\002 \002(\010\022T\n\017filesystem" +
-      "_perm\030\003 \002(\0162;.com.subterranean_security." +
-      "crimson.core.proto.msg.ReadWrite\022R\n\rsett" +
-      "ings_perm\030\004 \002(\0162;.com.subterranean_secur" +
-      "ity.crimson.core.proto.msg.ReadWrite*%\n\t" +
-      "ReadWrite\022\010\n\004NONE\020\000\022\006\n\002RO\020\001\022\006\n\002RW\020\002"
+      "\022\n\nlast_login\030\002 \001(\003\022T\n\tuser_perm\030\003 \001(\0132A" +
+      ".com.subterranean_security.crimson.core." +
+      "proto.msg.UserPermissions\"\344\001\n\017UserPermis",
+      "sions\022\021\n\tgenerator\030\001 \002(\010\022\024\n\014server_power" +
+      "\030\002 \002(\010\022T\n\017filesystem_perm\030\003 \002(\0162;.com.su" +
+      "bterranean_security.crimson.core.proto.m" +
+      "sg.ReadWrite\022R\n\rsettings_perm\030\004 \002(\0162;.co" +
+      "m.subterranean_security.crimson.core.pro" +
+      "to.msg.ReadWrite*%\n\tReadWrite\022\010\n\004NONE\020\000\022" +
+      "\006\n\002RO\020\001\022\006\n\002RW\020\002"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2708,7 +2787,7 @@ public final class Login {
     internal_static_com_subterranean_security_crimson_core_proto_msg_ServerInfoDelta_EV_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_com_subterranean_security_crimson_core_proto_msg_ServerInfoDelta_EV_descriptor,
-        new java.lang.String[] { "ServerStatus", "UserPerm", });
+        new java.lang.String[] { "ServerStatus", "LastLogin", "UserPerm", });
     internal_static_com_subterranean_security_crimson_core_proto_msg_UserPermissions_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_com_subterranean_security_crimson_core_proto_msg_UserPermissions_fieldAccessorTable = new

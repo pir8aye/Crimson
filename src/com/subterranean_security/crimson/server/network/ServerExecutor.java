@@ -204,7 +204,20 @@ public class ServerExecutor extends BasicExecutor {
 			Logger.debug("Accepting Login");
 			receptor.setInstance(Instance.VIEWER);
 			ServerStore.Connections.add(receptor);
-			ServerInfoDelta_EV info = ServerInfoDelta_EV.newBuilder().setServerStatus(Server.isRunning()).build();
+			long lastlogin = 0;
+			try {
+				lastlogin = ServerStore.Databases.loaded_users.get("").getDate("last-login").getTime();// TODO
+																										// get
+																										// from
+																										// the
+																										// correct
+																										// database
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ServerInfoDelta_EV info = ServerInfoDelta_EV.newBuilder().setLastLogin(lastlogin)
+					.setServerStatus(Server.isRunning()).build();
 			rs.setInitialInfo(info);
 		}
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setLoginRs(rs).build());
