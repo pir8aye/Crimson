@@ -35,6 +35,7 @@ import com.subterranean_security.crimson.core.proto.msg.State.StateChange_RQ;
 import com.subterranean_security.crimson.core.utility.CUtil;
 import com.subterranean_security.crimson.core.utility.IDGen;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
+import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerCommands {
@@ -51,7 +52,7 @@ public enum ViewerCommands {
 			if (rs != null) {
 				Logger.debug("Received login response: " + rs.getLoginRs().getResponse());
 				if (rs.getLoginRs().getResponse()) {
-					// TODO handle initial info
+					LoginDialog.initial = rs.getLoginRs().getInitialInfo();
 					return true;
 				}
 

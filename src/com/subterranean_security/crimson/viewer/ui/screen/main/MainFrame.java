@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.main;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -27,6 +28,7 @@ import javax.swing.JPanel;
 import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.viewer.ui.panel.DPanel;
 import com.subterranean_security.crimson.viewer.ui.panel.NPanel;
+import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class MainFrame extends JFrame {
@@ -57,6 +59,8 @@ public class MainFrame extends JFrame {
 		setTitle("Crimson");
 		initMenus();
 		initContent();
+
+		np.addNote("Last Login: " + new Date(LoginDialog.initial.getLastLogin()).toString());
 
 	}
 
