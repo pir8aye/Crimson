@@ -1,0 +1,10 @@
+VERSIONS:
+	We have adopted the following version format from now on:
+							A.B.C.D
+	Where C and D are hotfix numbers and A and B are the major versions.
+
+PLUGINS:
+	Support for official and user created plugins has been REMOVED entirely.
+	The main reason being that implementing or integrating a SECURE plugin 
+	framework would be more trouble than its worth.  Something comparable
+	may be added in the future.
