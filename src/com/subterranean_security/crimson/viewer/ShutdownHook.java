@@ -25,6 +25,8 @@ public class ShutdownHook extends Thread {
 	@Override
 	public void run() {
 		Logger.info("Shutting down");
+		ViewerStore.Databases.local.close();
+
 		Logger.close();
 
 		FileLocking.unlock();
