@@ -17,17 +17,77 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.proto.msg.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.storage.LViewerDB;
 import com.subterranean_security.crimson.sv.Profile;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerStore {
 
 	;
+
+	public static class LocalServer {
+
+		/**
+		 * The server executable
+		 */
+		public static final File bundledServer = new File(Common.base.getAbsolutePath() + "/Crimson-Server.jar");
+
+		public static Process process;
+		private static OutputStream os;
+
+		public static boolean startLocalServer() {
+			try {
+				process = Runtime.getRuntime().exec("java -jar \"" + bundledServer.getAbsolutePath() + "\"");
+				os = process.getOutputStream();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return false;
+		}
+
+		public static void killLocalServer() {
+			if (os != null) {
+				// kill server
+				try {
+					os.write("\u0003\n".getBytes());
+					os.flush();
+					process.waitFor(3, TimeUnit.SECONDS);
+					os.close();
+					process.destroyForcibly();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public static class Databases {
+		public static LViewerDB local;
+
+		static {
+			try {
+				local = new LViewerDB(new File(Common.var.getAbsolutePath() + "/viewer.db"));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public static class Profiles {
 		public static ArrayList<Profile> profiles = new ArrayList<Profile>();

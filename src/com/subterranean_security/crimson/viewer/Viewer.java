@@ -19,9 +19,11 @@ package com.subterranean_security.crimson.viewer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Date;
 
 import javax.swing.UIManager;
 
@@ -39,16 +41,10 @@ import aurelienribon.tweenengine.Tween;
 public class Viewer {
 
 	/**
-	 * The server executable
-	 */
-	public static final File bundledServer = new File("Crimson-Server.jar");
-
-	/**
 	 * True when a server instance is detected that was not started by the
 	 * viewer
 	 */
 	public static boolean slsr = FileLocking.lockExists(Common.Instance.SERVER);
-	private static Process serverProcess;
 
 	public static void main(String[] argv) {
 
@@ -65,27 +61,34 @@ public class Viewer {
 		}
 
 		// Show the EULA if needed
-		EULADialog eula = new EULADialog(true);
-		eula.setLocationRelativeTo(null);
-		eula.setVisible(true);
+		try {
+			if (ViewerStore.Databases.local.getBoolean("show_eula")) {
+				EULADialog eula = new EULADialog(true);
+				eula.setLocationRelativeTo(null);
+				eula.setVisible(true);
 
-		synchronized (eula) {
-			try {
-				eula.wait();
-			} catch (InterruptedException e) {
-				return;
+				synchronized (eula) {
+					try {
+						eula.wait();
+					} catch (InterruptedException e) {
+						return;
+					}
+				}
+				if (eula.accepted) {
+					ViewerStore.Databases.local.storeObject("show_eula", false);
+				}
+				eula = null;
 			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		eula = null;
 
-		if (bundledServer.exists() && !slsr) {
-			try {
-				Logger.debug("Attempting to start local server");
-				serverProcess = Runtime.getRuntime().exec("java -jar Crimson-Server.jar");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		if (ViewerStore.LocalServer.bundledServer.exists() && !slsr) {
+
+			Logger.debug("Attempting to start local server");
+			ViewerStore.LocalServer.startLocalServer();
+
 		}
 
 		// initialize sliding layout
@@ -94,6 +97,8 @@ public class Viewer {
 
 		// show login dialog
 		LoginDialog login = new LoginDialog();
+		login.loginPanel.setLocalServer(ViewerStore.LocalServer.bundledServer.exists() && !slsr);
+
 		login.setVisible(true);
 		try {
 			synchronized (login) {
@@ -105,19 +110,26 @@ public class Viewer {
 		}
 		login = null;
 
-		// Start the interface
+		// Start the main interface
 		MainFrame.main = new MainFrame();
 		MainFrame.main.setVisible(true);
 		MainFrame.main.setLocationRelativeTo(null);
 
-	}
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (LoginDialog.initial.hasLastLogin()) {
+					MainFrame.main.np
+							.addNote("info:Last Login: " + new Date(LoginDialog.initial.getLastLogin()).toString());
+				}
 
-	public boolean startLocalServer() {
-
-		return false;
-	}
-
-	public void killLocalServer() {
+			}
+		}).start();
 
 	}
 
