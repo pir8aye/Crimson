@@ -27,6 +27,8 @@ public class ShutdownHook extends Thread {
 		Logger.info("Shutting down");
 		ViewerStore.Databases.local.close();
 
+		ViewerStore.LocalServer.killLocalServer();
+
 		Logger.close();
 
 		FileLocking.unlock();
