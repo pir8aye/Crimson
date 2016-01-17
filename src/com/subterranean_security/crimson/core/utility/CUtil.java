@@ -40,10 +40,10 @@ import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -365,6 +365,7 @@ public enum CUtil {
 
 		public static void extract(String res, String dest) {
 			InputStream stream = CUtil.class.getClassLoader().getResourceAsStream(res);
+
 			FileOutputStream fos = null;
 			try {
 				fos = new FileOutputStream(dest);
@@ -788,32 +789,51 @@ public enum CUtil {
 
 	public static class Versions {
 
-		public static Map getAttributes() throws Exception {
+		public static String[] getRequisites() {
+			ArrayList<Element> elements = null;
+			try {
+				elements = readDependancyXML(new FileInputStream(new File("Dependancies.xml")));
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			String[] a = new String[elements.size()];
+			for (int i = 0; i < a.length; i++) {
+				a[i] = elements.get(i).getElementsByTagName("Requisites").item(0).getTextContent();
+			}
+			return a;
+		}
+
+		private static ArrayList<Element> readDependancyXML(InputStream xml) throws Exception {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 
-			Document doc = builder.parse(CUtil.class.getResourceAsStream(""));
+			Document doc = builder.parse(xml);
 
 			doc.getDocumentElement().normalize();
-			NodeList nList = doc.getElementsByTagName("student");
-			System.out.println("----------------------------");
+			NodeList nList = doc.getElementsByTagName("Lib");
+			ArrayList<Element> elements = new ArrayList<Element>();
 			for (int temp = 0; temp < nList.getLength(); temp++) {
 				Node nNode = nList.item(temp);
-				System.out.println("\nCurrent Element :" + nNode.getNodeName());
+				// System.out.println("\nCurrent Element :" +
+				// nNode.getNodeName());
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					System.out.println("Student roll no : " + eElement.getAttribute("rollno"));
-					System.out.println(
-							"First Name : " + eElement.getElementsByTagName("firstname").item(0).getTextContent());
-					System.out.println(
-							"Last Name : " + eElement.getElementsByTagName("lastname").item(0).getTextContent());
-					System.out.println(
-							"Nick Name : " + eElement.getElementsByTagName("nickname").item(0).getTextContent());
-					System.out.println("Marks : " + eElement.getElementsByTagName("marks").item(0).getTextContent());
+					elements.add(eElement);
+					// System.out.println("CID: " +
+					// eElement.getAttribute("CID"));
+					// System.out
+					// .println("EVersion: " +
+					// eElement.getElementsByTagName("EVersion").item(0).getTextContent());
+					// System.out.println(
+					// "Requisites: " +
+					// eElement.getElementsByTagName("Requisites").item(0).getTextContent());
 				}
 			}
 
-			return null;
+			return elements;
 		}
 
 	}
