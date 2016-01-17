@@ -17,6 +17,29 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.component;
 
-public abstract class DModule {
+import javax.swing.JPanel;
 
+import com.subterranean_security.crimson.sv.Profile;
+
+public abstract class DModule extends JPanel implements Comparable {
+	private static final long serialVersionUID = 1L;
+	private boolean showing = false;
+
+	public byte weight; // -5 <= x <= 5
+
+	public abstract void setTarget(Profile p);
+
+	public boolean isShowing() {
+		return showing;
+	}
+
+	public void setShowing(boolean showing) {
+		this.showing = showing;
+	}
+
+	public abstract void updateGraphics();
+
+	public int compareTo(DModule o) {
+		return (weight - o.weight);
+	}
 }

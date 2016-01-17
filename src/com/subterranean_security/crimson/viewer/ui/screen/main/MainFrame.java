@@ -60,8 +60,6 @@ public class MainFrame extends JFrame {
 		initMenus();
 		initContent();
 
-		np.addNote("Last Login: " + new Date(LoginDialog.initial.getLastLogin()).toString());
-
 	}
 
 	private void initMenus() {

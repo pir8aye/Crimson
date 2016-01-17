@@ -19,10 +19,15 @@ package com.subterranean_security.crimson.viewer.ui.screen.main;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -45,6 +50,107 @@ public class HostList extends JPanel {
 		table.setDefaultRenderer(Object.class, tr);
 		table.setFillsViewportHeight(true);
 		table.setShowVerticalLines(false);
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// get source of click
+				JTable source = (JTable) e.getSource();
+				final int sourceRow = source.rowAtPoint(e.getPoint());
+				if (sourceRow == -1) {
+					source.clearSelection();
+					MainFrame.main.dp.closeDetail();
+					return;
+				}
+				// select row
+				if (!source.isRowSelected(sourceRow)) {
+					source.changeSelection(sourceRow, 0, false, false);
+				}
+				// final Connection selected = h.getHostConnection(sourceRow);
+
+				if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
+
+					// right click on table
+					JPopupMenu popup = new JPopupMenu();
+					JMenuItem control = new JMenuItem();
+					control.setText("Control Panel");
+					control.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent e) {
+
+							new Thread() {
+								public void run() {
+
+								}
+							}.start();
+
+						}
+
+					});
+					popup.add(control);
+
+					JMenu quick = new JMenu();
+					quick.setText("Quick Commands");
+					popup.add(quick);
+
+					JMenuItem poweroff = new JMenuItem();
+					poweroff.setText("Shutdown");
+					poweroff.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent e) {
+
+							new Thread() {
+								public void run() {
+
+								}
+							}.start();
+
+						}
+
+					});
+					quick.add(poweroff);
+
+					JMenuItem restart = new JMenuItem();
+					restart.setText("Restart");
+					restart.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent e) {
+
+							new Thread() {
+								public void run() {
+
+								}
+							}.start();
+
+						}
+
+					});
+					quick.add(restart);
+
+					JMenuItem refresh = new JMenuItem();
+					refresh.setText("Refresh Information");
+					refresh.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent e) {
+
+							new Thread() {
+								public void run() {
+
+								}
+							}.start();
+
+						}
+
+					});
+					quick.add(refresh);
+
+					popup.show(table, e.getX(), e.getY());
+
+				} else {
+					// open up the detail
+					MainFrame.main.dp.showDetail();
+				}
+			}
+		});
 
 		JScrollPane jsp = new JScrollPane(table);
 
@@ -61,8 +167,18 @@ class TM extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	String[] headers = new String[] { "Username", "Hostname" };
 
-	public void setHeaders(ArrayList<String> headers) {
-		// this.headers = headers;
+	public TM() {
+		refreshHeaders();
+	}
+
+	public void refreshHeaders() {
+		try {
+			headers = (String[]) ViewerStore.Databases.local.getObject("list_headers");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			Logger.error("Failed to update list headers");
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -82,23 +198,23 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		switch (headers[columnIndex].toLowerCase()) {
-		case "username": {
+		switch (headers[columnIndex]) {
+		case "Username": {
 			return ViewerStore.Profiles.profiles.get(rowIndex).getUsername();
 		}
-		case "activity": {
+		case "Activity": {
 
 		}
-		case "status": {
+		case "Status": {
 
 		}
-		case "hostname": {
+		case "Hostname": {
 			return ViewerStore.Profiles.profiles.get(rowIndex).getHostname();
 		}
-		case "system uptime": {
+		case "System Uptime": {
 
 		}
-		case "java uptime": {
+		case "Java Uptime": {
 
 		}
 		case "Internal IP": {

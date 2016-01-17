@@ -60,8 +60,8 @@ public class DPanel extends SLPanel {
 		// replace these configs
 		pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f)
 				.place(0, 0, movingMain);
-		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(1f).col(1f)
-				.place(0, 0, movingMain).place(1, 0, movingBar);
+		pos2 = new SLConfig(this).gap(0, 0).row(6f).col(3f).col(1f)
+				.place(0, 0, movingMain).place(0, 1, movingBar);
 
 		this.setTweenManager(SLAnimator.createTweenManager());
 		this.initialize(pos1);
