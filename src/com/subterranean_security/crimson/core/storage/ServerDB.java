@@ -41,12 +41,7 @@ public class ServerDB extends Database {
 		if (isFirstRun()) {
 			Defaults.hardReset(this);
 		}
-		try {
-			storeObject("runs", getInteger("runs") + 1);
-		} catch (Exception e) {
-			Logger.error("Could not update run count");
-			e.printStackTrace();
-		}
+		
 	}
 
 	public boolean userExists(String user) {

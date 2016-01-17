@@ -32,7 +32,9 @@ public class LViewerDB extends Database {
 					dfile.getAbsolutePath());
 		}
 		init(dfile);
-		// TODO set defaults
+		if (isFirstRun()) {
+			Defaults.hardReset(this);
+		}
 
 	}
 }

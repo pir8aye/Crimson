@@ -60,6 +60,13 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		Logger.debug("Initialized database: " + dfile.getAbsolutePath());
 
+		// increase run count
+		try {
+			storeObject("runs", getInteger("runs") + 1);
+		} catch (Exception e) {
+			Logger.error("Could not update run count");
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -117,7 +124,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			Logger.error("Could not query key: " + key);
+			Logger.error("Key not found: " + key);
 			throw new Exception();
 		} else {
 			return ObjectTransfer.Default.deserialize(rs.getBytes("Data"));
@@ -300,7 +307,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 	public boolean isFirstRun() {
 
 		try {
-			return (getInteger("runs") == 0);
+			return (getInteger("runs") == 1);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -312,7 +319,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 	private void flushMap() throws SerialException, SQLException {
 		for (String key : map.keySet()) {
-			PreparedStatement stmt = db.prepareStatement("INSERT INTO map(Name, Data) VALUES (?, ?)");
+			PreparedStatement stmt = db.prepareStatement("INSERT OR REPLACE INTO map(Name, Data) VALUES (?, ?)");
 			stmt.setString(1, key);
 			if (map.get(key) instanceof String) {
 				stmt.setString(2, (String) map.get(key));
@@ -333,7 +340,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 	private void flushHeap() throws SQLException {
 		for (Integer id : heap.keySet()) {
-			PreparedStatement stmt = db.prepareStatement("INSERT INTO heap(Id, Data) VALUES (?, ?)");
+			PreparedStatement stmt = db.prepareStatement("INSERT OR REPLACE INTO heap(Id, Data) VALUES (?, ?)");
 			stmt.setInt(1, id);
 			stmt.setBytes(2, ObjectTransfer.Default.serialize(heap.get(id)));
 			stmt.executeUpdate();
