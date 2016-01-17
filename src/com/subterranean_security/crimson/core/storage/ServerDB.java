@@ -31,8 +31,13 @@ import com.subterranean_security.crimson.server.ServerStore;
 public class ServerDB extends Database {
 
 	public ServerDB(File dfile) throws Exception {
-		super(dfile);
-		execute("CREATE TABLE IF NOT EXISTS users (Id INTEGER PRIMARY KEY AUTOINCREMENT, Username VARCHAR(16), Salt VARCHAR(128), UID VARCHAR(8) );");
+		if (!dfile.exists()) {
+			// copy the template
+			Logger.debug("Copying database template to: " + dfile.getAbsolutePath());
+			CUtil.Files.extract("com/subterranean_security/crimson/core/storage/server-template.db",
+					dfile.getAbsolutePath());
+		}
+		init(dfile);
 		if (isEmpty()) {
 			Defaults.System.set(this, true);
 		}
@@ -92,18 +97,39 @@ public class ServerDB extends Database {
 				throw new Exception();
 			}
 
-			if (!ServerStore.Databases.loaded_users.containsKey(UID)) {
-				ServerStore.Databases.loaded_users.put(UID,
-						new LocalClientDB(new File(Common.var + File.separator + UID + ".db")));
+			if (!ServerStore.Databases.loaded_viewers.containsKey(UID)) {
+				ServerStore.Databases.loaded_viewers.put(UID,
+						new ViewerDB(new File(Common.var + File.separator + UID + ".db")));
 			}
 
-			return ServerStore.Databases.loaded_users.get(UID).getString("MAGIC").equals("subterranean");
+			return ServerStore.Databases.loaded_viewers.get(UID).getString("MAGIC").equals("subterranean");
 
 		} catch (Exception e) {
 			Logger.rerror("Error during login query");
 
 		}
 		return false;
+	}
+
+	public String getUID(String username) {
+		try {
+			PreparedStatement stmt = db.prepareStatement("SELECT * FROM users WHERE `Username`=?");
+			stmt.setString(1, username);
+
+			ResultSet rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getString("UID");
+			} else {
+				Logger.debug("Could not get UID");
+				throw new Exception();
+			}
+
+		} catch (Exception e) {
+			Logger.rerror("Error during login query");
+
+		}
+		return null;
 	}
 
 	public boolean addUser(String user, String password) {
@@ -113,7 +139,7 @@ public class ServerDB extends Database {
 		}
 
 		String salt = Crypto.genSalt();
-		String UID = CUtil.Misc.nameGen(8);
+		String UID = CUtil.Misc.nameGen(4);
 
 		try {
 			PreparedStatement stmt = db.prepareStatement("INSERT INTO users (Username, Salt, UID ) VALUES (?,?,?);");
@@ -128,7 +154,7 @@ public class ServerDB extends Database {
 		}
 
 		try {
-			LocalClientDB udb = new LocalClientDB(new File(dfile.getParent() + File.separator + UID + ".db"));
+			ViewerDB udb = new ViewerDB(new File(dfile.getParent() + File.separator + UID + ".db"));
 			udb.master = Crypto.hashPass(password.toCharArray(), salt);
 			udb.close();
 		} catch (Exception e1) {

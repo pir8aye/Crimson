@@ -17,6 +17,28 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.storage;
 
-public class ViewerDB {
+import java.io.File;
+
+import com.subterranean_security.crimson.core.Logger;
+import com.subterranean_security.crimson.core.utility.CUtil;
+
+public class ViewerDB extends Database {
+
+	public String master;
+
+	public ViewerDB(File dfile) throws Exception {
+
+		if (!dfile.exists()) {
+			// copy the template
+			Logger.debug("Copying database template to: " + dfile.getAbsolutePath());
+			CUtil.Files.extract("com/subterranean_security/crimson/core/storage/viewer-template.db",
+					dfile.getAbsolutePath());
+		}
+		init(dfile);
+		if (isEmpty()) {
+			Defaults.User.set_server(this, true);
+		}
+
+	}
 
 }

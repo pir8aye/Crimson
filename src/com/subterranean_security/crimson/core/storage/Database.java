@@ -18,14 +18,12 @@
 package com.subterranean_security.crimson.core.storage;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 import java.util.HashMap;
 
 import javax.sql.rowset.serial.SerialException;
@@ -42,15 +40,8 @@ public abstract class Database extends Thread implements AutoCloseable {
 	protected Connection db;
 	public File dfile;
 
-	public Database(File dfile) throws Exception {
+	public void init(File dfile) throws Exception {
 		this.dfile = dfile;
-		try {
-			dfile.createNewFile();
-		} catch (IOException e1) {
-			Logger.error("Cannot create database: " + dfile.getAbsolutePath());
-
-			throw new Exception("Could not create database: " + dfile.getAbsolutePath());
-		}
 
 		try {
 			// load the driver if unloaded
@@ -67,9 +58,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 			throw new Exception("Could not create database: " + dfile.getAbsolutePath());
 		}
 
-		Logger.debug("Initializing database: " + dfile.getAbsolutePath());
-		execute("CREATE TABLE IF NOT EXISTS map (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name VARCHAR(128), Data BLOB);");
-		execute("CREATE TABLE IF NOT EXISTS heap (Id INTEGER PRIMARY KEY AUTOINCREMENT, Data BLOB);");
+		Logger.debug("Initialized database: " + dfile.getAbsolutePath());
 
 	}
 
@@ -165,16 +154,16 @@ public abstract class Database extends Thread implements AutoCloseable {
 	}
 
 	/**
-	 * Get Date from map
+	 * Get Long from map
 	 * 
 	 * @param key
 	 * @return
 	 * @throws Exception
 	 */
-	public Date getDate(String key) throws Exception {
+	public Long getLong(String key) throws Exception {
 
 		if (map.containsKey(key)) {
-			return (Date) map.get(key);
+			return (long) map.get(key);
 		}
 
 		// get the string from the database
@@ -186,7 +175,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 			Logger.error("Could not query key: " + key);
 			throw new Exception();
 		} else {
-			return (Date) rs.getObject("Data");
+			return rs.getLong("Data");
 		}
 
 	}
@@ -299,6 +288,8 @@ public abstract class Database extends Thread implements AutoCloseable {
 				stmt.setString(2, (String) map.get(key));
 			} else if (map.get(key) instanceof Integer) {
 				stmt.setInt(2, (int) map.get(key));
+			} else if (map.get(key) instanceof Long) {
+				stmt.setLong(2, (long) map.get(key));
 			} else {
 				stmt.setBytes(2, ObjectTransfer.Default.serialize(map.get(key)));
 			}
