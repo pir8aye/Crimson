@@ -28,7 +28,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.msg.Gen.GenReport;
-import com.subterranean_security.crimson.core.storage.LocalClientDB;
+import com.subterranean_security.crimson.core.storage.ViewerDB;
 import com.subterranean_security.crimson.core.utility.CUtil;
 
 public class Generator {
@@ -74,7 +74,7 @@ public class Generator {
 
 		// create a database for the client
 		try {
-			LocalClientDB database = new LocalClientDB(clientDB);
+			ViewerDB database = new ViewerDB(clientDB);
 			database.storeObject("generation_date", start);
 			database.storeObject("reconnect_period", ic.getReconnectPeriod());
 			database.storeObject("group", ic.getGroup());
@@ -112,7 +112,7 @@ public class Generator {
 		// CUtil.Files.delete(clientJar);
 
 		gReport.setHashMd5(CUtil.Files.getHash(clientJar.getAbsolutePath(), "MD5"));
-		gReport.setHashSha256(CUtil.Files.getHash(clientJar.getAbsolutePath(), "SHA256"));
+		gReport.setHashSha256(CUtil.Files.getHash(clientJar.getAbsolutePath(), "SHA-256"));
 		gReport.setFileSize((int) clientJar.length());
 		gReport.setResult(true);
 		gReport.setGenTime((int) (new Date().getTime() - start.getTime()));
