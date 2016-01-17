@@ -45,6 +45,7 @@ import javax.swing.border.LineBorder;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.utility.CUtil;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
@@ -335,7 +336,15 @@ public class AboutDialog extends JDialog {
 				panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
 				panel.add(panel_1);
 				{
-					JLabel lblNewLabel_1 = new JLabel("JD2S-P2L2-SDW2-0SDB");
+					String serial = "XXXXXXXXXXXXXXXX";
+					try {
+						serial = ViewerStore.Databases.local.getString("serial");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					JLabel lblNewLabel_1 = new JLabel(serial.substring(0, 4) + "-" + serial.substring(4, 8) + "-"
+							+ serial.substring(8, 12) + "-" + serial.substring(12));
 					lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 					lblNewLabel_1.setPreferredSize(new Dimension(299, 15));
 					panel_1.add(lblNewLabel_1);
