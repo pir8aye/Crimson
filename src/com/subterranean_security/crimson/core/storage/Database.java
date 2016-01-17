@@ -208,6 +208,33 @@ public abstract class Database extends Thread implements AutoCloseable {
 	}
 
 	/**
+	 * Get Boolean from map
+	 * 
+	 * @param key
+	 * @return
+	 * @throws Exception
+	 */
+	public Boolean getBoolean(String key) throws Exception {
+
+		if (map.containsKey(key)) {
+			return (boolean) map.get(key);
+		}
+
+		// get the boolean from the database
+		PreparedStatement stmt = db.prepareStatement("SELECT * FROM map WHERE `Name`=?");
+		stmt.setString(1, key);
+
+		ResultSet rs = stmt.executeQuery();
+		if (!rs.next()) {
+			Logger.error("Could not query key: " + key);
+			throw new Exception();
+		} else {
+			return rs.getBoolean("Data");
+		}
+
+	}
+
+	/**
 	 * Get serialized object from map
 	 * 
 	 * @param key
@@ -290,6 +317,8 @@ public abstract class Database extends Thread implements AutoCloseable {
 				stmt.setInt(2, (int) map.get(key));
 			} else if (map.get(key) instanceof Long) {
 				stmt.setLong(2, (long) map.get(key));
+			} else if (map.get(key) instanceof Boolean) {
+				stmt.setBoolean(2, (boolean) map.get(key));
 			} else {
 				stmt.setBytes(2, ObjectTransfer.Default.serialize(map.get(key)));
 			}
