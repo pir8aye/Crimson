@@ -30,7 +30,7 @@ import com.subterranean_security.crimson.viewer.ui.panel.HPanel;
 public class LoginDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	public final LoginPanel loginPanel = new LoginPanel(this, false);
+	public final LoginPanel loginPanel = new LoginPanel(this);
 	public final HPanel hp = new HPanel(loginPanel);
 
 	private Dimension size = new Dimension(405, 320);

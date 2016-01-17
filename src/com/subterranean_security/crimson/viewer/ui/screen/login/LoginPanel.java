@@ -74,7 +74,7 @@ public class LoginPanel extends JPanel {
 	private Border fld_user_border;
 	private Border fld_server_border;
 
-	public LoginPanel(final LoginDialog parent, boolean local) {
+	public LoginPanel(final LoginDialog parent) {
 		this.parent = parent;
 
 		setPreferredSize(new Dimension(400, 248));
@@ -270,6 +270,7 @@ public class LoginPanel extends JPanel {
 				ViewerConnector.connector = new ViewerConnector(server, Integer.parseInt(port));
 				Logger.debug("Connection made");
 			} catch (Throwable e) {
+				e.printStackTrace();
 				Logger.debug("Connection failed");
 				btn_login.setEnabled(true);
 				lbl_status.unfreeze();
@@ -381,5 +382,10 @@ public class LoginPanel extends JPanel {
 	private void setPassError() {
 		fld_password.setBorder(new LineBorder(Color.RED));
 		lbl_status.setBad("Invalid password");
+	}
+
+	public void setLocalServer(boolean b) {
+		// TODO Auto-generated method stub
+
 	}
 }
