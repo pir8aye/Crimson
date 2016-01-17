@@ -297,11 +297,14 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 	}
 
-	public boolean isEmpty() {
+	public boolean isFirstRun() {
 
 		try {
-			return !db.prepareStatement("SELECT * FROM map LIMIT 1;").executeQuery().next();
-		} catch (SQLException e) {
+			return (getInteger("runs") == 0);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return true;
 		}
 
