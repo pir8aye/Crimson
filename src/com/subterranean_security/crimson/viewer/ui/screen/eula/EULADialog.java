@@ -43,6 +43,7 @@ import javax.swing.event.ChangeListener;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Logger;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.component.StatusLights;
 
@@ -51,7 +52,7 @@ public class EULADialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private boolean exitOnDisp;
-	private boolean accepted = false;
+	public boolean accepted = false;
 
 	public Date start;
 

@@ -34,13 +34,13 @@ public enum Defaults {
 		softReset(db);
 		hardResetUniversal(db);
 
-		db.storeObject("runs", 0);
-		db.storeObject("login-times", new ArrayList<Long>());
-		db.storeObject("login-ips", new ArrayList<String>());
 	}
 
 	public static void softReset(ViewerDB db) {
 		softResetUniversal(db);
+
+		db.storeObject("login-times", new ArrayList<Long>());
+		db.storeObject("login-ips", new ArrayList<String>());
 	}
 
 	public static void hardReset(ViewerDB db) {
@@ -56,11 +56,7 @@ public enum Defaults {
 		db.storeObject("close_on_tray", false);
 		db.storeObject("show_eula", true);
 		db.storeObject("show_detail", true);
-
-		ArrayList<String> headers = new ArrayList<String>();
-		headers.add("Username");
-		headers.add("Hostname");
-		db.storeObject("list_headers", headers);
+		db.storeObject("list_headers", new String[]{"Location", "Username", "Hostname", "Language", "Java Version"});
 	}
 
 	public static void hardReset(LViewerDB db) {
