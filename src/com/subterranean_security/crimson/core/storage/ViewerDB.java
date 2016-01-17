@@ -35,8 +35,8 @@ public class ViewerDB extends Database {
 					dfile.getAbsolutePath());
 		}
 		init(dfile);
-		if (isEmpty()) {
-			Defaults.User.set_server(this, true);
+		if (isFirstRun()) {
+			Defaults.hardReset(this);
 		}
 
 	}

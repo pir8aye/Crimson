@@ -38,8 +38,8 @@ public class ServerDB extends Database {
 					dfile.getAbsolutePath());
 		}
 		init(dfile);
-		if (isEmpty()) {
-			Defaults.System.set(this, true);
+		if (isFirstRun()) {
+			Defaults.hardReset(this);
 		}
 		try {
 			storeObject("runs", getInteger("runs") + 1);

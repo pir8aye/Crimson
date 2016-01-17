@@ -17,64 +17,22 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.storage;
 
-import java.util.ArrayList;
+import java.io.File;
 
 import com.subterranean_security.crimson.core.Logger;
-import com.subterranean_security.crimson.core.proto.msg.Reports.Report;
+import com.subterranean_security.crimson.core.utility.CUtil;
 
-public enum Defaults {
-	;
+public class LViewerDB extends Database {
+	public LViewerDB(File dfile) throws Exception {
 
-	public static void softReset(ServerDB db) {
-		softResetUniversal(db);
-	}
+		if (!dfile.exists()) {
+			// copy the template
+			Logger.debug("Copying database template to: " + dfile.getAbsolutePath());
+			CUtil.Files.extract("com/subterranean_security/crimson/core/storage/lviewer-template.db",
+					dfile.getAbsolutePath());
+		}
+		init(dfile);
+		// TODO set defaults
 
-	public static void hardReset(ServerDB db) {
-		Logger.debug("Setting ServerDB Defaults");
-		softReset(db);
-		hardResetUniversal(db);
-
-		db.storeObject("runs", 0);
-		db.storeObject("login-times", new ArrayList<Long>());
-		db.storeObject("login-ips", new ArrayList<String>());
-	}
-
-	public static void softReset(ViewerDB db) {
-		softResetUniversal(db);
-	}
-
-	public static void hardReset(ViewerDB db) {
-		softReset(db);
-		hardResetUniversal(db);
-
-		db.storeObject("MAGIC", "subterranean");
-	}
-
-	public static void softReset(LViewerDB db) {
-		softResetUniversal(db);
-
-		db.storeObject("close_on_tray", false);
-		db.storeObject("show_eula", true);
-		db.storeObject("show_detail", true);
-
-		ArrayList<String> headers = new ArrayList<String>();
-		headers.add("Username");
-		headers.add("Hostname");
-		db.storeObject("list_headers", headers);
-	}
-
-	public static void hardReset(LViewerDB db) {
-		softReset(db);
-		hardResetUniversal(db);
-	}
-
-	private static void softResetUniversal(Database db) {
-		db.storeObject("error_reporting", true);
-		db.storeObject("reports_sent", 0);
-		db.storeObject("language", "en");
-	}
-
-	private static void hardResetUniversal(Database db) {
-		db.storeObject("report_buffer", new ArrayList<Report>());
 	}
 }
