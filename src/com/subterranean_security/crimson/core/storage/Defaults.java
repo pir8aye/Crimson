@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.core.storage;
 import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.Logger;
+import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
 import com.subterranean_security.crimson.core.proto.msg.Reports.Report;
 
 public enum Defaults {
@@ -27,6 +28,8 @@ public enum Defaults {
 
 	public static void softReset(ServerDB db) {
 		softResetUniversal(db);
+
+		db.storeObject("groups", new ArrayList<Group>());
 	}
 
 	public static void hardReset(ServerDB db) {
@@ -56,7 +59,7 @@ public enum Defaults {
 		db.storeObject("close_on_tray", false);
 		db.storeObject("show_eula", true);
 		db.storeObject("show_detail", true);
-		db.storeObject("list_headers", new String[]{"Location", "Username", "Hostname", "Language", "Java Version"});
+		db.storeObject("list_headers", new String[] { "Location", "Username", "Hostname", "Language", "Java Version" });
 	}
 
 	public static void hardReset(LViewerDB db) {
