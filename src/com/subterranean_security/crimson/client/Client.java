@@ -18,7 +18,6 @@
 package com.subterranean_security.crimson.client;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.SSLException;
@@ -27,12 +26,12 @@ import com.subterranean_security.crimson.client.network.ClientConnector;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.proto.msg.Gen.NetworkTarget;
-import com.subterranean_security.crimson.core.storage.LocalClientDB;
+import com.subterranean_security.crimson.core.storage.ViewerDB;
 
 public class Client {
 
 	public static ClientConnector connector;
-	public static LocalClientDB clientDB;
+	public static ViewerDB clientDB;
 	public static int connectionIterations = 0;
 
 	public static void main(String[] args) {
@@ -47,7 +46,7 @@ public class Client {
 
 		List<NetworkTarget> nts = null;
 		try {
-			clientDB = new LocalClientDB(new File(Common.base + "/var/client.db"));
+			clientDB = new ViewerDB(new File(Common.base + "/var/client.db"));
 			nts = getExternalNts();
 		} catch (Exception e) {
 			// TODO: handle exception
