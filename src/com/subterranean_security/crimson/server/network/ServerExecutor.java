@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.network;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import com.google.protobuf.ByteString;
@@ -35,13 +37,13 @@ import com.subterranean_security.crimson.core.proto.msg.Login.Login_RS;
 import com.subterranean_security.crimson.core.proto.msg.Login.ServerInfoDelta_EV;
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
 import com.subterranean_security.crimson.core.proto.msg.State.StateChange_RQ;
+import com.subterranean_security.crimson.core.storage.ViewerDB;
 import com.subterranean_security.crimson.core.utility.CUtil;
 import com.subterranean_security.crimson.core.utility.Crypto;
 import com.subterranean_security.crimson.core.utility.IDGen;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.server.ServerStore;
-import com.subterranean_security.crimson.server.ServerStore.Connections;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -203,22 +205,27 @@ public class ServerExecutor extends BasicExecutor {
 		if (rs.getResponse()) {
 			Logger.debug("Accepting Login");
 			receptor.setInstance(Instance.VIEWER);
+			receptor.setState(ConnectionState.AUTHENTICATED);
 			ServerStore.Connections.add(receptor);
-			long lastlogin = 0;
+			ViewerDB vdb = ServerStore.Databases.loaded_viewers
+					.get(ServerStore.Databases.system.getUID(m.getLoginRq().getUsername()));
+			ServerInfoDelta_EV.Builder builder = ServerInfoDelta_EV.newBuilder();
 			try {
-				lastlogin = ServerStore.Databases.loaded_users.get("").getDate("last-login").getTime();// TODO
-																										// get
-																										// from
-																										// the
-																										// correct
-																										// database
+				ArrayList<Long> times = (ArrayList<Long>) vdb.getObject("login-times");
+				ArrayList<String> ips = (ArrayList<String>) vdb.getObject("login-ips");
+				if (times.size() != 0) {
+					builder.setLastLogin(times.get(0));
+				}
+
+				// TODO set last ip
+				times.add(new Date().getTime());
+				// TODO add ip
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			ServerInfoDelta_EV info = ServerInfoDelta_EV.newBuilder().setLastLogin(lastlogin)
-					.setServerStatus(Server.isRunning()).build();
-			rs.setInitialInfo(info);
+			builder.setServerStatus(Server.isRunning());
+			rs.setInitialInfo(builder.build());
 		}
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setLoginRs(rs).build());
 		if (!rs.getResponse()) {
