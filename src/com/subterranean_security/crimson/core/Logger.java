@@ -30,6 +30,10 @@ public enum Logger {
 	private static boolean logging = true;
 	private static boolean logFile = false;
 
+	public static void login(String s) {
+		log("[LOGIN][" + new Date().toString() + "] " + s);
+	}
+
 	public static void info(String s) {
 		log("[I][" + new Date().toString() + "] " + s);
 	}
