@@ -122,11 +122,11 @@ public class AboutDialog extends JDialog {
 				stat_version.add(panel_1);
 				panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 				{
-					JLabel lblCrimsonxatVersion = new JLabel("Version");
-					lblCrimsonxatVersion.setHorizontalAlignment(SwingConstants.CENTER);
-					lblCrimsonxatVersion.setHorizontalTextPosition(SwingConstants.CENTER);
-					lblCrimsonxatVersion.setPreferredSize(new Dimension(299, 15));
-					panel_1.add(lblCrimsonxatVersion);
+					JLabel lblCrimsonVersion = new JLabel("Version");
+					lblCrimsonVersion.setHorizontalAlignment(SwingConstants.CENTER);
+					lblCrimsonVersion.setHorizontalTextPosition(SwingConstants.CENTER);
+					lblCrimsonVersion.setPreferredSize(new Dimension(299, 15));
+					panel_1.add(lblCrimsonVersion);
 				}
 			}
 			{
@@ -304,7 +304,7 @@ public class AboutDialog extends JDialog {
 				panel_1.setBorder(new LineBorder(UICommon.bg));
 				stat_edition.add(panel_1);
 				{
-					JLabel lblValue_2 = new JLabel("Professional");
+					JLabel lblValue_2 = new JLabel("ALPHA");
 					lblValue_2.setFont(new Font("Dialog", Font.BOLD, 11));
 					lblValue_2.setHorizontalAlignment(SwingConstants.CENTER);
 					lblValue_2.setPreferredSize(new Dimension(299, 15));
@@ -338,13 +338,13 @@ public class AboutDialog extends JDialog {
 				{
 					String serial = "XXXXXXXXXXXXXXXX";
 					try {
-						serial = ViewerStore.Databases.local.getString("serial");
+						String tmp = ViewerStore.Databases.local.getString("serial");
+						serial = tmp.substring(0, 4) + "-" + tmp.substring(4, 8) + "-" + tmp.substring(8, 12) + "-"
+								+ tmp.substring(12);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+
 					}
-					JLabel lblNewLabel_1 = new JLabel(serial.substring(0, 4) + "-" + serial.substring(4, 8) + "-"
-							+ serial.substring(8, 12) + "-" + serial.substring(12));
+					JLabel lblNewLabel_1 = new JLabel(serial);
 					lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 					lblNewLabel_1.setPreferredSize(new Dimension(299, 15));
 					panel_1.add(lblNewLabel_1);
