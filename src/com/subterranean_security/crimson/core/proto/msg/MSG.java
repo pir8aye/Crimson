@@ -211,6 +211,32 @@ public final class MSG {
     com.subterranean_security.crimson.core.proto.msg.State.GetState_RSOrBuilder getGetStateRsOrBuilder();
 
     /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+     */
+    boolean hasFileListingRq();
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+     */
+    com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ getFileListingRq();
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+     */
+    com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQOrBuilder getFileListingRqOrBuilder();
+
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+     */
+    boolean hasFileListingRs();
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+     */
+    com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS getFileListingRs();
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+     */
+    com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RSOrBuilder getFileListingRsOrBuilder();
+
+    /**
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.ChallengeResult_1W challengeresult_1w = 140;</code>
      *
      * <pre>
@@ -479,9 +505,35 @@ public final class MSG {
               bitField0_ |= 0x00000008;
               break;
             }
+            case 122: {
+              com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.Builder subBuilder = null;
+              if (((bitField0_ & 0x00004000) == 0x00004000)) {
+                subBuilder = fileListingRq_.toBuilder();
+              }
+              fileListingRq_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(fileListingRq_);
+                fileListingRq_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00004000;
+              break;
+            }
+            case 130: {
+              com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.Builder subBuilder = null;
+              if (((bitField0_ & 0x00008000) == 0x00008000)) {
+                subBuilder = fileListingRs_.toBuilder();
+              }
+              fileListingRs_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(fileListingRs_);
+                fileListingRs_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00008000;
+              break;
+            }
             case 1122: {
               com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.Builder subBuilder = null;
-              if (((bitField0_ & 0x00004000) == 0x00004000)) {
+              if (((bitField0_ & 0x00010000) == 0x00010000)) {
                 subBuilder = challengeresult1W_.toBuilder();
               }
               challengeresult1W_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.PARSER, extensionRegistry);
@@ -489,12 +541,12 @@ public final class MSG {
                 subBuilder.mergeFrom(challengeresult1W_);
                 challengeresult1W_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00004000;
+              bitField0_ |= 0x00010000;
               break;
             }
             case 1130: {
               com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.Builder subBuilder = null;
-              if (((bitField0_ & 0x00008000) == 0x00008000)) {
+              if (((bitField0_ & 0x00020000) == 0x00020000)) {
                 subBuilder = auth1W_.toBuilder();
               }
               auth1W_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.PARSER, extensionRegistry);
@@ -502,12 +554,12 @@ public final class MSG {
                 subBuilder.mergeFrom(auth1W_);
                 auth1W_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00008000;
+              bitField0_ |= 0x00020000;
               break;
             }
             case 1138: {
               com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.Builder subBuilder = null;
-              if (((bitField0_ & 0x00010000) == 0x00010000)) {
+              if (((bitField0_ & 0x00040000) == 0x00040000)) {
                 subBuilder = report1W_.toBuilder();
               }
               report1W_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.PARSER, extensionRegistry);
@@ -515,7 +567,7 @@ public final class MSG {
                 subBuilder.mergeFrom(report1W_);
                 report1W_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00010000;
+              bitField0_ |= 0x00040000;
               break;
             }
           }
@@ -864,6 +916,48 @@ public final class MSG {
       return getStateRs_;
     }
 
+    public static final int FILE_LISTING_RQ_FIELD_NUMBER = 15;
+    private com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ fileListingRq_;
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+     */
+    public boolean hasFileListingRq() {
+      return ((bitField0_ & 0x00004000) == 0x00004000);
+    }
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+     */
+    public com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ getFileListingRq() {
+      return fileListingRq_;
+    }
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+     */
+    public com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQOrBuilder getFileListingRqOrBuilder() {
+      return fileListingRq_;
+    }
+
+    public static final int FILE_LISTING_RS_FIELD_NUMBER = 16;
+    private com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS fileListingRs_;
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+     */
+    public boolean hasFileListingRs() {
+      return ((bitField0_ & 0x00008000) == 0x00008000);
+    }
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+     */
+    public com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS getFileListingRs() {
+      return fileListingRs_;
+    }
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+     */
+    public com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RSOrBuilder getFileListingRsOrBuilder() {
+      return fileListingRs_;
+    }
+
     public static final int CHALLENGERESULT_1W_FIELD_NUMBER = 140;
     private com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W challengeresult1W_;
     /**
@@ -874,7 +968,7 @@ public final class MSG {
      * </pre>
      */
     public boolean hasChallengeresult1W() {
-      return ((bitField0_ & 0x00004000) == 0x00004000);
+      return ((bitField0_ & 0x00010000) == 0x00010000);
     }
     /**
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.ChallengeResult_1W challengeresult_1w = 140;</code>
@@ -903,7 +997,7 @@ public final class MSG {
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.Auth_1W auth_1w = 141;</code>
      */
     public boolean hasAuth1W() {
-      return ((bitField0_ & 0x00008000) == 0x00008000);
+      return ((bitField0_ & 0x00020000) == 0x00020000);
     }
     /**
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.Auth_1W auth_1w = 141;</code>
@@ -924,7 +1018,7 @@ public final class MSG {
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.Report_1W report_1w = 142;</code>
      */
     public boolean hasReport1W() {
-      return ((bitField0_ & 0x00010000) == 0x00010000);
+      return ((bitField0_ & 0x00040000) == 0x00040000);
     }
     /**
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.Report_1W report_1w = 142;</code>
@@ -954,6 +1048,8 @@ public final class MSG {
       stateChangeRs_ = com.subterranean_security.crimson.core.proto.msg.State.StateChange_RS.getDefaultInstance();
       getStateRq_ = com.subterranean_security.crimson.core.proto.msg.State.GetState_RQ.getDefaultInstance();
       getStateRs_ = com.subterranean_security.crimson.core.proto.msg.State.GetState_RS.getDefaultInstance();
+      fileListingRq_ = com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.getDefaultInstance();
+      fileListingRs_ = com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.getDefaultInstance();
       challengeresult1W_ = com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.getDefaultInstance();
       auth1W_ = com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.getDefaultInstance();
       report1W_ = com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.getDefaultInstance();
@@ -1020,6 +1116,12 @@ public final class MSG {
       }
       if (hasGetStateRq()) {
         if (!getGetStateRq().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasFileListingRs()) {
+        if (!getFileListingRs().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -1092,12 +1194,18 @@ public final class MSG {
         output.writeMessage(14, profileDeltaEv_);
       }
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
-        output.writeMessage(140, challengeresult1W_);
+        output.writeMessage(15, fileListingRq_);
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
-        output.writeMessage(141, auth1W_);
+        output.writeMessage(16, fileListingRs_);
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
+        output.writeMessage(140, challengeresult1W_);
+      }
+      if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        output.writeMessage(141, auth1W_);
+      }
+      if (((bitField0_ & 0x00040000) == 0x00040000)) {
         output.writeMessage(142, report1W_);
       }
       getUnknownFields().writeTo(output);
@@ -1167,13 +1275,21 @@ public final class MSG {
       }
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(140, challengeresult1W_);
+          .computeMessageSize(15, fileListingRq_);
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(141, auth1W_);
+          .computeMessageSize(16, fileListingRs_);
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(140, challengeresult1W_);
+      }
+      if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(141, auth1W_);
+      }
+      if (((bitField0_ & 0x00040000) == 0x00040000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(142, report1W_);
       }
@@ -1298,6 +1414,8 @@ public final class MSG {
           getStateChangeRsFieldBuilder();
           getGetStateRqFieldBuilder();
           getGetStateRsFieldBuilder();
+          getFileListingRqFieldBuilder();
+          getFileListingRsFieldBuilder();
           getChallengeresult1WFieldBuilder();
           getAuth1WFieldBuilder();
           getReport1WFieldBuilder();
@@ -1385,24 +1503,36 @@ public final class MSG {
           getStateRsBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00002000);
+        if (fileListingRqBuilder_ == null) {
+          fileListingRq_ = com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.getDefaultInstance();
+        } else {
+          fileListingRqBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00004000);
+        if (fileListingRsBuilder_ == null) {
+          fileListingRs_ = com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.getDefaultInstance();
+        } else {
+          fileListingRsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00008000);
         if (challengeresult1WBuilder_ == null) {
           challengeresult1W_ = com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.getDefaultInstance();
         } else {
           challengeresult1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00010000);
         if (auth1WBuilder_ == null) {
           auth1W_ = com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.getDefaultInstance();
         } else {
           auth1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         if (report1WBuilder_ == null) {
           report1W_ = com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.getDefaultInstance();
         } else {
           report1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         return this;
       }
 
@@ -1538,21 +1668,37 @@ public final class MSG {
         if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
           to_bitField0_ |= 0x00004000;
         }
+        if (fileListingRqBuilder_ == null) {
+          result.fileListingRq_ = fileListingRq_;
+        } else {
+          result.fileListingRq_ = fileListingRqBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
+          to_bitField0_ |= 0x00008000;
+        }
+        if (fileListingRsBuilder_ == null) {
+          result.fileListingRs_ = fileListingRs_;
+        } else {
+          result.fileListingRs_ = fileListingRsBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
+          to_bitField0_ |= 0x00010000;
+        }
         if (challengeresult1WBuilder_ == null) {
           result.challengeresult1W_ = challengeresult1W_;
         } else {
           result.challengeresult1W_ = challengeresult1WBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
-          to_bitField0_ |= 0x00008000;
+        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
+          to_bitField0_ |= 0x00020000;
         }
         if (auth1WBuilder_ == null) {
           result.auth1W_ = auth1W_;
         } else {
           result.auth1W_ = auth1WBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
-          to_bitField0_ |= 0x00010000;
+        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
+          to_bitField0_ |= 0x00040000;
         }
         if (report1WBuilder_ == null) {
           result.report1W_ = report1W_;
@@ -1616,6 +1762,12 @@ public final class MSG {
         }
         if (other.hasGetStateRs()) {
           mergeGetStateRs(other.getGetStateRs());
+        }
+        if (other.hasFileListingRq()) {
+          mergeFileListingRq(other.getFileListingRq());
+        }
+        if (other.hasFileListingRs()) {
+          mergeFileListingRs(other.getFileListingRs());
         }
         if (other.hasChallengeresult1W()) {
           mergeChallengeresult1W(other.getChallengeresult1W());
@@ -1687,6 +1839,12 @@ public final class MSG {
         }
         if (hasGetStateRq()) {
           if (!getGetStateRq().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasFileListingRs()) {
+          if (!getFileListingRs().isInitialized()) {
             
             return false;
           }
@@ -3259,6 +3417,238 @@ public final class MSG {
         return getStateRsBuilder_;
       }
 
+      private com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ fileListingRq_ = com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.Builder, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQOrBuilder> fileListingRqBuilder_;
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+       */
+      public boolean hasFileListingRq() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ getFileListingRq() {
+        if (fileListingRqBuilder_ == null) {
+          return fileListingRq_;
+        } else {
+          return fileListingRqBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+       */
+      public Builder setFileListingRq(com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ value) {
+        if (fileListingRqBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          fileListingRq_ = value;
+          onChanged();
+        } else {
+          fileListingRqBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00004000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+       */
+      public Builder setFileListingRq(
+          com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.Builder builderForValue) {
+        if (fileListingRqBuilder_ == null) {
+          fileListingRq_ = builderForValue.build();
+          onChanged();
+        } else {
+          fileListingRqBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00004000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+       */
+      public Builder mergeFileListingRq(com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ value) {
+        if (fileListingRqBuilder_ == null) {
+          if (((bitField0_ & 0x00004000) == 0x00004000) &&
+              fileListingRq_ != com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.getDefaultInstance()) {
+            fileListingRq_ =
+              com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.newBuilder(fileListingRq_).mergeFrom(value).buildPartial();
+          } else {
+            fileListingRq_ = value;
+          }
+          onChanged();
+        } else {
+          fileListingRqBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00004000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+       */
+      public Builder clearFileListingRq() {
+        if (fileListingRqBuilder_ == null) {
+          fileListingRq_ = com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.getDefaultInstance();
+          onChanged();
+        } else {
+          fileListingRqBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00004000);
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.Builder getFileListingRqBuilder() {
+        bitField0_ |= 0x00004000;
+        onChanged();
+        return getFileListingRqFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQOrBuilder getFileListingRqOrBuilder() {
+        if (fileListingRqBuilder_ != null) {
+          return fileListingRqBuilder_.getMessageOrBuilder();
+        } else {
+          return fileListingRq_;
+        }
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RQ file_listing_rq = 15;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.Builder, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQOrBuilder> 
+          getFileListingRqFieldBuilder() {
+        if (fileListingRqBuilder_ == null) {
+          fileListingRqBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.Builder, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQOrBuilder>(
+                  getFileListingRq(),
+                  getParentForChildren(),
+                  isClean());
+          fileListingRq_ = null;
+        }
+        return fileListingRqBuilder_;
+      }
+
+      private com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS fileListingRs_ = com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.Builder, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RSOrBuilder> fileListingRsBuilder_;
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+       */
+      public boolean hasFileListingRs() {
+        return ((bitField0_ & 0x00008000) == 0x00008000);
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS getFileListingRs() {
+        if (fileListingRsBuilder_ == null) {
+          return fileListingRs_;
+        } else {
+          return fileListingRsBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+       */
+      public Builder setFileListingRs(com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS value) {
+        if (fileListingRsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          fileListingRs_ = value;
+          onChanged();
+        } else {
+          fileListingRsBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00008000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+       */
+      public Builder setFileListingRs(
+          com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.Builder builderForValue) {
+        if (fileListingRsBuilder_ == null) {
+          fileListingRs_ = builderForValue.build();
+          onChanged();
+        } else {
+          fileListingRsBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00008000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+       */
+      public Builder mergeFileListingRs(com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS value) {
+        if (fileListingRsBuilder_ == null) {
+          if (((bitField0_ & 0x00008000) == 0x00008000) &&
+              fileListingRs_ != com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.getDefaultInstance()) {
+            fileListingRs_ =
+              com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.newBuilder(fileListingRs_).mergeFrom(value).buildPartial();
+          } else {
+            fileListingRs_ = value;
+          }
+          onChanged();
+        } else {
+          fileListingRsBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00008000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+       */
+      public Builder clearFileListingRs() {
+        if (fileListingRsBuilder_ == null) {
+          fileListingRs_ = com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.getDefaultInstance();
+          onChanged();
+        } else {
+          fileListingRsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00008000);
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.Builder getFileListingRsBuilder() {
+        bitField0_ |= 0x00008000;
+        onChanged();
+        return getFileListingRsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RSOrBuilder getFileListingRsOrBuilder() {
+        if (fileListingRsBuilder_ != null) {
+          return fileListingRsBuilder_.getMessageOrBuilder();
+        } else {
+          return fileListingRs_;
+        }
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.FileListing_RS file_listing_rs = 16;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.Builder, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RSOrBuilder> 
+          getFileListingRsFieldBuilder() {
+        if (fileListingRsBuilder_ == null) {
+          fileListingRsBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.Builder, com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RSOrBuilder>(
+                  getFileListingRs(),
+                  getParentForChildren(),
+                  isClean());
+          fileListingRs_ = null;
+        }
+        return fileListingRsBuilder_;
+      }
+
       private com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W challengeresult1W_ = com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W, com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.Builder, com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1WOrBuilder> challengeresult1WBuilder_;
@@ -3270,7 +3660,7 @@ public final class MSG {
        * </pre>
        */
       public boolean hasChallengeresult1W() {
-        return ((bitField0_ & 0x00004000) == 0x00004000);
+        return ((bitField0_ & 0x00010000) == 0x00010000);
       }
       /**
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.ChallengeResult_1W challengeresult_1w = 140;</code>
@@ -3303,7 +3693,7 @@ public final class MSG {
         } else {
           challengeresult1WBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -3321,7 +3711,7 @@ public final class MSG {
         } else {
           challengeresult1WBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -3333,7 +3723,7 @@ public final class MSG {
        */
       public Builder mergeChallengeresult1W(com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W value) {
         if (challengeresult1WBuilder_ == null) {
-          if (((bitField0_ & 0x00004000) == 0x00004000) &&
+          if (((bitField0_ & 0x00010000) == 0x00010000) &&
               challengeresult1W_ != com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.getDefaultInstance()) {
             challengeresult1W_ =
               com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.newBuilder(challengeresult1W_).mergeFrom(value).buildPartial();
@@ -3344,7 +3734,7 @@ public final class MSG {
         } else {
           challengeresult1WBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -3361,7 +3751,7 @@ public final class MSG {
         } else {
           challengeresult1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00010000);
         return this;
       }
       /**
@@ -3372,7 +3762,7 @@ public final class MSG {
        * </pre>
        */
       public com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.Builder getChallengeresult1WBuilder() {
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00010000;
         onChanged();
         return getChallengeresult1WFieldBuilder().getBuilder();
       }
@@ -3418,7 +3808,7 @@ public final class MSG {
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Auth_1W auth_1w = 141;</code>
        */
       public boolean hasAuth1W() {
-        return ((bitField0_ & 0x00008000) == 0x00008000);
+        return ((bitField0_ & 0x00020000) == 0x00020000);
       }
       /**
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Auth_1W auth_1w = 141;</code>
@@ -3443,7 +3833,7 @@ public final class MSG {
         } else {
           auth1WBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -3457,7 +3847,7 @@ public final class MSG {
         } else {
           auth1WBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -3465,7 +3855,7 @@ public final class MSG {
        */
       public Builder mergeAuth1W(com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W value) {
         if (auth1WBuilder_ == null) {
-          if (((bitField0_ & 0x00008000) == 0x00008000) &&
+          if (((bitField0_ & 0x00020000) == 0x00020000) &&
               auth1W_ != com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.getDefaultInstance()) {
             auth1W_ =
               com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.newBuilder(auth1W_).mergeFrom(value).buildPartial();
@@ -3476,7 +3866,7 @@ public final class MSG {
         } else {
           auth1WBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -3489,14 +3879,14 @@ public final class MSG {
         } else {
           auth1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         return this;
       }
       /**
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Auth_1W auth_1w = 141;</code>
        */
       public com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.Builder getAuth1WBuilder() {
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         onChanged();
         return getAuth1WFieldBuilder().getBuilder();
       }
@@ -3534,7 +3924,7 @@ public final class MSG {
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Report_1W report_1w = 142;</code>
        */
       public boolean hasReport1W() {
-        return ((bitField0_ & 0x00010000) == 0x00010000);
+        return ((bitField0_ & 0x00040000) == 0x00040000);
       }
       /**
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Report_1W report_1w = 142;</code>
@@ -3559,7 +3949,7 @@ public final class MSG {
         } else {
           report1WBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -3573,7 +3963,7 @@ public final class MSG {
         } else {
           report1WBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -3581,7 +3971,7 @@ public final class MSG {
        */
       public Builder mergeReport1W(com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W value) {
         if (report1WBuilder_ == null) {
-          if (((bitField0_ & 0x00010000) == 0x00010000) &&
+          if (((bitField0_ & 0x00040000) == 0x00040000) &&
               report1W_ != com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.getDefaultInstance()) {
             report1W_ =
               com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.newBuilder(report1W_).mergeFrom(value).buildPartial();
@@ -3592,7 +3982,7 @@ public final class MSG {
         } else {
           report1WBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -3605,14 +3995,14 @@ public final class MSG {
         } else {
           report1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         return this;
       }
       /**
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Report_1W report_1w = 142;</code>
        */
       public com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.Builder getReport1WBuilder() {
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         onChanged();
         return getReport1WFieldBuilder().getBuilder();
       }
@@ -3673,7 +4063,7 @@ public final class MSG {
       "to\032\023msg/Keylogger.proto\032\016msg/Auth.proto\032" +
       "\rmsg/Gen.proto\032\017msg/State.proto\032\021msg/Rep" +
       "orts.proto\032\017msg/Delta.proto\032\014msg/FM.prot" +
-      "o\"\242\n\n\007Message\022\016\n\006urgent\030\001 \001(\010\022\n\n\002id\030\002 \001(" +
+      "o\"\330\013\n\007Message\022\016\n\006urgent\030\001 \001(\010\022\n\n\002id\030\002 \001(" +
       "\005\022M\n\006key_ev\030\003 \001(\0132=.com.subterranean_sec" +
       "urity.crimson.core.proto.msg.KeyEvent_EV" +
       "\022[\n\020profile_delta_ev\030\016 \001(\0132A.com.subterr" +
@@ -3699,13 +4089,18 @@ public final class MSG {
       "subterranean_security.crimson.core.proto" +
       ".msg.GetState_RQ\022S\n\014get_state_rs\030\r \001(\0132=",
       ".com.subterranean_security.crimson.core." +
-      "proto.msg.GetState_RS\022a\n\022challengeresult" +
-      "_1w\030\214\001 \001(\0132D.com.subterranean_security.c" +
-      "rimson.core.proto.msg.ChallengeResult_1W" +
-      "\022K\n\007auth_1w\030\215\001 \001(\01329.com.subterranean_se" +
-      "curity.crimson.core.proto.msg.Auth_1W\022O\n" +
-      "\treport_1w\030\216\001 \001(\0132;.com.subterranean_sec" +
-      "urity.crimson.core.proto.msg.Report_1W"
+      "proto.msg.GetState_RS\022Y\n\017file_listing_rq" +
+      "\030\017 \001(\0132@.com.subterranean_security.crims" +
+      "on.core.proto.msg.FileListing_RQ\022Y\n\017file" +
+      "_listing_rs\030\020 \001(\0132@.com.subterranean_sec" +
+      "urity.crimson.core.proto.msg.FileListing" +
+      "_RS\022a\n\022challengeresult_1w\030\214\001 \001(\0132D.com.s" +
+      "ubterranean_security.crimson.core.proto." +
+      "msg.ChallengeResult_1W\022K\n\007auth_1w\030\215\001 \001(\013" +
+      "29.com.subterranean_security.crimson.cor",
+      "e.proto.msg.Auth_1W\022O\n\treport_1w\030\216\001 \001(\0132" +
+      ";.com.subterranean_security.crimson.core" +
+      ".proto.msg.Report_1W"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -3732,7 +4127,7 @@ public final class MSG {
     internal_static_com_subterranean_security_crimson_core_proto_msg_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_com_subterranean_security_crimson_core_proto_msg_Message_descriptor,
-        new java.lang.String[] { "Urgent", "Id", "KeyEv", "ProfileDeltaEv", "LoginRq", "LoginRs", "ChallengeRq", "ChallengeRs", "GenerateRq", "GenerateRs", "StateChangeRq", "StateChangeRs", "GetStateRq", "GetStateRs", "Challengeresult1W", "Auth1W", "Report1W", });
+        new java.lang.String[] { "Urgent", "Id", "KeyEv", "ProfileDeltaEv", "LoginRq", "LoginRs", "ChallengeRq", "ChallengeRs", "GenerateRq", "GenerateRs", "StateChangeRq", "StateChangeRs", "GetStateRq", "GetStateRs", "FileListingRq", "FileListingRs", "Challengeresult1W", "Auth1W", "Report1W", });
     com.subterranean_security.crimson.core.proto.msg.Login.getDescriptor();
     com.subterranean_security.crimson.core.proto.msg.Keylogger.getDescriptor();
     com.subterranean_security.crimson.core.proto.msg.Auth.getDescriptor();

@@ -130,6 +130,15 @@ public final class Login {
      */
     com.google.protobuf.ByteString
         getHashBytes();
+
+    /**
+     * <code>optional int32 VID = 3;</code>
+     */
+    boolean hasVID();
+    /**
+     * <code>optional int32 VID = 3;</code>
+     */
+    int getVID();
   }
   /**
    * Protobuf type {@code com.subterranean_security.crimson.core.proto.msg.Login_RQ}
@@ -193,6 +202,11 @@ public final class Login {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
               hash_ = bs;
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              vID_ = input.readInt32();
               break;
             }
           }
@@ -319,9 +333,25 @@ public final class Login {
       }
     }
 
+    public static final int VID_FIELD_NUMBER = 3;
+    private int vID_;
+    /**
+     * <code>optional int32 VID = 3;</code>
+     */
+    public boolean hasVID() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional int32 VID = 3;</code>
+     */
+    public int getVID() {
+      return vID_;
+    }
+
     private void initFields() {
       username_ = "";
       hash_ = "";
+      vID_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -350,6 +380,9 @@ public final class Login {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getHashBytes());
       }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(3, vID_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -366,6 +399,10 @@ public final class Login {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, getHashBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, vID_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -488,6 +525,8 @@ public final class Login {
         bitField0_ = (bitField0_ & ~0x00000001);
         hash_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        vID_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -524,6 +563,10 @@ public final class Login {
           to_bitField0_ |= 0x00000002;
         }
         result.hash_ = hash_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.vID_ = vID_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -549,6 +592,9 @@ public final class Login {
           bitField0_ |= 0x00000002;
           hash_ = other.hash_;
           onChanged();
+        }
+        if (other.hasVID()) {
+          setVID(other.getVID());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -733,6 +779,38 @@ public final class Login {
   }
   bitField0_ |= 0x00000002;
         hash_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int vID_ ;
+      /**
+       * <code>optional int32 VID = 3;</code>
+       */
+      public boolean hasVID() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional int32 VID = 3;</code>
+       */
+      public int getVID() {
+        return vID_;
+      }
+      /**
+       * <code>optional int32 VID = 3;</code>
+       */
+      public Builder setVID(int value) {
+        bitField0_ |= 0x00000004;
+        vID_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 VID = 3;</code>
+       */
+      public Builder clearVID() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        vID_ = 0;
         onChanged();
         return this;
       }
@@ -2741,22 +2819,22 @@ public final class Login {
   static {
     java.lang.String[] descriptorData = {
       "\n\017msg/Login.proto\0220com.subterranean_secu" +
-      "rity.crimson.core.proto.msg\"*\n\010Login_RQ\022" +
-      "\020\n\010username\030\001 \002(\t\022\014\n\004hash\030\002 \002(\t\"x\n\010Login" +
-      "_RS\022\020\n\010response\030\001 \002(\010\022Z\n\014initial_info\030\002 " +
-      "\001(\0132D.com.subterranean_security.crimson." +
-      "core.proto.msg.ServerInfoDelta_EV\"\225\001\n\022Se" +
-      "rverInfoDelta_EV\022\025\n\rserver_status\030\001 \001(\010\022" +
-      "\022\n\nlast_login\030\002 \001(\003\022T\n\tuser_perm\030\003 \001(\0132A" +
-      ".com.subterranean_security.crimson.core." +
-      "proto.msg.UserPermissions\"\344\001\n\017UserPermis",
-      "sions\022\021\n\tgenerator\030\001 \002(\010\022\024\n\014server_power" +
-      "\030\002 \002(\010\022T\n\017filesystem_perm\030\003 \002(\0162;.com.su" +
-      "bterranean_security.crimson.core.proto.m" +
-      "sg.ReadWrite\022R\n\rsettings_perm\030\004 \002(\0162;.co" +
-      "m.subterranean_security.crimson.core.pro" +
-      "to.msg.ReadWrite*%\n\tReadWrite\022\010\n\004NONE\020\000\022" +
-      "\006\n\002RO\020\001\022\006\n\002RW\020\002"
+      "rity.crimson.core.proto.msg\"7\n\010Login_RQ\022" +
+      "\020\n\010username\030\001 \002(\t\022\014\n\004hash\030\002 \002(\t\022\013\n\003VID\030\003" +
+      " \001(\005\"x\n\010Login_RS\022\020\n\010response\030\001 \002(\010\022Z\n\014in" +
+      "itial_info\030\002 \001(\0132D.com.subterranean_secu" +
+      "rity.crimson.core.proto.msg.ServerInfoDe" +
+      "lta_EV\"\225\001\n\022ServerInfoDelta_EV\022\025\n\rserver_" +
+      "status\030\001 \001(\010\022\022\n\nlast_login\030\002 \001(\003\022T\n\tuser" +
+      "_perm\030\003 \001(\0132A.com.subterranean_security." +
+      "crimson.core.proto.msg.UserPermissions\"\344",
+      "\001\n\017UserPermissions\022\021\n\tgenerator\030\001 \002(\010\022\024\n" +
+      "\014server_power\030\002 \002(\010\022T\n\017filesystem_perm\030\003" +
+      " \002(\0162;.com.subterranean_security.crimson" +
+      ".core.proto.msg.ReadWrite\022R\n\rsettings_pe" +
+      "rm\030\004 \002(\0162;.com.subterranean_security.cri" +
+      "mson.core.proto.msg.ReadWrite*%\n\tReadWri" +
+      "te\022\010\n\004NONE\020\000\022\006\n\002RO\020\001\022\006\n\002RW\020\002"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2775,7 +2853,7 @@ public final class Login {
     internal_static_com_subterranean_security_crimson_core_proto_msg_Login_RQ_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_com_subterranean_security_crimson_core_proto_msg_Login_RQ_descriptor,
-        new java.lang.String[] { "Username", "Hash", });
+        new java.lang.String[] { "Username", "Hash", "VID", });
     internal_static_com_subterranean_security_crimson_core_proto_msg_Login_RS_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_com_subterranean_security_crimson_core_proto_msg_Login_RS_fieldAccessorTable = new
