@@ -1,3 +1,0 @@
-These ALPHA builds are unstable and should NOT be used outside of a secure testing environment.
-
-You'll most likely want to download the most recent build.
