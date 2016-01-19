@@ -19,6 +19,8 @@ package com.subterranean_security.crimson.viewer;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Logger;
+import com.subterranean_security.crimson.core.Reporter;
+import com.subterranean_security.crimson.core.utility.CUtil;
 
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
@@ -29,7 +31,7 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 			arg1.printStackTrace();
 		}
 
-
+		Reporter.report(Reporter.newReport().setStackTrace(CUtil.Misc.getStack(arg1)).build());
 
 	}
 
