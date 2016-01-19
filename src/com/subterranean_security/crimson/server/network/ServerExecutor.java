@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.network.BasicExecutor;
 import com.subterranean_security.crimson.core.network.ConnectionState;
@@ -30,6 +31,7 @@ import com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W;
 import com.subterranean_security.crimson.core.proto.msg.Auth.Challenge_RQ;
 import com.subterranean_security.crimson.core.proto.msg.Auth.Challenge_RS;
 import com.subterranean_security.crimson.core.proto.msg.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS;
 import com.subterranean_security.crimson.core.proto.msg.Gen.GenReport;
 import com.subterranean_security.crimson.core.proto.msg.Gen.Generate_RS;
 import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
@@ -119,6 +121,7 @@ public class ServerExecutor extends BasicExecutor {
 
 			}
 		}
+
 	}
 
 	private void challengeResult_1w(Message m) {
@@ -214,12 +217,13 @@ public class ServerExecutor extends BasicExecutor {
 				ArrayList<Long> times = (ArrayList<Long>) vdb.getObject("login-times");
 				ArrayList<String> ips = (ArrayList<String>) vdb.getObject("login-ips");
 				if (times.size() != 0) {
+					Logger.debug("Last login: " + times.get(0));
 					builder.setLastLogin(times.get(0));
 				}
 
 				// TODO set last ip
 				times.add(new Date().getTime());
-				// TODO add ip
+				ips.add("cha.nge.me");// TODO
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -229,7 +233,7 @@ public class ServerExecutor extends BasicExecutor {
 		}
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setLoginRs(rs).build());
 		if (!rs.getResponse()) {
-			Logger.debug("Rejecting Login");
+			Logger.login("Rejecting Login");
 			receptor.close();
 		}
 	}
@@ -268,6 +272,16 @@ public class ServerExecutor extends BasicExecutor {
 		Generate_RS.Builder rs = Generate_RS.newBuilder().setInstaller(ByteString.copyFrom(res))
 				.setReport(g.getReport());
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setGenerateRs(rs).build());
+	}
+
+	private void file_listing_rq(Message m) {
+		if (m.getFileListingRq().hasClientid()) {
+			// TODO check permissions and send to client
+			return;
+		}
+		// TODO finish sending back a response
+		receptor.handle.write(
+				Message.newBuilder().setFileListingRs(FileListing_RS.newBuilder().addAllListing(null).build()).build());
 	}
 
 }
