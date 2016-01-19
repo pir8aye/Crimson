@@ -32,7 +32,6 @@ import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
 import com.subterranean_security.crimson.core.utility.CUtil;
 import com.subterranean_security.crimson.core.utility.Crypto;
 import com.subterranean_security.crimson.core.utility.IDGen;
-import com.subterranean_security.crimson.server.ServerStore.Connections;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -84,7 +83,6 @@ public class ClientExecutor extends BasicExecutor {
 		nbt.start();
 	}
 
-	// TODO Check connection status to prevent attacks
 	private void challenge_rq(Message m) {
 		if (connector.getState() != ConnectionState.AUTH_STAGE1) {
 			return;
