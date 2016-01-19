@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.main;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.io.IOException;
 import java.util.Date;
 
 import javax.swing.JFrame;
@@ -26,6 +27,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.core.Logger;
+import com.subterranean_security.crimson.core.utility.CUtil;
 import com.subterranean_security.crimson.viewer.ui.panel.DPanel;
 import com.subterranean_security.crimson.viewer.ui.panel.NPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
@@ -56,7 +58,14 @@ public class MainFrame extends JFrame {
 		setMinimumSize(dim_frame_main);
 		setIconImages(UUtil.getIconList());
 
-		setTitle("Crimson");
+		String buildNo = null;
+		try {
+			buildNo = CUtil.Misc.getManifestAttr("Build-Number");
+		} catch (IOException e) {
+
+		}
+
+		setTitle("Crimson [ALPHA PREVIEW" + (buildNo != null ? (" BUILD: " + buildNo) : "") + "]");
 		initMenus();
 		initContent();
 
