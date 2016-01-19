@@ -32,7 +32,7 @@ public enum Common {
 	 * When true, debug messages will be logged and additional functionality
 	 * enabled
 	 */
-	public static final boolean debug = true;
+	public static final boolean debug = false;
 
 	/**
 	 * Version Syntax: X.X.X.X with major versions being on the left and minor
