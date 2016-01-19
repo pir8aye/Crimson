@@ -42,7 +42,9 @@ public class FileTable extends JPanel {
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-
+				if (pane.loading) {
+					return;
+				}
 				// get source of click
 				JTable source = (JTable) e.getSource();
 				final int sourceRow = source.rowAtPoint(e.getPoint());

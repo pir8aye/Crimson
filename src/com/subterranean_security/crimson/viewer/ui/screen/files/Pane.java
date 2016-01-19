@@ -18,10 +18,11 @@
 package com.subterranean_security.crimson.viewer.ui.screen.files;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -44,14 +45,34 @@ public class Pane extends JPanel {
 	// for viewers
 	private LocalFilesystem lf = new LocalFilesystem();
 
+	public boolean loading = false;
+
 	public Pane(FMPanel parent) {
 		this.parent = parent;
 		setLayout(new BorderLayout(0, 0));
 		add(ft, BorderLayout.CENTER);
 
-	
-
-		JComboBox comboBox = new JComboBox();
+		final JComboBox comboBox = new JComboBox();
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ImageIcon selected = (ImageIcon) comboBox.getSelectedItem();
+				switch (selected.getDescription().toLowerCase()) {
+				case "viewer": {
+					type = TYPE.VIEWER;
+					break;
+				}
+				case "server": {
+					type = TYPE.SERVER;
+					break;
+				}
+				default: {
+					type = TYPE.CLIENT;
+					break;
+				}
+				}
+				refresh();
+			}
+		});
 		comboBox.setRenderer(new ComboBoxRenderer());
 		comboBox.setModel(new FileComboBoxModel());
 		add(comboBox, BorderLayout.SOUTH);
@@ -59,54 +80,70 @@ public class Pane extends JPanel {
 	}
 
 	public void up() {
-		Date start = new Date();
-		switch (type) {
-		case CLIENT:
-			break;
-		case SERVER:
-			break;
-		case VIEWER:
-			lf.up();
-			refresh();
-			break;
+		new Thread(new Runnable() {
+			public void run() {
+				Date start = new Date();
+				switch (type) {
+				case CLIENT:
+					break;
+				case SERVER:
+					break;
+				case VIEWER:
+					lf.up();
+					refresh();
+					break;
 
-		}
-		parent.console.addLine("Moved up in: " + (new Date().getTime() - start.getTime()) + " milliseconds");
+				}
+				parent.console.addLine("Moved up in: " + (new Date().getTime() - start.getTime()) + " milliseconds");
+			}
+		}).start();
 
 	}
 
-	public void down(String s) {
-		Date start = new Date();
-		switch (type) {
-		case CLIENT:
-			break;
-		case SERVER:
-			break;
-		case VIEWER:
-			lf.down(s);
-			refresh();
-			break;
+	public void down(final String s) {
 
-		}
-		parent.console.addLine("Moved down in: " + (new Date().getTime() - start.getTime()) + " milliseconds");
+		new Thread(new Runnable() {
+			public void run() {
+				Date start = new Date();
+				switch (type) {
+				case CLIENT:
+					break;
+				case SERVER:
+					break;
+				case VIEWER:
+					lf.down(s);
+					refresh();
+					break;
+
+				}
+				parent.console.addLine("Moved down in: " + (new Date().getTime() - start.getTime()) + " milliseconds");
+			}
+		}).start();
+
 	}
 
 	public void refresh() {
-		switch (type) {
-		case CLIENT:
-			break;
-		case SERVER:
-			break;
-		case VIEWER:
-			try {
-				ft.setFiles(lf.list());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		// TODO investigate ways to remove thread overhead
+		// probably by declaring the Runnable as a field
+		new Thread(new Runnable() {
+			public void run() {
+				switch (type) {
+				case CLIENT:
+					break;
+				case SERVER:
+					break;
+				case VIEWER:
+					try {
+						ft.setFiles(lf.list());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
 
-		}
+				}
+			}
+		}).start();
 
 	}
 
