@@ -20,9 +20,11 @@ package com.subterranean_security.crimson.server;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.subterranean_security.crimson.core.Logger;
+import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
-import com.subterranean_security.crimson.core.storage.LocalClientDB;
 import com.subterranean_security.crimson.core.storage.ServerDB;
+import com.subterranean_security.crimson.core.storage.ViewerDB;
 import com.subterranean_security.crimson.server.network.Listener;
 import com.subterranean_security.crimson.server.network.Receptor;
 
@@ -35,7 +37,7 @@ public enum ServerStore {
 
 	public static class Databases {
 		public static ServerDB system;
-		public static HashMap<String, LocalClientDB> loaded_users = new HashMap<String, LocalClientDB>();// UID
+		public static HashMap<String, ViewerDB> loaded_viewers = new HashMap<String, ViewerDB>();// UID
 
 	}
 
@@ -60,9 +62,22 @@ public enum ServerStore {
 
 	}
 
+	public static class Files {
+		// TODO somehow get the correct filesystem
+		ArrayList<LocalFilesystem> fs = new ArrayList<LocalFilesystem>();
+	}
+
 	public static class Groups {
-		public static ArrayList<Group> groups = new ArrayList<Group>();// TODO
-																		// persistence
+		public static ArrayList<Group> groups = null;
+
+		static {
+			try {
+				groups = (ArrayList<Group>) Databases.system.getObject("groups");
+			} catch (Exception e) {
+				Logger.error("Failed to load groups");
+				e.printStackTrace();
+			}
+		}
 
 		public static Group getGroup(String groupname) {
 			for (Group g : groups) {
