@@ -425,7 +425,7 @@ public enum CUtil {
 			return String.valueOf(size);
 		}
 
-		public static String getStack(Exception e) {
+		public static String getStack(Throwable e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
