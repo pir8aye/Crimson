@@ -40,13 +40,13 @@ public class ViewerConnector implements AutoCloseable {
 	// Only one connector is needed for viewers
 	public static ViewerConnector connector;
 
-	public ViewerHandler handle = new ViewerHandler(this);
-	public ViewerExecutor executor = new ViewerExecutor(this);
-
 	// Buffers
 	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
 	public final BlockingHashMap<Integer, Message> cq = new BlockingHashMap<Integer, Message>();
 	public final BlockingQueue<Message> uq = new LinkedBlockingQueue<Message>();
+
+	public ViewerHandler handle = new ViewerHandler(this);
+	public ViewerExecutor executor = new ViewerExecutor(this);
 
 	private EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private ChannelFuture f;
