@@ -66,7 +66,6 @@ public class LocalFilesystem {
 			ArrayList<FileListlet> list = new ArrayList<FileListlet>();
 			for (Path entry : stream) {
 				FileListlet.Builder builder = FileListlet.newBuilder();
-				builder.setPwd(pwd());
 				builder.setName(entry.getFileName().toString());
 				builder.setDir(Files.isDirectory(entry));
 				if (mtime) {
