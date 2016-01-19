@@ -21,29 +21,21 @@ package com.subterranean_security.crimson.core;
 import java.util.Date;
 
 import com.subterranean_security.crimson.core.proto.msg.Reports.Report;
+import com.subterranean_security.services.Services;
 
 public class Reporter {
 
-	public static void report(Report r) {
-		// add report to buffer
-		// Server.getSettings()...
+	public static void report(final Report r) {
+		// add report to buffer TODO
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				refresh();
+				Services.sendReport(r);
 
 			}
 
 		}).start();
-
-	}
-
-	/**
-	 * Send any buffered reports
-	 */
-	public static void refresh() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -54,8 +46,8 @@ public class Reporter {
 		rb.setJreVersion(System.getProperty("java.version"));
 		rb.setInstance(Common.instance.toString());
 		rb.setOsFamily(PlatformInfo.os.toString());
-		rb.setSysArch(PlatformInfo.sysArch.toString());
-		rb.setJreArch(PlatformInfo.jreArch.toString());
+		//rb.setSysArch(PlatformInfo.sysArch.toString());
+		//rb.setJreArch(PlatformInfo.jreArch.toString());
 
 		return rb;
 	}
