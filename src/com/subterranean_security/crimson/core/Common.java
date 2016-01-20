@@ -36,6 +36,12 @@ public enum Common {
 
 	public static void setDebug(boolean d) {
 		debug = d;
+		if (debug) {
+			Logger.debug("Debug mode enabled");
+		} else {
+			Logger.info("Debug mode disabled");
+		}
+
 	}
 
 	public static boolean isDebugMode() {
@@ -62,6 +68,8 @@ public enum Common {
 	public static final File gtmp = new File(System.getProperty("java.io.tmpdir"));
 
 	static {
+
+		setDebug(new File("/debug.txt").exists());
 
 		if ((!base.canRead() || !base.canWrite()) && instance != Instance.INSTALLER) {
 			Logger.ferror("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
