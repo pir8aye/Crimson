@@ -49,7 +49,7 @@ public enum Logger {
 	}
 
 	public static void debug(String s) {
-		if (Common.debug) {
+		if (Common.isDebugMode()) {
 			log("[D][" + new Date().toString() + "] " + s);
 		}
 	}

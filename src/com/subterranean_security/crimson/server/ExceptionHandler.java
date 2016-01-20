@@ -27,7 +27,7 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 	@Override
 	public void uncaughtException(Thread arg0, Throwable arg1) {
 		Logger.debug("An unexpected exception has occurred");
-		if (Common.debug) {
+		if (Common.isDebugMode()) {
 			arg1.printStackTrace();
 		}
 

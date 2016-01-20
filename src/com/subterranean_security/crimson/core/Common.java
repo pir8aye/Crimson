@@ -32,7 +32,15 @@ public enum Common {
 	 * When true, debug messages will be logged and additional functionality
 	 * enabled
 	 */
-	public static final boolean debug = false;
+	private static boolean debug = false;
+
+	public static void setDebug(boolean d) {
+		debug = d;
+	}
+
+	public static boolean isDebugMode() {
+		return debug;
+	}
 
 	/**
 	 * Version Syntax: X.X.X.X with major versions being on the left and minor
@@ -104,7 +112,11 @@ public enum Common {
 			// the base will always be two dirs above the core library
 			String bpath = Common.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 
-			return new File(bpath.substring(0, bpath.length() - 16));
+			File f = new File(bpath.substring(0, bpath.length() - 16));
+			if (!f.exists() || !f.isDirectory()) {
+				Logger.ferror("Base directory does not exist: " + f.getAbsolutePath());
+			}
+			return f;
 		} catch (URISyntaxException e) {
 			Logger.ferror("Null Base Directory");
 			return null;

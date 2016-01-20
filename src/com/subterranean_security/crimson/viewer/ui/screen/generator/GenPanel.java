@@ -582,7 +582,7 @@ public class GenPanel extends JPanel {
 
 		changeToJar();
 
-		if (Common.debug) {
+		if (Common.isDebugMode()) {
 			cbx_allow_win.setSelected(true);
 			table.add(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(2031).build());
 			fld_path.setText("C:/Users/dev/Desktop/client.jar");

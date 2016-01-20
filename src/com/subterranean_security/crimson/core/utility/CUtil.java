@@ -103,7 +103,7 @@ public enum CUtil {
 			public static File getLDir() {
 				File f = new File(Common.tmp.getAbsolutePath() + File.separator + Misc.nameGen(9));
 				f.mkdirs();
-				if (!Common.debug) {
+				if (!Common.isDebugMode()) {
 					f.deleteOnExit();
 				}
 

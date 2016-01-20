@@ -156,9 +156,6 @@ public class LoginPanel extends JPanel {
 		fld_port.setPreferredSize(new Dimension(25, 19));
 		fld_port.setMinimumSize(new Dimension(25, 19));
 		fld_port.setHorizontalAlignment(SwingConstants.CENTER);
-		if (Common.debug) {
-			fld_port.setText("2031");
-		}
 
 		fld_port.setMaximumSize(new Dimension(25, 19));
 		panel_4.add(fld_port);
