@@ -1,3 +1,7 @@
 These ALPHA builds are unstable and should NOT be used outside of a secure testing environment.
 
-You'll most likely want to download the most recent build.
+INSTRUCTIONS:
+
+1. Download the most recent build
+2. Begin the installer by executing the runnable jar file
+3. Execute the runnable jar file: "Crimson-Viewer.jar" located in your install directory
