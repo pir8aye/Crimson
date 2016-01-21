@@ -48,11 +48,15 @@ public enum Common {
 		return debug;
 	}
 
+	static {
+		setDebug(new File("/debug.txt").exists());
+	}
+
 	/**
 	 * Version Syntax: X.X.X.X with major versions being on the left and minor
 	 * versions and fixes on the right
 	 */
-	public static final String version = "1.0.0.0";
+	public static String version;
 
 	/**
 	 * Initialization Timestamp
@@ -68,8 +72,12 @@ public enum Common {
 	public static final File gtmp = new File(System.getProperty("java.io.tmpdir"));
 
 	static {
-
-		setDebug(new File("/debug.txt").exists());
+		try {
+			version = CUtil.Misc.getManifestAttr("Crimson-Version");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		if ((!base.canRead() || !base.canWrite()) && instance != Instance.INSTALLER) {
 			Logger.ferror("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
