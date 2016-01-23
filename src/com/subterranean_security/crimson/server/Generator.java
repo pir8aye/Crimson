@@ -25,7 +25,6 @@ import java.util.Date;
 import org.zeroturnaround.zip.ZipUtil;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.msg.Gen.GenReport;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
@@ -41,7 +40,6 @@ public class Generator {
 	}
 
 	public Generator(ClientConfig config) throws Exception {
-		Logger.debug("Starting Generation");
 
 		// store the group
 		ServerStore.Groups.groups.add(config.getGroup());

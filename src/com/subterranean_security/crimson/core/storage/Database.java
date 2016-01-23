@@ -28,11 +28,15 @@ import java.util.HashMap;
 
 import javax.sql.rowset.serial.SerialException;
 
-import com.subterranean_security.crimson.core.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.utility.CUtil;
 import com.subterranean_security.crimson.core.utility.ObjectTransfer;
 
 public abstract class Database extends Thread implements AutoCloseable {
+	private static final Logger log = LoggerFactory
+			.getLogger("com.subterranean_security.crimson.core.storage.Database");
 
 	private HashMap<String, Object> map = new HashMap<String, Object>();
 	private HashMap<Integer, Object> heap = new HashMap<Integer, Object>();
@@ -47,24 +51,24 @@ public abstract class Database extends Thread implements AutoCloseable {
 			// load the driver if unloaded
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
-			Logger.error("Missing Dependency: sqlite");
+			log.error("Missing Dependency: sqlite");
 			throw e;
 		}
 
 		try {
 			db = DriverManager.getConnection("jdbc:sqlite:" + dfile.getAbsolutePath());
 		} catch (SQLException e) {
-			Logger.error("Could not connect to database: " + dfile.getAbsolutePath());
+			log.error("Could not connect to database: " + dfile.getAbsolutePath());
 			throw new Exception("Could not create database: " + dfile.getAbsolutePath());
 		}
 
-		Logger.debug("Initialized database: " + dfile.getAbsolutePath());
+		log.debug("Initialized database: " + dfile.getAbsolutePath());
 
 		// increase run count
 		try {
 			storeObject("runs", getInteger("runs") + 1);
 		} catch (Exception e) {
-			Logger.error("Could not update run count");
+			log.error("Could not update run count");
 			e.printStackTrace();
 		}
 	}
@@ -83,7 +87,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			Logger.error("Query for: " + id + " failed");
+			log.error("Query for: " + id + " failed");
 			throw new Exception();
 		} else {
 			return rs.getBytes("Data");
@@ -124,7 +128,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			Logger.error("Key not found: " + key);
+			log.error("Key not found: " + key);
 			throw new Exception();
 		} else {
 			return ObjectTransfer.Default.deserialize(rs.getBytes("Data"));
@@ -151,10 +155,10 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			Logger.error("Could not query key: " + key);
+			log.error("Could not query key: " + key);
 			throw new Exception();
 		} else {
-			Logger.debug("Returning: " + rs.getString("Data") + " for key: " + key);
+			log.debug("Returning: " + rs.getString("Data") + " for key: " + key);
 			return rs.getString("Data");
 		}
 
@@ -179,7 +183,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			Logger.error("Could not query key: " + key);
+			log.error("Could not query key: " + key);
 			throw new Exception();
 		} else {
 			return rs.getLong("Data");
@@ -206,7 +210,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			Logger.error("Could not query key: " + key);
+			log.error("Could not query key: " + key);
 			throw new Exception();
 		} else {
 			return rs.getInt("Data");
@@ -233,7 +237,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			Logger.error("Could not query key: " + key);
+			log.error("Could not query key: " + key);
 			throw new Exception();
 		} else {
 			return rs.getBoolean("Data");

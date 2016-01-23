@@ -17,8 +17,9 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
+
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 public class SettingsPanel extends JPanel {

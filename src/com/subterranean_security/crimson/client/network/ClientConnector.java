@@ -25,7 +25,6 @@ import javax.net.ssl.SSLException;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.network.ConnectionState;
 import com.subterranean_security.crimson.core.proto.msg.Auth.AuthType;
 import com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W;
@@ -61,7 +60,6 @@ public class ClientConnector implements AutoCloseable {
 	private ConnectionState state = ConnectionState.NOT_CONNECTED;
 
 	public void setState(ConnectionState cs) {
-		Logger.debug("Connector connection state changed to: " + cs.toString());
 		state = cs;
 	}
 
@@ -90,7 +88,6 @@ public class ClientConnector implements AutoCloseable {
 			group = (Group) Client.clientDB.getObject("group");
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			Logger.debug("Unable to get group information");
 			return;
 		}
 		setState(ConnectionState.AUTH_STAGE1);

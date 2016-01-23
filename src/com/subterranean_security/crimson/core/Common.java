@@ -22,11 +22,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.utility.CUtil;
 
 public enum Common {
-
 	;
+	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.core.Common");
 
 	/**
 	 * When true, debug messages will be logged and additional functionality
@@ -37,9 +40,9 @@ public enum Common {
 	public static void setDebug(boolean d) {
 		debug = d;
 		if (debug) {
-			Logger.debug("Debug mode enabled");
+			log.debug("Debug mode enabled");
 		} else {
-			Logger.info("Debug mode disabled");
+			log.info("Debug mode disabled");
 		}
 
 	}
@@ -66,7 +69,6 @@ public enum Common {
 	public static final Instance instance = discoverInstance();
 
 	public static final File base = discoverBaseDir();
-	public static final File log = new File(base.getAbsolutePath() + "/log/crimson.log");
 	public static final File tmp = new File(base.getAbsolutePath() + "/tmp");
 	public static final File var = new File(base.getAbsolutePath() + "/var");
 	public static final File gtmp = new File(System.getProperty("java.io.tmpdir"));
@@ -80,21 +82,13 @@ public enum Common {
 		}
 
 		if ((!base.canRead() || !base.canWrite()) && instance != Instance.INSTALLER) {
-			Logger.ferror("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
+			log.error("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
 
 		}
 
-		if (new File(base.getAbsolutePath() + "/log").mkdirs()) {
-			try {
-				log.createNewFile();
-			} catch (IOException e) {
-				// TODO
-			}
-		}
+		log.debug("Base directory: " + base.getAbsolutePath());
+		log.debug("Temporary directory: " + tmp.getAbsolutePath());
 
-		Logger.debug("Base directory: " + base.getAbsolutePath());
-		Logger.debug("Log file: " + log.getAbsolutePath());
-		Logger.debug("Temporary directory: " + tmp.getAbsolutePath());
 	}
 
 	public enum Instance {
@@ -118,7 +112,7 @@ public enum Common {
 		if (CUtil.Misc.findClass("com.subterranean_security.viridian.Main")) {
 			return Instance.VIRIDIAN;
 		}
-		Logger.info("Unknown Instance");
+		log.info("Unknown Instance");
 		return null;
 	}
 
@@ -130,11 +124,11 @@ public enum Common {
 
 			File f = new File(bpath.substring(0, bpath.length() - 16));
 			if (!f.exists() || !f.isDirectory()) {
-				Logger.ferror("Base directory does not exist: " + f.getAbsolutePath());
+				log.error("Base directory does not exist: " + f.getAbsolutePath());
 			}
 			return f;
 		} catch (URISyntaxException e) {
-			Logger.ferror("Null Base Directory");
+			log.error("Null Base Directory");
 			return null;
 		}
 	}

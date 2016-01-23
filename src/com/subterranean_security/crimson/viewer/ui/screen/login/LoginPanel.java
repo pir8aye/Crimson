@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -40,17 +41,12 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.utility.CUtil;
 import com.subterranean_security.crimson.viewer.network.ViewerCommands;
 import com.subterranean_security.crimson.viewer.network.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-
-import javax.swing.BoxLayout;
-import javax.swing.border.BevelBorder;
 
 public class LoginPanel extends JPanel {
 
@@ -265,10 +261,8 @@ public class LoginPanel extends JPanel {
 
 			try {
 				ViewerConnector.connector = new ViewerConnector(server, Integer.parseInt(port));
-				Logger.debug("Connection made");
 			} catch (Throwable e) {
 				e.printStackTrace();
-				Logger.debug("Connection failed");
 				btn_login.setEnabled(true);
 				lbl_status.unfreeze();
 				lbl_status.setBad("Unable to Connect");

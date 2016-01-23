@@ -24,7 +24,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 
 import aurelienribon.slidinglayout.SLAnimator;
@@ -50,7 +49,6 @@ public class HPanel extends SLPanel {
 	public NormalMenu nmenu = new NormalMenu();
 
 	public HPanel(JPanel main) {
-		Logger.debug("Initializing HPanel");
 		thisHP = this;
 
 		movingBar = new MovingPanel(nmenu);

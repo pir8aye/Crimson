@@ -41,9 +41,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.component.StatusLights;
 
@@ -89,7 +86,6 @@ public class EULADialog extends JDialog {
 					Thread.sleep(300);
 				} catch (InterruptedException e) {
 				}
-				Logger.info("Exiting...");
 				System.exit(0);
 			}
 

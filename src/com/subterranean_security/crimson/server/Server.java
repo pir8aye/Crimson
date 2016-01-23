@@ -20,8 +20,10 @@ package com.subterranean_security.crimson.server;
 import java.io.File;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
 import com.subterranean_security.crimson.core.storage.ServerDB;
@@ -30,6 +32,7 @@ import com.subterranean_security.crimson.core.utility.FileLocking;
 import com.subterranean_security.crimson.server.network.Listener;
 
 public final class Server {
+	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.server.Server");
 
 	private static boolean running;
 	private static Listener localListener;
@@ -44,7 +47,7 @@ public final class Server {
 
 		// Check for file lock
 		if (FileLocking.lockExists(Common.instance)) {
-			Logger.error("Crimson detected that it's already running");
+			log.error("Crimson detected that it's already running");
 			return;
 		} else {
 			FileLocking.lock(Common.instance);
@@ -57,7 +60,7 @@ public final class Server {
 		try {
 			ServerStore.Databases.system = new ServerDB(new File(Common.base.getAbsolutePath() + "/var/system.db"));
 		} catch (Exception e) {
-			Logger.ferror("Could not initialize system database");
+			log.error("Could not initialize system database");
 
 		}
 
@@ -65,7 +68,7 @@ public final class Server {
 		localListener = new Listener(2031, true, true, false);
 
 		start();
-		Logger.debug("Done");
+		log.debug("Done");
 
 		// testing();
 	}
@@ -88,7 +91,7 @@ public final class Server {
 	}
 
 	private static void testing() {
-		Logger.info("Starting server test!");
+		log.info("Starting server test!");
 
 		Group group = Group.newBuilder().setName("BESTGROUP").setKey("RANDOMKEY").build();
 		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setGroup(group).setReconnectPeriod(10)
@@ -96,7 +99,7 @@ public final class Server {
 		try {
 			Generator g = new Generator(cc);
 			byte[] res = g.getResult();
-			Logger.info("Installer size: " + res.length + " bytes");
+			log.info("Installer size: " + res.length + " bytes");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

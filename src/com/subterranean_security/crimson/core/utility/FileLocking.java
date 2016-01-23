@@ -25,12 +25,15 @@ import java.nio.channels.FileLock;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.Common.Instance;
 
 public enum FileLocking {
 	;
+	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.core.utilitiy.FileLocking");
 
 	private static FileChannel channel;
 	private static File file;
@@ -123,7 +126,8 @@ public enum FileLocking {
 				second = B64.encodeString(new String(digest.digest())).replaceAll("[/\\+=]", "");
 
 			} catch (NoSuchAlgorithmException e1) {
-				Logger.ferror("MD5 hashing algorithm missing!");
+				log.error("MD5 hashing algorithm missing!");
+				System.exit(0);
 			}
 
 			if (f.getName().equals(base + second)) {
@@ -151,7 +155,7 @@ public enum FileLocking {
 			lock.release();
 
 		} catch (Throwable e) {
-			Logger.error("Failed to release file lock");
+			log.error("Failed to release file lock");
 		}
 
 		try {
@@ -165,7 +169,7 @@ public enum FileLocking {
 			// delete the file
 			file.delete();
 		} catch (Throwable e) {
-			Logger.error("Failed to delete file lock");
+			log.error("Failed to delete file lock");
 		}
 
 	}

@@ -22,18 +22,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.utility.CUtil;
 import com.subterranean_security.crimson.core.utility.Crypto;
 import com.subterranean_security.crimson.server.ServerStore;
 
 public class ServerDB extends Database {
+	private static final Logger log = LoggerFactory
+			.getLogger("com.subterranean_security.crimson.core.storage.ServerDB");
 
 	public ServerDB(File dfile) throws Exception {
 		if (!dfile.exists()) {
 			// copy the template
-			Logger.debug("Copying database template to: " + dfile.getAbsolutePath());
+			log.debug("Copying database template to: " + dfile.getAbsolutePath());
 			CUtil.Files.extract("com/subterranean_security/crimson/core/storage/server-template.db",
 					dfile.getAbsolutePath());
 		}
@@ -41,7 +45,7 @@ public class ServerDB extends Database {
 		if (isFirstRun()) {
 			Defaults.hardReset(this);
 		}
-		
+
 	}
 
 	public boolean userExists(String user) {
@@ -53,7 +57,7 @@ public class ServerDB extends Database {
 			return rs.next();
 
 		} catch (SQLException e) {
-			Logger.rerror("Error during user query");
+			log.error("Error during user query");
 			return true;
 		}
 	}
@@ -69,7 +73,7 @@ public class ServerDB extends Database {
 				return rs.getString("Salt");
 			}
 		} catch (SQLException e) {
-			Logger.rerror("Error during salt query");
+			log.error("Error during salt query");
 
 		}
 		return null;
@@ -88,7 +92,7 @@ public class ServerDB extends Database {
 				UID = rs.getString("UID");
 				salt = rs.getString("Salt");
 			} else {
-				Logger.debug("Could not get UID and Salt");
+				log.debug("Could not get UID and Salt");
 				throw new Exception();
 			}
 
@@ -100,7 +104,7 @@ public class ServerDB extends Database {
 			return ServerStore.Databases.loaded_viewers.get(UID).getString("MAGIC").equals("subterranean");
 
 		} catch (Exception e) {
-			Logger.rerror("Error during login query");
+			log.error("Error during login query");
 
 		}
 		return false;
@@ -116,12 +120,12 @@ public class ServerDB extends Database {
 			if (rs.next()) {
 				return rs.getString("UID");
 			} else {
-				Logger.debug("Could not get UID");
+				log.debug("Could not get UID");
 				throw new Exception();
 			}
 
 		} catch (Exception e) {
-			Logger.rerror("Error during login query");
+			log.error("Error during login query");
 
 		}
 		return null;
@@ -129,7 +133,7 @@ public class ServerDB extends Database {
 
 	public boolean addUser(String user, String password) {
 		if (userExists(user)) {
-			Logger.info("This user already exists: " + user);
+			log.info("This user already exists: " + user);
 			return false;
 		}
 

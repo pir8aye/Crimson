@@ -21,7 +21,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -33,7 +32,6 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public class HostList extends JPanel {
@@ -176,7 +174,6 @@ class TM extends AbstractTableModel {
 			headers = (String[]) ViewerStore.Databases.local.getObject("list_headers");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Logger.error("Failed to update list headers");
 			e.printStackTrace();
 		}
 	}

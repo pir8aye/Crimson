@@ -20,21 +20,19 @@ package com.subterranean_security.crimson.core.utility;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import com.subterranean_security.crimson.core.Logger;
-
 public class T {
 
-	private static ResourceBundle	core;																				//0 to 10000
-	private static ResourceBundle	server;																			//10001 to 15000
-	private static ResourceBundle	client;																			//15001 to 20000
-	private static ResourceBundle	ui;																				//20001 to INTEGER.MAX
+	private static ResourceBundle core; // 0 to 10000
+	private static ResourceBundle server; // 10001 to 15000
+	private static ResourceBundle client; // 15001 to 20000
+	private static ResourceBundle ui; // 20001 to INTEGER.MAX
 
-	private static final String		coredir		= "com/subterranean_security/crimson/core/res/language/lang";
-	private static final String		serverdir	= "com/subterranean_security/crimson/server/res/language/lang";
-	private static final String		clientdir	= "com/subterranean_security/crimson/client/stage2/res/language/lang";
-	private static final String		uidir		= "com/subterranean_security/crimson/ui/res/language/lang";
+	private static final String coredir = "com/subterranean_security/crimson/core/res/language/lang";
+	private static final String serverdir = "com/subterranean_security/crimson/server/res/language/lang";
+	private static final String clientdir = "com/subterranean_security/crimson/client/stage2/res/language/lang";
+	private static final String uidir = "com/subterranean_security/crimson/ui/res/language/lang";
 
-	private static String			lang		= "";
+	private static String lang = "";
 
 	public static String t(int i) {
 		if (lang.isEmpty()) {
@@ -63,7 +61,6 @@ public class T {
 		lang = l.toLowerCase();
 		switch (lang) {
 		case "en": {
-			Logger.debug("Loading English translation");
 			core = ResourceBundle.getBundle(coredir, Locale.ENGLISH);
 			server = ResourceBundle.getBundle(serverdir, Locale.ENGLISH);
 			client = ResourceBundle.getBundle(clientdir, Locale.ENGLISH);

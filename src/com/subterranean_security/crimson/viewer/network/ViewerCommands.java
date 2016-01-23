@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import com.subterranean_security.crimson.core.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.proto.msg.FM.FileListlet;
 import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.msg.Gen.GenReport;
@@ -39,8 +41,8 @@ import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerCommands {
-
 	;
+	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.viewer.network.ViewerCommands");
 
 	public static boolean login(String user, char[] pass) {
 		int id = IDGen.get();
@@ -50,7 +52,7 @@ public enum ViewerCommands {
 		try {
 			Message rs = ViewerConnector.connector.cq.take(id, 7, TimeUnit.SECONDS);
 			if (rs != null) {
-				Logger.debug("Received login response: " + rs.getLoginRs().getResponse());
+				log.debug("Received login response: " + rs.getLoginRs().getResponse());
 				if (rs.getLoginRs().getResponse()) {
 					LoginDialog.initial = rs.getLoginRs().getInitialInfo();
 					return true;
@@ -58,7 +60,7 @@ public enum ViewerCommands {
 
 			}
 		} catch (InterruptedException e) {
-			Logger.debug("Login interrupted");
+			log.debug("Login interrupted");
 		}
 		return false;
 	}
@@ -97,17 +99,17 @@ public enum ViewerCommands {
 					CUtil.Files.writeFile(rs.getGenerateRs().getInstaller().toByteArray(), new File(output));
 				} else {
 					MainFrame.main.np.addNote("Error: Generation failed! Click for report.", r);
-					Logger.error("Could not generate an installer");
+					log.error("Could not generate an installer");
 				}
 
 			} else {
 				MainFrame.main.np.addNote("Error: Generation Timed Out!");
-				Logger.error("Could not generate an installer. Check the network.");
+				log.error("Could not generate an installer. Check the network.");
 			}
 		} catch (InterruptedException e) {
-			Logger.debug("Generation interrupted");
+			log.debug("Generation interrupted");
 		} catch (IOException e) {
-			Logger.error("Failed to write the installer");
+			log.error("Failed to write the installer");
 			e.printStackTrace();
 		}
 

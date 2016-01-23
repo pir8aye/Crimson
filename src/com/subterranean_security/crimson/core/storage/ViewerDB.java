@@ -19,7 +19,6 @@ package com.subterranean_security.crimson.core.storage;
 
 import java.io.File;
 
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.utility.CUtil;
 
 public class ViewerDB extends Database {
@@ -30,7 +29,6 @@ public class ViewerDB extends Database {
 
 		if (!dfile.exists()) {
 			// copy the template
-			Logger.debug("Copying database template to: " + dfile.getAbsolutePath());
 			CUtil.Files.extract("com/subterranean_security/crimson/core/storage/viewer-template.db",
 					dfile.getAbsolutePath());
 		}

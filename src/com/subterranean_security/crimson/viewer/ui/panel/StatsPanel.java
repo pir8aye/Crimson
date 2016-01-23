@@ -17,8 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.panel;
 
-import javax.swing.JPanel;
 import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 
 public class StatsPanel extends JPanel {
 

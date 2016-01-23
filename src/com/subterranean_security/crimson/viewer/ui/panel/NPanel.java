@@ -29,8 +29,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.Logger;
-
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
 import aurelienribon.slidinglayout.SLKeyframe;
@@ -96,7 +94,6 @@ public class NPanel extends SLPanel {
 
 				Object[] o = noteQ.poll();
 				if (o == null) {
-					Logger.error("Null element in note queue");
 					return;
 				}
 				note.set((String) o[0], (Runnable) o[1]);

@@ -21,7 +21,6 @@ import com.subterranean_security.crimson.core.network.BasicHandler;
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.ReferenceCountUtil;
 
 public class ClientHandler extends BasicHandler {
 

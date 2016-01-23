@@ -21,22 +21,18 @@ import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.MenuSelectionManager;
-import javax.swing.border.EtchedBorder;
+import javax.swing.UIManager;
 
-import com.subterranean_security.crimson.viewer.Viewer;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.component.WideMenuItem;
 import com.subterranean_security.crimson.viewer.ui.screen.about.AboutDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.GenDialog;
-import java.awt.SystemColor;
-import javax.swing.UIManager;
 
 public class MainMenu extends JPanel {
 

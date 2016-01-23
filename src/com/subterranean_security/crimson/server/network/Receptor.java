@@ -23,7 +23,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.network.ConnectionState;
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
 import com.subterranean_security.crimson.server.ServerStore;
@@ -45,7 +44,6 @@ public class Receptor implements AutoCloseable {
 	private ConnectionState state = ConnectionState.CONNECTED;
 
 	public void setState(ConnectionState cs) {
-		Logger.debug("Receptor connection state changed to: " + cs.toString());
 		state = cs;
 	}
 

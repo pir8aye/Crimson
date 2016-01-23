@@ -22,7 +22,6 @@ import java.awt.Component;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JSeparator;
 import javax.swing.ListCellRenderer;
 
 public class ComboBoxRenderer extends JLabel implements ListCellRenderer {

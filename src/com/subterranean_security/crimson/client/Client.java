@@ -22,13 +22,16 @@ import java.util.List;
 
 import javax.net.ssl.SSLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.client.network.ClientConnector;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.proto.msg.Gen.NetworkTarget;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
 
 public class Client {
+	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.client.Client");
 
 	public static ClientConnector connector;
 	public static ViewerDB clientDB;
@@ -66,7 +69,7 @@ public class Client {
 		connectionIterations++;
 		for (NetworkTarget n : nt) {
 			try {
-				Logger.debug("Attempting connection to: " + n.getServer() + ":" + n.getPort());
+				log.debug("Attempting connection to: " + n.getServer() + ":" + n.getPort());
 				connector = new ClientConnector(n.getServer(), n.getPort());
 			} catch (SSLException | InterruptedException e) {
 				// TODO Auto-generated catch block

@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.generator;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
@@ -49,18 +50,12 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import org.jbundle.thin.base.screen.jcalendarbutton.JCalendarButton;
-
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.proto.msg.Gen;
 import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.msg.Gen.NetworkTarget;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.utility.CUtil;
-
-import java.awt.BorderLayout;
-import javax.swing.ImageIcon;
 
 public class GenPanel extends JPanel {
 
@@ -545,20 +540,20 @@ public class GenPanel extends JPanel {
 		pl_timestamps.add(fld_ctime);
 		fld_ctime.setColumns(10);
 
-		JCalendarButton btnNewButton = new JCalendarButton(new Date());
-		btnNewButton.addPropertyChangeListener(new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent arg0) {
-				if (arg0.getNewValue() instanceof Date) {
-					Date target = (Date) arg0.getNewValue();
-					if (target != null) {
-						setCreationDate(target);
-					}
-				}
+		// JCalendarButton btnNewButton = new JCalendarButton(new Date());
+		// btnNewButton.addPropertyChangeListener(new PropertyChangeListener() {
+		// public void propertyChange(PropertyChangeEvent arg0) {
+		// if (arg0.getNewValue() instanceof Date) {
+		// Date target = (Date) arg0.getNewValue();
+		// if (target != null) {
+		// setCreationDate(target);
+		// }
+		// }
 
-			}
-		});
-		btnNewButton.setBounds(238, 20, 20, 19);
-		pl_timestamps.add(btnNewButton);
+		// }
+		// });
+		// btnNewButton.setBounds(238, 20, 20, 19);
+		// pl_timestamps.add(btnNewButton);
 
 		JComboBox<String> comboBox_6 = new JComboBox<String>();
 		comboBox_6.addActionListener(new ActionListener() {
@@ -661,8 +656,6 @@ public class GenPanel extends JPanel {
 				ic.addTarget(nt);
 			}
 		}
-
-		Logger.debug("Group name: " + ic.getGroup().getName());
 
 		return ic.build();
 	}

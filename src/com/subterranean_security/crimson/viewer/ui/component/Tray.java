@@ -27,7 +27,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public class Tray {
@@ -77,10 +76,8 @@ public class Tray {
 			SystemTray.getSystemTray().add(trayObject);
 			MainFrame.main.setVisible(false);
 		} catch (AWTException e) {
-			Logger.error("Could not access system tray");
+			e.printStackTrace();
 		}
-
-		Logger.info("Crimson is now running in the system tray");
 	}
 
 	public static void removeTray() {

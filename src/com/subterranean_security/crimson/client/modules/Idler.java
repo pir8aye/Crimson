@@ -23,9 +23,11 @@ import java.util.Date;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import com.subterranean_security.crimson.core.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Idler extends Thread {
+	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.client.modules.Idler");
 
 	private Queue<Runnable>	buffer		= new ConcurrentLinkedQueue<Runnable>();
 
@@ -38,7 +40,7 @@ public class Idler extends Thread {
 	public Idler(int segmentLength) {
 		seglen = segmentLength;
 		if (MouseInfo.getPointerInfo().getLocation() == null) {
-			Logger.error("Could not poll mouse");
+			log.error("Could not poll mouse");
 		}
 	}
 
@@ -51,7 +53,7 @@ public class Idler extends Thread {
 			new Thread(buffer.poll()).start();
 		} catch (Throwable e) {
 			if (!(e instanceof NullPointerException)) {
-				Logger.error("Could not run a queued task");
+				log.error("Could not run a queued task");
 			}
 
 		}
@@ -83,7 +85,7 @@ public class Idler extends Thread {
 				segments++;
 				if (segments > segThresh) {
 					if (segments > segThresh + 1) {
-						Logger.info("System is now IDLE");
+						log.info("System is now IDLE");
 						idleSince = new Date(new Date().getTime() - (seglen * segments));
 					}
 					idle = true;
@@ -92,7 +94,7 @@ public class Idler extends Thread {
 				}
 			} else {
 				if (idle) {
-					Logger.debug("System is now ACTIVE");
+					log.debug("System is now ACTIVE");
 				}
 				idle = false;
 				segments = 0;

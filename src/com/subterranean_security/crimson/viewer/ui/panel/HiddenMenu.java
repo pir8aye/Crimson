@@ -36,7 +36,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.exception.InvalidObjectException;
 import com.subterranean_security.crimson.core.utility.ObjectTransfer;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
@@ -157,8 +156,6 @@ public class HiddenMenu extends JPanel {
 
 		test.removeAll();
 		test = null;
-
-		Logger.debug("HEIGHT: " + h);
 
 		return (h < maxHeight) ? h : maxHeight;
 	}

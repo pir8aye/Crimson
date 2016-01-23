@@ -19,7 +19,6 @@ package com.subterranean_security.crimson.core.storage;
 
 import java.util.ArrayList;
 
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
 import com.subterranean_security.crimson.core.proto.msg.Reports.Report;
 
@@ -33,7 +32,6 @@ public enum Defaults {
 	}
 
 	public static void hardReset(ServerDB db) {
-		Logger.debug("Setting ServerDB Defaults");
 		softReset(db);
 		hardResetUniversal(db);
 

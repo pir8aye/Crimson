@@ -19,9 +19,11 @@ package com.subterranean_security.crimson.client.network;
 
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.modules.GetInfo;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.network.BasicExecutor;
 import com.subterranean_security.crimson.core.network.ConnectionState;
 import com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W;
@@ -36,6 +38,7 @@ import com.subterranean_security.crimson.core.utility.IDGen;
 import io.netty.util.ReferenceCountUtil;
 
 public class ClientExecutor extends BasicExecutor {
+	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.client.network.ClientExecutor");
 
 	private ClientConnector connector;
 
@@ -93,7 +96,7 @@ public class ClientExecutor extends BasicExecutor {
 			group = (Group) Client.clientDB.getObject("group");
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			Logger.debug("Unable to get group information");
+			log.debug("Unable to get group information");
 			return;
 		}
 		String result = Crypto.sign(m.getChallengeRq().getMagic(), group.getKey());
@@ -106,7 +109,7 @@ public class ClientExecutor extends BasicExecutor {
 			return;
 		}
 		if (!m.getChallengeresult1W().getResult()) {
-			Logger.debug("Authentication with server failed");
+			log.debug("Authentication with server failed");
 			connector.setState(ConnectionState.CONNECTED);
 			return;
 		} else {
@@ -118,7 +121,7 @@ public class ClientExecutor extends BasicExecutor {
 			group = (Group) Client.clientDB.getObject("group");
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			Logger.debug("Unable to get group information");
+			log.debug("Unable to get group information");
 			return;
 		}
 		final String key = group.getKey();
@@ -137,16 +140,16 @@ public class ClientExecutor extends BasicExecutor {
 					Message rs = connector.cq.take(id, 7, TimeUnit.SECONDS);
 					if (rs != null) {
 						if (!rs.getChallengeRs().getResult().equals(Crypto.sign(magic, key))) {
-							Logger.info("Server challenge failed");
+							log.info("Server challenge failed");
 							flag = false;
 						}
 
 					} else {
-						Logger.debug("No response to challenge");
+						log.debug("No response to challenge");
 						flag = false;
 					}
 				} catch (InterruptedException e) {
-					Logger.debug("No response to challenge");
+					log.debug("No response to challenge");
 					flag = false;
 				}
 

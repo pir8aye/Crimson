@@ -21,8 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.subterranean_security.crimson.core.Logger;
-
 public enum Crypto {
 	;
 

@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.proto.msg.Delta.ProfileDelta_EV;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
 import com.subterranean_security.crimson.sv.Profile;
@@ -110,7 +109,6 @@ public enum ViewerStore {
 			boolean flag = true;
 			for (Profile p : profiles) {
 				if (p.getClientid() == change.getClientid()) {
-					Logger.debug("Found existing client and amalgamating");
 					flag = false;
 					amalgamate(p, change);
 
@@ -119,7 +117,6 @@ public enum ViewerStore {
 			}
 
 			if (flag) {
-				Logger.debug("Adding new profile");
 				Profile np = new Profile(change.getClientid());
 				amalgamate(np, change);
 				profiles.add(np);
@@ -135,12 +132,11 @@ public enum ViewerStore {
 		}
 
 		private static void amalgamate(Profile p, ProfileDelta_EV c) {
+			// TODO possibly use merge on a protobuffer for this
 			if (c.hasNetHostname()) {
-				Logger.debug("Updating hostname with new value");
 				p.setHostname(c.getNetHostname());
 			}
 			if (c.hasUserName()) {
-				Logger.debug("Updating username with new value");
 				p.setUsername(c.getUserName());
 			}
 		}

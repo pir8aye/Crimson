@@ -18,8 +18,6 @@
 package com.subterranean_security.crimson.viewer;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -28,7 +26,6 @@ import java.util.Date;
 import javax.swing.UIManager;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.utility.FileLocking;
 import com.subterranean_security.crimson.viewer.ui.panel.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.eula.EULADialog;
@@ -86,7 +83,6 @@ public class Viewer {
 
 		if (ViewerStore.LocalServer.bundledServer.exists() && !slsr) {
 
-			Logger.debug("Attempting to start local server");
 			ViewerStore.LocalServer.startLocalServer();
 
 		}

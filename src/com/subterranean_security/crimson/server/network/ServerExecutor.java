@@ -21,10 +21,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.fm.LocalFilesystem;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.network.BasicExecutor;
 import com.subterranean_security.crimson.core.network.ConnectionState;
 import com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W;
@@ -50,6 +51,8 @@ import com.subterranean_security.crimson.server.ServerStore;
 import io.netty.util.ReferenceCountUtil;
 
 public class ServerExecutor extends BasicExecutor {
+	private static final Logger log = LoggerFactory
+			.getLogger("com.subterranean_security.crimson.server.network.ServerExecutor");
 
 	private Receptor receptor;
 
@@ -134,7 +137,7 @@ public class ServerExecutor extends BasicExecutor {
 			ServerStore.Connections.add(receptor);
 			profileDelta(m.getChallengeresult1W().getInitialInfo());
 		} else {
-			Logger.debug("Authentication failed");
+			log.debug("Authentication failed");
 			receptor.setState(ConnectionState.CONNECTED);
 		}
 
@@ -163,7 +166,7 @@ public class ServerExecutor extends BasicExecutor {
 						if (flag) {
 							receptor.setState(ConnectionState.AUTH_STAGE2);
 						} else {
-							Logger.info("Challenge 1 failed");
+							log.info("Challenge 1 failed");
 							receptor.setState(ConnectionState.CONNECTED);
 						}
 						receptor.handle.write(Message.newBuilder().setId(id)
@@ -171,7 +174,7 @@ public class ServerExecutor extends BasicExecutor {
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						Logger.debug("Failed to get challenge from client");
+						log.debug("Failed to get challenge from client");
 					}
 				}
 			}).start();
@@ -206,7 +209,7 @@ public class ServerExecutor extends BasicExecutor {
 		Login_RS.Builder rs = Login_RS.newBuilder().setResponse(
 				ServerStore.Databases.system.validLogin(m.getLoginRq().getUsername(), m.getLoginRq().getHash()));
 		if (rs.getResponse()) {
-			Logger.debug("Accepting Login");
+			log.debug("Accepting Login");
 			receptor.setInstance(Instance.VIEWER);
 			receptor.setState(ConnectionState.AUTHENTICATED);
 			ServerStore.Connections.add(receptor);
@@ -217,7 +220,7 @@ public class ServerExecutor extends BasicExecutor {
 				ArrayList<Long> times = (ArrayList<Long>) vdb.getObject("login-times");
 				ArrayList<String> ips = (ArrayList<String>) vdb.getObject("login-ips");
 				if (times.size() != 0) {
-					Logger.debug("Last login: " + times.get(0));
+					log.debug("Last login: " + times.get(0));
 					builder.setLastLogin(times.get(0));
 				}
 
@@ -233,7 +236,7 @@ public class ServerExecutor extends BasicExecutor {
 		}
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setLoginRs(rs).build());
 		if (!rs.getResponse()) {
-			Logger.login("Rejecting Login");
+			log.info("Rejecting Login");
 			receptor.close();
 		}
 	}
@@ -260,7 +263,7 @@ public class ServerExecutor extends BasicExecutor {
 			g = new Generator(m.getGenerateRq().getInternalConfig());
 			res = g.getResult();
 		} catch (Exception e) {
-			Logger.info("Could not generate installer");
+			log.info("Could not generate installer");
 			e.printStackTrace();
 
 			GenReport.Builder gr = GenReport.newBuilder();

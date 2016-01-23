@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.network;
 
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.network.BasicExecutor;
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
 import com.subterranean_security.crimson.viewer.ViewerStore;
@@ -68,7 +67,6 @@ public class ViewerExecutor extends BasicExecutor {
 	}
 
 	private void profileDelta_ev(Message m) {
-		Logger.debug("Recieved profile delta event");
 		ViewerStore.Profiles.update(m.getProfileDeltaEv());
 	}
 

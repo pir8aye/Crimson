@@ -60,6 +60,8 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -67,12 +69,13 @@ import org.w3c.dom.NodeList;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.viewer.Viewer;
 
 public enum CUtil {
 	;
+	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.core.utility.CUtil");
+
 	public static class Files {
 
 		public static class Temp {
@@ -121,7 +124,7 @@ public enum CUtil {
 				for (File f : Common.tmp.listFiles()) {
 					// delete it
 					if (!delete(f)) {
-						Logger.error("Could not delete temporary file: " + f.getAbsolutePath());
+						log.error("Could not delete temporary file: " + f.getAbsolutePath());
 					}
 				}
 
@@ -132,7 +135,7 @@ public enum CUtil {
 					if (f.getName().startsWith("temp_")) {
 						// delete it
 						if (!delete(f)) {
-							Logger.error("Could not delete temporary file: " + f.getAbsolutePath());
+							log.error("Could not delete temporary file: " + f.getAbsolutePath());
 						}
 					}
 				}
@@ -506,7 +509,7 @@ public enum CUtil {
 			} catch (Throwable e1) {
 
 			}
-			Logger.error("Failed to get manifest attribute from default jar");
+			log.error("Failed to get manifest attribute from default jar");
 			return "FAILED";
 
 		}

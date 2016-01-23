@@ -18,13 +18,11 @@
 package com.subterranean_security.crimson.client;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Logger;
 
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
 	@Override
 	public void uncaughtException(Thread arg0, Throwable arg1) {
-		Logger.debug("An unexpected exception has occurred");
 		if (Common.isDebugMode()) {
 			arg1.printStackTrace();
 		}

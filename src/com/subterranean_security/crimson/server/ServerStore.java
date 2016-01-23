@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.server;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.subterranean_security.crimson.core.Logger;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
 import com.subterranean_security.crimson.core.storage.ServerDB;
@@ -74,7 +73,6 @@ public enum ServerStore {
 			try {
 				groups = (ArrayList<Group>) Databases.system.getObject("groups");
 			} catch (Exception e) {
-				Logger.error("Failed to load groups");
 				e.printStackTrace();
 			}
 		}
