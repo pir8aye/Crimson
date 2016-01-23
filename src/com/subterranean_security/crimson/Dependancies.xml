@@ -79,27 +79,27 @@
 		</Lib>
 
 		<Lib CID="c10">
-			<Name>UNUSED</Name>
-			<CVersion></CVersion>
-			<EVersion></EVersion>
-			<License></License>
-			<Requisites></Requisites>
+			<Name>SLF4J</Name>
+			<CVersion>1</CVersion>
+			<EVersion>1.7.13</EVersion>
+			<License>MIT</License>
+			<Requisites>SVCQ</Requisites>
 		</Lib>
 
 		<Lib CID="c11">
-			<Name>JCalendarButton</Name>
+			<Name>Logback Core</Name>
 			<CVersion>1</CVersion>
-			<EVersion>1.4.5</EVersion>
-			<License>GNU GPL 2</License>
-			<Requisites>V</Requisites>
+			<EVersion>1.1.3</EVersion>
+			<License>LGPL</License>
+			<Requisites>SVCQ</Requisites>
 		</Lib>
 
 		<Lib CID="c12">
-			<Name>JGraphX</Name>
+			<Name>Logback Classic</Name>
 			<CVersion>1</CVersion>
-			<EVersion>3.3.0.1</EVersion>
-			<License>BSD</License>
-			<Requisites>V</Requisites>
+			<EVersion>1.1.3</EVersion>
+			<License>LGPL</License>
+			<Requisites>SVCQ</Requisites>
 		</Lib>
 
 		<Lib CID="c13">
@@ -132,6 +132,14 @@
 			<EVersion>1.0</EVersion>
 			<License>LGPL</License>
 			<Requisites>SVCQ</Requisites>
+		</Lib>
+
+		<Lib CID="c17">
+			<Name>JGraphX</Name>
+			<CVersion>1</CVersion>
+			<EVersion>3.3.0.1</EVersion>
+			<License>BSD</License>
+			<Requisites>V</Requisites>
 		</Lib>
 
 	</JAR>
