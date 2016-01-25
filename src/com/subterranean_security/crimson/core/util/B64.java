@@ -20,7 +20,7 @@
 // Edits by Subterranean Security:
 // - removed some unneeded methods
 // - renamed some entities
-package com.subterranean_security.crimson.core.utility;
+package com.subterranean_security.crimson.core.util;
 
 public class B64 {
 	// Mapping table from 6-bit nibbles to Base64 characters.

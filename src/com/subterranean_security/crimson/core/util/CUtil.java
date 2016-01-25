@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.utility;
+package com.subterranean_security.crimson.core.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -71,6 +71,10 @@ import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.viewer.Viewer;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 
 public enum CUtil {
 	;
@@ -428,11 +432,46 @@ public enum CUtil {
 			return String.valueOf(size);
 		}
 
+		public static void configureLogger(String name) throws JoranException, IOException {
+			String path = "com/subterranean_security/crimson/core/" + name + ".xml";
+			System.out.println("Log config: " + path);
+			LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+			loggerContext.reset();
+			JoranConfigurator configurator = new JoranConfigurator();
+			InputStream configStream = CUtil.class.getResourceAsStream(path);
+			configurator.setContext(loggerContext);
+			configurator.doConfigure(configStream);
+			configStream.close();
+
+		}
+
 		public static String getStack(Throwable e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
 			return sw.toString();
+		}
+
+		public static void runBackgroundCommand(String c) throws IOException {
+			String command = "";
+			switch (PlatformInfo.os) {
+			case SOLARIS:
+			case BSD:
+			case LINUX:
+				command = "nohup " + c;
+				break;
+			case OSX:
+				break;
+
+			case WINDOWS:
+				command = "cmd /c start cmd /k \"" + c + "\"";
+				break;
+			default:
+				break;
+
+			}
+			log.debug("Running background command: \"" + command + "\"");
+			Runtime.getRuntime().exec(command);
 		}
 
 		public static int rand(int lower, int upper) {

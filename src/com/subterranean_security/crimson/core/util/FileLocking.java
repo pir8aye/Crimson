@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.utility;
+package com.subterranean_security.crimson.core.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import com.subterranean_security.crimson.core.Common.Instance;
 
 public enum FileLocking {
 	;
-	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.core.utilitiy.FileLocking");
+	private static final Logger log = LoggerFactory.getLogger(FileLocking.class);
 
 	private static FileChannel channel;
 	private static File file;

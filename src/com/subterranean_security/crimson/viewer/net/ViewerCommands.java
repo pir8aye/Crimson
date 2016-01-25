@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.network;
+package com.subterranean_security.crimson.viewer.net;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +34,8 @@ import com.subterranean_security.crimson.core.proto.msg.Login.Login_RQ;
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
 import com.subterranean_security.crimson.core.proto.msg.State.STATES;
 import com.subterranean_security.crimson.core.proto.msg.State.StateChange_RQ;
-import com.subterranean_security.crimson.core.utility.CUtil;
-import com.subterranean_security.crimson.core.utility.IDGen;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;

@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.network;
+package com.subterranean_security.crimson.core.net;
 
 public enum ConnectionState {
 	NOT_CONNECTED, CONNECTED, AUTH_STAGE1, AUTH_STAGE2, AUTHENTICATED;

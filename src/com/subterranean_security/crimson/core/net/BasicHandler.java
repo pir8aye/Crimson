@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.network;
+package com.subterranean_security.crimson.core.net;
 
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
 

@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.client.network;
+package com.subterranean_security.crimson.client.net;
 
 import java.util.concurrent.TimeUnit;
 
@@ -24,16 +24,16 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.modules.GetInfo;
-import com.subterranean_security.crimson.core.network.BasicExecutor;
-import com.subterranean_security.crimson.core.network.ConnectionState;
+import com.subterranean_security.crimson.core.net.BasicExecutor;
+import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W;
 import com.subterranean_security.crimson.core.proto.msg.Auth.Challenge_RQ;
 import com.subterranean_security.crimson.core.proto.msg.Auth.Challenge_RS;
 import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
-import com.subterranean_security.crimson.core.utility.CUtil;
-import com.subterranean_security.crimson.core.utility.Crypto;
-import com.subterranean_security.crimson.core.utility.IDGen;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.IDGen;
 
 import io.netty.util.ReferenceCountUtil;
 

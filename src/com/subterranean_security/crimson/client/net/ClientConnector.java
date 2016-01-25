@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.client.network;
+package com.subterranean_security.crimson.client.net;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,12 +25,12 @@ import javax.net.ssl.SSLException;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.core.network.ConnectionState;
+import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.msg.Auth.AuthType;
 import com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W;
 import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
-import com.subterranean_security.crimson.core.utility.IDGen;
+import com.subterranean_security.crimson.core.util.IDGen;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;

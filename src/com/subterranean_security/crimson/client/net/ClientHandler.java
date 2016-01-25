@@ -15,9 +15,9 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.client.network;
+package com.subterranean_security.crimson.client.net;
 
-import com.subterranean_security.crimson.core.network.BasicHandler;
+import com.subterranean_security.crimson.core.net.BasicHandler;
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
 
 import io.netty.channel.ChannelHandlerContext;

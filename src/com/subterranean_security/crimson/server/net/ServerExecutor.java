@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.network;
+package com.subterranean_security.crimson.server.net;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.network.BasicExecutor;
-import com.subterranean_security.crimson.core.network.ConnectionState;
+import com.subterranean_security.crimson.core.net.BasicExecutor;
+import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W;
 import com.subterranean_security.crimson.core.proto.msg.Auth.Challenge_RQ;
 import com.subterranean_security.crimson.core.proto.msg.Auth.Challenge_RS;
@@ -41,9 +41,9 @@ import com.subterranean_security.crimson.core.proto.msg.Login.ServerInfoDelta_EV
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
 import com.subterranean_security.crimson.core.proto.msg.State.StateChange_RQ;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
-import com.subterranean_security.crimson.core.utility.CUtil;
-import com.subterranean_security.crimson.core.utility.Crypto;
-import com.subterranean_security.crimson.core.utility.IDGen;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.server.ServerStore;

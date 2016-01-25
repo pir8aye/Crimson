@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.network;
+package com.subterranean_security.crimson.server.net;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -23,7 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.network.ConnectionState;
+import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.sv.Profile;

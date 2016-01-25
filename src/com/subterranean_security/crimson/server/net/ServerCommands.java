@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.network;
+package com.subterranean_security.crimson.server.net;
 
 public enum ServerCommands {
 	;
