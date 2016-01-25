@@ -22,21 +22,17 @@ import java.util.HashMap;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
+import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
-import com.subterranean_security.crimson.server.network.Listener;
-import com.subterranean_security.crimson.server.network.Receptor;
+import com.subterranean_security.crimson.server.net.Listener;
+import com.subterranean_security.crimson.server.net.Receptor;
+import com.subterranean_security.crimson.sv.Profile;
 
 public enum ServerStore {
 	;
 	public static class Listeners {
 		private static ArrayList<Listener> listeners = new ArrayList<Listener>();
-
-	}
-
-	public static class Databases {
-		public static ServerDB system;
-		public static HashMap<String, ViewerDB> loaded_viewers = new HashMap<String, ViewerDB>();// UID
 
 	}
 
@@ -58,6 +54,12 @@ public enum ServerStore {
 	}
 
 	public static class Streams {
+
+	}
+
+	public static class Databases {
+		public static ServerDB system;
+		public static HashMap<String, ViewerDB> loaded_viewers = new HashMap<String, ViewerDB>();// UID
 
 	}
 
@@ -84,6 +86,28 @@ public enum ServerStore {
 				}
 			}
 			return null;
+		}
+	}
+
+	public static class Profiles {
+		private static MemMap<Integer, Profile> profiles;
+
+		static {
+			try {
+				profiles = (MemMap<Integer, Profile>) Databases.system.getObject("clients");
+				profiles.setDatabase(Databases.system);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		public static Profile get(int id) throws Exception {
+			return profiles.get(id);
+		}
+
+		public static void add(Profile p) {
+			profiles.put(p.getClientid(), p);
 		}
 	}
 

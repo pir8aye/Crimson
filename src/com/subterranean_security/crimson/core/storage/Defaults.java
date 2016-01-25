@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
 import com.subterranean_security.crimson.core.proto.msg.Reports.Report;
+import com.subterranean_security.crimson.sv.Profile;
 
 public enum Defaults {
 	;
@@ -29,6 +30,7 @@ public enum Defaults {
 		softResetUniversal(db);
 
 		db.storeObject("groups", new ArrayList<Group>());
+		db.storeObject("clients", new MemMap<Integer, Profile>());
 	}
 
 	public static void hardReset(ServerDB db) {
