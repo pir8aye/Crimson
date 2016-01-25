@@ -518,13 +518,13 @@ public final class Keylogger {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required bool success = 1;</code>
+     * <code>required bool result = 1;</code>
      */
-    boolean hasSuccess();
+    boolean hasResult();
     /**
-     * <code>required bool success = 1;</code>
+     * <code>required bool result = 1;</code>
      */
-    boolean getSuccess();
+    boolean getResult();
   }
   /**
    * Protobuf type {@code com.subterranean_security.crimson.core.proto.msg.KeyloggerState_RS}
@@ -580,7 +580,7 @@ public final class Keylogger {
             }
             case 8: {
               bitField0_ |= 0x00000001;
-              success_ = input.readBool();
+              result_ = input.readBool();
               break;
             }
           }
@@ -623,23 +623,23 @@ public final class Keylogger {
     }
 
     private int bitField0_;
-    public static final int SUCCESS_FIELD_NUMBER = 1;
-    private boolean success_;
+    public static final int RESULT_FIELD_NUMBER = 1;
+    private boolean result_;
     /**
-     * <code>required bool success = 1;</code>
+     * <code>required bool result = 1;</code>
      */
-    public boolean hasSuccess() {
+    public boolean hasResult() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required bool success = 1;</code>
+     * <code>required bool result = 1;</code>
      */
-    public boolean getSuccess() {
-      return success_;
+    public boolean getResult() {
+      return result_;
     }
 
     private void initFields() {
-      success_ = false;
+      result_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -647,7 +647,7 @@ public final class Keylogger {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
-      if (!hasSuccess()) {
+      if (!hasResult()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -659,7 +659,7 @@ public final class Keylogger {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBool(1, success_);
+        output.writeBool(1, result_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -672,7 +672,7 @@ public final class Keylogger {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(1, success_);
+          .computeBoolSize(1, result_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -791,7 +791,7 @@ public final class Keylogger {
 
       public Builder clear() {
         super.clear();
-        success_ = false;
+        result_ = false;
         bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
@@ -824,7 +824,7 @@ public final class Keylogger {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.success_ = success_;
+        result.result_ = result_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -841,15 +841,15 @@ public final class Keylogger {
 
       public Builder mergeFrom(com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyloggerState_RS other) {
         if (other == com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyloggerState_RS.getDefaultInstance()) return this;
-        if (other.hasSuccess()) {
-          setSuccess(other.getSuccess());
+        if (other.hasResult()) {
+          setResult(other.getResult());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
-        if (!hasSuccess()) {
+        if (!hasResult()) {
           
           return false;
         }
@@ -875,34 +875,34 @@ public final class Keylogger {
       }
       private int bitField0_;
 
-      private boolean success_ ;
+      private boolean result_ ;
       /**
-       * <code>required bool success = 1;</code>
+       * <code>required bool result = 1;</code>
        */
-      public boolean hasSuccess() {
+      public boolean hasResult() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required bool success = 1;</code>
+       * <code>required bool result = 1;</code>
        */
-      public boolean getSuccess() {
-        return success_;
+      public boolean getResult() {
+        return result_;
       }
       /**
-       * <code>required bool success = 1;</code>
+       * <code>required bool result = 1;</code>
        */
-      public Builder setSuccess(boolean value) {
+      public Builder setResult(boolean value) {
         bitField0_ |= 0x00000001;
-        success_ = value;
+        result_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required bool success = 1;</code>
+       * <code>required bool result = 1;</code>
        */
-      public Builder clearSuccess() {
+      public Builder clearResult() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        success_ = false;
+        result_ = false;
         onChanged();
         return this;
       }
@@ -1706,30 +1706,48 @@ public final class Keylogger {
     // @@protoc_insertion_point(class_scope:com.subterranean_security.crimson.core.proto.msg.Keylog_RS)
   }
 
-  public interface KeyEvent_EVOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:com.subterranean_security.crimson.core.proto.msg.KeyEvent_EV)
+  public interface KLogOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:com.subterranean_security.crimson.core.proto.msg.KLog)
       com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required int32 clientID = 1;</code>
+     */
+    boolean hasClientID();
+    /**
+     * <code>required int32 clientID = 1;</code>
+     */
+    int getClientID();
+
+    /**
+     * <code>required int32 pagemap_address = 2;</code>
+     */
+    boolean hasPagemapAddress();
+    /**
+     * <code>required int32 pagemap_address = 2;</code>
+     */
+    int getPagemapAddress();
   }
   /**
-   * Protobuf type {@code com.subterranean_security.crimson.core.proto.msg.KeyEvent_EV}
+   * Protobuf type {@code com.subterranean_security.crimson.core.proto.msg.KLog}
    */
-  public static final class KeyEvent_EV extends
+  public static final class KLog extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:com.subterranean_security.crimson.core.proto.msg.KeyEvent_EV)
-      KeyEvent_EVOrBuilder {
-    // Use KeyEvent_EV.newBuilder() to construct.
-    private KeyEvent_EV(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      // @@protoc_insertion_point(message_implements:com.subterranean_security.crimson.core.proto.msg.KLog)
+      KLogOrBuilder {
+    // Use KLog.newBuilder() to construct.
+    private KLog(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private KeyEvent_EV(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+    private KLog(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
-    private static final KeyEvent_EV defaultInstance;
-    public static KeyEvent_EV getDefaultInstance() {
+    private static final KLog defaultInstance;
+    public static KLog getDefaultInstance() {
       return defaultInstance;
     }
 
-    public KeyEvent_EV getDefaultInstanceForType() {
+    public KLog getDefaultInstanceForType() {
       return defaultInstance;
     }
 
@@ -1739,11 +1757,12 @@ public final class Keylogger {
         getUnknownFields() {
       return this.unknownFields;
     }
-    private KeyEvent_EV(
+    private KLog(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       initFields();
+      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -1761,6 +1780,16 @@ public final class Keylogger {
               }
               break;
             }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              clientID_ = input.readInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              pagemapAddress_ = input.readInt32();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -1775,32 +1804,65 @@ public final class Keylogger {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KeyEvent_EV_descriptor;
+      return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KLog_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KeyEvent_EV_fieldAccessorTable
+      return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KLog_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV.class, com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV.Builder.class);
+              com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog.class, com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog.Builder.class);
     }
 
-    public static com.google.protobuf.Parser<KeyEvent_EV> PARSER =
-        new com.google.protobuf.AbstractParser<KeyEvent_EV>() {
-      public KeyEvent_EV parsePartialFrom(
+    public static com.google.protobuf.Parser<KLog> PARSER =
+        new com.google.protobuf.AbstractParser<KLog>() {
+      public KLog parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new KeyEvent_EV(input, extensionRegistry);
+        return new KLog(input, extensionRegistry);
       }
     };
 
     @java.lang.Override
-    public com.google.protobuf.Parser<KeyEvent_EV> getParserForType() {
+    public com.google.protobuf.Parser<KLog> getParserForType() {
       return PARSER;
     }
 
+    private int bitField0_;
+    public static final int CLIENTID_FIELD_NUMBER = 1;
+    private int clientID_;
+    /**
+     * <code>required int32 clientID = 1;</code>
+     */
+    public boolean hasClientID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required int32 clientID = 1;</code>
+     */
+    public int getClientID() {
+      return clientID_;
+    }
+
+    public static final int PAGEMAP_ADDRESS_FIELD_NUMBER = 2;
+    private int pagemapAddress_;
+    /**
+     * <code>required int32 pagemap_address = 2;</code>
+     */
+    public boolean hasPagemapAddress() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required int32 pagemap_address = 2;</code>
+     */
+    public int getPagemapAddress() {
+      return pagemapAddress_;
+    }
+
     private void initFields() {
+      clientID_ = 0;
+      pagemapAddress_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1808,6 +1870,14 @@ public final class Keylogger {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
+      if (!hasClientID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasPagemapAddress()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -1815,6 +1885,12 @@ public final class Keylogger {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, clientID_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(2, pagemapAddress_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1824,6 +1900,14 @@ public final class Keylogger {
       if (size != -1) return size;
 
       size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, clientID_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, pagemapAddress_);
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
@@ -1836,53 +1920,53 @@ public final class Keylogger {
       return super.writeReplace();
     }
 
-    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parseFrom(
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parseFrom(
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parseFrom(byte[] data)
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parseFrom(
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parseFrom(java.io.InputStream input)
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parseFrom(
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parseDelimitedFrom(java.io.InputStream input)
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parseDelimitedFrom(
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parseFrom(
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parseFrom(
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1891,7 +1975,7 @@ public final class Keylogger {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV prototype) {
+    public static Builder newBuilder(com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -1903,25 +1987,25 @@ public final class Keylogger {
       return builder;
     }
     /**
-     * Protobuf type {@code com.subterranean_security.crimson.core.proto.msg.KeyEvent_EV}
+     * Protobuf type {@code com.subterranean_security.crimson.core.proto.msg.KLog}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:com.subterranean_security.crimson.core.proto.msg.KeyEvent_EV)
-        com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EVOrBuilder {
+        // @@protoc_insertion_point(builder_implements:com.subterranean_security.crimson.core.proto.msg.KLog)
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KLogOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KeyEvent_EV_descriptor;
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KLog_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KeyEvent_EV_fieldAccessorTable
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KLog_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV.class, com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV.Builder.class);
+                com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog.class, com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog.Builder.class);
       }
 
-      // Construct using com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV.newBuilder()
+      // Construct using com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1941,6 +2025,10 @@ public final class Keylogger {
 
       public Builder clear() {
         super.clear();
+        clientID_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        pagemapAddress_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -1950,43 +2038,68 @@ public final class Keylogger {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KeyEvent_EV_descriptor;
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KLog_descriptor;
       }
 
-      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV getDefaultInstanceForType() {
-        return com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV.getDefaultInstance();
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog getDefaultInstanceForType() {
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog.getDefaultInstance();
       }
 
-      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV build() {
-        com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV result = buildPartial();
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog build() {
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV buildPartial() {
-        com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV result = new com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV(this);
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog buildPartial() {
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog result = new com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.clientID_ = clientID_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.pagemapAddress_ = pagemapAddress_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV) {
-          return mergeFrom((com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV)other);
+        if (other instanceof com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog) {
+          return mergeFrom((com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV other) {
-        if (other == com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog other) {
+        if (other == com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog.getDefaultInstance()) return this;
+        if (other.hasClientID()) {
+          setClientID(other.getClientID());
+        }
+        if (other.hasPagemapAddress()) {
+          setPagemapAddress(other.getPagemapAddress());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
+        if (!hasClientID()) {
+          
+          return false;
+        }
+        if (!hasPagemapAddress()) {
+          
+          return false;
+        }
         return true;
       }
 
@@ -1994,11 +2107,11 @@ public final class Keylogger {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV parsedMessage = null;
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.subterranean_security.crimson.core.proto.msg.Keylogger.KeyEvent_EV) e.getUnfinishedMessage();
+          parsedMessage = (com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -2007,16 +2120,1689 @@ public final class Keylogger {
         }
         return this;
       }
+      private int bitField0_;
 
-      // @@protoc_insertion_point(builder_scope:com.subterranean_security.crimson.core.proto.msg.KeyEvent_EV)
+      private int clientID_ ;
+      /**
+       * <code>required int32 clientID = 1;</code>
+       */
+      public boolean hasClientID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required int32 clientID = 1;</code>
+       */
+      public int getClientID() {
+        return clientID_;
+      }
+      /**
+       * <code>required int32 clientID = 1;</code>
+       */
+      public Builder setClientID(int value) {
+        bitField0_ |= 0x00000001;
+        clientID_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 clientID = 1;</code>
+       */
+      public Builder clearClientID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        clientID_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int pagemapAddress_ ;
+      /**
+       * <code>required int32 pagemap_address = 2;</code>
+       */
+      public boolean hasPagemapAddress() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required int32 pagemap_address = 2;</code>
+       */
+      public int getPagemapAddress() {
+        return pagemapAddress_;
+      }
+      /**
+       * <code>required int32 pagemap_address = 2;</code>
+       */
+      public Builder setPagemapAddress(int value) {
+        bitField0_ |= 0x00000002;
+        pagemapAddress_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 pagemap_address = 2;</code>
+       */
+      public Builder clearPagemapAddress() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        pagemapAddress_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:com.subterranean_security.crimson.core.proto.msg.KLog)
     }
 
     static {
-      defaultInstance = new KeyEvent_EV(true);
+      defaultInstance = new KLog(true);
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:com.subterranean_security.crimson.core.proto.msg.KeyEvent_EV)
+    // @@protoc_insertion_point(class_scope:com.subterranean_security.crimson.core.proto.msg.KLog)
+  }
+
+  public interface KPageOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:com.subterranean_security.crimson.core.proto.msg.KPage)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required int64 date = 1;</code>
+     */
+    boolean hasDate();
+    /**
+     * <code>required int64 date = 1;</code>
+     */
+    long getDate();
+
+    /**
+     * <code>repeated string title = 2;</code>
+     */
+    com.google.protobuf.ProtocolStringList
+        getTitleList();
+    /**
+     * <code>repeated string title = 2;</code>
+     */
+    int getTitleCount();
+    /**
+     * <code>repeated string title = 2;</code>
+     */
+    java.lang.String getTitle(int index);
+    /**
+     * <code>repeated string title = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getTitleBytes(int index);
+
+    /**
+     * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+     */
+    java.util.List<com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent> 
+        getEventList();
+    /**
+     * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+     */
+    com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent getEvent(int index);
+    /**
+     * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+     */
+    int getEventCount();
+    /**
+     * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+     */
+    java.util.List<? extends com.subterranean_security.crimson.core.proto.msg.Keylogger.KEventOrBuilder> 
+        getEventOrBuilderList();
+    /**
+     * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+     */
+    com.subterranean_security.crimson.core.proto.msg.Keylogger.KEventOrBuilder getEventOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code com.subterranean_security.crimson.core.proto.msg.KPage}
+   */
+  public static final class KPage extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:com.subterranean_security.crimson.core.proto.msg.KPage)
+      KPageOrBuilder {
+    // Use KPage.newBuilder() to construct.
+    private KPage(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private KPage(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final KPage defaultInstance;
+    public static KPage getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public KPage getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private KPage(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              date_ = input.readInt64();
+              break;
+            }
+            case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                title_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              title_.add(bs);
+              break;
+            }
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                event_ = new java.util.ArrayList<com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              event_.add(input.readMessage(com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          title_ = title_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          event_ = java.util.Collections.unmodifiableList(event_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KPage_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KPage_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage.class, com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<KPage> PARSER =
+        new com.google.protobuf.AbstractParser<KPage>() {
+      public KPage parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new KPage(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<KPage> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    public static final int DATE_FIELD_NUMBER = 1;
+    private long date_;
+    /**
+     * <code>required int64 date = 1;</code>
+     */
+    public boolean hasDate() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required int64 date = 1;</code>
+     */
+    public long getDate() {
+      return date_;
+    }
+
+    public static final int TITLE_FIELD_NUMBER = 2;
+    private com.google.protobuf.LazyStringList title_;
+    /**
+     * <code>repeated string title = 2;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getTitleList() {
+      return title_;
+    }
+    /**
+     * <code>repeated string title = 2;</code>
+     */
+    public int getTitleCount() {
+      return title_.size();
+    }
+    /**
+     * <code>repeated string title = 2;</code>
+     */
+    public java.lang.String getTitle(int index) {
+      return title_.get(index);
+    }
+    /**
+     * <code>repeated string title = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTitleBytes(int index) {
+      return title_.getByteString(index);
+    }
+
+    public static final int EVENT_FIELD_NUMBER = 3;
+    private java.util.List<com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent> event_;
+    /**
+     * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+     */
+    public java.util.List<com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent> getEventList() {
+      return event_;
+    }
+    /**
+     * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+     */
+    public java.util.List<? extends com.subterranean_security.crimson.core.proto.msg.Keylogger.KEventOrBuilder> 
+        getEventOrBuilderList() {
+      return event_;
+    }
+    /**
+     * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+     */
+    public int getEventCount() {
+      return event_.size();
+    }
+    /**
+     * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+     */
+    public com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent getEvent(int index) {
+      return event_.get(index);
+    }
+    /**
+     * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+     */
+    public com.subterranean_security.crimson.core.proto.msg.Keylogger.KEventOrBuilder getEventOrBuilder(
+        int index) {
+      return event_.get(index);
+    }
+
+    private void initFields() {
+      date_ = 0L;
+      title_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      event_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasDate()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getEventCount(); i++) {
+        if (!getEvent(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt64(1, date_);
+      }
+      for (int i = 0; i < title_.size(); i++) {
+        output.writeBytes(2, title_.getByteString(i));
+      }
+      for (int i = 0; i < event_.size(); i++) {
+        output.writeMessage(3, event_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, date_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < title_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(title_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getTitleList().size();
+      }
+      for (int i = 0; i < event_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, event_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code com.subterranean_security.crimson.core.proto.msg.KPage}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:com.subterranean_security.crimson.core.proto.msg.KPage)
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KPageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KPage_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KPage_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage.class, com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage.Builder.class);
+      }
+
+      // Construct using com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getEventFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        date_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        title_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (eventBuilder_ == null) {
+          event_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+        } else {
+          eventBuilder_.clear();
+        }
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KPage_descriptor;
+      }
+
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage getDefaultInstanceForType() {
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage.getDefaultInstance();
+      }
+
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage build() {
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage buildPartial() {
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage result = new com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.date_ = date_;
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          title_ = title_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        }
+        result.title_ = title_;
+        if (eventBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+            event_ = java.util.Collections.unmodifiableList(event_);
+            bitField0_ = (bitField0_ & ~0x00000004);
+          }
+          result.event_ = event_;
+        } else {
+          result.event_ = eventBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage) {
+          return mergeFrom((com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage other) {
+        if (other == com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage.getDefaultInstance()) return this;
+        if (other.hasDate()) {
+          setDate(other.getDate());
+        }
+        if (!other.title_.isEmpty()) {
+          if (title_.isEmpty()) {
+            title_ = other.title_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            ensureTitleIsMutable();
+            title_.addAll(other.title_);
+          }
+          onChanged();
+        }
+        if (eventBuilder_ == null) {
+          if (!other.event_.isEmpty()) {
+            if (event_.isEmpty()) {
+              event_ = other.event_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+            } else {
+              ensureEventIsMutable();
+              event_.addAll(other.event_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.event_.isEmpty()) {
+            if (eventBuilder_.isEmpty()) {
+              eventBuilder_.dispose();
+              eventBuilder_ = null;
+              event_ = other.event_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+              eventBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getEventFieldBuilder() : null;
+            } else {
+              eventBuilder_.addAllMessages(other.event_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasDate()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getEventCount(); i++) {
+          if (!getEvent(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.subterranean_security.crimson.core.proto.msg.Keylogger.KPage) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private long date_ ;
+      /**
+       * <code>required int64 date = 1;</code>
+       */
+      public boolean hasDate() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required int64 date = 1;</code>
+       */
+      public long getDate() {
+        return date_;
+      }
+      /**
+       * <code>required int64 date = 1;</code>
+       */
+      public Builder setDate(long value) {
+        bitField0_ |= 0x00000001;
+        date_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int64 date = 1;</code>
+       */
+      public Builder clearDate() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        date_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList title_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureTitleIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          title_ = new com.google.protobuf.LazyStringArrayList(title_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      /**
+       * <code>repeated string title = 2;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getTitleList() {
+        return title_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string title = 2;</code>
+       */
+      public int getTitleCount() {
+        return title_.size();
+      }
+      /**
+       * <code>repeated string title = 2;</code>
+       */
+      public java.lang.String getTitle(int index) {
+        return title_.get(index);
+      }
+      /**
+       * <code>repeated string title = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTitleBytes(int index) {
+        return title_.getByteString(index);
+      }
+      /**
+       * <code>repeated string title = 2;</code>
+       */
+      public Builder setTitle(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTitleIsMutable();
+        title_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string title = 2;</code>
+       */
+      public Builder addTitle(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTitleIsMutable();
+        title_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string title = 2;</code>
+       */
+      public Builder addAllTitle(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureTitleIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, title_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string title = 2;</code>
+       */
+      public Builder clearTitle() {
+        title_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string title = 2;</code>
+       */
+      public Builder addTitleBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTitleIsMutable();
+        title_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent> event_ =
+        java.util.Collections.emptyList();
+      private void ensureEventIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          event_ = new java.util.ArrayList<com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent>(event_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEventOrBuilder> eventBuilder_;
+
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public java.util.List<com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent> getEventList() {
+        if (eventBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(event_);
+        } else {
+          return eventBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public int getEventCount() {
+        if (eventBuilder_ == null) {
+          return event_.size();
+        } else {
+          return eventBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent getEvent(int index) {
+        if (eventBuilder_ == null) {
+          return event_.get(index);
+        } else {
+          return eventBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public Builder setEvent(
+          int index, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent value) {
+        if (eventBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventIsMutable();
+          event_.set(index, value);
+          onChanged();
+        } else {
+          eventBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public Builder setEvent(
+          int index, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder builderForValue) {
+        if (eventBuilder_ == null) {
+          ensureEventIsMutable();
+          event_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          eventBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public Builder addEvent(com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent value) {
+        if (eventBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventIsMutable();
+          event_.add(value);
+          onChanged();
+        } else {
+          eventBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public Builder addEvent(
+          int index, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent value) {
+        if (eventBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventIsMutable();
+          event_.add(index, value);
+          onChanged();
+        } else {
+          eventBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public Builder addEvent(
+          com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder builderForValue) {
+        if (eventBuilder_ == null) {
+          ensureEventIsMutable();
+          event_.add(builderForValue.build());
+          onChanged();
+        } else {
+          eventBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public Builder addEvent(
+          int index, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder builderForValue) {
+        if (eventBuilder_ == null) {
+          ensureEventIsMutable();
+          event_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          eventBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public Builder addAllEvent(
+          java.lang.Iterable<? extends com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent> values) {
+        if (eventBuilder_ == null) {
+          ensureEventIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, event_);
+          onChanged();
+        } else {
+          eventBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public Builder clearEvent() {
+        if (eventBuilder_ == null) {
+          event_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          onChanged();
+        } else {
+          eventBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public Builder removeEvent(int index) {
+        if (eventBuilder_ == null) {
+          ensureEventIsMutable();
+          event_.remove(index);
+          onChanged();
+        } else {
+          eventBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder getEventBuilder(
+          int index) {
+        return getEventFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KEventOrBuilder getEventOrBuilder(
+          int index) {
+        if (eventBuilder_ == null) {
+          return event_.get(index);  } else {
+          return eventBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public java.util.List<? extends com.subterranean_security.crimson.core.proto.msg.Keylogger.KEventOrBuilder> 
+           getEventOrBuilderList() {
+        if (eventBuilder_ != null) {
+          return eventBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(event_);
+        }
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder addEventBuilder() {
+        return getEventFieldBuilder().addBuilder(
+            com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder addEventBuilder(
+          int index) {
+        return getEventFieldBuilder().addBuilder(
+            index, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .com.subterranean_security.crimson.core.proto.msg.KEvent event = 3;</code>
+       */
+      public java.util.List<com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder> 
+           getEventBuilderList() {
+        return getEventFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEventOrBuilder> 
+          getEventFieldBuilder() {
+        if (eventBuilder_ == null) {
+          eventBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEventOrBuilder>(
+                  event_,
+                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  getParentForChildren(),
+                  isClean());
+          event_ = null;
+        }
+        return eventBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:com.subterranean_security.crimson.core.proto.msg.KPage)
+    }
+
+    static {
+      defaultInstance = new KPage(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:com.subterranean_security.crimson.core.proto.msg.KPage)
+  }
+
+  public interface KEventOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:com.subterranean_security.crimson.core.proto.msg.KEvent)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional int64 date_offset = 1;</code>
+     */
+    boolean hasDateOffset();
+    /**
+     * <code>optional int64 date_offset = 1;</code>
+     */
+    long getDateOffset();
+
+    /**
+     * <code>required string event = 2;</code>
+     */
+    boolean hasEvent();
+    /**
+     * <code>required string event = 2;</code>
+     */
+    java.lang.String getEvent();
+    /**
+     * <code>required string event = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getEventBytes();
+
+    /**
+     * <code>required int32 title = 3;</code>
+     */
+    boolean hasTitle();
+    /**
+     * <code>required int32 title = 3;</code>
+     */
+    int getTitle();
+  }
+  /**
+   * Protobuf type {@code com.subterranean_security.crimson.core.proto.msg.KEvent}
+   */
+  public static final class KEvent extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:com.subterranean_security.crimson.core.proto.msg.KEvent)
+      KEventOrBuilder {
+    // Use KEvent.newBuilder() to construct.
+    private KEvent(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private KEvent(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final KEvent defaultInstance;
+    public static KEvent getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public KEvent getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private KEvent(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              dateOffset_ = input.readInt64();
+              break;
+            }
+            case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000002;
+              event_ = bs;
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              title_ = input.readInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KEvent_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KEvent_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.class, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<KEvent> PARSER =
+        new com.google.protobuf.AbstractParser<KEvent>() {
+      public KEvent parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new KEvent(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<KEvent> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    public static final int DATE_OFFSET_FIELD_NUMBER = 1;
+    private long dateOffset_;
+    /**
+     * <code>optional int64 date_offset = 1;</code>
+     */
+    public boolean hasDateOffset() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional int64 date_offset = 1;</code>
+     */
+    public long getDateOffset() {
+      return dateOffset_;
+    }
+
+    public static final int EVENT_FIELD_NUMBER = 2;
+    private java.lang.Object event_;
+    /**
+     * <code>required string event = 2;</code>
+     */
+    public boolean hasEvent() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required string event = 2;</code>
+     */
+    public java.lang.String getEvent() {
+      java.lang.Object ref = event_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          event_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string event = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getEventBytes() {
+      java.lang.Object ref = event_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        event_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TITLE_FIELD_NUMBER = 3;
+    private int title_;
+    /**
+     * <code>required int32 title = 3;</code>
+     */
+    public boolean hasTitle() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required int32 title = 3;</code>
+     */
+    public int getTitle() {
+      return title_;
+    }
+
+    private void initFields() {
+      dateOffset_ = 0L;
+      event_ = "";
+      title_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasEvent()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasTitle()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt64(1, dateOffset_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getEventBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(3, title_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, dateOffset_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getEventBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, title_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code com.subterranean_security.crimson.core.proto.msg.KEvent}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:com.subterranean_security.crimson.core.proto.msg.KEvent)
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KEventOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KEvent_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KEvent_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.class, com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.Builder.class);
+      }
+
+      // Construct using com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        dateOffset_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        event_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        title_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.internal_static_com_subterranean_security_crimson_core_proto_msg_KEvent_descriptor;
+      }
+
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent getDefaultInstanceForType() {
+        return com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.getDefaultInstance();
+      }
+
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent build() {
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent buildPartial() {
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent result = new com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.dateOffset_ = dateOffset_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.event_ = event_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.title_ = title_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent) {
+          return mergeFrom((com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent other) {
+        if (other == com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent.getDefaultInstance()) return this;
+        if (other.hasDateOffset()) {
+          setDateOffset(other.getDateOffset());
+        }
+        if (other.hasEvent()) {
+          bitField0_ |= 0x00000002;
+          event_ = other.event_;
+          onChanged();
+        }
+        if (other.hasTitle()) {
+          setTitle(other.getTitle());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasEvent()) {
+          
+          return false;
+        }
+        if (!hasTitle()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.subterranean_security.crimson.core.proto.msg.Keylogger.KEvent) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private long dateOffset_ ;
+      /**
+       * <code>optional int64 date_offset = 1;</code>
+       */
+      public boolean hasDateOffset() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional int64 date_offset = 1;</code>
+       */
+      public long getDateOffset() {
+        return dateOffset_;
+      }
+      /**
+       * <code>optional int64 date_offset = 1;</code>
+       */
+      public Builder setDateOffset(long value) {
+        bitField0_ |= 0x00000001;
+        dateOffset_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 date_offset = 1;</code>
+       */
+      public Builder clearDateOffset() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        dateOffset_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object event_ = "";
+      /**
+       * <code>required string event = 2;</code>
+       */
+      public boolean hasEvent() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required string event = 2;</code>
+       */
+      public java.lang.String getEvent() {
+        java.lang.Object ref = event_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            event_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string event = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getEventBytes() {
+        java.lang.Object ref = event_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          event_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string event = 2;</code>
+       */
+      public Builder setEvent(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        event_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string event = 2;</code>
+       */
+      public Builder clearEvent() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        event_ = getDefaultInstance().getEvent();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string event = 2;</code>
+       */
+      public Builder setEventBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        event_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int title_ ;
+      /**
+       * <code>required int32 title = 3;</code>
+       */
+      public boolean hasTitle() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required int32 title = 3;</code>
+       */
+      public int getTitle() {
+        return title_;
+      }
+      /**
+       * <code>required int32 title = 3;</code>
+       */
+      public Builder setTitle(int value) {
+        bitField0_ |= 0x00000004;
+        title_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 title = 3;</code>
+       */
+      public Builder clearTitle() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        title_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:com.subterranean_security.crimson.core.proto.msg.KEvent)
+    }
+
+    static {
+      defaultInstance = new KEvent(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:com.subterranean_security.crimson.core.proto.msg.KEvent)
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
@@ -2040,10 +3826,20 @@ public final class Keylogger {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_com_subterranean_security_crimson_core_proto_msg_Keylog_RS_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_subterranean_security_crimson_core_proto_msg_KeyEvent_EV_descriptor;
+    internal_static_com_subterranean_security_crimson_core_proto_msg_KLog_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_subterranean_security_crimson_core_proto_msg_KeyEvent_EV_fieldAccessorTable;
+      internal_static_com_subterranean_security_crimson_core_proto_msg_KLog_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_subterranean_security_crimson_core_proto_msg_KPage_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_com_subterranean_security_crimson_core_proto_msg_KPage_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_subterranean_security_crimson_core_proto_msg_KEvent_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_com_subterranean_security_crimson_core_proto_msg_KEvent_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -2057,11 +3853,16 @@ public final class Keylogger {
       "security.crimson.core.proto.msg\"^\n\021Keylo" +
       "ggerState_RQ\022I\n\010newState\030\001 \002(\01627.com.sub" +
       "terranean_security.crimson.core.proto.ms" +
-      "g.State\"$\n\021KeyloggerState_RS\022\017\n\007success\030" +
-      "\001 \002(\010\"1\n\tKeylog_RQ\022\022\n\nstart_date\030\001 \001(\003\022\020" +
-      "\n\010end_date\030\002 \001(\003\"\013\n\tKeylog_RS\"\r\n\013KeyEven" +
-      "t_EV*1\n\005State\022\017\n\013UNINSTALLED\020\000\022\013\n\007OFFLIN" +
-      "E\020\001\022\n\n\006ONLINE\020\002"
+      "g.State\"#\n\021KeyloggerState_RS\022\016\n\006result\030\001" +
+      " \002(\010\"1\n\tKeylog_RQ\022\022\n\nstart_date\030\001 \001(\003\022\020\n" +
+      "\010end_date\030\002 \001(\003\"\013\n\tKeylog_RS\"1\n\004KLog\022\020\n\010" +
+      "clientID\030\001 \002(\005\022\027\n\017pagemap_address\030\002 \002(\005\"" +
+      "m\n\005KPage\022\014\n\004date\030\001 \002(\003\022\r\n\005title\030\002 \003(\t\022G\n" +
+      "\005event\030\003 \003(\01328.com.subterranean_security",
+      ".crimson.core.proto.msg.KEvent\";\n\006KEvent" +
+      "\022\023\n\013date_offset\030\001 \001(\003\022\r\n\005event\030\002 \002(\t\022\r\n\005" +
+      "title\030\003 \002(\005*1\n\005State\022\017\n\013UNINSTALLED\020\000\022\013\n" +
+      "\007OFFLINE\020\001\022\n\n\006ONLINE\020\002"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2086,7 +3887,7 @@ public final class Keylogger {
     internal_static_com_subterranean_security_crimson_core_proto_msg_KeyloggerState_RS_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_com_subterranean_security_crimson_core_proto_msg_KeyloggerState_RS_descriptor,
-        new java.lang.String[] { "Success", });
+        new java.lang.String[] { "Result", });
     internal_static_com_subterranean_security_crimson_core_proto_msg_Keylog_RQ_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_com_subterranean_security_crimson_core_proto_msg_Keylog_RQ_fieldAccessorTable = new
@@ -2099,12 +3900,24 @@ public final class Keylogger {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_com_subterranean_security_crimson_core_proto_msg_Keylog_RS_descriptor,
         new java.lang.String[] { });
-    internal_static_com_subterranean_security_crimson_core_proto_msg_KeyEvent_EV_descriptor =
+    internal_static_com_subterranean_security_crimson_core_proto_msg_KLog_descriptor =
       getDescriptor().getMessageTypes().get(4);
-    internal_static_com_subterranean_security_crimson_core_proto_msg_KeyEvent_EV_fieldAccessorTable = new
+    internal_static_com_subterranean_security_crimson_core_proto_msg_KLog_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_com_subterranean_security_crimson_core_proto_msg_KeyEvent_EV_descriptor,
-        new java.lang.String[] { });
+        internal_static_com_subterranean_security_crimson_core_proto_msg_KLog_descriptor,
+        new java.lang.String[] { "ClientID", "PagemapAddress", });
+    internal_static_com_subterranean_security_crimson_core_proto_msg_KPage_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_com_subterranean_security_crimson_core_proto_msg_KPage_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_com_subterranean_security_crimson_core_proto_msg_KPage_descriptor,
+        new java.lang.String[] { "Date", "Title", "Event", });
+    internal_static_com_subterranean_security_crimson_core_proto_msg_KEvent_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_com_subterranean_security_crimson_core_proto_msg_KEvent_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_com_subterranean_security_crimson_core_proto_msg_KEvent_descriptor,
+        new java.lang.String[] { "DateOffset", "Event", "Title", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
