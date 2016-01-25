@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.ui;
+package com.subterranean_security.crimson.cv.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
