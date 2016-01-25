@@ -15,19 +15,16 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.logs.keylogger;
+package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
-import java.io.Serializable;
-import java.util.Date;
+import javax.swing.JPanel;
 
-import com.subterranean_security.crimson.core.storage.MemMap;
+public class LocalGeneral extends JPanel {
 
-public class KLog implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-	private MemMap<Date, KPage> pages;
-	
-	public KLog(){
-		pages = new MemMap<Date, KPage>(null);
+	public LocalGeneral() {
+
 	}
 
 }
