@@ -26,13 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.utility.CUtil;
-import com.subterranean_security.crimson.core.utility.Crypto;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.server.ServerStore;
 
 public class ServerDB extends Database {
-	private static final Logger log = LoggerFactory
-			.getLogger("com.subterranean_security.crimson.core.storage.ServerDB");
+	private static final Logger log = LoggerFactory.getLogger(ServerDB.class);
 
 	public ServerDB(File dfile) throws Exception {
 		if (!dfile.exists()) {

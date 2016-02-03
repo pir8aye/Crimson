@@ -28,7 +28,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.msg.Gen.GenReport;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
-import com.subterranean_security.crimson.core.utility.CUtil;
+import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Generator {
 

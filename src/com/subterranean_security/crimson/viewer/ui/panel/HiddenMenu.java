@@ -37,7 +37,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.exception.InvalidObjectException;
-import com.subterranean_security.crimson.core.utility.ObjectTransfer;
+import com.subterranean_security.crimson.core.util.ObjectTransfer;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 
 public class HiddenMenu extends JPanel {

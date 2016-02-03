@@ -18,12 +18,26 @@
 package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
 import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.BoxLayout;
+import javax.swing.border.TitledBorder;
+import java.awt.BorderLayout;
+import javax.swing.JComboBox;
 
 public class LocalGeneral extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
 	public LocalGeneral() {
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(null, "Language", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(panel);
+		panel.setLayout(new BorderLayout(0, 0));
+		
+		JComboBox comboBox = new JComboBox();
+		panel.add(comboBox, BorderLayout.CENTER);
 
 	}
 

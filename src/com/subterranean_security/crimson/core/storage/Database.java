@@ -31,8 +31,8 @@ import javax.sql.rowset.serial.SerialException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.utility.CUtil;
-import com.subterranean_security.crimson.core.utility.ObjectTransfer;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.ObjectTransfer;
 
 public abstract class Database extends Thread implements AutoCloseable {
 	private static final Logger log = LoggerFactory

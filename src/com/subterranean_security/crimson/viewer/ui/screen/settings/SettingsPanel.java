@@ -18,25 +18,70 @@
 package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 public class SettingsPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	private JTree tree;
+	private JPanel cards;
 
 	public SettingsPanel(SettingsDialog settingsDialog, boolean b) {
 		setLayout(new BorderLayout(0, 0));
 
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		add(tabbedPane, BorderLayout.CENTER);
+		JPanel panel = new JPanel();
+		add(panel, BorderLayout.WEST);
+		panel.setLayout(new BorderLayout(0, 0));
 
-		LocalSettingsPanel lsp = new LocalSettingsPanel();
-		tabbedPane.addTab("Local", null, lsp, null);
+		tree = new JTree();
+		tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Settings") {
+			{
+				DefaultMutableTreeNode node_1;
+				node_1 = new DefaultMutableTreeNode("Local");
+				node_1.add(new DefaultMutableTreeNode("General"));
+				add(node_1);
+				node_1 = new DefaultMutableTreeNode("Server");
+				node_1.add(new DefaultMutableTreeNode("General"));
+				add(node_1);
+			}
+		}));
+		tree.addTreeSelectionListener(new TreeListener());
+		panel.add(tree, BorderLayout.NORTH);
 
-		ServerSettingsPanel ssp = new ServerSettingsPanel();
-		tabbedPane.addTab("Server", null, ssp, null);
+		cards = new JPanel();
+		add(cards, BorderLayout.CENTER);
+		cards.setLayout(new CardLayout(0, 0));
+		cards.add("SettingsLocalGeneral", new LocalGeneral());
+
+	}
+
+	class TreeListener implements TreeSelectionListener {
+
+		@Override
+		public void valueChanged(TreeSelectionEvent e) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+			if (node == null) {
+				return;
+			}
+
+			String p = "";
+			Object[] path = node.getUserObjectPath();
+			for (int i = 0; i < path.length; i++) {
+				p += (String) path[i];
+			}
+			System.out.println("Showing card: " + p);
+
+			((CardLayout) cards.getLayout()).show(cards, p);
+
+		}
+
 	}
 
 }

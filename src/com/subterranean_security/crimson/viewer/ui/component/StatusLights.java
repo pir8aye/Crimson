@@ -22,7 +22,7 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 
-import com.subterranean_security.crimson.core.utility.CUtil;
+import com.subterranean_security.crimson.core.util.CUtil;
 
 public class StatusLights extends JComponent {
 

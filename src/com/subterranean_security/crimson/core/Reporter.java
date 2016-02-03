@@ -21,6 +21,7 @@ package com.subterranean_security.crimson.core;
 import java.util.Date;
 
 import com.subterranean_security.crimson.core.proto.msg.Reports.Report;
+import com.subterranean_security.crimson.core.util.PlatformInfo;
 import com.subterranean_security.services.Services;
 
 public class Reporter {

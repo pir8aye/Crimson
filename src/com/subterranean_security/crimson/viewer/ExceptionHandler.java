@@ -19,7 +19,7 @@ package com.subterranean_security.crimson.viewer;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Reporter;
-import com.subterranean_security.crimson.core.utility.CUtil;
+import com.subterranean_security.crimson.core.util.CUtil;
 
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 

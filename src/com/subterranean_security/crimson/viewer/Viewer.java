@@ -25,8 +25,12 @@ import java.util.Date;
 
 import javax.swing.UIManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.utility.FileLocking;
+import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.crimson.core.util.PlatformInfo;
 import com.subterranean_security.crimson.viewer.ui.panel.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.eula.EULADialog;
 import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
@@ -36,6 +40,7 @@ import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.tweenengine.Tween;
 
 public class Viewer {
+	private static final Logger log = LoggerFactory.getLogger(Viewer.class);
 
 	/**
 	 * True when a server instance is detected that was not started by the
@@ -52,8 +57,18 @@ public class Viewer {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			switch (PlatformInfo.os) {
+
+			case LINUX:
+				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+				break;
+			default:
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				break;
+			}
+
 		} catch (Exception e) {
+			log.error("Failed to set look and feel");
 			e.printStackTrace();
 		}
 

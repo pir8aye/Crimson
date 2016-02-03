@@ -25,11 +25,11 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.utility.CUtil;
+import com.subterranean_security.crimson.core.util.CUtil;
 
 public enum Common {
 	;
-	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.core.Common");
+	private static final Logger log = LoggerFactory.getLogger(Common.class);
 
 	/**
 	 * When true, debug messages will be logged and additional functionality

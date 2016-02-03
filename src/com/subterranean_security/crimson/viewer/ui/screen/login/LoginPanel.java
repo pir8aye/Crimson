@@ -43,9 +43,9 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.utility.CUtil;
-import com.subterranean_security.crimson.viewer.network.ViewerCommands;
-import com.subterranean_security.crimson.viewer.network.ViewerConnector;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 
 public class LoginPanel extends JPanel {
@@ -104,11 +104,11 @@ public class LoginPanel extends JPanel {
 
 		lblIpdns = new JLabel("Address");
 		lblIpdns.setBounds(20, 12, 280, 15);
-		lblIpdns.setFont(new Font("Dialog", Font.PLAIN, 10));
+		lblIpdns.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_4.add(lblIpdns);
 
 		fld_server = new JComboBox<String>();
-		fld_server.setFont(new Font("Dialog", Font.BOLD, 11));
+		fld_server.setFont(new Font("Dialog", Font.PLAIN, 10));
 		fld_server_border = fld_server.getBorder();
 		fld_server.addMouseListener(new MouseAdapter() {
 			@Override
@@ -130,11 +130,11 @@ public class LoginPanel extends JPanel {
 		lblPort = new JLabel("Port");
 		lblPort.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPort.setBounds(312, 12, 56, 15);
-		lblPort.setFont(new Font("Dialog", Font.PLAIN, 10));
+		lblPort.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_4.add(lblPort);
 
 		fld_port = new JTextField();
-		fld_port.setFont(new Font("Dialog", Font.PLAIN, 11));
+		fld_port.setFont(new Font("Dialog", Font.PLAIN, 10));
 		fld_port_border = fld_port.getBorder();
 		fld_port.addMouseListener(new MouseAdapter() {
 			@Override
@@ -165,6 +165,7 @@ public class LoginPanel extends JPanel {
 		panel_5.setLayout(null);
 
 		fld_user = new JTextField();
+		fld_user.setFont(new Font("Dialog", Font.PLAIN, 10));
 		fld_user_border = fld_user.getBorder();
 		fld_user.setDocument(new FieldLimiter(20));
 		fld_user.setText("admin");
@@ -186,6 +187,7 @@ public class LoginPanel extends JPanel {
 		fld_user.setColumns(10);
 
 		fld_password = new JPasswordField();
+		fld_password.setFont(new Font("Dialog", Font.PLAIN, 10));
 		fld_password_border = fld_password.getBorder();
 		fld_password.addMouseListener(new MouseAdapter() {
 			@Override
@@ -207,13 +209,13 @@ public class LoginPanel extends JPanel {
 
 		lblUsername = new JLabel("Username");
 		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUsername.setFont(new Font("Dialog", Font.PLAIN, 10));
+		lblUsername.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblUsername.setBounds(20, 12, 140, 15);
 		panel_5.add(lblUsername);
 
 		lblPassword = new JLabel("Password");
 		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPassword.setFont(new Font("Dialog", Font.PLAIN, 10));
+		lblPassword.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblPassword.setBounds(228, 12, 140, 15);
 		panel_5.add(lblPassword);
 

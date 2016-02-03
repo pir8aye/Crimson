@@ -33,6 +33,7 @@ import com.subterranean_security.crimson.viewer.ui.screen.about.AboutDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.GenDialog;
+import com.subterranean_security.crimson.viewer.ui.screen.settings.SettingsDialog;
 
 public class MainMenu extends JPanel {
 
@@ -122,10 +123,16 @@ public class MainMenu extends JPanel {
 
 		mnManagement.add(wmUsers);
 
-		WideMenuItem wmSettings = new WideMenuItem("Settings", "Change Server Settings");
+		final WideMenuItem wmSettings = new WideMenuItem("Settings", "Change Local or Server Settings");
 		wmSettings.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
+				// TODO DONT allow multiple instances
+				SettingsDialog sd = new SettingsDialog();
+				sd.setVisible(true);
+
+				wmSettings.resetBG();
+				MenuSelectionManager.defaultManager().clearSelectedPath();
 			}
 		});
 
@@ -138,6 +145,7 @@ public class MainMenu extends JPanel {
 		wmAbout.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
+				// TODO DONT allow multiple instances
 				AboutDialog ad = new AboutDialog();
 				ad.setVisible(true);
 

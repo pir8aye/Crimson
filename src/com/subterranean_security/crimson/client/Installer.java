@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.subterranean_security.crimson.client.network.ClientCommands;
+import com.subterranean_security.crimson.client.net.ClientCommands;
 import com.subterranean_security.crimson.core.proto.msg.Gen.NetworkTarget;
 
 public class Installer {

@@ -19,14 +19,18 @@ package com.subterranean_security.crimson.sv;
 
 import java.io.Serializable;
 
+import com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog;
+
 public class Profile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private int clientid;
 
-	protected String hostname;
-	protected String username;
+	private String hostname;
+	private String username;
+
+	private KLog klog;
 
 	public Profile(int clientid) {
 		this.clientid = clientid;

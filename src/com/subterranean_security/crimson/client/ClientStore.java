@@ -19,7 +19,7 @@ package com.subterranean_security.crimson.client;
 
 import java.util.ArrayList;
 
-import com.subterranean_security.crimson.client.network.ClientConnector;
+import com.subterranean_security.crimson.client.net.ClientConnector;
 
 public enum ClientStore {
 	;

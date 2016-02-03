@@ -17,7 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server;
 
-import com.subterranean_security.crimson.core.utility.FileLocking;
+import com.subterranean_security.crimson.core.util.FileLocking;
 
 public class ShutdownHook extends Thread {
 

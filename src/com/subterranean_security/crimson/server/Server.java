@@ -27,12 +27,12 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
 import com.subterranean_security.crimson.core.storage.ServerDB;
-import com.subterranean_security.crimson.core.utility.CUtil;
-import com.subterranean_security.crimson.core.utility.FileLocking;
-import com.subterranean_security.crimson.server.network.Listener;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.crimson.server.net.Listener;
 
 public final class Server {
-	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.server.Server");
+	private static final Logger log = LoggerFactory.getLogger(Server.class);
 
 	private static boolean running;
 	private static Listener localListener;

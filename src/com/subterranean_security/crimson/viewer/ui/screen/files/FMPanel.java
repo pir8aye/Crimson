@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
 
 import com.subterranean_security.crimson.viewer.ui.panel.Console;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
@@ -33,6 +34,9 @@ public class FMPanel extends JPanel {
 
 	public FMPanel(Type type) {
 		setLayout(new BorderLayout(0, 0));
+
+		JToolBar jtb = new JToolBar();
+		add(jtb, BorderLayout.NORTH);
 
 		JPanel panel = new JPanel();
 		add(panel, BorderLayout.SOUTH);

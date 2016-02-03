@@ -16,7 +16,7 @@
  *                                                                            *
  *****************************************************************************/
 
-package com.subterranean_security.crimson.core;
+package com.subterranean_security.crimson.core.util;
 
 public enum PlatformInfo {
 	;

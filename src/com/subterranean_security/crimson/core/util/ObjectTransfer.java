@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.utility;
+package com.subterranean_security.crimson.core.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

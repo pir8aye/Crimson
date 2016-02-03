@@ -25,13 +25,13 @@ import javax.net.ssl.SSLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.client.network.ClientConnector;
+import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.msg.Gen.NetworkTarget;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
 
 public class Client {
-	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.client.Client");
+	private static final Logger log = LoggerFactory.getLogger(Client.class);
 
 	public static ClientConnector connector;
 	public static ViewerDB clientDB;
@@ -39,7 +39,7 @@ public class Client {
 
 	public static void main(String[] args) {
 
-		System.out.println("Valid installation detected: starting up");
+		log.info("Initializing client");
 
 		// Establish the custom fallback exception handler
 		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());

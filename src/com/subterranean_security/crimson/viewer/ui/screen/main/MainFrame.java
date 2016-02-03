@@ -25,7 +25,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
-import com.subterranean_security.crimson.core.utility.CUtil;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ui.panel.DPanel;
 import com.subterranean_security.crimson.viewer.ui.panel.NPanel;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
