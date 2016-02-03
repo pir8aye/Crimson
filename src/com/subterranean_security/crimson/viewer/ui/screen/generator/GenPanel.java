@@ -18,18 +18,21 @@
 package com.subterranean_security.crimson.viewer.ui.screen.generator;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -55,7 +58,8 @@ import com.subterranean_security.crimson.core.proto.msg.Gen;
 import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.msg.Gen.NetworkTarget;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.utility.CUtil;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Crypto;
 
 public class GenPanel extends JPanel {
 
@@ -94,6 +98,8 @@ public class GenPanel extends JPanel {
 	private String[] ipath_bsd = new String[] { "/home/%USERNAME%/.crimson" };
 
 	private static final String defaultHint = "set or load generation options";
+
+	private static Timer timer = new Timer();
 
 	public GenPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -455,6 +461,70 @@ public class GenPanel extends JPanel {
 
 		JPanel atab = new JPanel();
 		tabbedPane.addTab(null, atab);
+		atab.setLayout(new BorderLayout(0, 0));
+
+		JPanel panel_8 = new JPanel();
+		panel_8.setBorder(
+				new TitledBorder(null, "Authentication Type", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		atab.add(panel_8, BorderLayout.NORTH);
+		panel_8.setLayout(new BorderLayout(0, 0));
+
+		JTextArea txtrGroupAuthenticationIs = new JTextArea();
+		txtrGroupAuthenticationIs.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		txtrGroupAuthenticationIs.setFont(new Font("Dialog", Font.PLAIN, 10));
+		txtrGroupAuthenticationIs.setOpaque(false);
+		txtrGroupAuthenticationIs.setWrapStyleWord(true);
+		txtrGroupAuthenticationIs.setLineWrap(true);
+		txtrGroupAuthenticationIs.setText(
+				"Group authentication is the most secure mechanism. A \"group key\" is embedded in the client and only servers that posses this key may authenticate with the client.");
+		panel_8.add(txtrGroupAuthenticationIs, BorderLayout.CENTER);
+
+		JPanel panel_10 = new JPanel();
+		panel_8.add(panel_10, BorderLayout.WEST);
+
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] { "Group", "Password", "None" }));
+		panel_10.add(comboBox);
+
+		JPanel panel_9 = new JPanel();
+		atab.add(panel_9, BorderLayout.CENTER);
+		panel_9.setLayout(new CardLayout(0, 0));
+
+		JPanel authpanel_group = new JPanel();
+		panel_9.add(authpanel_group, "name_13122844881559");
+		authpanel_group.setLayout(new BorderLayout(0, 0));
+
+		JPanel panel_11 = new JPanel();
+		panel_11.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		authpanel_group.add(panel_11, BorderLayout.NORTH);
+		panel_11.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblGroupKeyPrefix = new JLabel("Group Key Prefix:");
+		lblGroupKeyPrefix.setFont(new Font("Dialog", Font.BOLD, 11));
+		panel_11.add(lblGroupKeyPrefix, BorderLayout.WEST);
+
+		key_prefix = new JLabel("4 5 9 2 0 1 5 3 8 3 1 3 4 2 5 5");
+		key_prefix.setFont(new Font("Dialog", Font.BOLD, 11));
+		key_prefix.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_11.add(key_prefix, BorderLayout.CENTER);
+
+		JPanel panel_12 = new JPanel();
+		authpanel_group.add(panel_12);
+
+		JPanel authpanel_password = new JPanel();
+		authpanel_password.setBorder(
+				new TitledBorder(null, "Password Authentication", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_9.add(authpanel_password, "name_13128462346933");
+
+		JPanel authpanel_none = new JPanel();
+		FlowLayout fl_authpanel_none = (FlowLayout) authpanel_none.getLayout();
+		panel_9.add(authpanel_none, "name_13132135038447");
+
+		JLabel lblNewLabel = new JLabel("Warning: Authentication mode is set to NONE");
+		authpanel_none.add(lblNewLabel);
+
+		JLabel lblThisClientWill = new JLabel("This client will be able to connect to any server!");
+		authpanel_none.add(lblThisClientWill);
 		tabbedPane.setTabComponentAt(4, new GenTabComponent("lock", "Auth"));
 
 		otab = new JPanel();
@@ -583,7 +653,7 @@ public class GenPanel extends JPanel {
 			fld_path.setText("C:/Users/dev/Desktop/client.jar");
 			cbx_waiver.setSelected(true);
 		}
-
+		timer.schedule(new GroupTimer(), 0, 750);
 	}
 
 	public Date currentCTime;// see getvalues() for reasoning
@@ -594,6 +664,7 @@ public class GenPanel extends JPanel {
 	private JComboBox<String> fld_install_bsd;
 	private JComboBox<String> fld_install_solaris;
 	private JComboBox<String> type_comboBox;
+	private JLabel key_prefix;
 
 	private void setCreationDate(Date d) {
 		currentCTime = d;
@@ -742,6 +813,40 @@ public class GenPanel extends JPanel {
 	private void changeToSh() {
 
 		txt_output_desc.setText("");
+
+	}
+
+	class GroupTimer extends TimerTask {
+
+		private Random rand = new Random();
+		private String last = "" + new Date().getTime();
+
+		private int upper = 20;
+		private int lower = 10;
+
+		@Override
+		public void run() {
+			last = Crypto.sign(last, CUtil.Misc.nameGen(rand.nextInt(upper - lower + 1) + lower)).replaceAll("\\+|/",
+					"0");
+			display();
+		}
+
+		private void display() {
+			String data = last;
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < 16; i++) {
+				sb.append(' ');
+				sb.append(data.charAt(i));
+			}
+			key_prefix.setText("");
+			try {
+				Thread.sleep(70);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			key_prefix.setText(sb.toString().substring(1).toUpperCase());
+		}
 
 	}
 }
