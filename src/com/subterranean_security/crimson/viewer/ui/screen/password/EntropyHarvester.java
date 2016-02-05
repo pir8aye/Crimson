@@ -26,6 +26,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -46,7 +47,8 @@ public class EntropyHarvester extends JPanel {
 	private static Color paintColor = Color.RED;
 
 	public EntropyHarvester() {
-		setBorder(new TitledBorder(null, "Entropy Harvester", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Entropy", TitledBorder.LEADING,
+				TitledBorder.TOP, null, new Color(51, 51, 51)));
 		setLayout(new BorderLayout(0, 0));
 		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
@@ -90,27 +92,10 @@ public class EntropyHarvester extends JPanel {
 		// hpanel.add(prompt);
 		add(main, BorderLayout.CENTER);
 
-		JSeparator Nseparator = new JSeparator();
-		Nseparator.setVisible(false);
-		Nseparator.setPreferredSize(new Dimension(0, 10));
-		Nseparator.setOrientation(SwingConstants.VERTICAL);
-		main.add(Nseparator, BorderLayout.NORTH);
-
-		JSeparator Sseparator = new JSeparator();
-		Sseparator.setVisible(false);
-		Sseparator.setPreferredSize(new Dimension(0, 10));
-		Sseparator.setOrientation(SwingConstants.VERTICAL);
-		main.add(Sseparator, BorderLayout.SOUTH);
-
-		JSeparator Wseparator = new JSeparator();
-		Wseparator.setVisible(false);
-		Wseparator.setPreferredSize(new Dimension(10, 0));
-		main.add(Wseparator, BorderLayout.WEST);
-
-		JSeparator Eseparator = new JSeparator();
-		Eseparator.setVisible(false);
-		Eseparator.setPreferredSize(new Dimension(10, 0));
-		main.add(Eseparator, BorderLayout.EAST);
+		main.add(Box.createVerticalStrut(10), BorderLayout.NORTH);
+		main.add(Box.createVerticalStrut(10), BorderLayout.SOUTH);
+		main.add(Box.createHorizontalStrut(10), BorderLayout.WEST);
+		main.add(Box.createHorizontalStrut(10), BorderLayout.EAST);
 
 	}
 
