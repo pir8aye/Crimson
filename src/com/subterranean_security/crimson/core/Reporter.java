@@ -20,11 +20,20 @@ package com.subterranean_security.crimson.core;
 
 import java.util.Date;
 
+import org.slf4j.Logger;
+
 import com.subterranean_security.crimson.core.proto.msg.Reports.Report;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.PlatformInfo;
 import com.subterranean_security.services.Services;
 
+/**
+ * @author subterranean Sends a report using the Services library
+ *
+ */
 public class Reporter {
+
+	private static final Logger log = CUtil.Logging.getLogger(Reporter.class);
 
 	public static void report(final Report r) {
 		// add report to buffer TODO
@@ -32,6 +41,7 @@ public class Reporter {
 
 			@Override
 			public void run() {
+				log.debug("Reporting event");
 				Services.sendReport(r);
 
 			}
@@ -47,8 +57,13 @@ public class Reporter {
 		rb.setJreVersion(System.getProperty("java.version"));
 		rb.setInstance(Common.instance.toString());
 		rb.setOsFamily(PlatformInfo.os.toString());
-		//rb.setSysArch(PlatformInfo.sysArch.toString());
-		//rb.setJreArch(PlatformInfo.jreArch.toString());
+		// rb.setSysArch(PlatformInfo.sysArch.toString());
+		// rb.setJreArch(PlatformInfo.jreArch.toString());
+
+		log.debug(
+				"Generated base report with values: Initialization: {}, Crimson Version: {}, JRE Version: {}, Instance: {}, OS Family: {}",
+				new Object[] { rb.getInitDate(), rb.getCrVersion(), rb.getJreVersion(), rb.getInstance(),
+						rb.getOsFamily() });
 
 		return rb;
 	}

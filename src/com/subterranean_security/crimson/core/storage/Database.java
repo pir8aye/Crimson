@@ -29,14 +29,12 @@ import java.util.HashMap;
 import javax.sql.rowset.serial.SerialException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.ObjectTransfer;
 
 public abstract class Database extends Thread implements AutoCloseable {
-	private static final Logger log = LoggerFactory
-			.getLogger("com.subterranean_security.crimson.core.storage.Database");
+	private static final Logger log = CUtil.Logging.getLogger(Database.class);
 
 	private HashMap<String, Object> map = new HashMap<String, Object>();
 	private HashMap<Integer, Object> heap = new HashMap<Integer, Object>();

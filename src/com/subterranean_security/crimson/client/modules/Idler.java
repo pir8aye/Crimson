@@ -24,18 +24,19 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Idler extends Thread {
-	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.client.modules.Idler");
+	private static final Logger log = CUtil.Logging.getLogger(Idler.class);
 
-	private Queue<Runnable>	buffer		= new ConcurrentLinkedQueue<Runnable>();
+	private Queue<Runnable> buffer = new ConcurrentLinkedQueue<Runnable>();
 
-	private boolean			idle		= false;
-	private int				segments	= 0;
-	private int				seglen;
-	private int				segThresh	= 50;
-	private Date			idleSince;
+	private boolean idle = false;
+	private int segments = 0;
+	private int seglen;
+	private int segThresh = 50;
+	private Date idleSince;
 
 	public Idler(int segmentLength) {
 		seglen = segmentLength;
