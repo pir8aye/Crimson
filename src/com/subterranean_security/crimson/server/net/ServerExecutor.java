@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common.Instance;
@@ -51,8 +50,7 @@ import com.subterranean_security.crimson.server.ServerStore;
 import io.netty.util.ReferenceCountUtil;
 
 public class ServerExecutor extends BasicExecutor {
-	private static final Logger log = LoggerFactory
-			.getLogger("com.subterranean_security.crimson.server.network.ServerExecutor");
+	private static final Logger log = CUtil.Logging.getLogger(ServerExecutor.class);
 
 	private Receptor receptor;
 

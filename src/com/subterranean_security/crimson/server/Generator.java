@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
+import org.slf4j.Logger;
 import org.zeroturnaround.zip.ZipUtil;
 
 import com.subterranean_security.crimson.core.Common;
@@ -31,6 +32,8 @@ import com.subterranean_security.crimson.core.storage.ViewerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Generator {
+
+	private static final Logger log = CUtil.Logging.getLogger(Generator.class);
 
 	private File temp = CUtil.Files.Temp.getLDir();
 	private GenReport.Builder report = GenReport.newBuilder();

@@ -27,6 +27,10 @@ import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.proto.msg.FM.FileListlet;
 
+/**
+ * @author subterranean For file system browsing
+ *
+ */
 public class LocalFilesystem {
 
 	private Path ref;

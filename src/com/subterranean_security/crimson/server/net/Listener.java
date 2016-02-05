@@ -34,6 +34,7 @@ public class Listener implements AutoCloseable {
 
 	public static final String id = CUtil.Misc.nameGen(8);
 
+	// TODO only accept localhost connections
 	public Listener(int port, boolean acceptClients, boolean acceptViewers, boolean upnp) {
 		bossGroup = new NioEventLoopGroup();
 		workerGroup = new NioEventLoopGroup();

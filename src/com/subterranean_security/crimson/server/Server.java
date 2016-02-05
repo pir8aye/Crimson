@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
@@ -32,7 +31,7 @@ import com.subterranean_security.crimson.core.util.FileLocking;
 import com.subterranean_security.crimson.server.net.Listener;
 
 public final class Server {
-	private static final Logger log = LoggerFactory.getLogger(Server.class);
+	private static final Logger log = CUtil.Logging.getLogger(Server.class);
 
 	private static boolean running;
 	private static Listener localListener;
@@ -40,9 +39,11 @@ public final class Server {
 	public static void main(String[] argv) {
 
 		// Establish the custom fallback exception handler
+		log.debug("Initializing exception handler");
 		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 
 		// Establish the custom shutdown hook
+		log.debug("Initializing shutdown hook");
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Check for file lock
@@ -54,6 +55,7 @@ public final class Server {
 		}
 
 		// Clear /tmp/
+		log.debug("Clearing local temporary directory");
 		CUtil.Files.Temp.clearL();
 
 		// initialize system database
@@ -65,12 +67,13 @@ public final class Server {
 		}
 
 		// start a localhost listener (dont add it to the store)
+		log.debug("Initializing local listener");
+		// TODO only accept connections from localhost
 		localListener = new Listener(2031, true, true, false);
 
 		start();
-		log.debug("Done");
 
-		// testing();
+		generateDebugInstaller();
 	}
 
 	public static boolean isRunning() {
@@ -90,10 +93,10 @@ public final class Server {
 		}
 	}
 
-	private static void testing() {
-		log.info("Starting server test!");
+	private static void generateDebugInstaller() {
+		log.debug("Generating debug installer");
 
-		Group group = Group.newBuilder().setName("BESTGROUP").setKey("RANDOMKEY").build();
+		Group group = Group.newBuilder().setName("BESTGROUP").setKey("INSECUREKEY").build();
 		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setGroup(group).setReconnectPeriod(10)
 				.build();
 		try {

@@ -26,14 +26,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
 
+/**
+ * @author subterranean Locks a file in the system temp directory to prevent
+ *         multiple instances of Crimson
+ *
+ */
 public enum FileLocking {
 	;
-	private static final Logger log = LoggerFactory.getLogger(FileLocking.class);
+	private static final Logger log = CUtil.Logging.getLogger(FileLocking.class);
 
 	private static FileChannel channel;
 	private static File file;
@@ -85,6 +89,8 @@ public enum FileLocking {
 			e.printStackTrace();
 
 		}
+
+		log.debug("Created file lock: " + file.getName());
 
 	}
 
@@ -170,7 +176,10 @@ public enum FileLocking {
 			file.delete();
 		} catch (Throwable e) {
 			log.error("Failed to delete file lock");
+			return;
 		}
+
+		log.debug("Released file lock");
 
 	}
 
