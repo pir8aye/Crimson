@@ -19,7 +19,6 @@ package com.subterranean_security.crimson.viewer.ui.screen.password;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -30,15 +29,13 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 public class EntropyHarvester extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel hpanel;
+	public JPanel hpanel;
 	private ArrayList<Point> points = new ArrayList<Point>();
 	public int progress = 0;
 	private JProgressBar progressBar;
