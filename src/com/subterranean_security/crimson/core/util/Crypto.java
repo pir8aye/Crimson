@@ -60,7 +60,7 @@ public enum Crypto {
 	}
 
 	public static String genSalt() {
-		return CUtil.Misc.nameGen(8);
+		return CUtil.Misc.randString(8);
 	}
 
 	public static String sign(String magic, String key) {
@@ -71,7 +71,7 @@ public enum Crypto {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return CUtil.Misc.nameGen(8);// return something random because signing
+		return CUtil.Misc.randString(8);// return something random because signing
 										// failed
 	}
 

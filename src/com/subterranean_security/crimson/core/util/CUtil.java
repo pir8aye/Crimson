@@ -101,19 +101,19 @@ public enum CUtil {
 			}
 
 			public static File getLFile() {
-				File f = new File(Common.tmp.getAbsolutePath() + File.separator + Misc.nameGen(9));
+				File f = new File(Common.tmp.getAbsolutePath() + File.separator + Misc.randString(9));
 				f.deleteOnExit();
 				return f;
 			}
 
 			public static File getGFile() {
-				File f = new File(Common.gtmp.getAbsolutePath() + File.separator + "cr_" + Misc.nameGen(9));
+				File f = new File(Common.gtmp.getAbsolutePath() + File.separator + "cr_" + Misc.randString(9));
 				f.deleteOnExit();
 				return f;
 			}
 
 			public static File getLDir() {
-				File f = new File(Common.tmp.getAbsolutePath() + File.separator + Misc.nameGen(9));
+				File f = new File(Common.tmp.getAbsolutePath() + File.separator + Misc.randString(9));
 				f.mkdirs();
 				if (!Common.isDebugMode()) {
 					f.deleteOnExit();
@@ -123,7 +123,7 @@ public enum CUtil {
 			}
 
 			public static File getGDir() {
-				File f = new File(Common.gtmp.getAbsolutePath() + File.separator + "cr_" + Misc.nameGen(9));
+				File f = new File(Common.gtmp.getAbsolutePath() + File.separator + "cr_" + Misc.randString(9));
 				f.mkdirs();
 				f.deleteOnExit();
 				return f;
@@ -504,16 +504,15 @@ public enum CUtil {
 		 *            length of string
 		 * @return random string
 		 */
-		public static String nameGen(int characters) {
-
-			String filename = "";
+		public static String randString(int characters) {
+			StringBuffer filename = new StringBuffer();
 			for (int i = 0; i < characters; i++) {
 				// append a random character
-				char c = (char) (new Random().nextInt(122 - 97) + 97);
-				filename += c;
+				char c = (char) (new Random().nextInt(25) + 97);
+				filename.append(c);
 			}
 
-			return filename;
+			return filename.toString();
 		}
 
 		public static boolean findClass(String c) {

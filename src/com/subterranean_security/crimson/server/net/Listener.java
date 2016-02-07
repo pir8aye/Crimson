@@ -32,7 +32,7 @@ public class Listener implements AutoCloseable {
 	private EventLoopGroup bossGroup;
 	private EventLoopGroup workerGroup;
 
-	public static final String id = CUtil.Misc.nameGen(8);
+	public static final String id = CUtil.Misc.randString(8);
 
 	// TODO only accept localhost connections
 	public Listener(int port, boolean acceptClients, boolean acceptViewers, boolean upnp) {

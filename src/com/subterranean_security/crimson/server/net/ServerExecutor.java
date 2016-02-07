@@ -152,7 +152,7 @@ public class ServerExecutor extends BasicExecutor {
 			final Group group = ServerStore.Groups.getGroup(m.getAuth1W().getGroupname());
 			final int id = IDGen.get();
 
-			final String magic = CUtil.Misc.nameGen(64);
+			final String magic = CUtil.Misc.randString(64);
 			Challenge_RQ rq = Challenge_RQ.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
 			receptor.handle.write(Message.newBuilder().setId(id).setChallengeRq(rq).build());
 

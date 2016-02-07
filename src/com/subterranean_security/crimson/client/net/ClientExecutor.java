@@ -128,7 +128,7 @@ public class ClientExecutor extends BasicExecutor {
 		// Send authentication challenge
 		final int id = IDGen.get();
 
-		final String magic = CUtil.Misc.nameGen(64);
+		final String magic = CUtil.Misc.randString(64);
 		Challenge_RQ rq = Challenge_RQ.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
 		connector.handle.write(Message.newBuilder().setId(id).setChallengeRq(rq).build());
 

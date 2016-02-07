@@ -137,7 +137,7 @@ public class ServerDB extends Database {
 		}
 
 		String salt = Crypto.genSalt();
-		String UID = CUtil.Misc.nameGen(4);
+		String UID = CUtil.Misc.randString(4);
 
 		try {
 			PreparedStatement stmt = db.prepareStatement("INSERT INTO users (Username, Salt, UID ) VALUES (?,?,?);");

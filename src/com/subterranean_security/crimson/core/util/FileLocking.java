@@ -65,7 +65,7 @@ public enum FileLocking {
 			break;
 
 		}
-		base += CUtil.Misc.nameGen(15);
+		base += CUtil.Misc.randString(15);
 		// hash the base
 		MessageDigest digest;
 		String second = null;

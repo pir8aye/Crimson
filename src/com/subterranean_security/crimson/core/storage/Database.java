@@ -351,7 +351,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 	private int reserveRow() {
 		try {
-			String placeholder = CUtil.Misc.nameGen(64);
+			String placeholder = CUtil.Misc.randString(64);
 			PreparedStatement stmt = db.prepareStatement("INSERT INTO heap(Data) VALUES (?)");
 			stmt.setBytes(1, placeholder.getBytes());
 			stmt.executeUpdate();
