@@ -77,12 +77,13 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 public enum CUtil {
 	;
-	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.core.utility.CUtil");
+	private static final Logger log = CUtil.Logging.getLogger(CUtil.class);
 
 	public static class Files {
 
@@ -176,8 +177,8 @@ public enum CUtil {
 
 			FileChannel destination = null;
 
-			try {
-				destination = new FileOutputStream(destFile).getChannel();
+			try (FileOutputStream fos = new FileOutputStream(destFile)) {
+				destination = fos.getChannel();
 				destination.transferFrom(source, 0, source.size());
 			} finally {
 				if (source != null) {
@@ -887,25 +888,32 @@ public enum CUtil {
 	public static class Logging {
 
 		public static Logger getLogger(Class c) {
-		/*	LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 			PatternLayoutEncoder ple = new PatternLayoutEncoder();
 
-			ple.setPattern("%date %level [%thread] %logger{10} [%file:%line] %msg%n");
+			ple.setPattern("[%date][%level][%thread] %logger{10} %msg%n");
 			ple.setContext(lc);
 			ple.start();
-			FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
-			fileAppender.setFile(file);
-			fileAppender.setEncoder(ple);
-			fileAppender.setContext(lc);
-			fileAppender.start();
 
-			Logger logger = (Logger) LoggerFactory.getLogger(string);
-			logger.addAppender(fileAppender);
+			ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(c);
+			ConsoleAppender<ILoggingEvent> stdout = new ConsoleAppender<ILoggingEvent>();
+			stdout.setEncoder(ple);
+			stdout.setContext(lc);
+			stdout.start();
+			logger.addAppender(stdout);
 			logger.setLevel(Level.DEBUG);
+			logger.setAdditive(false);
 
-			return logger;*/
-			
-			return null;
+			return logger;
+		}
+
+		public static void tmp() {
+			FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
+			/*
+			 * fileAppender.setFile(file); fileAppender.setEncoder(ple);
+			 * fileAppender.setContext(lc); fileAppender.start();
+			 * logger.addAppender(fileAppender);
+			 */
 		}
 	}
 
