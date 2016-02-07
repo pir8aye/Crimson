@@ -224,6 +224,32 @@ public final class MSG {
     com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RSOrBuilder getFileListingRsOrBuilder();
 
     /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+     */
+    boolean hasPingRq();
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+     */
+    com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ getPingRq();
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+     */
+    com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQOrBuilder getPingRqOrBuilder();
+
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+     */
+    boolean hasPingRs();
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+     */
+    com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS getPingRs();
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+     */
+    com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RSOrBuilder getPingRsOrBuilder();
+
+    /**
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.ChallengeResult_1W challengeresult_1w = 140;</code>
      *
      * <pre>
@@ -505,9 +531,35 @@ public final class MSG {
               bitField0_ |= 0x00004000;
               break;
             }
+            case 138: {
+              com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.Builder subBuilder = null;
+              if (((bitField0_ & 0x00008000) == 0x00008000)) {
+                subBuilder = pingRq_.toBuilder();
+              }
+              pingRq_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(pingRq_);
+                pingRq_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00008000;
+              break;
+            }
+            case 146: {
+              com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.Builder subBuilder = null;
+              if (((bitField0_ & 0x00010000) == 0x00010000)) {
+                subBuilder = pingRs_.toBuilder();
+              }
+              pingRs_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(pingRs_);
+                pingRs_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00010000;
+              break;
+            }
             case 1122: {
               com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.Builder subBuilder = null;
-              if (((bitField0_ & 0x00008000) == 0x00008000)) {
+              if (((bitField0_ & 0x00020000) == 0x00020000)) {
                 subBuilder = challengeresult1W_.toBuilder();
               }
               challengeresult1W_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.PARSER, extensionRegistry);
@@ -515,12 +567,12 @@ public final class MSG {
                 subBuilder.mergeFrom(challengeresult1W_);
                 challengeresult1W_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00008000;
+              bitField0_ |= 0x00020000;
               break;
             }
             case 1130: {
               com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.Builder subBuilder = null;
-              if (((bitField0_ & 0x00010000) == 0x00010000)) {
+              if (((bitField0_ & 0x00040000) == 0x00040000)) {
                 subBuilder = auth1W_.toBuilder();
               }
               auth1W_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.PARSER, extensionRegistry);
@@ -528,12 +580,12 @@ public final class MSG {
                 subBuilder.mergeFrom(auth1W_);
                 auth1W_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00010000;
+              bitField0_ |= 0x00040000;
               break;
             }
             case 1138: {
               com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.Builder subBuilder = null;
-              if (((bitField0_ & 0x00020000) == 0x00020000)) {
+              if (((bitField0_ & 0x00080000) == 0x00080000)) {
                 subBuilder = report1W_.toBuilder();
               }
               report1W_ = input.readMessage(com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.PARSER, extensionRegistry);
@@ -541,7 +593,7 @@ public final class MSG {
                 subBuilder.mergeFrom(report1W_);
                 report1W_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00020000;
+              bitField0_ |= 0x00080000;
               break;
             }
           }
@@ -911,6 +963,48 @@ public final class MSG {
       return fileListingRs_;
     }
 
+    public static final int PING_RQ_FIELD_NUMBER = 17;
+    private com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ pingRq_;
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+     */
+    public boolean hasPingRq() {
+      return ((bitField0_ & 0x00008000) == 0x00008000);
+    }
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+     */
+    public com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ getPingRq() {
+      return pingRq_;
+    }
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+     */
+    public com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQOrBuilder getPingRqOrBuilder() {
+      return pingRq_;
+    }
+
+    public static final int PING_RS_FIELD_NUMBER = 18;
+    private com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS pingRs_;
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+     */
+    public boolean hasPingRs() {
+      return ((bitField0_ & 0x00010000) == 0x00010000);
+    }
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+     */
+    public com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS getPingRs() {
+      return pingRs_;
+    }
+    /**
+     * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+     */
+    public com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RSOrBuilder getPingRsOrBuilder() {
+      return pingRs_;
+    }
+
     public static final int CHALLENGERESULT_1W_FIELD_NUMBER = 140;
     private com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W challengeresult1W_;
     /**
@@ -921,7 +1015,7 @@ public final class MSG {
      * </pre>
      */
     public boolean hasChallengeresult1W() {
-      return ((bitField0_ & 0x00008000) == 0x00008000);
+      return ((bitField0_ & 0x00020000) == 0x00020000);
     }
     /**
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.ChallengeResult_1W challengeresult_1w = 140;</code>
@@ -950,7 +1044,7 @@ public final class MSG {
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.Auth_1W auth_1w = 141;</code>
      */
     public boolean hasAuth1W() {
-      return ((bitField0_ & 0x00010000) == 0x00010000);
+      return ((bitField0_ & 0x00040000) == 0x00040000);
     }
     /**
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.Auth_1W auth_1w = 141;</code>
@@ -971,7 +1065,7 @@ public final class MSG {
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.Report_1W report_1w = 142;</code>
      */
     public boolean hasReport1W() {
-      return ((bitField0_ & 0x00020000) == 0x00020000);
+      return ((bitField0_ & 0x00080000) == 0x00080000);
     }
     /**
      * <code>optional .com.subterranean_security.crimson.core.proto.msg.Report_1W report_1w = 142;</code>
@@ -1002,6 +1096,8 @@ public final class MSG {
       getStateRs_ = com.subterranean_security.crimson.core.proto.msg.State.GetState_RS.getDefaultInstance();
       fileListingRq_ = com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RQ.getDefaultInstance();
       fileListingRs_ = com.subterranean_security.crimson.core.proto.msg.FM.FileListing_RS.getDefaultInstance();
+      pingRq_ = com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.getDefaultInstance();
+      pingRs_ = com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.getDefaultInstance();
       challengeresult1W_ = com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.getDefaultInstance();
       auth1W_ = com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.getDefaultInstance();
       report1W_ = com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.getDefaultInstance();
@@ -1149,12 +1245,18 @@ public final class MSG {
         output.writeMessage(16, fileListingRs_);
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
-        output.writeMessage(140, challengeresult1W_);
+        output.writeMessage(17, pingRq_);
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
-        output.writeMessage(141, auth1W_);
+        output.writeMessage(18, pingRs_);
       }
       if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        output.writeMessage(140, challengeresult1W_);
+      }
+      if (((bitField0_ & 0x00040000) == 0x00040000)) {
+        output.writeMessage(141, auth1W_);
+      }
+      if (((bitField0_ & 0x00080000) == 0x00080000)) {
         output.writeMessage(142, report1W_);
       }
       getUnknownFields().writeTo(output);
@@ -1228,13 +1330,21 @@ public final class MSG {
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(140, challengeresult1W_);
+          .computeMessageSize(17, pingRq_);
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(141, auth1W_);
+          .computeMessageSize(18, pingRs_);
       }
       if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(140, challengeresult1W_);
+      }
+      if (((bitField0_ & 0x00040000) == 0x00040000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(141, auth1W_);
+      }
+      if (((bitField0_ & 0x00080000) == 0x00080000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(142, report1W_);
       }
@@ -1360,6 +1470,8 @@ public final class MSG {
           getGetStateRsFieldBuilder();
           getFileListingRqFieldBuilder();
           getFileListingRsFieldBuilder();
+          getPingRqFieldBuilder();
+          getPingRsFieldBuilder();
           getChallengeresult1WFieldBuilder();
           getAuth1WFieldBuilder();
           getReport1WFieldBuilder();
@@ -1453,24 +1565,36 @@ public final class MSG {
           fileListingRsBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00004000);
+        if (pingRqBuilder_ == null) {
+          pingRq_ = com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.getDefaultInstance();
+        } else {
+          pingRqBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00008000);
+        if (pingRsBuilder_ == null) {
+          pingRs_ = com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.getDefaultInstance();
+        } else {
+          pingRsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00010000);
         if (challengeresult1WBuilder_ == null) {
           challengeresult1W_ = com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.getDefaultInstance();
         } else {
           challengeresult1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         if (auth1WBuilder_ == null) {
           auth1W_ = com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.getDefaultInstance();
         } else {
           auth1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         if (report1WBuilder_ == null) {
           report1W_ = com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.getDefaultInstance();
         } else {
           report1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         return this;
       }
 
@@ -1614,21 +1738,37 @@ public final class MSG {
         if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
           to_bitField0_ |= 0x00008000;
         }
+        if (pingRqBuilder_ == null) {
+          result.pingRq_ = pingRq_;
+        } else {
+          result.pingRq_ = pingRqBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
+          to_bitField0_ |= 0x00010000;
+        }
+        if (pingRsBuilder_ == null) {
+          result.pingRs_ = pingRs_;
+        } else {
+          result.pingRs_ = pingRsBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
+          to_bitField0_ |= 0x00020000;
+        }
         if (challengeresult1WBuilder_ == null) {
           result.challengeresult1W_ = challengeresult1W_;
         } else {
           result.challengeresult1W_ = challengeresult1WBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
-          to_bitField0_ |= 0x00010000;
+        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
+          to_bitField0_ |= 0x00040000;
         }
         if (auth1WBuilder_ == null) {
           result.auth1W_ = auth1W_;
         } else {
           result.auth1W_ = auth1WBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
-          to_bitField0_ |= 0x00020000;
+        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
+          to_bitField0_ |= 0x00080000;
         }
         if (report1WBuilder_ == null) {
           result.report1W_ = report1W_;
@@ -1695,6 +1835,12 @@ public final class MSG {
         }
         if (other.hasFileListingRs()) {
           mergeFileListingRs(other.getFileListingRs());
+        }
+        if (other.hasPingRq()) {
+          mergePingRq(other.getPingRq());
+        }
+        if (other.hasPingRs()) {
+          mergePingRs(other.getPingRs());
         }
         if (other.hasChallengeresult1W()) {
           mergeChallengeresult1W(other.getChallengeresult1W());
@@ -3460,6 +3606,238 @@ public final class MSG {
         return fileListingRsBuilder_;
       }
 
+      private com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ pingRq_ = com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.Builder, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQOrBuilder> pingRqBuilder_;
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+       */
+      public boolean hasPingRq() {
+        return ((bitField0_ & 0x00008000) == 0x00008000);
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ getPingRq() {
+        if (pingRqBuilder_ == null) {
+          return pingRq_;
+        } else {
+          return pingRqBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+       */
+      public Builder setPingRq(com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ value) {
+        if (pingRqBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          pingRq_ = value;
+          onChanged();
+        } else {
+          pingRqBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00008000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+       */
+      public Builder setPingRq(
+          com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.Builder builderForValue) {
+        if (pingRqBuilder_ == null) {
+          pingRq_ = builderForValue.build();
+          onChanged();
+        } else {
+          pingRqBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00008000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+       */
+      public Builder mergePingRq(com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ value) {
+        if (pingRqBuilder_ == null) {
+          if (((bitField0_ & 0x00008000) == 0x00008000) &&
+              pingRq_ != com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.getDefaultInstance()) {
+            pingRq_ =
+              com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.newBuilder(pingRq_).mergeFrom(value).buildPartial();
+          } else {
+            pingRq_ = value;
+          }
+          onChanged();
+        } else {
+          pingRqBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00008000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+       */
+      public Builder clearPingRq() {
+        if (pingRqBuilder_ == null) {
+          pingRq_ = com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.getDefaultInstance();
+          onChanged();
+        } else {
+          pingRqBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00008000);
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.Builder getPingRqBuilder() {
+        bitField0_ |= 0x00008000;
+        onChanged();
+        return getPingRqFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQOrBuilder getPingRqOrBuilder() {
+        if (pingRqBuilder_ != null) {
+          return pingRqBuilder_.getMessageOrBuilder();
+        } else {
+          return pingRq_;
+        }
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RQ ping_rq = 17;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.Builder, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQOrBuilder> 
+          getPingRqFieldBuilder() {
+        if (pingRqBuilder_ == null) {
+          pingRqBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQ.Builder, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RQOrBuilder>(
+                  getPingRq(),
+                  getParentForChildren(),
+                  isClean());
+          pingRq_ = null;
+        }
+        return pingRqBuilder_;
+      }
+
+      private com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS pingRs_ = com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.Builder, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RSOrBuilder> pingRsBuilder_;
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+       */
+      public boolean hasPingRs() {
+        return ((bitField0_ & 0x00010000) == 0x00010000);
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS getPingRs() {
+        if (pingRsBuilder_ == null) {
+          return pingRs_;
+        } else {
+          return pingRsBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+       */
+      public Builder setPingRs(com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS value) {
+        if (pingRsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          pingRs_ = value;
+          onChanged();
+        } else {
+          pingRsBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00010000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+       */
+      public Builder setPingRs(
+          com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.Builder builderForValue) {
+        if (pingRsBuilder_ == null) {
+          pingRs_ = builderForValue.build();
+          onChanged();
+        } else {
+          pingRsBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00010000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+       */
+      public Builder mergePingRs(com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS value) {
+        if (pingRsBuilder_ == null) {
+          if (((bitField0_ & 0x00010000) == 0x00010000) &&
+              pingRs_ != com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.getDefaultInstance()) {
+            pingRs_ =
+              com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.newBuilder(pingRs_).mergeFrom(value).buildPartial();
+          } else {
+            pingRs_ = value;
+          }
+          onChanged();
+        } else {
+          pingRsBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00010000;
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+       */
+      public Builder clearPingRs() {
+        if (pingRsBuilder_ == null) {
+          pingRs_ = com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.getDefaultInstance();
+          onChanged();
+        } else {
+          pingRsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00010000);
+        return this;
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.Builder getPingRsBuilder() {
+        bitField0_ |= 0x00010000;
+        onChanged();
+        return getPingRsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+       */
+      public com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RSOrBuilder getPingRsOrBuilder() {
+        if (pingRsBuilder_ != null) {
+          return pingRsBuilder_.getMessageOrBuilder();
+        } else {
+          return pingRs_;
+        }
+      }
+      /**
+       * <code>optional .com.subterranean_security.crimson.core.proto.msg.Ping_RS ping_rs = 18;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.Builder, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RSOrBuilder> 
+          getPingRsFieldBuilder() {
+        if (pingRsBuilder_ == null) {
+          pingRsBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RS.Builder, com.subterranean_security.crimson.core.proto.msg.Ping.Ping_RSOrBuilder>(
+                  getPingRs(),
+                  getParentForChildren(),
+                  isClean());
+          pingRs_ = null;
+        }
+        return pingRsBuilder_;
+      }
+
       private com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W challengeresult1W_ = com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W, com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.Builder, com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1WOrBuilder> challengeresult1WBuilder_;
@@ -3471,7 +3849,7 @@ public final class MSG {
        * </pre>
        */
       public boolean hasChallengeresult1W() {
-        return ((bitField0_ & 0x00008000) == 0x00008000);
+        return ((bitField0_ & 0x00020000) == 0x00020000);
       }
       /**
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.ChallengeResult_1W challengeresult_1w = 140;</code>
@@ -3504,7 +3882,7 @@ public final class MSG {
         } else {
           challengeresult1WBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -3522,7 +3900,7 @@ public final class MSG {
         } else {
           challengeresult1WBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -3534,7 +3912,7 @@ public final class MSG {
        */
       public Builder mergeChallengeresult1W(com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W value) {
         if (challengeresult1WBuilder_ == null) {
-          if (((bitField0_ & 0x00008000) == 0x00008000) &&
+          if (((bitField0_ & 0x00020000) == 0x00020000) &&
               challengeresult1W_ != com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.getDefaultInstance()) {
             challengeresult1W_ =
               com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.newBuilder(challengeresult1W_).mergeFrom(value).buildPartial();
@@ -3545,7 +3923,7 @@ public final class MSG {
         } else {
           challengeresult1WBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -3562,7 +3940,7 @@ public final class MSG {
         } else {
           challengeresult1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         return this;
       }
       /**
@@ -3573,7 +3951,7 @@ public final class MSG {
        * </pre>
        */
       public com.subterranean_security.crimson.core.proto.msg.Auth.ChallengeResult_1W.Builder getChallengeresult1WBuilder() {
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         onChanged();
         return getChallengeresult1WFieldBuilder().getBuilder();
       }
@@ -3619,7 +3997,7 @@ public final class MSG {
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Auth_1W auth_1w = 141;</code>
        */
       public boolean hasAuth1W() {
-        return ((bitField0_ & 0x00010000) == 0x00010000);
+        return ((bitField0_ & 0x00040000) == 0x00040000);
       }
       /**
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Auth_1W auth_1w = 141;</code>
@@ -3644,7 +4022,7 @@ public final class MSG {
         } else {
           auth1WBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -3658,7 +4036,7 @@ public final class MSG {
         } else {
           auth1WBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -3666,7 +4044,7 @@ public final class MSG {
        */
       public Builder mergeAuth1W(com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W value) {
         if (auth1WBuilder_ == null) {
-          if (((bitField0_ & 0x00010000) == 0x00010000) &&
+          if (((bitField0_ & 0x00040000) == 0x00040000) &&
               auth1W_ != com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.getDefaultInstance()) {
             auth1W_ =
               com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.newBuilder(auth1W_).mergeFrom(value).buildPartial();
@@ -3677,7 +4055,7 @@ public final class MSG {
         } else {
           auth1WBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -3690,14 +4068,14 @@ public final class MSG {
         } else {
           auth1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         return this;
       }
       /**
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Auth_1W auth_1w = 141;</code>
        */
       public com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W.Builder getAuth1WBuilder() {
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         onChanged();
         return getAuth1WFieldBuilder().getBuilder();
       }
@@ -3735,7 +4113,7 @@ public final class MSG {
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Report_1W report_1w = 142;</code>
        */
       public boolean hasReport1W() {
-        return ((bitField0_ & 0x00020000) == 0x00020000);
+        return ((bitField0_ & 0x00080000) == 0x00080000);
       }
       /**
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Report_1W report_1w = 142;</code>
@@ -3760,7 +4138,7 @@ public final class MSG {
         } else {
           report1WBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -3774,7 +4152,7 @@ public final class MSG {
         } else {
           report1WBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -3782,7 +4160,7 @@ public final class MSG {
        */
       public Builder mergeReport1W(com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W value) {
         if (report1WBuilder_ == null) {
-          if (((bitField0_ & 0x00020000) == 0x00020000) &&
+          if (((bitField0_ & 0x00080000) == 0x00080000) &&
               report1W_ != com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.getDefaultInstance()) {
             report1W_ =
               com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.newBuilder(report1W_).mergeFrom(value).buildPartial();
@@ -3793,7 +4171,7 @@ public final class MSG {
         } else {
           report1WBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -3806,14 +4184,14 @@ public final class MSG {
         } else {
           report1WBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         return this;
       }
       /**
        * <code>optional .com.subterranean_security.crimson.core.proto.msg.Report_1W report_1w = 142;</code>
        */
       public com.subterranean_security.crimson.core.proto.msg.Reports.Report_1W.Builder getReport1WBuilder() {
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00080000;
         onChanged();
         return getReport1WFieldBuilder().getBuilder();
       }
@@ -3874,42 +4252,46 @@ public final class MSG {
       "to\032\023msg/Keylogger.proto\032\016msg/Auth.proto\032" +
       "\rmsg/Gen.proto\032\017msg/State.proto\032\021msg/Rep" +
       "orts.proto\032\017msg/Delta.proto\032\014msg/FM.prot" +
-      "o\"\211\013\n\007Message\022\016\n\006urgent\030\001 \001(\010\022\n\n\002id\030\002 \001(" +
-      "\005\022[\n\020profile_delta_ev\030\016 \001(\0132A.com.subter" +
-      "ranean_security.crimson.core.proto.msg.P" +
-      "rofileDelta_EV\022L\n\010login_rq\030\004 \001(\0132:.com.s" +
-      "ubterranean_security.crimson.core.proto.",
-      "msg.Login_RQ\022L\n\010login_rs\030\005 \001(\0132:.com.sub" +
-      "terranean_security.crimson.core.proto.ms" +
-      "g.Login_RS\022T\n\014challenge_rq\030\006 \001(\0132>.com.s" +
-      "ubterranean_security.crimson.core.proto." +
-      "msg.Challenge_RQ\022T\n\014challenge_rs\030\007 \001(\0132>" +
-      ".com.subterranean_security.crimson.core." +
-      "proto.msg.Challenge_RS\022R\n\013generate_rq\030\010 " +
-      "\001(\0132=.com.subterranean_security.crimson." +
-      "core.proto.msg.Generate_RQ\022R\n\013generate_r" +
-      "s\030\t \001(\0132=.com.subterranean_security.crim",
-      "son.core.proto.msg.Generate_RS\022Y\n\017state_" +
-      "change_rq\030\n \001(\0132@.com.subterranean_secur" +
-      "ity.crimson.core.proto.msg.StateChange_R" +
-      "Q\022Y\n\017state_change_rs\030\013 \001(\0132@.com.subterr" +
-      "anean_security.crimson.core.proto.msg.St" +
-      "ateChange_RS\022S\n\014get_state_rq\030\014 \001(\0132=.com" +
+      "o\032\016msg/Ping.proto\"\241\014\n\007Message\022\016\n\006urgent\030" +
+      "\001 \001(\010\022\n\n\002id\030\002 \001(\005\022[\n\020profile_delta_ev\030\016 " +
+      "\001(\0132A.com.subterranean_security.crimson." +
+      "core.proto.msg.ProfileDelta_EV\022L\n\010login_" +
+      "rq\030\004 \001(\0132:.com.subterranean_security.cri",
+      "mson.core.proto.msg.Login_RQ\022L\n\010login_rs" +
+      "\030\005 \001(\0132:.com.subterranean_security.crims" +
+      "on.core.proto.msg.Login_RS\022T\n\014challenge_" +
+      "rq\030\006 \001(\0132>.com.subterranean_security.cri" +
+      "mson.core.proto.msg.Challenge_RQ\022T\n\014chal" +
+      "lenge_rs\030\007 \001(\0132>.com.subterranean_securi" +
+      "ty.crimson.core.proto.msg.Challenge_RS\022R" +
+      "\n\013generate_rq\030\010 \001(\0132=.com.subterranean_s" +
+      "ecurity.crimson.core.proto.msg.Generate_" +
+      "RQ\022R\n\013generate_rs\030\t \001(\0132=.com.subterrane",
+      "an_security.crimson.core.proto.msg.Gener" +
+      "ate_RS\022Y\n\017state_change_rq\030\n \001(\0132@.com.su" +
+      "bterranean_security.crimson.core.proto.m" +
+      "sg.StateChange_RQ\022Y\n\017state_change_rs\030\013 \001" +
+      "(\0132@.com.subterranean_security.crimson.c" +
+      "ore.proto.msg.StateChange_RS\022S\n\014get_stat" +
+      "e_rq\030\014 \001(\0132=.com.subterranean_security.c" +
+      "rimson.core.proto.msg.GetState_RQ\022S\n\014get" +
+      "_state_rs\030\r \001(\0132=.com.subterranean_secur" +
+      "ity.crimson.core.proto.msg.GetState_RS\022Y",
+      "\n\017file_listing_rq\030\017 \001(\0132@.com.subterrane" +
+      "an_security.crimson.core.proto.msg.FileL" +
+      "isting_RQ\022Y\n\017file_listing_rs\030\020 \001(\0132@.com" +
       ".subterranean_security.crimson.core.prot" +
-      "o.msg.GetState_RQ\022S\n\014get_state_rs\030\r \001(\0132" +
-      "=.com.subterranean_security.crimson.core" +
-      ".proto.msg.GetState_RS\022Y\n\017file_listing_r",
-      "q\030\017 \001(\0132@.com.subterranean_security.crim" +
-      "son.core.proto.msg.FileListing_RQ\022Y\n\017fil" +
-      "e_listing_rs\030\020 \001(\0132@.com.subterranean_se" +
-      "curity.crimson.core.proto.msg.FileListin" +
-      "g_RS\022a\n\022challengeresult_1w\030\214\001 \001(\0132D.com." +
+      "o.msg.FileListing_RS\022J\n\007ping_rq\030\021 \001(\01329." +
+      "com.subterranean_security.crimson.core.p" +
+      "roto.msg.Ping_RQ\022J\n\007ping_rs\030\022 \001(\01329.com." +
       "subterranean_security.crimson.core.proto" +
-      ".msg.ChallengeResult_1W\022K\n\007auth_1w\030\215\001 \001(" +
-      "\01329.com.subterranean_security.crimson.co" +
-      "re.proto.msg.Auth_1W\022O\n\treport_1w\030\216\001 \001(\013" +
-      "2;.com.subterranean_security.crimson.cor",
-      "e.proto.msg.Report_1W"
+      ".msg.Ping_RS\022a\n\022challengeresult_1w\030\214\001 \001(" +
+      "\0132D.com.subterranean_security.crimson.co",
+      "re.proto.msg.ChallengeResult_1W\022K\n\007auth_" +
+      "1w\030\215\001 \001(\01329.com.subterranean_security.cr" +
+      "imson.core.proto.msg.Auth_1W\022O\n\treport_1" +
+      "w\030\216\001 \001(\0132;.com.subterranean_security.cri" +
+      "mson.core.proto.msg.Report_1W"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -3930,13 +4312,14 @@ public final class MSG {
           com.subterranean_security.crimson.core.proto.msg.Reports.getDescriptor(),
           com.subterranean_security.crimson.core.proto.msg.Delta.getDescriptor(),
           com.subterranean_security.crimson.core.proto.msg.FM.getDescriptor(),
+          com.subterranean_security.crimson.core.proto.msg.Ping.getDescriptor(),
         }, assigner);
     internal_static_com_subterranean_security_crimson_core_proto_msg_Message_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_com_subterranean_security_crimson_core_proto_msg_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_com_subterranean_security_crimson_core_proto_msg_Message_descriptor,
-        new java.lang.String[] { "Urgent", "Id", "ProfileDeltaEv", "LoginRq", "LoginRs", "ChallengeRq", "ChallengeRs", "GenerateRq", "GenerateRs", "StateChangeRq", "StateChangeRs", "GetStateRq", "GetStateRs", "FileListingRq", "FileListingRs", "Challengeresult1W", "Auth1W", "Report1W", });
+        new java.lang.String[] { "Urgent", "Id", "ProfileDeltaEv", "LoginRq", "LoginRs", "ChallengeRq", "ChallengeRs", "GenerateRq", "GenerateRs", "StateChangeRq", "StateChangeRs", "GetStateRq", "GetStateRs", "FileListingRq", "FileListingRs", "PingRq", "PingRs", "Challengeresult1W", "Auth1W", "Report1W", });
     com.subterranean_security.crimson.core.proto.msg.Login.getDescriptor();
     com.subterranean_security.crimson.core.proto.msg.Keylogger.getDescriptor();
     com.subterranean_security.crimson.core.proto.msg.Auth.getDescriptor();
@@ -3945,6 +4328,7 @@ public final class MSG {
     com.subterranean_security.crimson.core.proto.msg.Reports.getDescriptor();
     com.subterranean_security.crimson.core.proto.msg.Delta.getDescriptor();
     com.subterranean_security.crimson.core.proto.msg.FM.getDescriptor();
+    com.subterranean_security.crimson.core.proto.msg.Ping.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)
