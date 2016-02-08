@@ -20,13 +20,16 @@ package com.subterranean_security.crimson.viewer.ui.screen.generator;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
@@ -34,6 +37,8 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -60,6 +65,7 @@ import com.subterranean_security.crimson.core.proto.msg.Gen.NetworkTarget;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.viewer.ui.screen.password.EntropyHarvester;
 
 public class GenPanel extends JPanel {
 
@@ -100,6 +106,7 @@ public class GenPanel extends JPanel {
 	private static final String defaultHint = "set or load generation options";
 
 	private static Timer timer = new Timer();
+	private GroupTimer gt = new GroupTimer();
 
 	public GenPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -110,80 +117,12 @@ public class GenPanel extends JPanel {
 		optab = new JPanel();
 		tabbedPane.addTab(null, optab);
 		tabbedPane.setTabComponentAt(0, new GenTabComponent("link", "Setup"));
-
-		optab.setLayout(null);
-
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(
-				new TitledBorder(null, "Optional Information", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_1.setBounds(12, 148, 341, 112);
-		optab.add(panel_1);
-		panel_1.setLayout(null);
-
-		fld_group_name = new JTextField();
-		fld_group_name.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				lbl_status.setInfo("A simple identifier for clients installed by this installer");
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				lbl_status.setInfo(defaultHint);
-			}
-		});
-		fld_group_name.setBounds(130, 20, 117, 19);
-		panel_1.add(fld_group_name);
-		fld_group_name.setColumns(10);
-
-		JLabel lblClientIdentifier = new JLabel("Group Name:");
-		lblClientIdentifier.setFont(new Font("Dialog", Font.BOLD, 11));
-		lblClientIdentifier.setBounds(12, 21, 112, 15);
-		panel_1.add(lblClientIdentifier);
-
-		JButton btnRandom_1 = new JButton("Randomize");
-		btnRandom_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				fld_group_name.setText("Grp-" + CUtil.Misc.nameGen(5));
-			}
-		});
-		btnRandom_1.setMargin(new Insets(2, 2, 2, 2));
-		btnRandom_1.setFont(new Font("Dialog", Font.BOLD, 9));
-		btnRandom_1.setBounds(259, 20, 70, 19);
-		panel_1.add(btnRandom_1);
-
-		JLabel lblInstallMessage = new JLabel("Install Message:");
-		lblInstallMessage.setFont(new Font("Dialog", Font.BOLD, 11));
-		lblInstallMessage.setBounds(12, 49, 112, 15);
-		panel_1.add(lblInstallMessage);
-
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(130, 49, 199, 55);
-		panel_1.add(scrollPane);
-
-		fld_install_message = new JTextArea();
-		fld_install_message.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				lbl_status.setInfo("a message to be displayed on client installation");
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				lbl_status.setInfo(defaultHint);
-			}
-		});
-		fld_install_message.setLineWrap(true);
-		fld_install_message.setWrapStyleWord(true);
-		fld_install_message.setFont(new Font("Dialog", Font.PLAIN, 10));
-		scrollPane.setViewportView(fld_install_message);
+		optab.setLayout(new BoxLayout(optab, BoxLayout.Y_AXIS));
 
 		JPanel panel_3 = new JPanel();
-		panel_3.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Generation Output",
-				TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_3.setBounds(12, 12, 341, 131);
+		panel_3.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Generation Type",
+				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		optab.add(panel_3);
-		panel_3.setLayout(null);
 
 		type_comboBox = new JComboBox<String>();
 		type_comboBox.addActionListener(new ActionListener() {
@@ -208,11 +147,16 @@ public class GenPanel extends JPanel {
 				}
 			}
 		});
+		panel_3.setLayout(new BorderLayout(0, 0));
 		type_comboBox.setFont(new Font("Dialog", Font.BOLD, 11));
 		type_comboBox.setModel(new DefaultComboBoxModel(new String[] { "Runnable Java Archive (.jar)",
 				"Windows Portable Executable (.exe)", "Android Application (.apk)", "Shell Script (.sh)" }));
-		type_comboBox.setBounds(12, 20, 317, 24);
-		panel_3.add(type_comboBox);
+		panel_3.add(type_comboBox, BorderLayout.NORTH);
+
+		JPanel panel_100 = new JPanel();
+
+		panel_3.add(panel_100, BorderLayout.CENTER);
+		panel_100.setLayout(new BorderLayout(0, 0));
 
 		txt_output_desc = new JTextArea();
 		txt_output_desc.setWrapStyleWord(true);
@@ -221,8 +165,60 @@ public class GenPanel extends JPanel {
 		txt_output_desc.setEditable(false);
 		txt_output_desc.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		txt_output_desc.setOpaque(false);
-		txt_output_desc.setBounds(12, 56, 317, 68);
-		panel_3.add(txt_output_desc);
+		panel_100.add(txt_output_desc);
+		panel_100.add(Box.createVerticalStrut(5), BorderLayout.NORTH);
+		panel_3.add(Box.createHorizontalStrut(5), BorderLayout.EAST);
+		panel_3.add(Box.createHorizontalStrut(5), BorderLayout.WEST);
+		panel_3.add(Box.createVerticalStrut(5), BorderLayout.SOUTH);
+
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(
+				new TitledBorder(null, "Optional Information", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		optab.add(panel_1);
+		panel_1.setLayout(new BorderLayout(0, 0));
+
+		JPanel panel_15 = new JPanel();
+
+		panel_1.add(panel_15, BorderLayout.CENTER);
+		panel_15.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblInstallMessage = new JLabel("Install Message:");
+		panel_15.add(lblInstallMessage, BorderLayout.WEST);
+		lblInstallMessage.setFont(new Font("Dialog", Font.BOLD, 11));
+
+		JScrollPane scrollPane = new JScrollPane();
+		panel_15.add(scrollPane, BorderLayout.EAST);
+		panel_15.add(Box.createVerticalStrut(5), BorderLayout.NORTH);
+		panel_15.add(Box.createVerticalStrut(5), BorderLayout.SOUTH);
+
+		fld_install_message = new JTextArea();
+		fld_install_message.setColumns(25);
+		fld_install_message.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lbl_status.setInfo("a message to be displayed on client installation");
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lbl_status.setInfo(defaultHint);
+			}
+		});
+		fld_install_message.setLineWrap(true);
+		fld_install_message.setWrapStyleWord(true);
+		fld_install_message.setFont(new Font("Dialog", Font.PLAIN, 10));
+		scrollPane.setViewportView(fld_install_message);
+
+		JPanel panel_16 = new JPanel();
+		panel_1.add(panel_16, BorderLayout.NORTH);
+		panel_16.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblIdentifier = new JLabel("Identifier:");
+		panel_16.add(lblIdentifier, BorderLayout.WEST);
+
+		textField = new JTextField();
+		panel_16.add(textField, BorderLayout.EAST);
+		textField.setColumns(15);
 
 		etab = new JPanel();
 		tabbedPane.addTab(null, etab);
@@ -454,11 +450,6 @@ public class GenPanel extends JPanel {
 		lblSeconds_1.setBounds(267, 20, 63, 15);
 		panel_5.add(lblSeconds_1);
 
-		JCheckBox chckbxConnectToThis = new JCheckBox("Connect ONLY to this server");
-		chckbxConnectToThis.setFont(new Font("Dialog", Font.BOLD, 11));
-		chckbxConnectToThis.setBounds(12, 40, 310, 23);
-		panel_5.add(chckbxConnectToThis);
-
 		JPanel atab = new JPanel();
 		tabbedPane.addTab(null, atab);
 		atab.setLayout(new BorderLayout(0, 0));
@@ -482,9 +473,13 @@ public class GenPanel extends JPanel {
 		JPanel panel_10 = new JPanel();
 		panel_8.add(panel_10, BorderLayout.WEST);
 
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] { "Group", "Password", "None" }));
-		panel_10.add(comboBox);
+		authType = new JComboBox();
+		authType.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		authType.setModel(new DefaultComboBoxModel(new String[] { "Group", "Password", "None" }));
+		panel_10.add(authType);
 
 		JPanel panel_9 = new JPanel();
 		atab.add(panel_9, BorderLayout.CENTER);
@@ -510,6 +505,55 @@ public class GenPanel extends JPanel {
 
 		JPanel panel_12 = new JPanel();
 		authpanel_group.add(panel_12);
+		panel_12.setLayout(new BorderLayout(0, 0));
+
+		JPanel panel_13 = new JPanel();
+		panel_13.setBorder(new TitledBorder(null, "Settings", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_12.add(panel_13, BorderLayout.NORTH);
+		panel_13.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblGroupName = new JLabel("  Group Name:");
+		panel_13.add(lblGroupName, BorderLayout.WEST);
+
+		JPanel panel_14 = new JPanel();
+		panel_13.add(panel_14, BorderLayout.EAST);
+
+		fld_group_name = new JTextField();
+		fld_group_name.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lbl_status.setInfo("A simple identifier for clients installed by this installer");
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lbl_status.setInfo(defaultHint);
+			}
+		});
+		fld_group_name.setBounds(130, 20, 117, 19);
+		panel_14.add(fld_group_name);
+		fld_group_name.setColumns(10);
+
+		JButton btnRandom_1 = new JButton("Randomize");
+		btnRandom_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				fld_group_name.setText("Grp-" + CUtil.Misc.randString(5));
+			}
+		});
+		btnRandom_1.setMargin(new Insets(2, 2, 2, 2));
+		btnRandom_1.setFont(new Font("Dialog", Font.BOLD, 9));
+		btnRandom_1.setBounds(259, 20, 70, 19);
+		panel_14.add(btnRandom_1);
+
+		EntropyHarvester eh = new EntropyHarvester();
+		eh.hpanel.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+
+				gt.mix(e.getPoint());
+			}
+		});
+		panel_12.add(eh, BorderLayout.CENTER);
 
 		JPanel authpanel_password = new JPanel();
 		authpanel_password.setBorder(
@@ -517,7 +561,6 @@ public class GenPanel extends JPanel {
 		panel_9.add(authpanel_password, "name_13128462346933");
 
 		JPanel authpanel_none = new JPanel();
-		FlowLayout fl_authpanel_none = (FlowLayout) authpanel_none.getLayout();
 		panel_9.add(authpanel_none, "name_13132135038447");
 
 		JLabel lblNewLabel = new JLabel("Warning: Authentication mode is set to NONE");
@@ -583,32 +626,30 @@ public class GenPanel extends JPanel {
 		JPanel pl_timestamps = new JPanel();
 		pl_timestamps.setBorder(
 				new TitledBorder(null, "Arbitrary Timestamps", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pl_timestamps.setBounds(12, 120, 330, 53);
+		pl_timestamps.setBounds(12, 120, 330, 47);
 		otab.add(pl_timestamps);
-		pl_timestamps.setLayout(null);
 
 		JButton btnRandom = new JButton("Random");
+		btnRandom.setPreferredSize(new Dimension(55, 17));
 		btnRandom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				setCreationDate(new Date(CUtil.Misc.rand(0L, new Date().getTime())));
 			}
 		});
-		btnRandom.setFont(new Font("Dialog", Font.BOLD, 9));
-		btnRandom.setMargin(new Insets(2, 4, 2, 4));
-		btnRandom.setBounds(263, 20, 55, 19);
-		pl_timestamps.add(btnRandom);
+		pl_timestamps.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JLabel lblCreation = new JLabel("Creation:");
 		lblCreation.setFont(new Font("Dialog", Font.BOLD, 11));
-		lblCreation.setBounds(12, 21, 70, 15);
 		pl_timestamps.add(lblCreation);
 
 		fld_ctime = new JTextField();
 		fld_ctime.setHorizontalAlignment(SwingConstants.CENTER);
 		fld_ctime.setFont(new Font("Dialog", Font.PLAIN, 10));
-		fld_ctime.setBounds(78, 20, 153, 19);
 		pl_timestamps.add(fld_ctime);
-		fld_ctime.setColumns(10);
+		fld_ctime.setColumns(24);
+		btnRandom.setFont(new Font("Dialog", Font.BOLD, 9));
+		btnRandom.setMargin(new Insets(1, 4, 1, 4));
+		pl_timestamps.add(btnRandom);
 
 		// JCalendarButton btnNewButton = new JCalendarButton(new Date());
 		// btnNewButton.addPropertyChangeListener(new PropertyChangeListener() {
@@ -653,7 +694,8 @@ public class GenPanel extends JPanel {
 			fld_path.setText("C:/Users/dev/Desktop/client.jar");
 			cbx_waiver.setSelected(true);
 		}
-		timer.schedule(new GroupTimer(), 0, 750);
+		timer.schedule(gt, 0, 750);
+
 	}
 
 	public Date currentCTime;// see getvalues() for reasoning
@@ -665,6 +707,8 @@ public class GenPanel extends JPanel {
 	private JComboBox<String> fld_install_solaris;
 	private JComboBox<String> type_comboBox;
 	private JLabel key_prefix;
+	private JTextField textField;
+	private JComboBox authType;
 
 	private void setCreationDate(Date d) {
 		currentCTime = d;
@@ -683,7 +727,7 @@ public class GenPanel extends JPanel {
 		ic.setOutputType((String) type_comboBox.getSelectedItem());
 		ic.setDelay((int) fld_delay.getValue());
 		ic.setReconnectPeriod((int) fld_connect_period.getValue());
-		ic.setGroup(Gen.Group.newBuilder().setName(fld_group_name.getText()).setKey(CUtil.Misc.nameGen(64)).build());
+		ic.setGroup(Gen.Group.newBuilder().setName(fld_group_name.getText()).setKey(CUtil.Misc.randString(64)).build());
 		ic.setImsg(fld_install_message.getText());
 		ic.setAllowBsd(cbx_allow_bsd.isSelected());
 		ic.setAllowLin(cbx_allow_lin.isSelected());
@@ -775,7 +819,7 @@ public class GenPanel extends JPanel {
 	private void changeToJar() {
 
 		txt_output_desc.setText(
-				"A jar file installer can install Crimson on Windows, OS X, Linux, BSD, and Solaris machines, and is the most popular way to install Crimson.  Java 1.7 or greater is required before installation.");
+				"A jar file installer can install Crimson on Windows, OS X, Linux, BSD, and Solaris machines, and is the most popular way to install Crimson.  Java 1.8 or greater is required before installation.");
 		cbx_allow_and.setSelected(false);
 		cbx_allow_and.setEnabled(false);
 		cbx_allow_bsd.setEnabled(true);
@@ -816,6 +860,11 @@ public class GenPanel extends JPanel {
 
 	}
 
+	private void refreshAuth() {
+		String c = (String) authType.getSelectedItem();
+
+	}
+
 	class GroupTimer extends TimerTask {
 
 		private Random rand = new Random();
@@ -826,12 +875,16 @@ public class GenPanel extends JPanel {
 
 		@Override
 		public void run() {
-			last = Crypto.sign(last, CUtil.Misc.nameGen(rand.nextInt(upper - lower + 1) + lower)).replaceAll("\\+|/",
-					"0");
-			display();
+			hash();
+			display(50);
 		}
 
-		private void display() {
+		private void hash() {
+			last = Crypto.sign(last, CUtil.Misc.randString(rand.nextInt(upper - lower + 1) + lower)).replaceAll("\\+|/",
+					CUtil.Misc.randString(1));
+		}
+
+		private void display(int delay) {
 			String data = last;
 			StringBuffer sb = new StringBuffer();
 			for (int i = 0; i < 16; i++) {
@@ -840,13 +893,25 @@ public class GenPanel extends JPanel {
 			}
 			key_prefix.setText("");
 			try {
-				Thread.sleep(70);
+				Thread.sleep(delay);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			key_prefix.setText(sb.toString().substring(1).toUpperCase());
 		}
+
+		public void mix(Point p) {
+			last += p.x + p.y;
+			hash();
+			display(0);
+		}
+
+	}
+
+	public void cancelTimer() {
+		timer.cancel();
+		timer = null;
 
 	}
 }
