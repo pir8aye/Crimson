@@ -129,4 +129,10 @@ public class GenDialog extends JDialog {
 		getContentPane().add(hp);
 	}
 
+	@Override
+	public void dispose() {
+		gp.cancelTimer();
+		super.dispose();
+	}
+
 }
