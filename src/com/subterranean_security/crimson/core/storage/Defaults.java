@@ -58,6 +58,7 @@ public enum Defaults {
 
 		db.storeObject("close_on_tray", false);
 		db.storeObject("show_eula", true);
+		db.storeObject("show_helps", true);
 		db.storeObject("show_detail", true);
 		db.storeObject("list_headers", new String[] { "Location", "Username", "Hostname", "Language", "Java Version" });
 	}
