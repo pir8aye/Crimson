@@ -163,7 +163,7 @@ public class HostList extends JPanel {
 class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	String[] headers = new String[] { "Username", "Hostname" };
+	Headers[] headers = new Headers[] {};
 
 	public TM() {
 		refreshHeaders();
@@ -171,7 +171,7 @@ class TM extends AbstractTableModel {
 
 	public void refreshHeaders() {
 		try {
-			headers = (String[]) ViewerStore.Databases.local.getObject("list_headers");
+			headers = (Headers[]) ViewerStore.Databases.local.getObject("hostlist.headers");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -190,91 +190,70 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		return headers[column];
+		return headers[column].toString();
 	};
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		switch (headers[columnIndex]) {
-		case "Username": {
+		case USERNAME: {
 			return ViewerStore.Profiles.profiles.get(rowIndex).getUsername();
 		}
-		case "Activity": {
+		case USER_STATUS: {
 
 		}
-		case "Status": {
-
-		}
-		case "Hostname": {
+		case HOSTNAME: {
 			return ViewerStore.Profiles.profiles.get(rowIndex).getHostname();
 		}
-		case "System Uptime": {
+		case INTERNAL_IP: {
 
 		}
-		case "Java Uptime": {
+		case EXTERNAL_IP: {
 
 		}
-		case "Internal IP": {
+		case LANGUAGE: {
 
 		}
-		case "External IP": {
+		case ACTIVE_WINDOW: {
 
 		}
-		case "Primary MAC Address": {
+		case COUNTRY: {
 
 		}
-		case "Language": {
+		case CPU_NAME: {
 
 		}
-		case "Active Window": {
+		case CPU_USAGE: {
 
 		}
-		case "Location": {
+		case CPU_TEMPERATURE: {
 
 		}
-		case "Distance": {
+		case RAM_CAPACITY: {
 
 		}
-		case "CPU Name": {
+		case RAM_USAGE: {
 
 		}
-		case "CPU Usage": {
+		case CRIMSON_VERSION: {
 
 		}
-		case "CPU Temperature": {
+		case OS_FAMILY: {
 
 		}
-		case "RAM Capacity": {
+		case OS_ARCH: {
 
 		}
-		case "RAM Usage": {
+		case JAVA_VERSION: {
 
 		}
-		case "Version": {
+		case MONITOR_COUNT: {
 
 		}
-		case "Operating System": {
+		case VIRTUALIZATION: {
 
 		}
-		case "OS Architecture": {
-
-		}
-		case "Java Version": {
-
-		}
-		case "Monitors": {
-
-		}
-		case "Upload Speed": {
-
-		}
-		case "Download Speed": {
-
-		}
-		case "Virtualization": {
-
-		}
-		case "Timezone": {
+		case TIMEZONE: {
 
 		}
 
