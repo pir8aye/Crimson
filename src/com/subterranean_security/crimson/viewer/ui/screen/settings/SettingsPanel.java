@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 
 import javax.swing.JPanel;
 import javax.swing.JTree;
@@ -27,16 +28,22 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import com.subterranean_security.crimson.core.storage.LViewerDB;
+import com.subterranean_security.crimson.viewer.ui.screen.main.Headers;
+
 public class SettingsPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTree tree;
 	private JPanel cards;
+	private LocalGeneral lg = new LocalGeneral();
+	private HostListHeaders hlh = new HostListHeaders();
 
 	public SettingsPanel(SettingsDialog settingsDialog, boolean b) {
 		setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
+		panel.setBackground(Color.WHITE);
 		add(panel, BorderLayout.WEST);
 		panel.setLayout(new BorderLayout(0, 0));
 
@@ -44,8 +51,16 @@ public class SettingsPanel extends JPanel {
 		tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Settings") {
 			{
 				DefaultMutableTreeNode node_1;
+				DefaultMutableTreeNode node_2;
+				DefaultMutableTreeNode node_3;
 				node_1 = new DefaultMutableTreeNode("Local");
 				node_1.add(new DefaultMutableTreeNode("General"));
+				node_2 = new DefaultMutableTreeNode("Views");
+				node_3 = new DefaultMutableTreeNode("Host List");
+				node_3.add(new DefaultMutableTreeNode("Headers"));
+				node_2.add(node_3);
+				node_2.add(new DefaultMutableTreeNode("Host Graph"));
+				node_1.add(node_2);
 				add(node_1);
 				node_1 = new DefaultMutableTreeNode("Server");
 				node_1.add(new DefaultMutableTreeNode("General"));
@@ -58,8 +73,93 @@ public class SettingsPanel extends JPanel {
 		cards = new JPanel();
 		add(cards, BorderLayout.CENTER);
 		cards.setLayout(new CardLayout(0, 0));
-		cards.add("SettingsLocalGeneral", new LocalGeneral());
+		cards.add("SettingsLocalGeneral", lg);
+		cards.add("SettingsLocalViewsHost ListHeaders", hlh);
 
+	}
+
+	public void setValues(LViewerDB db) {
+		try {
+			lg.runInTray.setSelected(db.getBoolean("close_on_tray"));
+			lg.neverShowLicense.setSelected(db.getBoolean("show_eula"));
+			lg.neverShowHelp.setSelected(db.getBoolean("show_helps"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			Headers[] headers = (Headers[]) db.getObject("hostlist.headers");
+			for (Headers h : headers) {
+				switch (h) {
+				case ACTIVE_WINDOW:
+					hlh.chckbxActiveWindow.setSelected(true);
+					break;
+				case COUNTRY:
+					hlh.chckbxLocation.setSelected(true);
+					break;
+				case CPU_NAME:
+					break;
+				case CPU_TEMPERATURE:
+					hlh.chckbxCpuTemp.setSelected(true);
+					break;
+				case CPU_USAGE:
+					hlh.chckbxCpuUsage.setSelected(true);
+					break;
+				case CRIMSON_VERSION:
+					hlh.chckbxCrimsonVersion.setSelected(true);
+					break;
+				case EXTERNAL_IP:
+					hlh.chckbxExternalIp.setSelected(true);
+					break;
+				case HOSTNAME:
+					hlh.chckbxHostname.setSelected(true);
+					break;
+				case INTERNAL_IP:
+					hlh.chckbxInternalIp.setSelected(true);
+					break;
+				case JAVA_VERSION:
+					break;
+				case LANGUAGE:
+					hlh.chckbxLanguage.setSelected(true);
+					break;
+				case MESSAGE_PING:
+					hlh.chckbxMessagePing.setSelected(true);
+					break;
+				case MONITOR_COUNT:
+					break;
+				case OS_ARCH:
+					break;
+				case OS_FAMILY:
+					break;
+				case RAM_CAPACITY:
+					hlh.chckbxRamCapacity.setSelected(true);
+					break;
+				case RAM_USAGE:
+					hlh.chckbxRamUsage.setSelected(true);
+					break;
+				case SCREEN_PREVIEW:
+					hlh.chckbxScreenPreview.setSelected(true);
+					break;
+				case TIMEZONE:
+					hlh.chckbxTimezone.setSelected(true);
+					break;
+				case USERNAME:
+					hlh.chckbxUsername.setSelected(true);
+					break;
+				case USER_STATUS:
+					break;
+				case VIRTUALIZATION:
+					break;
+				default:
+					break;
+
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	class TreeListener implements TreeSelectionListener {
