@@ -22,23 +22,32 @@ import java.awt.Dimension;
 
 import javax.swing.JDialog;
 
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.panel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class SettingsDialog extends JDialog {
+
+	private static final long serialVersionUID = 1L;
 
 	public final SettingsPanel settingsPanel = new SettingsPanel(this, false);
 	public final HPanel hp = new HPanel(settingsPanel);
 
-	private Dimension size = new Dimension(405, 320);
+	private Dimension size = new Dimension(550, 260);
 
 	public SettingsDialog() {
 		setTitle("Settings");
 		setSize(size);
+		setMinimumSize(size);
 		setPreferredSize(size);
-		setResizable(false);
+		setResizable(true);
 		setLocationRelativeTo(null);
+		setIconImages(UUtil.getIconList());
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(hp);
+
+		// load values from databases
+		settingsPanel.setValues(ViewerStore.Databases.local);
 
 		// Component[] buttons = { loginPanel.btn_cancel,
 		// Box.createHorizontalGlue(), hp.initBtnUP(),
