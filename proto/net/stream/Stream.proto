@@ -9,4 +9,9 @@ message Stop {
 }
 
 message Data {
+	optional InfoData info_data = 1;
+}
+
+message InfoData {
+	repeated string data = 1;
 }
