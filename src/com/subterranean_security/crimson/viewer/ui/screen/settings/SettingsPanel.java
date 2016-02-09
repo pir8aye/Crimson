@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.settings;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.JTree;
@@ -28,8 +29,9 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
-import com.subterranean_security.crimson.viewer.ui.screen.main.Headers;
+import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public class SettingsPanel extends JPanel {
 
@@ -76,6 +78,27 @@ public class SettingsPanel extends JPanel {
 		cards.add("SettingsLocalGeneral", lg);
 		cards.add("SettingsLocalViewsHost ListHeaders", hlh);
 
+	}
+
+	public void save(LViewerDB db) {
+		db.storeObject("close_on_tray", lg.runInTray.isSelected());
+		db.storeObject("show_eula", lg.neverShowLicense.isSelected());
+		db.storeObject("show_helps", lg.neverShowHelp.isSelected());
+
+		ArrayList<Headers> h = new ArrayList<Headers>();
+		if (hlh.chckbxActiveWindow.isSelected()) {
+			h.add(Headers.ACTIVE_WINDOW);
+		} // TODO REPEAT
+
+		Headers[] headers = new Headers[h.size()];
+		for (int i = 0; i < h.size(); i++) {
+			headers[i] = h.get(i);
+		}
+
+		db.storeObject("hostlist.headers", headers);
+
+		// refresh list headers
+		MainFrame.main.panel.list.refreshTM();
 	}
 
 	public void setValues(LViewerDB db) {
