@@ -26,8 +26,8 @@ import org.slf4j.Logger;
 import org.zeroturnaround.zip.ZipUtil;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
-import com.subterranean_security.crimson.core.proto.msg.Gen.GenReport;
+import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
+import com.subterranean_security.crimson.core.proto.net.Gen.GenReport;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 

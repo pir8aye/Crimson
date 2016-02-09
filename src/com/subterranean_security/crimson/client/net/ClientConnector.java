@@ -26,10 +26,10 @@ import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.net.ConnectionState;
-import com.subterranean_security.crimson.core.proto.msg.Auth.AuthType;
-import com.subterranean_security.crimson.core.proto.msg.Auth.Auth_1W;
-import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
-import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
+import com.subterranean_security.crimson.core.proto.net.Auth.AuthType;
+import com.subterranean_security.crimson.core.proto.net.Auth.Auth_1W;
+import com.subterranean_security.crimson.core.proto.net.Gen.Group;
+import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.util.IDGen;
 
 import io.netty.bootstrap.Bootstrap;

@@ -19,8 +19,8 @@ package com.subterranean_security.crimson.core.storage;
 
 import java.util.ArrayList;
 
-import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
-import com.subterranean_security.crimson.core.proto.msg.Reports.Report;
+import com.subterranean_security.crimson.core.proto.net.Gen.Group;
+import com.subterranean_security.crimson.core.proto.net.Reports.Report;
 import com.subterranean_security.crimson.sv.Profile;
 
 public enum Defaults {
@@ -60,7 +60,8 @@ public enum Defaults {
 		db.storeObject("show_eula", true);
 		db.storeObject("show_helps", true);
 		db.storeObject("show_detail", true);
-		db.storeObject("list_headers", new String[] { "Location", "Username", "Hostname", "Language", "Java Version" });
+		db.storeObject("hostlist.headers",
+				new Headers[] { Headers.COUNTRY, Headers.USERNAME, Headers.HOSTNAME, Headers.LANGUAGE });
 	}
 
 	public static void hardReset(LViewerDB db) {

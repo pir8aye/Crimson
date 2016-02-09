@@ -17,53 +17,42 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.modules;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.awt.Toolkit;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class Clipboard implements ClipboardOwner {
 
-import com.subterranean_security.crimson.core.proto.net.Keylogger.KEvent;
+	java.awt.datatransfer.Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
-public enum Keylogger {
-	;
-	private static final Logger log = LoggerFactory.getLogger(Keylogger.class);
+	@Override
+	public void lostOwnership(java.awt.datatransfer.Clipboard aClipboard, Transferable aContents) {
 
-	private static Thread monitor;
+	}
 
-	public static BlockingQueue<KEvent> buffer = new ArrayBlockingQueue<KEvent>(512);
+	public void setString(String s) {
+		clipboard.setContents(new StringSelection(s), this);
+	}
 
-	public static void start() {
-		stop();
-		log.info("Starting keylogger");
-		monitor = new Thread(new Runnable() {
-			public void run() {
-				KEvent k;
-				try {
-					while (!monitor.isInterrupted()) {
-						k = buffer.take();
-						log.info("Dropping key event: " + k.getEvent());
-					}
-				} catch (InterruptedException e) {
-					log.info("Exited monitoring thread");
-				}
+	public String getClipboardContents() {
+		String result = "";
 
+		Transferable contents = clipboard.getContents(null);
+		boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+		if (hasTransferableText) {
+			try {
+				result = (String) contents.getTransferData(DataFlavor.stringFlavor);
+				
+			} catch (UnsupportedFlavorException | IOException ex) {
+				System.out.println(ex);
+				ex.printStackTrace();
 			}
-		});
-		monitor.start();
-	}
-
-	public static void stop() {
-		if (monitor != null) {
-			log.info("Stopping keylogger");
-			monitor.interrupt();
-			monitor = null;
 		}
-
-	}
-
-	public static boolean isLogging() {
-		return monitor == null ? false : monitor.isAlive();
+		return result;
 	}
 
 }

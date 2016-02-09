@@ -890,7 +890,7 @@ public enum CUtil {
 			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 			PatternLayoutEncoder ple = new PatternLayoutEncoder();
 
-			ple.setPattern("[%date][%level][%thread] %logger{10} %msg%n");
+			ple.setPattern("[%date][%level{1}][%thread] %logger{10} %msg%n");
 			ple.setContext(lc);
 			ple.start();
 

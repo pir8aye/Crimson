@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.msg.Gen.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.net.Gen.NetworkTarget;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
 
 public class Client {

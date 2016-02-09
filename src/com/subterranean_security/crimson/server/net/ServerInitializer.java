@@ -17,7 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net;
 
-import com.subterranean_security.crimson.core.proto.msg.MSG;
+import com.subterranean_security.crimson.core.proto.net.MSG;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

@@ -32,6 +32,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public class HostList extends JPanel {

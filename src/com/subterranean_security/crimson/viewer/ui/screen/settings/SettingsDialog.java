@@ -18,8 +18,13 @@
 package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import com.subterranean_security.crimson.viewer.ViewerStore;
@@ -49,12 +54,30 @@ public class SettingsDialog extends JDialog {
 		// load values from databases
 		settingsPanel.setValues(ViewerStore.Databases.local);
 
-		// Component[] buttons = { loginPanel.btn_cancel,
-		// Box.createHorizontalGlue(), hp.initBtnUP(),
-		// Box.createHorizontalGlue(), loginPanel.btn_login };
-		// hp.nmenu.setButtons(buttons);
+		JButton cancel = new JButton("Cancel");
+		cancel.addActionListener(new ActionListener() {
 
-		hp.hmenu.setDesc("");
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+
+			}
+		});
+		JButton save = new JButton("Save");
+		save.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// save to databases
+				settingsPanel.save(ViewerStore.Databases.local);
+
+			}
+		});
+
+		Component[] buttons = { cancel, Box.createHorizontalGlue(), hp.initBtnUP(), Box.createHorizontalGlue(), save };
+		hp.nmenu.setButtons(buttons);
+
+		hp.hmenu.setDesc("Change both local and server settings");
 
 		hp.refreshHeight();
 	}

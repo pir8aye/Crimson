@@ -24,7 +24,7 @@ import java.awt.Dimension;
 import javax.swing.Box;
 import javax.swing.JDialog;
 
-import com.subterranean_security.crimson.core.proto.msg.Login.ServerInfoDelta_EV;
+import com.subterranean_security.crimson.core.proto.net.Login.ServerInfoDelta_EV;
 import com.subterranean_security.crimson.viewer.ui.panel.HPanel;
 
 public class LoginDialog extends JDialog {

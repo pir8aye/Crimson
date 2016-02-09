@@ -27,7 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.subterranean_security.crimson.core.proto.msg.FM.FileListlet;
+import com.subterranean_security.crimson.core.proto.net.FM.FileListlet;
 
 public class FileTable extends JPanel {
 	private static final long serialVersionUID = 1L;

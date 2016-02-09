@@ -25,7 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import com.subterranean_security.crimson.core.proto.msg.FM.FileListlet;
+import com.subterranean_security.crimson.core.proto.net.FM.FileListlet;
 
 /**
  * @author subterranean For file system browsing

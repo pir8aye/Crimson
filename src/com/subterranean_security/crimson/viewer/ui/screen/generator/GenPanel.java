@@ -59,9 +59,9 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.msg.Gen;
-import com.subterranean_security.crimson.core.proto.msg.Gen.ClientConfig;
-import com.subterranean_security.crimson.core.proto.msg.Gen.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.net.Gen;
+import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
+import com.subterranean_security.crimson.core.proto.net.Gen.NetworkTarget;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
@@ -105,7 +105,7 @@ public class GenPanel extends JPanel {
 
 	private static final String defaultHint = "set or load generation options";
 
-	private static Timer timer = new Timer();
+	private Timer timer = new Timer();
 	private GroupTimer gt = new GroupTimer();
 
 	public GenPanel() {

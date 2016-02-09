@@ -22,7 +22,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.msg.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
 
 public enum GetInfo {
 

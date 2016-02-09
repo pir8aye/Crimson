@@ -22,7 +22,7 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 
-import com.subterranean_security.crimson.core.proto.msg.Reports.Report;
+import com.subterranean_security.crimson.core.proto.net.Reports.Report;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.PlatformInfo;
 import com.subterranean_security.services.Services;
@@ -42,6 +42,7 @@ public class Reporter {
 			@Override
 			public void run() {
 				log.debug("Reporting event");
+				System.out.println(r.getStackTrace());
 				Services.sendReport(r);
 
 			}

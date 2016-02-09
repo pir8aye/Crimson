@@ -19,7 +19,7 @@ package com.subterranean_security.crimson.sv;
 
 import java.io.Serializable;
 
-import com.subterranean_security.crimson.core.proto.msg.Keylogger.KLog;
+import com.subterranean_security.crimson.core.proto.net.Keylogger.KLog;
 
 public class Profile implements Serializable {
 

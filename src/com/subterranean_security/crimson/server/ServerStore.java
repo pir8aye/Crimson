@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
-import com.subterranean_security.crimson.core.proto.msg.Gen.Group;
+import com.subterranean_security.crimson.core.proto.net.Gen.Group;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.storage.ViewerDB;

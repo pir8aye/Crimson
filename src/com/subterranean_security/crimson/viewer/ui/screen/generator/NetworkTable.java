@@ -25,7 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.subterranean_security.crimson.core.proto.msg.Gen.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.net.Gen.NetworkTarget;
 
 public class NetworkTable extends JScrollPane {
 

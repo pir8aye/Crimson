@@ -24,7 +24,7 @@ import javax.net.ssl.SSLException;
 
 import org.thavam.util.concurrent.BlockingHashMap;
 
-import com.subterranean_security.crimson.core.proto.msg.MSG.Message;
+import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
