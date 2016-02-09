@@ -1,0 +1,30 @@
+package com.subterranean_security.crimson.core.proto.net;
+
+message Report {
+
+//general information//
+	required int64 init_date = 1;
+	optional string hwid = 2;
+	optional string cr_version = 3;
+	optional string jre_version = 4;
+	optional string lib_version = 5;
+	optional string instance = 6;
+	optional string os_version = 7;
+	optional string os_family = 8;
+	optional string sys_arch = 9;
+	optional string jre_arch = 10;
+	optional string jre_uptime = 11;
+	optional string timezone = 12;
+	optional string sys_lang = 13;
+	optional string cr_lang = 14;
+	optional string charset = 15;
+	optional string log = 16;
+	optional string comment = 17;
+
+	//error information//
+	optional string stack_trace = 18;
+}
+
+message Report_1W {
+	required Report report = 1;
+}

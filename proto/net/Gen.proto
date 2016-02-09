@@ -1,0 +1,67 @@
+package com.subterranean_security.crimson.core.proto.net;
+
+message GenReport {
+	required bool result = 1;
+	required int32 gen_time = 2;
+	optional string comment = 3;
+	optional string hash_md5 = 4;
+	optional string hash_sha256 = 5;
+	optional int32 fileSize = 6;
+	optional string output_type = 7;
+}
+
+message Group {
+	required string name = 1;
+	required string key = 2;
+}
+
+message ClientConfig {
+//general
+	required string output_type = 1;
+	required Group group = 2;
+	optional int32 delay = 3;
+	optional bool always_imsg = 4;
+	optional string imsg = 5;
+
+	//network
+	repeated NetworkTarget target = 6;
+	required int32 reconnect_period = 7;
+
+	//execution
+	optional bool melt = 8;
+	optional string path_win = 9;
+	optional string path_lin = 10;
+	optional string path_osx = 11;
+	optional string path_sol = 12;
+	optional string path_bsd = 13;
+	optional bool allow_win = 14;
+	optional bool allow_lin = 15;
+	optional bool allow_osx = 16;
+	optional bool allow_sol = 17;
+	optional bool allow_bsd = 18;
+	optional bool allow_and = 19;
+
+	//for parser only
+	optional bool waiver = 20;
+}
+
+message NetworkTarget {
+	required string server = 1;
+	required int32 port = 2;
+}
+
+message Generate_RQ {
+	required ClientConfig internal_config = 1;
+}
+
+message Generate_RS {
+	required GenReport report = 1;
+	optional bytes installer = 2;
+}
+
+message GenInfo_RQ {
+}
+
+message GenInfo_RS {
+	required int32 size_jar_dl = 1;
+}

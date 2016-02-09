@@ -1,0 +1,21 @@
+package com.subterranean_security.crimson.core.proto.net;
+
+message ProfileDelta_EV {
+	required int32 clientid = 1;
+	optional string net_hostname = 100;
+	repeated NetworkInterface net_interface = 101;
+	optional string crimson_version = 102;
+	optional string user_name = 103;
+	optional string user_dir = 104;
+	optional string user_home = 105;
+	optional string java_version = 106;
+	optional string java_vendor = 107;
+	optional string java_home = 108;
+	optional string java_arch = 109;
+}
+
+message NetworkInterface {
+	optional string name = 1;
+	optional string ip = 2;
+	required string mac = 3;
+}

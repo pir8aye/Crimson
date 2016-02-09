@@ -1,0 +1,31 @@
+package com.subterranean_security.crimson.core.proto.net;
+
+message Login_RQ {
+	required string username = 1;
+	required string hash = 2;
+	optional int32 VID = 3;
+}
+
+message Login_RS {
+	required bool response = 1;
+	optional ServerInfoDelta_EV initial_info = 2;
+}
+
+message ServerInfoDelta_EV {
+	optional bool server_status = 1;
+	optional int64 last_login = 2;
+	optional UserPermissions user_perm = 3;
+}
+
+message UserPermissions {
+	required bool generator = 1;
+	required bool server_power = 2;
+	required ReadWrite filesystem_perm = 3;
+	required ReadWrite settings_perm = 4;
+}
+
+enum ReadWrite {
+	NONE = 0;
+	RO = 1;
+	RW = 2;
+}

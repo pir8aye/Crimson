@@ -1,0 +1,40 @@
+package com.subterranean_security.crimson.core.proto.net;
+
+import "net/Login.proto";
+import "net/Keylogger.proto";
+import "net/Auth.proto";
+import "net/Gen.proto";
+import "net/State.proto";
+import "net/Reports.proto";
+import "net/Delta.proto";
+import "net/FM.proto";
+import "net/Ping.proto";
+import "net/stream/Stream.proto";
+message Message {
+	optional bool urgent = 1;
+	optional int32 id = 2;
+
+	//EVENTS
+	optional ProfileDelta_EV profile_delta_ev = 14;
+
+	//RQRS
+	optional Login_RQ login_rq = 4;
+	optional Login_RS login_rs = 5;
+	optional Challenge_RQ challenge_rq = 6;
+	optional Challenge_RS challenge_rs = 7;
+	optional Generate_RQ generate_rq = 8;
+	optional Generate_RS generate_rs = 9;
+	optional StateChange_RQ state_change_rq = 10;
+	optional StateChange_RS state_change_rs = 11;
+	optional GetState_RQ get_state_rq = 12;
+	optional GetState_RS get_state_rs = 13;
+	optional FileListing_RQ file_listing_rq = 15;
+	optional FileListing_RS file_listing_rs = 16;
+	optional Ping_RQ ping_rq = 17;
+	optional Ping_RS ping_rs = 18;
+
+	//ONE WAY
+	optional ChallengeResult_1W challengeresult_1w = 140;
+	optional Auth_1W auth_1w = 141;
+	optional Report_1W report_1w = 142;
+}

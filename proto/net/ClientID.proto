@@ -1,0 +1,5 @@
+package com.subterranean_security.crimson.core.proto.net;
+
+message AssignID_1W {
+	required int32 id = 1;
+}
