@@ -26,6 +26,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.component.Tray;
 import com.subterranean_security.crimson.viewer.ui.panel.DPanel;
 import com.subterranean_security.crimson.viewer.ui.panel.NPanel;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
@@ -95,7 +97,15 @@ public class MainFrame extends JFrame {
 
 	@Override
 	public void dispose() {
-		super.dispose();
-		// TODO check if we need to exit or run in tray
+		try {
+			if (ViewerStore.Databases.local.getBoolean("close_on_tray")) {
+				Tray.addTray();
+			} else {
+				System.exit(0);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
