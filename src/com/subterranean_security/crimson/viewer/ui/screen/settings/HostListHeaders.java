@@ -17,14 +17,14 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
-import javax.swing.JPanel;
 import java.awt.GridLayout;
+
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.storage.Headers;
-
-import javax.swing.BoxLayout;
 
 public class HostListHeaders extends JPanel {
 
