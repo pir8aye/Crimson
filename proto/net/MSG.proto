@@ -9,13 +9,17 @@ import "net/Reports.proto";
 import "net/Delta.proto";
 import "net/FM.proto";
 import "net/Ping.proto";
-import "net/stream/Stream.proto";
+import "net/Stream.proto";
 message Message {
 	optional bool urgent = 1;
 	optional int32 id = 2;
 
 	//EVENTS
 	optional ProfileDelta_EV profile_delta_ev = 14;
+	optional StreamStart_EV stream_start_ev = 19;
+	optional StreamStop_EV stream_stop_ev = 20;
+	optional StreamData_EV stream_data_ev = 21;
+
 
 	//RQRS
 	optional Login_RQ login_rq = 4;

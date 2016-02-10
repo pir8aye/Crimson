@@ -1,0 +1,27 @@
+package com.subterranean_security.crimson.core.proto.net;
+
+message StreamStart_EV {
+	required Param param = 1;
+}
+
+message StreamStop_EV {
+	required int32 streamID = 1;
+}
+
+message StreamData_EV {
+	required int32 streamID = 1;
+	optional InfoData info_data = 2;
+}
+
+message InfoData {
+	optional string ram_usage = 1;
+}
+
+message Param {
+	required int32 streamID = 1;
+	optional InfoParam info_param = 2;
+}
+
+message InfoParam {
+	optional bool ram_usage = 1;
+}
