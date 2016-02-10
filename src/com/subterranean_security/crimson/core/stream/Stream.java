@@ -20,8 +20,8 @@ package com.subterranean_security.crimson.core.stream;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.subterranean_security.crimson.core.proto.net.MSG;
-import com.subterranean_security.crimson.core.proto.net.stream.Parameter.Param;
+import com.subterranean_security.crimson.core.proto.net.MSG.Message;
+import com.subterranean_security.crimson.core.proto.net.Stream.Param;
 
 public abstract class Stream {
 
@@ -39,7 +39,7 @@ public abstract class Stream {
 	/**
 	 * Called when data arrives
 	 */
-	public abstract void received(MSG m);
+	public abstract void received(Message m);
 
 	/**
 	 * Called to pump the stream

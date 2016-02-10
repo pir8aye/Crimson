@@ -17,13 +17,13 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.stream.info;
 
-import com.subterranean_security.crimson.core.proto.net.MSG;
+import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.stream.Stream;
 
 public class InfoProxy extends Stream {
 
 	@Override
-	public void received(MSG m) {
+	public void received(Message m) {
 		// TODO Auto-generated method stub
 
 	}
@@ -37,13 +37,13 @@ public class InfoProxy extends Stream {
 	@Override
 	public void start() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void stop() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

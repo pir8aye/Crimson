@@ -17,29 +17,27 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.stream.info;
 
-import com.subterranean_security.crimson.core.proto.net.MSG;
-import com.subterranean_security.crimson.core.proto.net.stream.Stream.InfoData;
+import com.subterranean_security.crimson.core.proto.net.MSG.Message;
+import com.subterranean_security.crimson.core.proto.net.Stream.InfoData;
+import com.subterranean_security.crimson.core.proto.net.Stream.StreamData_EV;
 import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.util.CUtil;
 
 public class InfoSlave extends Stream {
 
 	@Override
-	public void received(MSG m) {
-
+	public void received(Message m) {
+		// do nothing
 	}
 
 	@Override
 	public void send() {
 		InfoData.Builder id = InfoData.newBuilder();
-		for (String s : param.getInfoParam().getPropertyList()) {
-			switch (s) {
-			case "CPU_USAGE": {
-				id.addData(CUtil.Misc.randString(5));
-				break;
-			}
-			}
+		if (param.getInfoParam().hasRamUsage()) {
+			// add ram usage
 		}
+
+		Message.newBuilder().setUrgent(true)
+				.setStreamDataEv(StreamData_EV.newBuilder().setStreamID(param.getStreamID()).setInfoData(id));
 
 	}
 

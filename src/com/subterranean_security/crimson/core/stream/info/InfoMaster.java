@@ -17,14 +17,22 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.stream.info;
 
-import com.subterranean_security.crimson.core.proto.net.MSG;
+import com.subterranean_security.crimson.core.proto.net.MSG.Message;
+import com.subterranean_security.crimson.core.proto.net.Stream.InfoData;
+import com.subterranean_security.crimson.core.proto.net.Stream.InfoParam;
+import com.subterranean_security.crimson.core.proto.net.Stream.Param;
+import com.subterranean_security.crimson.core.proto.net.Stream.StreamStart_EV;
+import com.subterranean_security.crimson.core.proto.net.Stream.StreamStop_EV;
 import com.subterranean_security.crimson.core.stream.Stream;
 
 public class InfoMaster extends Stream {
 
 	@Override
-	public void received(MSG m) {
-		// TODO Auto-generated method stub
+	public void received(Message m) {
+		InfoData infoData = m.getStreamDataEv().getInfoData();
+		if (infoData.hasRamUsage()) {
+			// update profile
+		}
 
 	}
 
@@ -36,14 +44,16 @@ public class InfoMaster extends Stream {
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		Message.newBuilder().setUrgent(true).setStreamStartEv(
+				StreamStart_EV.newBuilder().setParam(Param.newBuilder().setInfoParam(InfoParam.newBuilder())));
+
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-		
+		Message.newBuilder().setUrgent(true)
+				.setStreamStopEv(StreamStop_EV.newBuilder().setStreamID(param.getStreamID()));
+
 	}
 
 }
