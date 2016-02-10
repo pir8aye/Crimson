@@ -27,7 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.viewer.ui.component.DModule;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;

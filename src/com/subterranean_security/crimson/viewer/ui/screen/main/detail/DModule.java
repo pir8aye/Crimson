@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.component;
+package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 
 import javax.swing.JPanel;
 
