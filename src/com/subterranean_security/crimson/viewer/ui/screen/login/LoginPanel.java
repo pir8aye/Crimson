@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -44,6 +45,7 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
@@ -108,6 +110,19 @@ public class LoginPanel extends JPanel {
 		panel_4.add(lblIpdns);
 
 		fld_server = new JComboBox<String>();
+		fld_server.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (fld_server.getSelectedIndex() == -1) {
+					return;
+				}
+				String[] parts = ((String) fld_server.getSelectedItem()).split(":");
+				if (parts.length == 2) {
+					fld_server.setSelectedItem(parts[0]);
+					// TODO insert port
+
+				}
+			}
+		});
 		fld_server.setFont(new Font("Dialog", Font.PLAIN, 10));
 		fld_server_border = fld_server.getBorder();
 		fld_server.addMouseListener(new MouseAdapter() {
@@ -122,7 +137,6 @@ public class LoginPanel extends JPanel {
 			}
 		});
 		fld_server.setBounds(20, 28, 280, 17);
-		fld_server.setModel(new DefaultComboBoxModel<String>(new String[] { "127.0.0.1" }));
 		fld_server.setMaximumSize(new Dimension(59, 19));
 		panel_4.add(fld_server);
 		fld_server.setEditable(true);
@@ -139,7 +153,7 @@ public class LoginPanel extends JPanel {
 		fld_port.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				lbl_status.setInfo("port on the server to connect");
+				lbl_status.setInfo("corresponding port on the server");
 			}
 
 			@Override
@@ -187,7 +201,7 @@ public class LoginPanel extends JPanel {
 		fld_user.setColumns(10);
 
 		fld_password = new JPasswordField();
-		fld_password.setFont(new Font("Dialog", Font.PLAIN, 10));
+		fld_password.setFont(new Font("Dialog", Font.PLAIN, 8));
 		fld_password_border = fld_password.getBorder();
 		fld_password.addMouseListener(new MouseAdapter() {
 			@Override
@@ -278,6 +292,19 @@ public class LoginPanel extends JPanel {
 				try {
 					Thread.sleep(400);
 				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// update recents
+				try {
+					String successfulLogin = server + ":" + port;
+					ArrayList<String> recents = (ArrayList<String>) ViewerStore.Databases.local
+							.getObject("login.recents");
+					recents.remove(successfulLogin);
+					recents.add(successfulLogin);
+
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -377,8 +404,27 @@ public class LoginPanel extends JPanel {
 		lbl_status.setBad("Invalid password");
 	}
 
-	public void setLocalServer(boolean b) {
-		// TODO Auto-generated method stub
+	public void addRecents(boolean localServer) {
+		try {
+			ArrayList<String> r = (ArrayList<String>) ViewerStore.Databases.local.getObject("login.recents");
+			String[] recent = new String[localServer ? r.size() + 1 : r.size()];
+			if (localServer) {
+				recent[0] = "Local Server:10101";
+				for (int i = 0; i < r.size(); i++) {
+					recent[i + 1] = r.get(i);
+				}
+			} else {
+				for (int i = 0; i < r.size(); i++) {
+					recent[i] = r.get(i);
+				}
+			}
 
+			fld_server.setModel(new DefaultComboBoxModel<String>(recent));
+			fld_server.setSelectedIndex(-1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
 	}
 }

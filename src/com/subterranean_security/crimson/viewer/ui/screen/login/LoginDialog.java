@@ -34,10 +34,12 @@ public class LoginDialog extends JDialog {
 	public final HPanel hp = new HPanel(loginPanel);
 
 	private Dimension size = new Dimension(405, 320);
-	
+
 	public static ServerInfoDelta_EV initial = null;
 
-	public LoginDialog() {
+	public LoginDialog(boolean localServer) {
+
+		loginPanel.addRecents(localServer);
 
 		setTitle("Crimson - Login");
 		setSize(size);

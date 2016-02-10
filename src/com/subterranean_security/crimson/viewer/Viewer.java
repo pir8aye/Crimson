@@ -107,8 +107,7 @@ public class Viewer {
 		SLAnimator.start();
 
 		// show login dialog
-		LoginDialog login = new LoginDialog();
-		login.loginPanel.setLocalServer(ViewerStore.LocalServer.bundledServer.exists() && !slsr);
+		LoginDialog login = new LoginDialog(ViewerStore.LocalServer.bundledServer.exists() && !slsr);
 
 		login.setVisible(true);
 		try {
