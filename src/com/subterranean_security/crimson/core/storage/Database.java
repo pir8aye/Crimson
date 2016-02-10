@@ -255,7 +255,8 @@ public abstract class Database extends Thread implements AutoCloseable {
 			return map.get(key);
 		}
 
-		return query(key);
+		map.put(key, query(key));
+		return map.get(key);
 
 	}
 
@@ -319,7 +320,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 	}
 
-	private void flushMap() throws SerialException, SQLException {
+	public void flushMap() throws SerialException, SQLException {
 		for (String key : map.keySet()) {
 			PreparedStatement stmt = db.prepareStatement("INSERT OR REPLACE INTO map(Name, Data) VALUES (?, ?)");
 			stmt.setString(1, key);
@@ -340,7 +341,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 	}
 
-	private void flushHeap() throws SQLException {
+	public void flushHeap() throws SQLException {
 		for (Integer id : heap.keySet()) {
 			PreparedStatement stmt = db.prepareStatement("INSERT OR REPLACE INTO heap(Id, Data) VALUES (?, ?)");
 			stmt.setInt(1, id);
