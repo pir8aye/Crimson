@@ -36,6 +36,10 @@ public abstract class Stream {
 
 	};
 
+	public int getStreamID() {
+		return param.getStreamID();
+	}
+
 	/**
 	 * Called when data arrives
 	 */
