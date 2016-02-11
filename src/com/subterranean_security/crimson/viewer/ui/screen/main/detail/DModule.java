@@ -15,31 +15,25 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 
-import javax.swing.JPanel;
+package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 
 import com.subterranean_security.crimson.sv.Profile;
 
-public abstract class DModule extends JPanel implements Comparable {
-	private static final long serialVersionUID = 1L;
-	private boolean showing = false;
+public interface DModule extends Comparable<DModule> {
 
-	public byte weight; // -5 <= x <= 5
+	void setTarget(Profile p);
 
-	public abstract void setTarget(Profile p);
+	boolean isShowing();
 
-	public boolean isShowing() {
-		return showing;
+	void setShowing(boolean showing);
+
+	void updateGraphics();
+
+	int getWeight();
+
+	default int compareTo(DModule o) {
+		return (getWeight() - o.getWeight());
 	}
 
-	public void setShowing(boolean showing) {
-		this.showing = showing;
-	}
-
-	public abstract void updateGraphics();
-
-	public int compareTo(DModule o) {
-		return (weight - o.weight);
-	}
 }
