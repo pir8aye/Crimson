@@ -21,6 +21,9 @@ import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.stream.Stream;
 
 public class InfoProxy extends Stream {
+	
+	private int masterID;
+	private int slaveID;
 
 	@Override
 	public void received(Message m) {
@@ -30,7 +33,7 @@ public class InfoProxy extends Stream {
 
 	@Override
 	public void send() {
-		// TODO Auto-generated method stub
+		//do nothing
 
 	}
 

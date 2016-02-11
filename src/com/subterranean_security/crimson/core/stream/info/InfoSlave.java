@@ -17,12 +17,19 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.stream.info;
 
+import com.subterranean_security.crimson.client.net.Router;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.proto.net.Stream.InfoData;
+import com.subterranean_security.crimson.core.proto.net.Stream.Param;
 import com.subterranean_security.crimson.core.proto.net.Stream.StreamData_EV;
 import com.subterranean_security.crimson.core.stream.Stream;
 
 public class InfoSlave extends Stream {
+
+	public InfoSlave(Param p) {
+		param = p;
+		start();
+	}
 
 	@Override
 	public void received(Message m) {
@@ -31,13 +38,14 @@ public class InfoSlave extends Stream {
 
 	@Override
 	public void send() {
+		System.out.println("Pumping stream");
 		InfoData.Builder id = InfoData.newBuilder();
 		if (param.getInfoParam().hasRamUsage()) {
 			// add ram usage
 		}
 
-		Message.newBuilder().setUrgent(true)
-				.setStreamDataEv(StreamData_EV.newBuilder().setStreamID(param.getStreamID()).setInfoData(id));
+		Router.route(Message.newBuilder().setUrgent(true)
+				.setStreamDataEv(StreamData_EV.newBuilder().setStreamID(param.getStreamID()).setInfoData(id)));
 
 	}
 
