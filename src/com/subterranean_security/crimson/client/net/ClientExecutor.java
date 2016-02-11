@@ -30,6 +30,9 @@ import com.subterranean_security.crimson.core.proto.net.Auth.Challenge_RQ;
 import com.subterranean_security.crimson.core.proto.net.Auth.Challenge_RS;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
+import com.subterranean_security.crimson.core.proto.net.Stream.Param;
+import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -52,6 +55,10 @@ public class ClientExecutor extends BasicExecutor {
 						m = connector.uq.take();
 					} catch (InterruptedException e) {
 						return;
+					}
+
+					if (m.hasStreamStartEv()) {
+						stream_start_ev(m);
 					}
 
 					ReferenceCountUtil.release(m);
@@ -83,6 +90,13 @@ public class ClientExecutor extends BasicExecutor {
 			}
 		});
 		nbt.start();
+	}
+
+	private void stream_start_ev(Message m) {
+		Param p = m.getStreamStartEv().getParam();
+		if (p.hasInfoParam()) {
+			StreamStore.addStream(p.getStreamID(), new InfoSlave(p));
+		}
 	}
 
 	private void challenge_rq(Message m) {
