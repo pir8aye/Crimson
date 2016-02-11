@@ -18,16 +18,16 @@
 package com.subterranean_security.crimson.viewer.ui.panel;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.Component;
 import java.util.ArrayList;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
+import com.subterranean_security.crimson.sv.Profile;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DynamicProperty;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -47,7 +47,7 @@ public class DPanel extends SLPanel {
 	private MovingPanel movingBar;
 	private MovingPanel movingMain;
 
-	private Detail detail = new Detail();
+	public Detail detail = new Detail();
 	private boolean showing = false;
 
 	public DPanel(JPanel main) {
@@ -58,28 +58,20 @@ public class DPanel extends SLPanel {
 		movingMain.setAction(actionUP);
 
 		// replace these configs
-		pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f)
-				.place(0, 0, movingMain);
-		pos2 = new SLConfig(this).gap(0, 0).row(6f).col(3f).col(1f)
-				.place(0, 0, movingMain).place(0, 1, movingBar);
+		pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f).place(0, 0, movingMain);
+		pos2 = new SLConfig(this).gap(0, 0).row(6f).col(3f).col(1f).place(0, 0, movingMain).place(0, 1, movingBar);
 
 		this.setTweenManager(SLAnimator.createTweenManager());
 		this.initialize(pos1);
 
 	}
 
-	public void addModule(DModule dm) {
-
-		detail.addDM(dm);
-
-	}
-
-	public synchronized void showDetail() {
+	public synchronized void showDetail(Profile sp) {
 
 		if (!showing) {
 			// move the detail panel out
 			movingMain.runAction();
-			detail.nowOpen();
+			detail.nowOpen(sp);
 			showing = true;
 		}
 
@@ -100,16 +92,14 @@ public class DPanel extends SLPanel {
 		@Override
 		public void run() {
 
-			thisDP.createTransition()
-					.push(new SLKeyframe(pos2, 0.9f).setStartSide(
-							SLSide.BOTTOM, movingBar).setCallback(
-							new SLKeyframe.Callback() {
-								@Override
-								public void done() {
-									movingMain.setAction(actionDN);
-									movingMain.enableAction();
-								}
-							})).play();
+			thisDP.createTransition().push(new SLKeyframe(pos2, 0.9f).setStartSide(SLSide.RIGHT, movingBar)
+					.setCallback(new SLKeyframe.Callback() {
+				@Override
+				public void done() {
+					movingMain.setAction(actionDN);
+					movingMain.enableAction();
+				}
+			})).play();
 		}
 	};
 
@@ -117,15 +107,14 @@ public class DPanel extends SLPanel {
 		@Override
 		public void run() {
 
-			thisDP.createTransition()
-					.push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.BOTTOM,
-							movingBar).setCallback(new SLKeyframe.Callback() {
-						@Override
-						public void done() {
-							movingMain.setAction(actionUP);
+			thisDP.createTransition().push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.RIGHT, movingBar)
+					.setCallback(new SLKeyframe.Callback() {
+				@Override
+				public void done() {
+					movingMain.setAction(actionUP);
 
-						}
-					})).play();
+				}
+			})).play();
 		}
 	};
 
@@ -134,40 +123,56 @@ public class DPanel extends SLPanel {
 class Detail extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private JLabel text = new JLabel();
-	private JLabel icon = new JLabel();
-	private Runnable r;
 
 	private ArrayList<DModule> modules = new ArrayList<DModule>();
 
 	public Detail() {
-		this.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
+		refreshDetails();
+	}
 
-				new Thread(r).start();
+	public void refreshDetails() {
+		nowClosed();
+		modules.clear();
+		removeAll();
+		init();
 
-			}
-		});
+		// TODO get from database
+		// just add property for now
+		DynamicProperty dp = new DynamicProperty();
+		modules.add(dp);
+		addDM(dp);
 
-		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+	}
+
+	private void init() {
 		setLayout(new BorderLayout(0, 0));
-
-		text.setFont(new Font("Dialog", Font.BOLD, 13));
-		add(text, BorderLayout.CENTER);
-		add(icon, BorderLayout.WEST);
+		last = new JPanel(new BorderLayout(0, 0));
+		JScrollPane jsp = new JScrollPane(last);
+		jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		add(jsp, BorderLayout.CENTER);
 	}
 
-	public void addDM(DModule dm) {
+	private JPanel last = new JPanel(new BorderLayout(0, 0));
 
-	}
+	public void addDM(Component comp) {
+		JPanel tmp = new JPanel(new BorderLayout(0, 0));
+		tmp.add(comp, BorderLayout.NORTH);
+		last.add(tmp, BorderLayout.CENTER);
+		last = tmp;
 
-	public void nowOpen() {
+	};
 
+	public void nowOpen(Profile sp) {
+		for (DModule dm : modules) {
+			dm.setTarget(sp);
+			dm.setShowing(true);
+		}
 	}
 
 	public void nowClosed() {
-
+		for (DModule dm : modules) {
+			dm.setShowing(false);
+		}
 	}
 
 }
