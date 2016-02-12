@@ -141,6 +141,14 @@
 			<License>BSD</License>
 			<Requisites>V</Requisites>
 		</Lib>
+		
+		<Lib CID="c18">
+			<Name>JChart2D</Name>
+			<CVersion>1</CVersion>
+			<EVersion>3.2.2</EVersion>
+			<License>LGPL</License>
+			<Requisites>V</Requisites>
+		</Lib>
 
 	</JAR>
 

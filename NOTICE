@@ -173,3 +173,7 @@ License: http://www.gnu.org/licenses/lgpl-3.0
 - logback -
 Information: http://logback.qos.ch/
 License: http://www.gnu.org/licenses/lgpl-2.1
+
+- JChart2D -
+Information: http://jchart2d.sourceforge.net/
+License: http://www.gnu.org/licenses/lgpl-2.1
