@@ -27,7 +27,7 @@ import javax.swing.ScrollPaneConstants;
 
 import com.subterranean_security.crimson.sv.Profile;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DynamicProperty;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Processor;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -138,7 +138,7 @@ class Detail extends JPanel {
 
 		// TODO get from database
 		// just add property for now
-		DynamicProperty dp = new DynamicProperty();
+		Processor dp = new Processor();
 		modules.add(dp);
 		addDM(dp);
 
