@@ -151,13 +151,10 @@ public class MenuControls extends JPanel {
 		final JToggleButton tglbtnList = new JToggleButton("LIST");
 		tglbtnList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (tglbtnList.isSelected()) {
-					return;
-				}
 				MainFrame.main.panel.switchToList();
 			}
 		});
-		tglbtnList.setSelected(true);
+		tglbtnList.setSelected(MainFrame.main.panel.listLoaded);
 		tglbtnList.setFont(new Font("Dialog", Font.BOLD, 10));
 		tglbtnList.setMargin(new Insets(2, 4, 2, 4));
 		tglbtnList.setBounds(12, 20, 88, 20);
@@ -166,12 +163,10 @@ public class MenuControls extends JPanel {
 		final JToggleButton tglbtnGraph = new JToggleButton("GRAPH");
 		tglbtnGraph.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (tglbtnGraph.isSelected()) {
-					return;
-				}
 				MainFrame.main.panel.switchToGraph();
 			}
 		});
+		tglbtnGraph.setSelected(MainFrame.main.panel.graphLoaded);
 		tglbtnGraph.setFont(new Font("Dialog", Font.BOLD, 10));
 		tglbtnGraph.setBounds(100, 20, 88, 20);
 		panel_4.add(tglbtnGraph);
