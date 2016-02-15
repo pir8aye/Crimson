@@ -117,7 +117,7 @@ public class LoginPanel extends JPanel {
 				}
 				String[] parts = ((String) fld_server.getSelectedItem()).split(":");
 				if (parts.length == 2) {
-					fld_server.setSelectedItem(parts[0]);
+					fld_server.setSelectedItem(parts[0].equals("Local Server") ? "127.0.0.1" : parts[0]);
 					// TODO insert port
 
 				}
