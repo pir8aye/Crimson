@@ -63,6 +63,7 @@ public enum Defaults {
 		db.storeObject("hostlist.headers",
 				new Headers[] { Headers.COUNTRY, Headers.USERNAME, Headers.HOSTNAME, Headers.LANGUAGE });
 		db.storeObject("login.recents", new ArrayList<String>());
+		db.storeObject("view.last", "list");
 	}
 
 	public static void hardReset(LViewerDB db) {
