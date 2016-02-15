@@ -900,7 +900,7 @@ public enum CUtil {
 			stdout.setContext(lc);
 			stdout.start();
 			logger.addAppender(stdout);
-			logger.setLevel(Level.DEBUG);
+			logger.setLevel(Common.isDebugMode() ? Level.DEBUG : Level.INFO);
 			logger.setAdditive(false);
 
 			return logger;
