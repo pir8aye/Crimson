@@ -21,6 +21,8 @@ import java.awt.CardLayout;
 
 import javax.swing.JPanel;
 
+import com.subterranean_security.crimson.viewer.ViewerStore;
+
 public class MainPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -35,12 +37,17 @@ public class MainPanel extends JPanel {
 
 		setLayout(new CardLayout());
 
-		loadList();
-		// if (true) {// TODO get last open view
-		// switchToList();
-		// } else {
-		// switchToGraph();
-		// }
+		try {
+			String last = ViewerStore.Databases.local.getString("view.last");
+			if (last.equals("list")) {
+				loadList();
+			} else {
+				loadGraph();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
