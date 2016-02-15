@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.ui.debug.DebugFrame;
 import com.subterranean_security.crimson.core.util.FileLocking;
 import com.subterranean_security.crimson.core.util.PlatformInfo;
 import com.subterranean_security.crimson.viewer.ui.panel.MovingPanel;
@@ -124,6 +125,12 @@ public class Viewer {
 		MainFrame.main = new MainFrame();
 		MainFrame.main.setVisible(true);
 		MainFrame.main.setLocationRelativeTo(null);
+
+		if (Common.isDebugMode()) {
+			DebugFrame df = new DebugFrame();
+			df.setVisible(true);
+
+		}
 
 		new Thread(new Runnable() {
 			public void run() {
