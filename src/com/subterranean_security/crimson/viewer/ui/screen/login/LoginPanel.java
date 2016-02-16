@@ -42,6 +42,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -56,17 +57,17 @@ public class LoginPanel extends JPanel {
 	private JTextField fld_user;
 	public JButton btn_cancel;
 	public JButton btn_login;
-	private JPasswordField fld_password;
-	private JComboBox<String> fld_server;
+	private JPasswordField fld_pass;
+	private JComboBox<String> fld_address;
 	private JTextField fld_port;
-	private JPanel panel_4;
-	private JLabel lblIpdns;
-	private JLabel lblPort;
-	private JPanel panel_5;
+	private JPanel panel_server;
+	private JLabel lbl_address;
+	private JLabel lbl_port;
+	private JPanel panel_credentials;
 	private LoginDialog parent;
 	private StatusLabel lbl_status;
-	private JLabel lblUsername;
-	private JLabel lblPassword;
+	private JLabel lbl_user;
+	private JLabel lbl_pass;
 	private Border fld_port_border;
 	private Border fld_password_border;
 	private Border fld_user_border;
@@ -74,58 +75,67 @@ public class LoginPanel extends JPanel {
 
 	public LoginPanel(final LoginDialog parent) {
 		this.parent = parent;
+		init();
 
+		if (Common.isDebugMode()) {
+			fld_user.setText("admin");
+			fld_pass.setText("casio");
+		}
+
+	}
+
+	private void init() {
 		setPreferredSize(new Dimension(400, 248));
 		setBorder(null);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		JPanel panel_1 = new JPanel();
-		panel_1.setBackground(UICommon.bg);
-		panel_1.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
-		add(panel_1);
-		panel_1.setLayout(null);
+		JPanel panel_header = new JPanel();
+		panel_header.setBackground(UICommon.bg);
+		panel_header.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		add(panel_header);
+		panel_header.setLayout(null);
 
-		JLabel label = new JLabel("");
-		label.setIcon(new ImageIcon(LoginPanel.class
+		JLabel logo = new JLabel("");
+		logo.setIcon(new ImageIcon(LoginPanel.class
 				.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/crimson_logo-login.png")));
-		label.setBounds(94, 0, 210, 105);
-		panel_1.add(label);
+		logo.setBounds(94, 0, 210, 105);
+		panel_header.add(logo);
 
-		JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(10, 30));
-		panel.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
-		add(panel);
-		panel.setLayout(null);
+		JPanel panel_body = new JPanel();
+		panel_body.setPreferredSize(new Dimension(10, 30));
+		panel_body.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		add(panel_body);
+		panel_body.setLayout(null);
 
-		panel_4 = new JPanel();
-		panel_4.setBounds(6, 6, 388, 54);
-		panel.add(panel_4);
-		panel_4.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Server", TitledBorder.CENTER,
+		panel_server = new JPanel();
+		panel_server.setBounds(6, 6, 388, 54);
+		panel_body.add(panel_server);
+		panel_server.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Server", TitledBorder.CENTER,
 				TitledBorder.TOP, null, null));
-		panel_4.setLayout(null);
+		panel_server.setLayout(null);
 
-		lblIpdns = new JLabel("Address");
-		lblIpdns.setBounds(20, 12, 280, 15);
-		lblIpdns.setFont(new Font("Dialog", Font.BOLD, 10));
-		panel_4.add(lblIpdns);
+		lbl_address = new JLabel("Address");
+		lbl_address.setBounds(20, 12, 280, 15);
+		lbl_address.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel_server.add(lbl_address);
 
-		fld_server = new JComboBox<String>();
-		fld_server.addActionListener(new ActionListener() {
+		fld_address = new JComboBox<String>();
+		fld_address.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (fld_server.getSelectedIndex() == -1) {
+				if (fld_address.getSelectedIndex() == -1) {
 					return;
 				}
-				String[] parts = ((String) fld_server.getSelectedItem()).split(":");
+				String[] parts = ((String) fld_address.getSelectedItem()).split(":");
 				if (parts.length == 2) {
-					fld_server.setSelectedItem(parts[0].equals("Local Server") ? "127.0.0.1" : parts[0]);
+					fld_address.setSelectedItem(parts[0].equals("Local Server") ? "127.0.0.1" : parts[0]);
 					// TODO insert port
 
 				}
 			}
 		});
-		fld_server.setFont(new Font("Dialog", Font.PLAIN, 10));
-		fld_server_border = fld_server.getBorder();
-		fld_server.addMouseListener(new MouseAdapter() {
+		fld_address.setFont(new Font("Dialog", Font.PLAIN, 10));
+		fld_server_border = fld_address.getBorder();
+		fld_address.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				lbl_status.setInfo("enter an ip address, hostname, or DNS name");
@@ -136,16 +146,16 @@ public class LoginPanel extends JPanel {
 				lbl_status.setVisible(false);
 			}
 		});
-		fld_server.setBounds(20, 28, 280, 17);
-		fld_server.setMaximumSize(new Dimension(59, 19));
-		panel_4.add(fld_server);
-		fld_server.setEditable(true);
+		fld_address.setBounds(20, 28, 280, 17);
+		fld_address.setMaximumSize(new Dimension(59, 19));
+		panel_server.add(fld_address);
+		fld_address.setEditable(true);
 
-		lblPort = new JLabel("Port");
-		lblPort.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPort.setBounds(312, 12, 56, 15);
-		lblPort.setFont(new Font("Dialog", Font.BOLD, 10));
-		panel_4.add(lblPort);
+		lbl_port = new JLabel("Port");
+		lbl_port.setHorizontalAlignment(SwingConstants.CENTER);
+		lbl_port.setBounds(312, 12, 56, 15);
+		lbl_port.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel_server.add(lbl_port);
 
 		fld_port = new JTextField();
 		fld_port.setFont(new Font("Dialog", Font.PLAIN, 10));
@@ -168,21 +178,20 @@ public class LoginPanel extends JPanel {
 		fld_port.setHorizontalAlignment(SwingConstants.CENTER);
 
 		fld_port.setMaximumSize(new Dimension(25, 19));
-		panel_4.add(fld_port);
+		panel_server.add(fld_port);
 		fld_port.setColumns(10);
 
-		panel_5 = new JPanel();
-		panel_5.setBounds(6, 60, 388, 55);
-		panel.add(panel_5);
-		panel_5.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Credentials", TitledBorder.CENTER,
+		panel_credentials = new JPanel();
+		panel_credentials.setBounds(6, 60, 388, 55);
+		panel_body.add(panel_credentials);
+		panel_credentials.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Credentials", TitledBorder.CENTER,
 				TitledBorder.TOP, null, null));
-		panel_5.setLayout(null);
+		panel_credentials.setLayout(null);
 
 		fld_user = new JTextField();
 		fld_user.setFont(new Font("Dialog", Font.PLAIN, 10));
 		fld_user_border = fld_user.getBorder();
 		fld_user.setDocument(new FieldLimiter(20));
-		fld_user.setText("admin");
 		fld_user.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -197,13 +206,13 @@ public class LoginPanel extends JPanel {
 		fld_user.setHorizontalAlignment(SwingConstants.CENTER);
 		fld_user.setBounds(20, 28, 140, 19);
 		fld_user.setMaximumSize(new Dimension(100, 19));
-		panel_5.add(fld_user);
+		panel_credentials.add(fld_user);
 		fld_user.setColumns(10);
 
-		fld_password = new JPasswordField();
-		fld_password.setFont(new Font("Dialog", Font.PLAIN, 8));
-		fld_password_border = fld_password.getBorder();
-		fld_password.addMouseListener(new MouseAdapter() {
+		fld_pass = new JPasswordField();
+		fld_pass.setFont(new Font("Dialog", Font.PLAIN, 8));
+		fld_password_border = fld_pass.getBorder();
+		fld_pass.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				lbl_status.setInfo("corresponding case-sensitive password");
@@ -214,29 +223,28 @@ public class LoginPanel extends JPanel {
 				lbl_status.setVisible(false);
 			}
 		});
-		fld_password.setDocument(new FieldLimiter(32));
-		fld_password.setText("casio");
-		fld_password.setHorizontalAlignment(SwingConstants.CENTER);
-		fld_password.setBounds(228, 28, 140, 19);
-		fld_password.setMaximumSize(new Dimension(100, 19));
-		panel_5.add(fld_password);
+		fld_pass.setDocument(new FieldLimiter(32));
+		fld_pass.setHorizontalAlignment(SwingConstants.CENTER);
+		fld_pass.setBounds(228, 28, 140, 19);
+		fld_pass.setMaximumSize(new Dimension(100, 19));
+		panel_credentials.add(fld_pass);
 
-		lblUsername = new JLabel("Username");
-		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUsername.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblUsername.setBounds(20, 12, 140, 15);
-		panel_5.add(lblUsername);
+		lbl_user = new JLabel("Username");
+		lbl_user.setHorizontalAlignment(SwingConstants.CENTER);
+		lbl_user.setFont(new Font("Dialog", Font.BOLD, 10));
+		lbl_user.setBounds(20, 12, 140, 15);
+		panel_credentials.add(lbl_user);
 
-		lblPassword = new JLabel("Password");
-		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPassword.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblPassword.setBounds(228, 12, 140, 15);
-		panel_5.add(lblPassword);
+		lbl_pass = new JLabel("Password");
+		lbl_pass.setHorizontalAlignment(SwingConstants.CENTER);
+		lbl_pass.setFont(new Font("Dialog", Font.BOLD, 10));
+		lbl_pass.setBounds(228, 12, 140, 15);
+		panel_credentials.add(lbl_pass);
 
 		lbl_status = new StatusLabel();
 		lbl_status.setVisible(false);
 		lbl_status.setBounds(12, 120, 376, 15);
-		panel.add(lbl_status);
+		panel_body.add(lbl_status);
 
 		btn_cancel = new JButton("Exit");
 		btn_cancel.setMargin(new Insets(0, 5, 0, 5));
@@ -255,8 +263,8 @@ public class LoginPanel extends JPanel {
 
 				new Thread(new Runnable() {
 					public void run() {
-						login(parent, (String) fld_server.getSelectedItem(), fld_port.getText(), fld_user.getText(),
-								fld_password.getPassword());
+						login(parent, (String) fld_address.getSelectedItem(), fld_port.getText(), fld_user.getText(),
+								fld_pass.getPassword());
 					}
 				}).start();
 
@@ -348,14 +356,14 @@ public class LoginPanel extends JPanel {
 
 	private void startLogin() {
 		btn_login.setEnabled(false);
-		fld_password.setEnabled(false);
+		fld_pass.setEnabled(false);
 		fld_port.setEnabled(false);
-		fld_server.setEnabled(false);
+		fld_address.setEnabled(false);
 		fld_user.setEnabled(false);
-		lblIpdns.setEnabled(false);
-		lblPort.setEnabled(false);
-		lblPassword.setEnabled(false);
-		lblUsername.setEnabled(false);
+		lbl_address.setEnabled(false);
+		lbl_port.setEnabled(false);
+		lbl_pass.setEnabled(false);
+		lbl_user.setEnabled(false);
 
 		lbl_status.setInfo("Attempting Login");
 		lbl_status.freeze();
@@ -364,28 +372,28 @@ public class LoginPanel extends JPanel {
 	private void endLogin() {
 
 		btn_login.setEnabled(true);
-		fld_password.setEnabled(true);
+		fld_pass.setEnabled(true);
 		fld_port.setEnabled(true);
-		fld_server.setEnabled(true);
+		fld_address.setEnabled(true);
 		fld_user.setEnabled(true);
-		lblIpdns.setEnabled(true);
-		lblPort.setEnabled(true);
-		lblPassword.setEnabled(true);
-		lblUsername.setEnabled(true);
+		lbl_address.setEnabled(true);
+		lbl_port.setEnabled(true);
+		lbl_pass.setEnabled(true);
+		lbl_user.setEnabled(true);
 
 		lbl_status.unfreeze();
 
 	}
 
 	private void removeErrorBorders() {
-		fld_server.setBorder(fld_server_border);
+		fld_address.setBorder(fld_server_border);
 		fld_port.setBorder(fld_port_border);
 		fld_user.setBorder(fld_user_border);
-		fld_password.setBorder(fld_password_border);
+		fld_pass.setBorder(fld_password_border);
 	}
 
 	private void setServerError() {
-		fld_server.setBorder(new LineBorder(Color.RED));
+		fld_address.setBorder(new LineBorder(Color.RED));
 		lbl_status.setBad("Invalid server address");
 	}
 
@@ -400,7 +408,7 @@ public class LoginPanel extends JPanel {
 	}
 
 	private void setPassError() {
-		fld_password.setBorder(new LineBorder(Color.RED));
+		fld_pass.setBorder(new LineBorder(Color.RED));
 		lbl_status.setBad("Invalid password");
 	}
 
@@ -419,8 +427,8 @@ public class LoginPanel extends JPanel {
 				}
 			}
 
-			fld_server.setModel(new DefaultComboBoxModel<String>(recent));
-			fld_server.setSelectedIndex(-1);
+			fld_address.setModel(new DefaultComboBoxModel<String>(recent));
+			fld_address.setSelectedIndex(-1);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
