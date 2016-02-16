@@ -38,6 +38,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.component.Tray;
 
@@ -154,7 +155,15 @@ public class MenuControls extends JPanel {
 				MainFrame.main.panel.switchToList();
 			}
 		});
-		tglbtnList.setSelected(MainFrame.main.panel.listLoaded);
+		String view = null;
+		try {
+			view = ViewerStore.Databases.local.getString("view.last");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		tglbtnList.setSelected(view.equals("list"));
 		tglbtnList.setFont(new Font("Dialog", Font.BOLD, 10));
 		tglbtnList.setMargin(new Insets(2, 4, 2, 4));
 		tglbtnList.setBounds(12, 20, 88, 20);
@@ -166,7 +175,7 @@ public class MenuControls extends JPanel {
 				MainFrame.main.panel.switchToGraph();
 			}
 		});
-		tglbtnGraph.setSelected(MainFrame.main.panel.graphLoaded);
+		tglbtnGraph.setSelected(view.equals("graph"));
 		tglbtnGraph.setFont(new Font("Dialog", Font.BOLD, 10));
 		tglbtnGraph.setBounds(100, 20, 88, 20);
 		panel_4.add(tglbtnGraph);
