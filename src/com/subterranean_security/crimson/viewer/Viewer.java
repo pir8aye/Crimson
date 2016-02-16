@@ -26,10 +26,10 @@ import java.util.Date;
 import javax.swing.UIManager;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.ui.debug.DebugFrame;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
 import com.subterranean_security.crimson.core.util.PlatformInfo;
 import com.subterranean_security.crimson.viewer.ui.panel.MovingPanel;
@@ -41,7 +41,7 @@ import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.tweenengine.Tween;
 
 public class Viewer {
-	private static final Logger log = LoggerFactory.getLogger(Viewer.class);
+	private static final Logger log = CUtil.Logging.getLogger(Viewer.class);
 
 	/**
 	 * True when a server instance is detected that was not started by the
