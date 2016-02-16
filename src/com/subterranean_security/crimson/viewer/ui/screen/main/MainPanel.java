@@ -56,6 +56,7 @@ public class MainPanel extends JPanel {
 			loadList();
 		}
 		((CardLayout) getLayout()).show(this, "LIST");
+		ViewerStore.Databases.local.storeObject("view.last", "list");
 	}
 
 	public void switchToGraph() {
@@ -63,6 +64,7 @@ public class MainPanel extends JPanel {
 			loadGraph();
 		}
 		((CardLayout) getLayout()).show(this, "GRAPH");
+		ViewerStore.Databases.local.storeObject("view.last", "graph");
 	}
 
 	public void loadList() {
