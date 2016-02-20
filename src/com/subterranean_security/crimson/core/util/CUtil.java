@@ -437,19 +437,6 @@ public enum CUtil {
 			return String.valueOf(size);
 		}
 
-		public static void configureLogger(String name) throws JoranException, IOException {
-			String path = "com/subterranean_security/crimson/core/" + name + ".xml";
-			System.out.println("Log config: " + path);
-			LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-			loggerContext.reset();
-			JoranConfigurator configurator = new JoranConfigurator();
-			InputStream configStream = CUtil.class.getResourceAsStream(path);
-			configurator.setContext(loggerContext);
-			configurator.doConfigure(configStream);
-			configStream.close();
-
-		}
-
 		public static String getStack(Throwable e) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
@@ -890,7 +877,7 @@ public enum CUtil {
 			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 			PatternLayoutEncoder ple = new PatternLayoutEncoder();
 
-			ple.setPattern("[%date][%level{1}][%thread] %logger{10} %msg%n");
+			ple.setPattern("[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%thread] %logger{10} %msg%n");
 			ple.setContext(lc);
 			ple.start();
 
@@ -898,6 +885,7 @@ public enum CUtil {
 			ConsoleAppender<ILoggingEvent> stdout = new ConsoleAppender<ILoggingEvent>();
 			stdout.setEncoder(ple);
 			stdout.setContext(lc);
+			stdout.setName("com.subterranean_security");
 			stdout.start();
 			logger.addAppender(stdout);
 			logger.setLevel(Common.isDebugMode() ? Level.DEBUG : Level.INFO);
