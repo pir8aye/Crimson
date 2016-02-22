@@ -304,19 +304,20 @@ public class LoginPanel extends JPanel {
 					e.printStackTrace();
 				}
 
-				// update recents
-				try {
-					String successfulLogin = server + ":" + port;
-					ArrayList<String> recents = (ArrayList<String>) ViewerStore.Databases.local
-							.getObject("login.recents");
-					recents.remove(successfulLogin);
-					recents.add(successfulLogin);
+				if (!server.equals("127.0.0.1")) {
+					// update recents
+					try {
+						String successfulLogin = server + ":" + port;
+						ArrayList<String> recents = (ArrayList<String>) ViewerStore.Databases.local
+								.getObject("login.recents");
+						recents.remove(successfulLogin);
+						recents.add(successfulLogin);
 
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 
 				}
-
 				synchronized (parent) {
 					parent.notifyAll();
 				}
