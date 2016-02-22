@@ -23,6 +23,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.BadLocationException;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
@@ -128,7 +130,20 @@ public class LoginPanel extends JPanel {
 				String[] parts = ((String) fld_address.getSelectedItem()).split(":");
 				if (parts.length == 2) {
 					fld_address.setSelectedItem(parts[0].equals("Local Server") ? "127.0.0.1" : parts[0]);
-					// TODO insert port
+					// insert port
+					try {
+						fld_port.getDocument().remove(0, fld_port.getDocument().getLength());
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					// TODO find better way to add text to field
+					for (String s : parts[1].split("")) {
+						fld_port.dispatchEvent(new KeyEvent(fld_port, KeyEvent.KEY_TYPED, System.currentTimeMillis(),
+								KeyEvent.KEY_FIRST, KeyEvent.VK_UNDEFINED, s.charAt(0)));
+
+					}
 
 				}
 			}
@@ -184,8 +199,8 @@ public class LoginPanel extends JPanel {
 		panel_credentials = new JPanel();
 		panel_credentials.setBounds(6, 60, 388, 55);
 		panel_body.add(panel_credentials);
-		panel_credentials.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Credentials", TitledBorder.CENTER,
-				TitledBorder.TOP, null, null));
+		panel_credentials.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Credentials",
+				TitledBorder.CENTER, TitledBorder.TOP, null, null));
 		panel_credentials.setLayout(null);
 
 		fld_user = new JTextField();
@@ -316,7 +331,7 @@ public class LoginPanel extends JPanel {
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} 
+					}
 				}
 				synchronized (parent) {
 					parent.notifyAll();
