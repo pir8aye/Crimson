@@ -25,6 +25,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.PlatformInfo;
 
 public enum Common {
 	;
@@ -38,11 +39,7 @@ public enum Common {
 
 	public static void setDebug(boolean d) {
 		debug = d;
-		if (debug) {
-			log.debug("Debug mode enabled");
-		} else {
-			log.info("Debug mode disabled");
-		}
+		log.debug("Debug mode %s", (d ? "enabled" : "disabled"));
 
 	}
 
@@ -68,25 +65,28 @@ public enum Common {
 	public static final Instance instance = discoverInstance();
 
 	public static final File base = discoverBaseDir();
-	public static final File tmp = new File(base.getAbsolutePath() + "/tmp");
-	public static final File var = new File(base.getAbsolutePath() + "/var");
+	public static final File tmp = discoverTmpDir();
+	public static final File var = discoverVarDir();
 	public static final File gtmp = new File(System.getProperty("java.io.tmpdir"));
 
 	static {
-		try {
-			version = CUtil.Misc.getManifestAttr("Crimson-Version");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		if (instance != Instance.INSTALLER) {
+			try {
+				version = CUtil.Misc.getManifestAttr("Crimson-Version");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			if ((!base.canRead() || !base.canWrite())) {
+				log.error("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
+
+			}
+
+			log.debug("Base directory: " + base.getAbsolutePath());
+			log.debug("Temporary directory: " + tmp.getAbsolutePath());
+
 		}
-
-		if ((!base.canRead() || !base.canWrite()) && instance != Instance.INSTALLER) {
-			log.error("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
-
-		}
-
-		log.debug("Base directory: " + base.getAbsolutePath());
-		log.debug("Temporary directory: " + tmp.getAbsolutePath());
 
 	}
 
@@ -111,11 +111,14 @@ public enum Common {
 		if (CUtil.Misc.findClass("com.subterranean_security.viridian.Main")) {
 			return Instance.VIRIDIAN;
 		}
-		log.info("Unknown Instance");
+		log.error("Unknown Instance");
 		return null;
 	}
 
 	private static File discoverBaseDir() {
+		if (instance == Instance.INSTALLER) {
+			return null;
+		}
 
 		try {
 			// the base will always be two dirs above the core library
@@ -130,6 +133,27 @@ public enum Common {
 			log.error("Null Base Directory");
 			return null;
 		}
+	}
+
+	private static File discoverTmpDir() {
+		if (instance == Instance.INSTALLER) {
+			return null;
+		}
+		return new File(System.getProperty("java.io.tmpdir"));
+	}
+
+	private static File discoverVarDir() {
+		if (instance == Instance.INSTALLER) {
+			return null;
+		}
+		switch (PlatformInfo.os) {
+		case WINDOWS:
+			return new File(System.getProperty("user.home") + "/AppData/Local/Subterranean Security/Crimson/var");
+		default:
+			return new File(base.getAbsolutePath() + "/var");
+
+		}
+
 	}
 
 }
