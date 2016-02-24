@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.core.storage;
 
 import java.util.ArrayList;
 
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
 import com.subterranean_security.crimson.core.proto.net.Reports.Report;
 import com.subterranean_security.crimson.sv.Profile;
@@ -79,5 +80,6 @@ public enum Defaults {
 
 	private static void hardResetUniversal(Database db) {
 		db.storeObject("report_buffer", new ArrayList<Report>());
+		db.storeObject("crimson.version", Common.version);
 	}
 }
