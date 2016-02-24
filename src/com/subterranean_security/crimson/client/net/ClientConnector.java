@@ -92,7 +92,7 @@ public class ClientConnector implements AutoCloseable {
 		}
 		setState(ConnectionState.AUTH_STAGE1);
 		handle.write(Message.newBuilder().setId(IDGen.get())
-				.setAuth1W(Auth_1W.newBuilder().setType(AuthType.GROUP).setGroupname(group.getName()).build()).build());
+				.setAuth1W(Auth_1W.newBuilder().setType(AuthType.GROUP).setGroupName(group.getName()).build()).build());
 
 	}
 

@@ -27,9 +27,9 @@ import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
-import com.subterranean_security.crimson.core.proto.net.Auth.ChallengeResult_1W;
-import com.subterranean_security.crimson.core.proto.net.Auth.Challenge_RQ;
-import com.subterranean_security.crimson.core.proto.net.Auth.Challenge_RS;
+import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallengeResult_1W;
+import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RQ;
+import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RS;
 import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
 import com.subterranean_security.crimson.core.proto.net.FM.FileListing_RS;
 import com.subterranean_security.crimson.core.proto.net.Gen.GenReport;
@@ -149,17 +149,17 @@ public class ServerExecutor extends BasicExecutor {
 		}
 		switch (m.getAuth1W().getType()) {
 		case GROUP:
-			final Group group = ServerStore.Groups.getGroup(m.getAuth1W().getGroupname());
+			final Group group = ServerStore.Groups.getGroup(m.getAuth1W().getGroupName());
 			final int id = IDGen.get();
 
 			final String magic = CUtil.Misc.randString(64);
-			Challenge_RQ rq = Challenge_RQ.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
+			GroupChallenge_RQ rq = GroupChallenge_RQ.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
 			receptor.handle.write(Message.newBuilder().setId(id).setChallengeRq(rq).build());
 
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						Challenge_RS rs = receptor.cq.take(id, 7, TimeUnit.SECONDS).getChallengeRs();
+						GroupChallenge_RS rs = receptor.cq.take(id, 7, TimeUnit.SECONDS).getChallengeRs();
 						boolean flag = rs.getResult().equals(Crypto.sign(magic, group.getKey()));
 						if (flag) {
 							receptor.setState(ConnectionState.AUTH_STAGE2);
@@ -168,7 +168,8 @@ public class ServerExecutor extends BasicExecutor {
 							receptor.setState(ConnectionState.CONNECTED);
 						}
 						receptor.handle.write(Message.newBuilder().setId(id)
-								.setChallengeresult1W(ChallengeResult_1W.newBuilder().setResult(flag).build()).build());
+								.setChallengeresult1W(GroupChallengeResult_1W.newBuilder().setResult(flag).build())
+								.build());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -189,10 +190,11 @@ public class ServerExecutor extends BasicExecutor {
 		if (receptor.getState() != ConnectionState.AUTH_STAGE2) {
 			return;
 		}
-		Challenge_RQ rq = m.getChallengeRq();
+		GroupChallenge_RQ rq = m.getChallengeRq();
 		Group group = ServerStore.Groups.getGroup(rq.getGroupName());
 
-		Challenge_RS rs = Challenge_RS.newBuilder().setResult(Crypto.sign(rq.getMagic(), group.getKey())).build();
+		GroupChallenge_RS rs = GroupChallenge_RS.newBuilder().setResult(Crypto.sign(rq.getMagic(), group.getKey()))
+				.build();
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setChallengeRs(rs).build());
 		try {
 			Thread.sleep(100);

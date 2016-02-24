@@ -24,8 +24,8 @@ message Message {
 	//RQRS
 	optional Login_RQ login_rq = 4;
 	optional Login_RS login_rs = 5;
-	optional Challenge_RQ challenge_rq = 6;
-	optional Challenge_RS challenge_rs = 7;
+	optional GroupChallenge_RQ challenge_rq = 6;
+	optional GroupChallenge_RS challenge_rs = 7;
 	optional Generate_RQ generate_rq = 8;
 	optional Generate_RS generate_rs = 9;
 	optional StateChange_RQ state_change_rq = 10;
@@ -38,7 +38,7 @@ message Message {
 	optional Ping_RS ping_rs = 18;
 
 	//ONE WAY
-	optional ChallengeResult_1W challengeresult_1w = 140;
+	optional GroupChallengeResult_1W challengeresult_1w = 140;
 	optional Auth_1W auth_1w = 141;
 	optional Report_1W report_1w = 142;
 }

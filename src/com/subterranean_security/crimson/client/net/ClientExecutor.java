@@ -25,9 +25,9 @@ import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.modules.GetInfo;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
-import com.subterranean_security.crimson.core.proto.net.Auth.ChallengeResult_1W;
-import com.subterranean_security.crimson.core.proto.net.Auth.Challenge_RQ;
-import com.subterranean_security.crimson.core.proto.net.Auth.Challenge_RS;
+import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallengeResult_1W;
+import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RQ;
+import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RS;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.proto.net.Stream.Param;
@@ -113,7 +113,7 @@ public class ClientExecutor extends BasicExecutor {
 			return;
 		}
 		String result = Crypto.sign(m.getChallengeRq().getMagic(), group.getKey());
-		Challenge_RS rs = Challenge_RS.newBuilder().setResult(result).build();
+		GroupChallenge_RS rs = GroupChallenge_RS.newBuilder().setResult(result).build();
 		connector.handle.write(Message.newBuilder().setId(m.getId()).setChallengeRs(rs).build());
 	}
 
@@ -143,7 +143,7 @@ public class ClientExecutor extends BasicExecutor {
 		final int id = IDGen.get();
 
 		final String magic = CUtil.Misc.randString(64);
-		Challenge_RQ rq = Challenge_RQ.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
+		GroupChallenge_RQ rq = GroupChallenge_RQ.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
 		connector.handle.write(Message.newBuilder().setId(id).setChallengeRq(rq).build());
 
 		new Thread(new Runnable() {
@@ -166,7 +166,7 @@ public class ClientExecutor extends BasicExecutor {
 					flag = false;
 				}
 
-				ChallengeResult_1W.Builder oneway = ChallengeResult_1W.newBuilder().setResult(flag);
+				GroupChallengeResult_1W.Builder oneway = GroupChallengeResult_1W.newBuilder().setResult(flag);
 				if (flag) {
 					oneway.setInitialInfo(GetInfo.getStatic());
 					connector.setState(ConnectionState.AUTHENTICATED);
