@@ -21,11 +21,11 @@ import java.io.File;
 
 import com.subterranean_security.crimson.core.util.CUtil;
 
-public class ViewerDB extends Database {
+public class ClientDB extends Database {
 
 	public String master;
 
-	public ViewerDB(File dfile) throws Exception {
+	public ClientDB(File dfile) throws Exception {
 
 		if (!dfile.exists()) {
 			// copy the template
