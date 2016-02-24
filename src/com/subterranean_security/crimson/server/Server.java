@@ -69,7 +69,7 @@ public final class Server {
 		// start a localhost listener (dont add it to the store)
 		log.debug("Initializing local listener");
 		// TODO only accept connections from localhost
-		localListener = new Listener(2031, true, true, false);
+		localListener = new Listener(10101, true, true, false);
 
 		start();
 
