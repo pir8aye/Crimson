@@ -40,4 +40,8 @@ public enum StreamStore {
 		streams.put(id, s);
 	}
 
+	public static int size() {
+		return streams.size();
+	}
+
 }
