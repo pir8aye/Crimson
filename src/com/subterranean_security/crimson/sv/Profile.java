@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.sv;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.proto.net.Keylogger.KLog;
 
@@ -29,6 +30,11 @@ public class Profile implements Serializable {
 
 	private String hostname;
 	private String username;
+	private String timezone;
+	private String language;
+	private ArrayList<String> internal_ip;
+	private ArrayList<String> external_ip;
+	private float cpu_usage;
 
 	private KLog klog;
 
