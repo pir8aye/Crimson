@@ -150,6 +150,11 @@ public class ServerExecutor extends BasicExecutor {
 		switch (m.getAuth1W().getType()) {
 		case GROUP:
 			final Group group = ServerStore.Authentication.getGroup(m.getAuth1W().getGroupName());
+			if (group == null) {
+				log.debug("Authentication failed: Invalid Group: %s", m.getAuth1W().getGroupName());
+				receptor.setState(ConnectionState.CONNECTED);
+				return;
+			}
 			final int id = IDGen.get();
 
 			final String magic = CUtil.Misc.randString(64);
