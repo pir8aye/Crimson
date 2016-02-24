@@ -17,8 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.component;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
@@ -26,18 +29,18 @@ import com.subterranean_security.crimson.core.util.CUtil;
 
 public class StatusLights extends JComponent {
 
-	private static final long	serialVersionUID	= 1L;
-	private static final Color	unlit				= Color.lightGray;
+	private static final long serialVersionUID = 1L;
+	private static final Color unlit = Color.lightGray;
 
-	private Color				TOP					= unlit;
-	private Color				MID					= unlit;
-	private Color				BOT					= unlit;
+	private Color TOP = unlit;
+	private Color MID = unlit;
+	private Color BOT = unlit;
 
-	private String				topTip;
-	private String				midTip;
-	private String				botTip;
+	private String topTip;
+	private String midTip;
+	private String botTip;
 
-	private Thread				animator			= new Thread();
+	private Thread animator = new Thread();
 
 	public boolean isAnimating() {
 		return animator.isAlive();
@@ -57,6 +60,10 @@ public class StatusLights extends JComponent {
 	@Override
 	public void paintComponent(Graphics graphics) {
 		graphics.setColor(Color.black);
+
+		Graphics2D g2 = (Graphics2D) graphics;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setStroke(new BasicStroke(1.1f));
 
 		int circleDiameter = this.getWidth() - 1;
 
@@ -267,11 +274,11 @@ public class StatusLights extends JComponent {
 		animator.interrupt();
 	}
 
-	Thread	blinker	= new Thread(new Runnable() {
-						public void run() {
+	Thread blinker = new Thread(new Runnable() {
+		public void run() {
 
-						}
-					});
+		}
+	});
 
 	public void blink(final Color color, final int i) {
 
