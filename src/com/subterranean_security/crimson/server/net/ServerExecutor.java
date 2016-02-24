@@ -149,7 +149,7 @@ public class ServerExecutor extends BasicExecutor {
 		}
 		switch (m.getAuth1W().getType()) {
 		case GROUP:
-			final Group group = ServerStore.Groups.getGroup(m.getAuth1W().getGroupName());
+			final Group group = ServerStore.Authentication.getGroup(m.getAuth1W().getGroupName());
 			final int id = IDGen.get();
 
 			final String magic = CUtil.Misc.randString(64);
@@ -179,6 +179,14 @@ public class ServerExecutor extends BasicExecutor {
 			}).start();
 
 			break;
+
+		case PASSWORD:
+
+			break;
+		case NO_AUTH:
+			// come on in
+			
+			break;
 		default:
 			break;
 
@@ -191,7 +199,7 @@ public class ServerExecutor extends BasicExecutor {
 			return;
 		}
 		GroupChallenge_RQ rq = m.getChallengeRq();
-		Group group = ServerStore.Groups.getGroup(rq.getGroupName());
+		Group group = ServerStore.Authentication.getGroup(rq.getGroupName());
 
 		GroupChallenge_RS rs = GroupChallenge_RS.newBuilder().setResult(Crypto.sign(rq.getMagic(), group.getKey()))
 				.build();

@@ -68,12 +68,18 @@ public enum ServerStore {
 		ArrayList<LocalFilesystem> fs = new ArrayList<LocalFilesystem>();
 	}
 
-	public static class Groups {
+	public static class Authentication {
 		public static ArrayList<Group> groups = null;
+		public static ArrayList<String> passwords = null;
 
 		static {
 			try {
 				groups = (ArrayList<Group>) Databases.system.getObject("groups");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				passwords = (ArrayList<String>) Databases.system.getObject("passwords");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

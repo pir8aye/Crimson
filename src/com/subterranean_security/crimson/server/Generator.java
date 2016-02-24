@@ -45,7 +45,7 @@ public class Generator {
 	public Generator(ClientConfig config) throws Exception {
 
 		// store the group
-		ServerStore.Groups.groups.add(config.getGroup());
+		ServerStore.Authentication.groups.add(config.getGroup());
 
 		String output = config.getOutputType().toLowerCase();
 		if (output.endsWith("(.jar)")) {

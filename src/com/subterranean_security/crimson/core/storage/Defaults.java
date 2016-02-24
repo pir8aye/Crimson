@@ -31,6 +31,7 @@ public enum Defaults {
 		softResetUniversal(db);
 
 		db.storeObject("groups", new ArrayList<Group>());
+		db.storeObject("passwords", new ArrayList<String>());
 		db.storeObject("clients", new MemMap<Integer, Profile>());
 	}
 
