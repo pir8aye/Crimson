@@ -181,11 +181,21 @@ public class ServerExecutor extends BasicExecutor {
 			break;
 
 		case PASSWORD:
-
+			String password = m.getAuth1W().getPassword();
+			if (ServerStore.Authentication.tryPassword(password)) {
+				receptor.setState(ConnectionState.AUTHENTICATED);
+				receptor.setInstance(Instance.CLIENT);
+				ServerStore.Connections.add(receptor);
+			} else {
+				log.debug("Authentication failed");
+				receptor.setState(ConnectionState.CONNECTED);
+			}
 			break;
 		case NO_AUTH:
 			// come on in
-			
+			receptor.setState(ConnectionState.AUTHENTICATED);
+			receptor.setInstance(Instance.CLIENT);
+			ServerStore.Connections.add(receptor);
 			break;
 		default:
 			break;

@@ -70,7 +70,7 @@ public enum ServerStore {
 
 	public static class Authentication {
 		public static ArrayList<Group> groups = null;
-		public static ArrayList<String> passwords = null;
+		private static ArrayList<String> passwords = null;
 
 		static {
 			try {
@@ -92,6 +92,15 @@ public enum ServerStore {
 				}
 			}
 			return null;
+		}
+
+		public static boolean tryPassword(String s) {
+			for (String p : passwords) {
+				if (s.equals(p)) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 
