@@ -67,6 +67,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.subterranean_security.cinstaller.Main;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.server.Server;
@@ -523,24 +524,27 @@ public enum CUtil {
 				return getManifestAttr(attr,
 						new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
 			} catch (Throwable e1) {
-
 			}
 
 			try {
 				return getManifestAttr(attr,
 						new File(Viewer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
 			} catch (Throwable e1) {
-
 			}
 
 			try {
 				return getManifestAttr(attr,
 						new File(Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
 			} catch (Throwable e1) {
-
 			}
-			log.error("Failed to get manifest attribute from default jar");
-			return "FAILED";
+
+			try {
+				return getManifestAttr(attr,
+						new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
+			} catch (Throwable e1) {
+			}
+			log.error("Failed to get manifest attribute '%s' from default jar", attr);
+			return null;
 
 		}
 
