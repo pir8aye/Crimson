@@ -28,7 +28,7 @@ import org.zeroturnaround.zip.ZipUtil;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.net.Gen.GenReport;
-import com.subterranean_security.crimson.core.storage.ViewerDB;
+import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Generator {
@@ -75,11 +75,27 @@ public class Generator {
 
 		// create a database for the client
 		try {
-			ViewerDB database = new ViewerDB(clientDB);
+			ClientDB database = new ClientDB(clientDB);
 			database.storeObject("generation_date", start);
 			database.storeObject("reconnect_period", ic.getReconnectPeriod());
-			database.storeObject("group", ic.getGroup());
+			
 			database.storeObject("nts", ic.getTargetList());
+
+			database.storeObject("auth.type", ic.getAuthType());
+			switch (ic.getAuthType()) {
+			case GROUP:
+				database.storeObject("auth.group", ic.getGroup());
+				break;
+			case NO_AUTH:
+				break;
+			case PASSWORD:
+				database.storeObject("auth.password", ic.getPassword());
+				break;
+			default:
+				break;
+
+			}
+
 			database.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

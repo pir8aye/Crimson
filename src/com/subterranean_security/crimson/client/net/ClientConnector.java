@@ -83,16 +83,45 @@ public class ClientConnector implements AutoCloseable {
 	}
 
 	private void authenticate() {
-		Group group = null;
+		AuthType authType = null;
 		try {
-			group = (Group) Client.clientDB.getObject("group");
+			authType = (AuthType) Client.clientDB.getObject("auth.type");
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			return;
 		}
+
+		Auth_1W.Builder auth = Auth_1W.newBuilder().setType(authType);
+
+		switch (authType) {
+		case GROUP:
+			Group group = null;
+			try {
+				group = (Group) Client.clientDB.getObject("auth.group");
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				return;
+			}
+			auth.setGroupName(group.getName());
+			break;
+		case NO_AUTH:
+			break;
+		case PASSWORD:
+			try {
+				auth.setPassword(Client.clientDB.getString("auth.password"));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+			break;
+		default:
+			break;
+
+		}
+
 		setState(ConnectionState.AUTH_STAGE1);
-		handle.write(Message.newBuilder().setId(IDGen.get())
-				.setAuth1W(Auth_1W.newBuilder().setType(AuthType.GROUP).setGroupName(group.getName()).build()).build());
+		handle.write(Message.newBuilder().setId(IDGen.get()).setAuth1W(auth).build());
 
 	}
 

@@ -24,7 +24,7 @@ import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
-import com.subterranean_security.crimson.core.storage.ViewerDB;
+import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.server.net.Listener;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.Profile;
@@ -59,7 +59,7 @@ public enum ServerStore {
 
 	public static class Databases {
 		public static ServerDB system;
-		public static HashMap<String, ViewerDB> loaded_viewers = new HashMap<String, ViewerDB>();// UID
+		public static HashMap<String, ClientDB> loaded_viewers = new HashMap<String, ClientDB>();// UID
 
 	}
 

@@ -39,7 +39,7 @@ import com.subterranean_security.crimson.core.proto.net.Login.Login_RS;
 import com.subterranean_security.crimson.core.proto.net.Login.ServerInfoDelta_EV;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.proto.net.State.StateChange_RQ;
-import com.subterranean_security.crimson.core.storage.ViewerDB;
+import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -236,7 +236,7 @@ public class ServerExecutor extends BasicExecutor {
 			receptor.setInstance(Instance.VIEWER);
 			receptor.setState(ConnectionState.AUTHENTICATED);
 			ServerStore.Connections.add(receptor);
-			ViewerDB vdb = ServerStore.Databases.loaded_viewers
+			ClientDB vdb = ServerStore.Databases.loaded_viewers
 					.get(ServerStore.Databases.system.getUID(m.getLoginRq().getUsername()));
 			ServerInfoDelta_EV.Builder builder = ServerInfoDelta_EV.newBuilder();
 			try {

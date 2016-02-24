@@ -1,5 +1,8 @@
 package com.subterranean_security.crimson.core.proto.net;
 
+import "net/Auth.proto";
+
+
 message GenReport {
 	required bool result = 1;
 	required int32 gen_time = 2;
@@ -18,7 +21,7 @@ message Group {
 message ClientConfig {
 //general
 	required string output_type = 1;
-	required Group group = 2;
+	
 	optional int32 delay = 3;
 	optional bool always_imsg = 4;
 	optional string imsg = 5;
@@ -40,6 +43,10 @@ message ClientConfig {
 	optional bool allow_sol = 17;
 	optional bool allow_bsd = 18;
 	optional bool allow_and = 19;
+	
+	required AuthType authType = 21;
+	optional Group group = 22;
+	optional string password = 23;
 
 	//for parser only
 	optional bool waiver = 20;
