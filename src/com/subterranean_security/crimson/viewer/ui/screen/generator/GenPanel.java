@@ -60,6 +60,7 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.net.Gen;
+import com.subterranean_security.crimson.core.proto.net.Auth.AuthType;
 import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.net.Gen.NetworkTarget;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
@@ -96,6 +97,10 @@ public class GenPanel extends JPanel {
 	private static final String sh = "Shell Script (.sh)";
 	private JSpinner fld_delay;
 	private JSpinner fld_connect_period;
+
+	private String group_text = "Group authentication is the most secure mechanism. A \"group key\" is embedded in the client and only servers that posses this key may authenticate with the client.";
+	private String pass_text = "A simple password is used to authenticate the client. This is less secure than group authentication";
+	private String none_text = "The client will request to skip authentication entirely.";
 
 	private String[] ipath_win = new String[] { "C:/Users/%USERNAME%/Documents/Crimson" };
 	private String[] ipath_lin = new String[] { "/home/%USERNAME%/.crimson" };
@@ -466,27 +471,43 @@ public class GenPanel extends JPanel {
 		txtrGroupAuthenticationIs.setOpaque(false);
 		txtrGroupAuthenticationIs.setWrapStyleWord(true);
 		txtrGroupAuthenticationIs.setLineWrap(true);
-		txtrGroupAuthenticationIs.setText(
-				"Group authentication is the most secure mechanism. A \"group key\" is embedded in the client and only servers that posses this key may authenticate with the client.");
+		txtrGroupAuthenticationIs.setText(group_text);
 		panel_8.add(txtrGroupAuthenticationIs, BorderLayout.CENTER);
 
 		JPanel panel_10 = new JPanel();
 		panel_8.add(panel_10, BorderLayout.WEST);
 
+		JPanel panel_9 = new JPanel();
+		atab.add(panel_9, BorderLayout.CENTER);
+		panel_9.setLayout(new CardLayout(0, 0));
+
 		authType = new JComboBox();
 		authType.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				switch ((String) authType.getSelectedItem()) {
+				case "Group": {
+					txtrGroupAuthenticationIs.setText(group_text);
+					((CardLayout) panel_9.getLayout()).show(panel_9, "group");
+					break;
+				}
+				case "Password": {
+					txtrGroupAuthenticationIs.setText(pass_text);
+					((CardLayout) panel_9.getLayout()).show(panel_9, "Password");
+					break;
+				}
+				case "None": {
+					txtrGroupAuthenticationIs.setText(none_text);
+					((CardLayout) panel_9.getLayout()).show(panel_9, "None");
+					break;
+				}
+				}
 			}
 		});
 		authType.setModel(new DefaultComboBoxModel(new String[] { "Group", "Password", "None" }));
 		panel_10.add(authType);
 
-		JPanel panel_9 = new JPanel();
-		atab.add(panel_9, BorderLayout.CENTER);
-		panel_9.setLayout(new CardLayout(0, 0));
-
 		JPanel authpanel_group = new JPanel();
-		panel_9.add(authpanel_group, "name_13122844881559");
+		panel_9.add(authpanel_group, "group");
 		authpanel_group.setLayout(new BorderLayout(0, 0));
 
 		JPanel panel_11 = new JPanel();
@@ -558,16 +579,19 @@ public class GenPanel extends JPanel {
 		JPanel authpanel_password = new JPanel();
 		authpanel_password.setBorder(
 				new TitledBorder(null, "Password Authentication", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_9.add(authpanel_password, "name_13128462346933");
+		panel_9.add(authpanel_password, "Password");
 
 		JPanel authpanel_none = new JPanel();
-		panel_9.add(authpanel_none, "name_13132135038447");
+		panel_9.add(authpanel_none, "None");
 
 		JLabel lblNewLabel = new JLabel("Warning: Authentication mode is set to NONE");
 		authpanel_none.add(lblNewLabel);
 
-		JLabel lblThisClientWill = new JLabel("This client will be able to connect to any server!");
+		JLabel lblThisClientWill = new JLabel("This client will be able to authenticate with any server!");
 		authpanel_none.add(lblThisClientWill);
+		
+		JLabel lblSslEncryptionWill = new JLabel("SSL encryption will still be used");
+		authpanel_none.add(lblSslEncryptionWill);
 		tabbedPane.setTabComponentAt(4, new GenTabComponent("lock", "Auth"));
 
 		otab = new JPanel();
@@ -690,7 +714,7 @@ public class GenPanel extends JPanel {
 
 		if (Common.isDebugMode()) {
 			cbx_allow_win.setSelected(true);
-			table.add(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(2031).build());
+			table.add(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build());
 			fld_path.setText("C:/Users/dev/Desktop/client.jar");
 			cbx_waiver.setSelected(true);
 		}
@@ -727,7 +751,7 @@ public class GenPanel extends JPanel {
 		ic.setOutputType((String) type_comboBox.getSelectedItem());
 		ic.setDelay((int) fld_delay.getValue());
 		ic.setReconnectPeriod((int) fld_connect_period.getValue());
-		ic.setGroup(Gen.Group.newBuilder().setName(fld_group_name.getText()).setKey(CUtil.Misc.randString(64)).build());
+
 		ic.setImsg(fld_install_message.getText());
 		ic.setAllowBsd(cbx_allow_bsd.isSelected());
 		ic.setAllowLin(cbx_allow_lin.isSelected());
@@ -735,6 +759,23 @@ public class GenPanel extends JPanel {
 		ic.setAllowSol(cbx_allow_sol.isSelected());
 		ic.setAllowWin(cbx_allow_win.isSelected());
 		ic.setAllowAnd(cbx_allow_and.isSelected());
+
+		switch ((String) authType.getSelectedItem()) {
+		case "Group": {
+			ic.setAuthType(AuthType.GROUP);
+			ic.setGroup(
+					Gen.Group.newBuilder().setName(fld_group_name.getText()).setKey(CUtil.Misc.randString(64)).build());
+			break;
+		}
+		case "Password": {
+			ic.setAuthType(AuthType.PASSWORD);
+			break;
+		}
+		case "None": {
+			ic.setAuthType(AuthType.NO_AUTH);
+			break;
+		}
+		}
 
 		if (fld_install_windows.getSelectedItem() == null) {
 			ic.setPathWin(ipath_win[0]);
