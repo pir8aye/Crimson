@@ -60,7 +60,7 @@ public final class Server {
 
 		// initialize system database
 		try {
-			ServerStore.Databases.system = new ServerDB(new File(Common.base.getAbsolutePath() + "/var/system.db"));
+			ServerStore.Databases.system = new ServerDB(new File(Common.var.getAbsolutePath() + "/system.db"));
 		} catch (Exception e) {
 			log.error("Could not initialize system database");
 
@@ -73,7 +73,7 @@ public final class Server {
 
 		start();
 
-		generateDebugInstaller();
+		// generateDebugInstaller();
 	}
 
 	public static boolean isRunning() {
