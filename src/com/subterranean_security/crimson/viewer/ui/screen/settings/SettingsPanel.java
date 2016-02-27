@@ -142,6 +142,7 @@ public class SettingsPanel extends JPanel {
 					hlh.chckbxInternalIp.setSelected(true);
 					break;
 				case JAVA_VERSION:
+					hlh.chckbxJavaVersion.setSelected(true);
 					break;
 				case LANGUAGE:
 					hlh.chckbxLanguage.setSelected(true);
@@ -150,10 +151,13 @@ public class SettingsPanel extends JPanel {
 					hlh.chckbxMessagePing.setSelected(true);
 					break;
 				case MONITOR_COUNT:
+					hlh.chckbxMonitorCount.setSelected(true);
 					break;
 				case OS_ARCH:
+					hlh.chckbxOSArch.setSelected(true);
 					break;
 				case OS_FAMILY:
+					hlh.chckbxOperatingSystem.setSelected(true);
 					break;
 				case RAM_CAPACITY:
 					hlh.chckbxRamCapacity.setSelected(true);
@@ -171,8 +175,10 @@ public class SettingsPanel extends JPanel {
 					hlh.chckbxUsername.setSelected(true);
 					break;
 				case USER_STATUS:
+					hlh.chckbxUserStatus.setSelected(true);
 					break;
 				case VIRTUALIZATION:
+					hlh.chckbxVirtualization.setSelected(true);
 					break;
 				default:
 					break;

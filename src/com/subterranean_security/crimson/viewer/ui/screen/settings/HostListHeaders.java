@@ -30,7 +30,7 @@ public class HostListHeaders extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	//TODO FINISH
+	// TODO FINISH
 	public JCheckBox chckbxLocation = new JCheckBox(Headers.COUNTRY.toString());
 	public JCheckBox chckbxLanguage = new JCheckBox(Headers.LANGUAGE.toString());
 	public JCheckBox chckbxCrimsonVersion = new JCheckBox(Headers.CRIMSON_VERSION.toString());
@@ -50,37 +50,47 @@ public class HostListHeaders extends JPanel {
 	public JCheckBox chckbxActiveWindow = new JCheckBox("Active Window");
 	public JCheckBox chckbxScreenPreview = new JCheckBox("Screen Preview");
 
+	public JCheckBox chckbxMonitorCount = new JCheckBox("Monitor Count");
+	public JCheckBox chckbxOSArch = new JCheckBox("OS Architecture");
+	public JCheckBox chckbxVirtualization = new JCheckBox("Virtualization");
+	public JCheckBox chckbxJavaVersion = new JCheckBox("Java Version");
+
 	public HostListHeaders() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "General", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(panel);
-		panel.setLayout(new GridLayout(5, 3, 0, 0));
+		JPanel static_panel = new JPanel();
+		static_panel.setBorder(new TitledBorder(null, "General", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(static_panel);
+		static_panel.setLayout(new GridLayout(5, 3, 0, 0));
 
-		panel.add(chckbxLocation);
-		panel.add(chckbxLanguage);
-		panel.add(chckbxCrimsonVersion);
-		panel.add(chckbxTimezone);
-		panel.add(chckbxHostname);
-		panel.add(chckbxUsername);
-		panel.add(chckbxInternalIp);
-		panel.add(chckbxExternalIp);
-		panel.add(chckbxOperatingSystem);
-		panel.add(chckbxRamCapacity);
-		panel.add(chckbxUserStatus);
+		static_panel.add(chckbxLocation);
+		static_panel.add(chckbxLanguage);
+		static_panel.add(chckbxCrimsonVersion);
+		static_panel.add(chckbxTimezone);
+		static_panel.add(chckbxHostname);
+		static_panel.add(chckbxUsername);
+		static_panel.add(chckbxInternalIp);
+		static_panel.add(chckbxExternalIp);
+		static_panel.add(chckbxOperatingSystem);
+		static_panel.add(chckbxRamCapacity);
 
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new TitledBorder(null, "Dynamic", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(panel_1);
-		panel_1.setLayout(new GridLayout(5, 3, 0, 0));
+		static_panel.add(chckbxMonitorCount);
+		static_panel.add(chckbxOSArch);
+		static_panel.add(chckbxVirtualization);
+		static_panel.add(chckbxJavaVersion);
 
-		panel_1.add(chckbxMessagePing);
-		panel_1.add(chckbxRamUsage);
-		panel_1.add(chckbxCpuTemp);
-		panel_1.add(chckbxCpuUsage);
-		panel_1.add(chckbxActiveWindow);
-		panel_1.add(chckbxScreenPreview);
+		JPanel dynamic_panel = new JPanel();
+		dynamic_panel.setBorder(new TitledBorder(null, "Dynamic", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(dynamic_panel);
+		dynamic_panel.setLayout(new GridLayout(5, 3, 0, 0));
+
+		dynamic_panel.add(chckbxMessagePing);
+		dynamic_panel.add(chckbxUserStatus);
+		dynamic_panel.add(chckbxRamUsage);
+		dynamic_panel.add(chckbxCpuTemp);
+		dynamic_panel.add(chckbxCpuUsage);
+		dynamic_panel.add(chckbxActiveWindow);
+		dynamic_panel.add(chckbxScreenPreview);
 
 	}
 
