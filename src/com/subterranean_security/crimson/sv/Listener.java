@@ -15,9 +15,12 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.net;
+package com.subterranean_security.crimson.sv;
+
+import java.io.Serializable;
 
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.server.net.ServerInitializer;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -26,16 +29,33 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-public class Listener implements AutoCloseable {
+public class Listener implements AutoCloseable, Serializable {
 
-	private ChannelFuture future;
-	private EventLoopGroup bossGroup;
-	private EventLoopGroup workerGroup;
+	private static final long serialVersionUID = 1L;
+	private transient ChannelFuture future;
+	private transient EventLoopGroup bossGroup;
+	private transient EventLoopGroup workerGroup;
 
-	public static final String id = CUtil.Misc.randString(8);
+	public String name;
+	public int port;
+	public boolean local;
+	public boolean upnp;
+	public boolean clientAcceptor;
+	public boolean viewerAcceptor;
+	public final String id = CUtil.Misc.randString(8);// ensure this wont
+														// change
 
-	// TODO only accept localhost connections
-	public Listener(int port, boolean acceptClients, boolean acceptViewers, boolean upnp) {
+	public Listener(String name, int port, boolean local, boolean acceptClients, boolean acceptViewers, boolean upnp) {
+		this.port = port;
+		this.name = name;
+		this.local = local;
+		this.upnp = upnp;
+		this.clientAcceptor = acceptClients;
+		this.viewerAcceptor = acceptViewers;
+		start();
+	}
+
+	public void start() {
 		bossGroup = new NioEventLoopGroup();
 		workerGroup = new NioEventLoopGroup();
 
