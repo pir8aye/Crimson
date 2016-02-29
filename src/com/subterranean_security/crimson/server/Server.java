@@ -28,7 +28,7 @@ import com.subterranean_security.crimson.core.proto.net.Gen.Group;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
-import com.subterranean_security.crimson.server.net.Listener;
+import com.subterranean_security.crimson.sv.Listener;
 
 public final class Server {
 	private static final Logger log = CUtil.Logging.getLogger(Server.class);
@@ -68,8 +68,7 @@ public final class Server {
 
 		// start a localhost listener (dont add it to the store)
 		log.debug("Initializing local listener");
-		// TODO only accept connections from localhost
-		localListener = new Listener(10101, true, true, false);
+		localListener = new Listener("Local Listener", 10101, true, true, true, false);
 
 		start();
 
