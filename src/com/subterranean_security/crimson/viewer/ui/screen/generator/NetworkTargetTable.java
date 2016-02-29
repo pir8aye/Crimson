@@ -29,9 +29,9 @@ import com.subterranean_security.crimson.core.proto.net.Gen.NetworkTarget;
 
 public class NetworkTargetTable extends JScrollPane {
 
-	private static final long	serialVersionUID	= 1L;
-	private JTable				table				= new JTable();
-	private TM					tm					= new TM();
+	private static final long serialVersionUID = 1L;
+	private JTable table = new JTable();
+	private TM tm = new TM();
 
 	public NetworkTargetTable() {
 		table.setModel(tm);
@@ -53,9 +53,10 @@ public class NetworkTargetTable extends JScrollPane {
 				if (!source.isRowSelected(sourceRow)) {
 					source.changeSelection(sourceRow, 0, false, false);
 				}
-				NetworkTarget selected = tm.getAt(sourceRow);
+
 				if (e.getButton() == MouseEvent.BUTTON3) {
-					//right click
+					NetworkTarget selected = tm.getAt(sourceRow);
+					// right click
 
 				}
 			}
@@ -74,9 +75,9 @@ public class NetworkTargetTable extends JScrollPane {
 
 class TM extends AbstractTableModel {
 
-	private static final long			serialVersionUID	= 1L;
-	private final String[]				headers				= new String[] { "Address", "Port" };
-	private ArrayList<NetworkTarget>	targets				= new ArrayList<NetworkTarget>();
+	private static final long serialVersionUID = 1L;
+	private final String[] headers = new String[] { "Address", "Port" };
+	private ArrayList<NetworkTarget> targets = new ArrayList<NetworkTarget>();
 
 	@Override
 	public int getColumnCount() {
