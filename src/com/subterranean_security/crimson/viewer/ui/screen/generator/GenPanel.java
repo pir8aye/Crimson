@@ -81,7 +81,7 @@ public class GenPanel extends JPanel {
 	private JCheckBox cbx_waiver;
 	private JTextField fld_group_name;
 	private JTextArea txt_output_desc;
-	private NetworkTable table;
+	private NetworkTargetTable table;
 	private JTextField fld_server;
 	private JTextField fld_port;
 	private JCheckBox cbx_allow_win;
@@ -370,7 +370,7 @@ public class GenPanel extends JPanel {
 		tabbedPane.setTabComponentAt(3, new GenTabComponent("computer", "Network"));
 		ntab.setLayout(null);
 
-		table = new NetworkTable();
+		table = new NetworkTargetTable();
 		table.setBounds(12, 12, 330, 65);
 		ntab.add(table);
 

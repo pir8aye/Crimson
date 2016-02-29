@@ -27,13 +27,13 @@ import javax.swing.table.AbstractTableModel;
 
 import com.subterranean_security.crimson.core.proto.net.Gen.NetworkTarget;
 
-public class NetworkTable extends JScrollPane {
+public class NetworkTargetTable extends JScrollPane {
 
 	private static final long	serialVersionUID	= 1L;
 	private JTable				table				= new JTable();
 	private TM					tm					= new TM();
 
-	public NetworkTable() {
+	public NetworkTargetTable() {
 		table.setModel(tm);
 		table.setFillsViewportHeight(true);
 		table.setShowVerticalLines(false);
