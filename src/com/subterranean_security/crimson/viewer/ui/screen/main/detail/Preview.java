@@ -19,14 +19,14 @@ package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 
 import javax.swing.JPanel;
 
-import com.subterranean_security.crimson.sv.Profile;
+import com.subterranean_security.crimson.sv.ClientProfile;
 
 public class Preview extends JPanel implements DModule {
 
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void setTarget(Profile p) {
+	public void setTarget(ClientProfile p) {
 		// TODO Auto-generated method stub
 
 	}

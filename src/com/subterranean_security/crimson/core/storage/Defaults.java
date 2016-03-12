@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
 import com.subterranean_security.crimson.core.proto.net.Reports.Report;
-import com.subterranean_security.crimson.sv.Profile;
+import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.ViewerProfile;
 
 public enum Defaults {
 	;
@@ -32,7 +33,9 @@ public enum Defaults {
 
 		db.storeObject("groups", new ArrayList<Group>());
 		db.storeObject("passwords", new ArrayList<String>());
-		db.storeObject("clients", new MemMap<Integer, Profile>());
+		db.storeObject("profiles.clients", new MemMap<Integer, ClientProfile>());
+		db.storeObject("profiles.viewers", new MemMap<Integer, ViewerProfile>());
+		db.storeObject("profiles.idcount", 0);
 	}
 
 	public static void hardReset(ServerDB db) {

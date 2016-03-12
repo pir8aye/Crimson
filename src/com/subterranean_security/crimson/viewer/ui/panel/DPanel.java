@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
-import com.subterranean_security.crimson.sv.Profile;
+import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Processor;
 
@@ -66,7 +66,7 @@ public class DPanel extends SLPanel {
 
 	}
 
-	public synchronized void showDetail(Profile sp) {
+	public synchronized void showDetail(ClientProfile sp) {
 
 		if (!showing) {
 			// move the detail panel out
@@ -162,7 +162,7 @@ class Detail extends JPanel {
 
 	};
 
-	public void nowOpen(Profile sp) {
+	public void nowOpen(ClientProfile sp) {
 		for (DModule dm : modules) {
 			dm.setTarget(sp);
 			dm.setShowing(true);

@@ -15,38 +15,13 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
+package com.subterranean_security.crimson.sv;
 
-import javax.swing.JPanel;
+public class ViewerProfile {
 
-import com.subterranean_security.crimson.sv.ClientProfile;
-
-public class WorldMap extends JPanel implements DModule {
-
-	private static final long serialVersionUID = 1L;
-
-	@Override
-	public void setTarget(ClientProfile p) {
+	public Integer getClientid() {
 		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void updateGraphics() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setShowing(boolean showing) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public int getWeight() {
-		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 
 }

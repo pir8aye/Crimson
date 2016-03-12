@@ -22,17 +22,18 @@ import java.util.HashMap;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
+import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
-import com.subterranean_security.crimson.core.storage.ClientDB;
-import com.subterranean_security.crimson.server.net.Listener;
 import com.subterranean_security.crimson.server.net.Receptor;
-import com.subterranean_security.crimson.sv.Profile;
+import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.Listener;
+import com.subterranean_security.crimson.sv.ViewerProfile;
 
 public enum ServerStore {
 	;
 	public static class Listeners {
-		private static ArrayList<Listener> listeners = new ArrayList<Listener>();
+		public static ArrayList<Listener> listeners = new ArrayList<Listener>();
 
 	}
 
@@ -105,24 +106,53 @@ public enum ServerStore {
 	}
 
 	public static class Profiles {
-		private static MemMap<Integer, Profile> profiles;
+		private static MemMap<Integer, ClientProfile> clientProfiles;
+		private static MemMap<Integer, ViewerProfile> viewerProfiles;
+		private static int idCounter;
 
 		static {
 			try {
-				profiles = (MemMap<Integer, Profile>) Databases.system.getObject("clients");
-				profiles.setDatabase(Databases.system);
+				clientProfiles = (MemMap<Integer, ClientProfile>) Databases.system.getObject("profiles.clients");
+				clientProfiles.setDatabase(Databases.system);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			try {
+				viewerProfiles = (MemMap<Integer, ViewerProfile>) Databases.system.getObject("profiles.viewers");
+				viewerProfiles.setDatabase(Databases.system);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			try {
+				idCounter = Databases.system.getInteger("profiles.idcount");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
-		public static Profile get(int id) throws Exception {
-			return profiles.get(id);
+		public static ClientProfile getClient(int id) throws Exception {
+			return clientProfiles.get(id);
 		}
 
-		public static void add(Profile p) {
-			profiles.put(p.getClientid(), p);
+		public static void addClient(ClientProfile p) {
+			clientProfiles.put(p.getClientid(), p);
+		}
+
+		public static ViewerProfile getViewer(int id) throws Exception {
+			return viewerProfiles.get(id);
+		}
+
+		public static void addViewer(ViewerProfile p) {
+			viewerProfiles.put(p.getClientid(), p);
+		}
+
+		public static int nextID() {
+			return idCounter++;
 		}
 	}
 

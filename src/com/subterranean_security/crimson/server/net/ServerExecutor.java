@@ -108,9 +108,7 @@ public class ServerExecutor extends BasicExecutor {
 	private void profileDelta(ProfileDelta_EV pd) {
 		if (pd.getClientid() == 0) {
 			// no id has been assigned yet
-			// TODO check for conflicts
-			// TODO define bounds
-			int newId = CUtil.Misc.rand(1, 10000);
+			int newId = ServerStore.Profiles.nextID();
 			pd = ProfileDelta_EV.newBuilder().mergeFrom(pd).setClientid(newId).build();
 			ServerCommands.assignID(receptor, newId);
 		}

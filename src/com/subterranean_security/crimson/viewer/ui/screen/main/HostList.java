@@ -33,7 +33,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.subterranean_security.crimson.core.storage.Headers;
-import com.subterranean_security.crimson.sv.Profile;
+import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public class HostList extends JPanel {
@@ -65,7 +65,7 @@ public class HostList extends JPanel {
 				if (!source.isRowSelected(sourceRow)) {
 					source.changeSelection(sourceRow, 0, false, false);
 				}
-				final Profile sp = ViewerStore.Profiles.profiles.get(sourceRow);
+				final ClientProfile sp = ViewerStore.Profiles.profiles.get(sourceRow);
 
 				if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
 

@@ -32,7 +32,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.server.ServerStore;
-import com.subterranean_security.crimson.sv.Profile;
+import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public class ProfileList extends JPanel {
@@ -127,7 +127,7 @@ class ProfileTM extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		Profile p = null;
+		ClientProfile p = null;
 		if (Common.instance == Instance.VIEWER) {
 
 			p = ViewerStore.Profiles.profiles.get(rowIndex);

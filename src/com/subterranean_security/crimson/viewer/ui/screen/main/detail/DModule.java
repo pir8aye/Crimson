@@ -17,11 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 
-import com.subterranean_security.crimson.sv.Profile;
+import com.subterranean_security.crimson.sv.ClientProfile;
 
 public interface DModule extends Comparable<DModule> {
 
-	void setTarget(Profile p);
+	void setTarget(ClientProfile p);
 
 	boolean isShowing();
 

@@ -35,7 +35,7 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.proto.net.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
-import com.subterranean_security.crimson.sv.Profile;
+import com.subterranean_security.crimson.sv.ClientProfile;
 
 import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.ITrace2D;
@@ -167,11 +167,11 @@ public class Processor extends JPanel implements DModule {
 	}
 
 	private int streamID;
-	private Profile profile;
+	private ClientProfile profile;
 	private InfoMaster im;
 
 	@Override
-	public void setTarget(Profile p) {
+	public void setTarget(ClientProfile p) {
 		StreamStore.removeStream(streamID);
 		if (p != null) {
 			profile = p;

@@ -19,17 +19,19 @@ package com.subterranean_security.crimson.sv;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.subterranean_security.crimson.core.proto.net.Keylogger.KLog;
 
-public class Profile implements Serializable {
+public class ClientProfile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private int clientid;
 
 	private String hostname;
-	private String username;
+	private ArrayList<String> username;
+	private ArrayList<Date> username_dates;
 	private String timezone;
 	private String language;
 	private ArrayList<String> internal_ip;
@@ -38,7 +40,7 @@ public class Profile implements Serializable {
 
 	private KLog klog;
 
-	public Profile(int clientid) {
+	public ClientProfile(int clientid) {
 		this.clientid = clientid;
 	}
 
@@ -59,11 +61,16 @@ public class Profile implements Serializable {
 	}
 
 	public String getUsername() {
-		return username;
+		return username.get(username.size() - 1);
 	}
 
 	public void setUsername(String username) {
-		this.username = username;
+		setUsername(new Date(), username);
+	}
+
+	public void setUsername(Date date, String username) {
+		this.username.add(username);
+		this.username_dates.add(date);
 	}
 
 }

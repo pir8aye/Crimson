@@ -27,12 +27,18 @@ import java.util.concurrent.TimeUnit;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
-import com.subterranean_security.crimson.sv.Profile;
+import com.subterranean_security.crimson.sv.Listener;
+import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerStore {
 
 	;
+
+	public static class Listeners {
+		public static ArrayList<Listener> listeners = new ArrayList<Listener>();
+
+	}
 
 	public static class LocalServer {
 
@@ -89,14 +95,14 @@ public enum ViewerStore {
 	}
 
 	public static class Profiles {
-		public static ArrayList<Profile> profiles = new ArrayList<Profile>();
+		public static ArrayList<ClientProfile> profiles = new ArrayList<ClientProfile>();
 
-		public static void add(Profile p) {
+		public static void add(ClientProfile p) {
 			profiles.add(p);
 		}
 
 		public static void remove(Integer id) {
-			Iterator<Profile> pp = profiles.iterator();
+			Iterator<ClientProfile> pp = profiles.iterator();
 			while (pp.hasNext()) {
 				if (pp.next().getClientid() == id) {
 					pp.remove();
@@ -107,7 +113,7 @@ public enum ViewerStore {
 
 		public static void update(ProfileDelta_EV change) {
 			boolean flag = true;
-			for (Profile p : profiles) {
+			for (ClientProfile p : profiles) {
 				if (p.getClientid() == change.getClientid()) {
 					flag = false;
 					amalgamate(p, change);
@@ -117,7 +123,7 @@ public enum ViewerStore {
 			}
 
 			if (flag) {
-				Profile np = new Profile(change.getClientid());
+				ClientProfile np = new ClientProfile(change.getClientid());
 				amalgamate(np, change);
 				profiles.add(np);
 			}
@@ -131,7 +137,7 @@ public enum ViewerStore {
 
 		}
 
-		private static void amalgamate(Profile p, ProfileDelta_EV c) {
+		private static void amalgamate(ClientProfile p, ProfileDelta_EV c) {
 			// TODO possibly use merge on a protobuffer for this
 			if (c.hasNetHostname()) {
 				p.setHostname(c.getNetHostname());

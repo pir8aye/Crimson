@@ -31,7 +31,7 @@ import javax.swing.JPopupMenu;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 import com.subterranean_security.crimson.core.storage.Headers;
-import com.subterranean_security.crimson.sv.Profile;
+import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import java.awt.BorderLayout;
 
@@ -77,7 +77,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 					// get client id
 					int id = vertices.get(cell);
-					Profile selected = null;
+					ClientProfile selected = null;
 
 					if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
 
@@ -117,7 +117,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 	}
 
-	public void addClient(Profile p) {
+	public void addClient(ClientProfile p) {
 		// generate coordinates for the new vertex
 		int xMin = 0;
 		int xMax = 600;
@@ -207,7 +207,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		}
 	}
 
-	public void removeConnection(Profile p) {
+	public void removeConnection(ClientProfile p) {
 		if (p == null) {
 			return;
 		}
