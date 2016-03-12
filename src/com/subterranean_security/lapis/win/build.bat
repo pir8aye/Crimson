@@ -1,0 +1,2 @@
+g++ -c -DCRIMSON -I "C:\Users\dev\Desktop\lapis\include" -I "C:\Program Files\Java\jdk1.8.0_73\include" -I "C:\Program Files\Java\jdk1.8.0_73\include\win32" C:\Users\dev\Desktop\lapis\win\util.cpp
+g++ -shared -o win64.dll util.o
