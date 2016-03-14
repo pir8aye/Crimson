@@ -877,6 +877,12 @@ public enum CUtil {
 
 	public static class Logging {
 
+		static {
+			// TODO find a better way to exclude netty
+			ch.qos.logback.classic.Logger netty = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("io.netty");
+			netty.setLevel(Level.ERROR);
+		}
+
 		public static Logger getLogger(Class c) {
 			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 			PatternLayoutEncoder ple = new PatternLayoutEncoder();
