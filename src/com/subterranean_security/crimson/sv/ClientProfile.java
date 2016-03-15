@@ -30,12 +30,12 @@ public class ClientProfile implements Serializable {
 	private int clientid;
 
 	private String hostname;
-	private ArrayList<String> username;
-	private ArrayList<Date> username_dates;
+	private ArrayList<String> username = new ArrayList<String>();
+	private ArrayList<Date> username_dates = new ArrayList<Date>();
 	private String timezone;
 	private String language;
-	private ArrayList<String> internal_ip;
-	private ArrayList<String> external_ip;
+	private ArrayList<String> internal_ip = new ArrayList<String>();
+	private ArrayList<String> external_ip = new ArrayList<String>();
 	private float cpu_usage;
 
 	private KLog klog;
