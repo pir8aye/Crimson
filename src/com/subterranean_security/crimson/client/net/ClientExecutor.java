@@ -106,7 +106,7 @@ public class ClientExecutor extends BasicExecutor {
 
 		Group group = null;
 		try {
-			group = (Group) Client.clientDB.getObject("group");
+			group = (Group) Client.clientDB.getObject("auth.group");
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			log.debug("Unable to get group information");
@@ -131,7 +131,7 @@ public class ClientExecutor extends BasicExecutor {
 
 		Group group = null;
 		try {
-			group = (Group) Client.clientDB.getObject("group");
+			group = (Group) Client.clientDB.getObject("auth.group");
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			log.debug("Unable to get group information");
