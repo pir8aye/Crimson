@@ -29,6 +29,7 @@ import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.net.Gen.NetworkTarget;
 import com.subterranean_security.crimson.core.storage.ClientDB;
+import com.subterranean_security.crimson.core.util.PlatformInfo;
 
 public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
@@ -46,6 +47,38 @@ public class Client {
 
 		// Establish the custom shutdown hook
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
+
+		// Load native libraries
+		File lib = null;
+		String arch = null;
+		switch (PlatformInfo.jreArch) {
+		case ARM:
+			arch = "ARM";
+			break;
+		case X64:
+			arch = "64";
+			break;
+		case X86:
+			arch = "32";
+			break;
+		}
+		switch (PlatformInfo.os) {
+		case BSD:
+			break;
+		case LINUX:
+			lib = new File(Common.base.getAbsolutePath() + "/lib/jni/lin/crimson" + arch + ".so");
+			break;
+		case OSX:
+			break;
+		case SOLARIS:
+			break;
+		case WINDOWS:
+			lib = new File(Common.base.getAbsolutePath() + "/lib/jni/win/crimson" + arch + ".dll");
+			break;
+
+		}
+		System.out.println("Loading library: " + lib.getAbsolutePath());
+		System.load(lib.getAbsolutePath());
 
 		List<NetworkTarget> nts = null;
 		try {
