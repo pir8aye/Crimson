@@ -20,5 +20,6 @@ package com.subterranean_security.crimson.client;
 public class Native {
 
 	public static native String getActiveWindow();
+	public static native long getSystemUptime();
 
 }
