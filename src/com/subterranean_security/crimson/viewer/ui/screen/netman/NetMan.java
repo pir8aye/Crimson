@@ -17,7 +17,7 @@ public class NetMan extends JFrame {
 	public NetMan() {
 		setIconImages(UUtil.getIconList());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 573, 172);
+		setBounds(100, 100, 573, 364);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
