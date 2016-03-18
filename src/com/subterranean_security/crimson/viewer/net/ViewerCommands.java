@@ -36,17 +36,25 @@ import com.subterranean_security.crimson.core.proto.net.State.STATES;
 import com.subterranean_security.crimson.core.proto.net.State.StateChange_RQ;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerCommands {
 	;
-	private static final Logger log = LoggerFactory.getLogger("com.subterranean_security.crimson.viewer.network.ViewerCommands");
+	private static final Logger log = LoggerFactory.getLogger(ViewerCommands.class);
 
 	public static boolean login(String user, char[] pass) {
 		int id = IDGen.get();
-		Login_RQ.Builder rq = Login_RQ.newBuilder().setUsername(user).setHash(new String(pass));// TODO
+		int svid = 0;
+		try {
+			svid = ViewerStore.Databases.local.getInteger("svid");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Login_RQ.Builder rq = Login_RQ.newBuilder().setSvid(svid).setUsername(user).setHash(new String(pass));// TODO
 
 		ViewerConnector.connector.handle.write(Message.newBuilder().setId(id).setLoginRq(rq).build());
 		try {
