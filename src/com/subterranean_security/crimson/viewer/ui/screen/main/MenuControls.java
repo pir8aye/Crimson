@@ -31,7 +31,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
@@ -70,46 +69,28 @@ public class MenuControls extends JPanel {
 		panel_1.add(lblConnections);
 
 		JLabel label_1 = new JLabel("0");
+		label_1.setFont(new Font("Dialog", Font.BOLD, 10));
 		label_1.setHorizontalAlignment(SwingConstants.TRAILING);
 		label_1.setBounds(131, 17, 55, 17);
 		panel_1.add(label_1);
 
 		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "Local Throttling",
-				TitledBorder.CENTER, TitledBorder.TOP, null, UICommon.controlTitledBorder));
+		panel_2.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "Local Status",
+				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel_2.setBounds(0, 67, 198, 70);
 		panel.add(panel_2);
 		panel_2.setLayout(null);
 
-		JSpinner spinner = new JSpinner();
-		spinner.setRequestFocusEnabled(false);
-		spinner.setBounds(107, 24, 50, 20);
-		panel_2.add(spinner);
+		JLabel lblUsername = new JLabel("Username:");
+		lblUsername.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblUsername.setBounds(12, 17, 99, 17);
+		panel_2.add(lblUsername);
 
-		JSpinner spinner_1 = new JSpinner();
-		spinner_1.setRequestFocusEnabled(false);
-		spinner_1.setBounds(107, 46, 50, 20);
-		panel_2.add(spinner_1);
-
-		JLabel lblKibs = new JLabel("kib/s");
-		lblKibs.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblKibs.setBounds(164, 27, 34, 15);
-		panel_2.add(lblKibs);
-
-		JLabel label = new JLabel("kib/s");
+		JLabel label = new JLabel("0");
+		label.setHorizontalAlignment(SwingConstants.TRAILING);
 		label.setFont(new Font("Dialog", Font.BOLD, 10));
-		label.setBounds(164, 48, 34, 15);
+		label.setBounds(131, 17, 55, 17);
 		panel_2.add(label);
-
-		JLabel lblUpstreamLimit = new JLabel("UPSTREAM LIMIT");
-		lblUpstreamLimit.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblUpstreamLimit.setBounds(10, 26, 98, 16);
-		panel_2.add(lblUpstreamLimit);
-
-		JLabel lblDownstreamLimit = new JLabel("DNSTREAM LIMIT");
-		lblDownstreamLimit.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblDownstreamLimit.setBounds(10, 48, 98, 16);
-		panel_2.add(lblDownstreamLimit);
 
 		JPanel panel_3 = new JPanel();
 		panel_3.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "State Controls",
@@ -125,7 +106,7 @@ public class MenuControls extends JPanel {
 			}
 		});
 		btnCloseToTray.setMargin(new Insets(2, 4, 2, 4));
-		btnCloseToTray.setBounds(12, 25, 88, 20);
+		btnCloseToTray.setBounds(12, 20, 88, 20);
 		btnCloseToTray.setEnabled(SystemTray.isSupported());
 
 		panel_3.add(btnCloseToTray);
@@ -137,19 +118,31 @@ public class MenuControls extends JPanel {
 				System.exit(0);
 			}
 		});
-		btnShutdown.setBounds(100, 25, 88, 20);
+		btnShutdown.setBounds(100, 20, 88, 20);
 		panel_3.add(btnShutdown);
 		btnShutdown.setMargin(new Insets(2, 4, 2, 4));
 		btnShutdown.setFont(new Font("Dialog", Font.BOLD, 10));
 
+		JButton btnStartServer = new JButton("Start Server");
+		btnStartServer.setMargin(new Insets(2, 4, 2, 4));
+		btnStartServer.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnStartServer.setBounds(12, 45, 88, 20);
+		panel_3.add(btnStartServer);
+
+		JButton btnStopServer = new JButton("Stop Server");
+		btnStopServer.setMargin(new Insets(2, 4, 2, 4));
+		btnStopServer.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnStopServer.setBounds(100, 45, 88, 20);
+		panel_3.add(btnStopServer);
+
 		JPanel panel_4 = new JPanel();
-		panel_4.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "View Controls",
-				TitledBorder.CENTER, TitledBorder.TOP, null, UICommon.controlTitledBorder));
+		panel_4.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "Views",
+				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel_4.setBounds(0, 135, 198, 53);
 		panel.add(panel_4);
 		panel_4.setLayout(null);
 
-		final JToggleButton tglbtnList = new JToggleButton("LIST");
+		final JToggleButton tglbtnList = new JToggleButton("Host List");
 		tglbtnList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				MainFrame.main.panel.switchToList();
@@ -169,7 +162,8 @@ public class MenuControls extends JPanel {
 		tglbtnList.setBounds(12, 20, 88, 20);
 		panel_4.add(tglbtnList);
 
-		final JToggleButton tglbtnGraph = new JToggleButton("GRAPH");
+		final JToggleButton tglbtnGraph = new JToggleButton("Host Graph");
+		tglbtnGraph.setMargin(new Insets(2, 4, 2, 4));
 		tglbtnGraph.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MainFrame.main.panel.switchToGraph();
