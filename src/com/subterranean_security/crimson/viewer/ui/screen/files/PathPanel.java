@@ -17,39 +17,34 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.files;
 
-import java.awt.BorderLayout;
-
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JToolBar;
+import java.awt.CardLayout;
+import java.awt.BorderLayout;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
-import com.subterranean_security.crimson.viewer.ui.panel.Console;
-import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
-
-public class FMPanel extends JPanel {
+public class PathPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	private JTextField textField;
 
-	public Console console = new Console();
-
-	public FMPanel(Type type) {
+	public PathPanel() {
 		setLayout(new BorderLayout(0, 0));
 
-		JToolBar jtb = new JToolBar();
-		add(jtb, BorderLayout.NORTH);
+		JLabel lblIcon = new JLabel("icon");
+		add(lblIcon, BorderLayout.WEST);
 
-		JSplitPane splitPane = new JSplitPane();
-		splitPane.setResizeWeight(0.5);
+		JPanel panel = new JPanel();
+		add(panel, BorderLayout.CENTER);
+		panel.setLayout(new CardLayout(0, 0));
 
-		splitPane.setLeftComponent(new Pane(this));
-		splitPane.setRightComponent(new Pane(this));
+		textField = new JTextField();
+		panel.add(textField, "name_5219408239145");
+		textField.setColumns(10);
 
-		JSplitPane console_splitpane = new JSplitPane();
-		console_splitpane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		add(console_splitpane, BorderLayout.CENTER);
-		console_splitpane.setTopComponent(splitPane);
-		console_splitpane.setBottomComponent(console);
-		console_splitpane.setDividerLocation(200);
+		JLabel lblPath = new JLabel("");
+		panel.add(lblPath, "name_5406152265339");
 
 	}
+
 }

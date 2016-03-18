@@ -28,6 +28,11 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
+import java.awt.CardLayout;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.Font;
 
 public class Pane extends JPanel {
 
@@ -76,6 +81,18 @@ public class Pane extends JPanel {
 		comboBox.setRenderer(new ComboBoxRenderer());
 		comboBox.setModel(new FileComboBoxModel());
 		add(comboBox, BorderLayout.SOUTH);
+
+		JPanel panel = new JPanel();
+		add(panel, BorderLayout.NORTH);
+		panel.setLayout(new BorderLayout(0, 0));
+
+		JButton btnNewButton = new JButton("UP");
+		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel.add(btnNewButton, BorderLayout.WEST);
+
+		PathPanel path = new PathPanel();
+		panel.add(path, BorderLayout.CENTER);
+
 		refresh();
 	}
 
