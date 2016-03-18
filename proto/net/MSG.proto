@@ -10,6 +10,7 @@ import "net/Delta.proto";
 import "net/FM.proto";
 import "net/Ping.proto";
 import "net/Stream.proto";
+import "net/SVID.proto";
 message Message {
 	optional bool urgent = 1;
 	optional int32 id = 2;
@@ -41,4 +42,5 @@ message Message {
 	optional GroupChallengeResult_1W challengeresult_1w = 140;
 	optional Auth_1W auth_1w = 141;
 	optional Report_1W report_1w = 142;
+	optional AssignID_1W assign_1w = 143;
 }
