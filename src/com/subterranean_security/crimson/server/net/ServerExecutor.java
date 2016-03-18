@@ -46,6 +46,7 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.server.ServerStore;
+import com.subterranean_security.crimson.sv.ViewerProfile;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -94,6 +95,10 @@ public class ServerExecutor extends BasicExecutor {
 						auth_1w(m);
 					} else if (m.hasChallengeresult1W()) {
 						challengeResult_1w(m);
+					} else if (m.hasFileListingRq()) {
+						file_listing_rq(m);
+					} else if (m.hasFileListingRs()) {
+						file_listing_rs(m);
 					} else {
 						receptor.cq.put(m.getId(), m);
 					}
@@ -110,7 +115,7 @@ public class ServerExecutor extends BasicExecutor {
 			// no id has been assigned yet
 			int newId = ServerStore.Profiles.nextID();
 			pd = ProfileDelta_EV.newBuilder().mergeFrom(pd).setClientid(newId).build();
-			ServerCommands.assignID(receptor, newId);
+			ServerCommands.setSvid(receptor, newId);
 		}
 		for (Receptor r : ServerStore.Connections.connections) {
 			// somehow check permissions TODO
@@ -149,7 +154,7 @@ public class ServerExecutor extends BasicExecutor {
 		case GROUP:
 			final Group group = ServerStore.Authentication.getGroup(m.getAuth1W().getGroupName());
 			if (group == null) {
-				log.debug("Authentication failed: Invalid Group: %s", m.getAuth1W().getGroupName());
+				log.debug("Authentication failed: Invalid Group: {}", m.getAuth1W().getGroupName());
 				receptor.setState(ConnectionState.CONNECTED);
 				return;
 			}
@@ -233,25 +238,32 @@ public class ServerExecutor extends BasicExecutor {
 			log.debug("Accepting Login");
 			receptor.setInstance(Instance.VIEWER);
 			receptor.setState(ConnectionState.AUTHENTICATED);
+			ViewerProfile vp = null;
+			try {
+				vp = ServerStore.Profiles.getViewer(m.getLoginRq().getSvid());
+			} catch (Exception e1) {
+				int svid = ServerStore.Profiles.nextID();
+				ServerCommands.setSvid(receptor, svid);
+				vp = new ViewerProfile(svid);
+				vp.setUser(m.getLoginRq().getUsername());
+				ServerStore.Profiles.addViewer(vp);
+			}
 			ServerStore.Connections.add(receptor);
 			ClientDB vdb = ServerStore.Databases.loaded_viewers
 					.get(ServerStore.Databases.system.getUID(m.getLoginRq().getUsername()));
 			ServerInfoDelta_EV.Builder builder = ServerInfoDelta_EV.newBuilder();
-			try {
-				ArrayList<Long> times = (ArrayList<Long>) vdb.getObject("login-times");
-				ArrayList<String> ips = (ArrayList<String>) vdb.getObject("login-ips");
-				if (times.size() != 0) {
-					log.debug("Last login: " + times.get(0));
-					builder.setLastLogin(times.get(0));
-				}
 
-				// TODO set last ip
-				times.add(new Date().getTime());
-				ips.add("cha.nge.me");// TODO
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			ArrayList<String> ips = vp.getLogin_ip();
+			ArrayList<Date> times = vp.getLogin_times();
+			if (times.size() != 0) {
+				log.debug("Last login: " + times.get(0));
+				builder.setLastLogin(times.get(0).getTime());
 			}
+
+			// TODO set last ip
+			times.add(new Date());
+			ips.add("cha.nge.me");// TODO
+
 			builder.setServerStatus(Server.isRunning());
 			rs.setInitialInfo(builder.build());
 		}
@@ -299,13 +311,37 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void file_listing_rq(Message m) {
-		if (m.getFileListingRq().hasClientid()) {
-			// TODO check permissions and send to client
+		ViewerProfile vp = null;
+		try {
+			vp = ServerStore.Profiles.getViewer(m.getFileListingRq().getClientid());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return;
 		}
-		// TODO finish sending back a response
-		receptor.handle.write(
-				Message.newBuilder().setFileListingRs(FileListing_RS.newBuilder().addAllListing(null).build()).build());
+		if (m.getFileListingRq().hasClientid()) {
+			if (vp.getPermissions().verify(m.getFileListingRq().getClientid(), "fs.read")) {
+				System.out.println("Permissions error");
+				return;
+			}
+			Receptor r = ServerStore.Connections.getConnection(m.getFileListingRq().getClientid());
+			r.handle.write(m);
+
+		} else {
+			if (vp.getPermissions().verify("srv.fs.read")) {
+				System.out.println("Permissions error");
+				return;
+			}
+			receptor.handle.write(Message.newBuilder().setFileListingRs(
+					FileListing_RS.newBuilder().addAllListing(null).setViewerid(m.getFileListingRq().getViewerid()))
+					.build());
+		}
+
+	}
+
+	private void file_listing_rs(Message m) {
+		Receptor r = ServerStore.Connections.getConnection(m.getFileListingRq().getViewerid());
+		r.handle.write(m);
 	}
 
 }

@@ -22,12 +22,13 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.client.modules.GetInfo;
+import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallengeResult_1W;
 import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RQ;
 import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RS;
+import com.subterranean_security.crimson.core.proto.net.FM.FileListing_RS;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.proto.net.Stream.Param;
@@ -36,6 +37,9 @@ import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.sc.SystemInfo;
+import com.subterranean_security.crimson.server.ServerStore;
+import com.subterranean_security.crimson.server.net.Receptor;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -80,6 +84,8 @@ public class ClientExecutor extends BasicExecutor {
 						challenge_rq(m);
 					} else if (m.hasChallengeresult1W()) {
 						challengeResult_1w(m);
+					} else if (m.hasFileListingRq()) {
+						file_listing_rq(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -168,7 +174,7 @@ public class ClientExecutor extends BasicExecutor {
 
 				GroupChallengeResult_1W.Builder oneway = GroupChallengeResult_1W.newBuilder().setResult(flag);
 				if (flag) {
-					oneway.setInitialInfo(GetInfo.getStatic());
+					oneway.setInitialInfo(SystemInfo.getStatic());
 					connector.setState(ConnectionState.AUTHENTICATED);
 				} else {
 					connector.setState(ConnectionState.CONNECTED);
@@ -177,6 +183,14 @@ public class ClientExecutor extends BasicExecutor {
 			}
 		}).start();
 
+	}
+
+	private void file_listing_rq(Message m) {
+
+		Client.connector.handle.write(Message.newBuilder()
+				.setFileListingRs(
+						FileListing_RS.newBuilder().addAllListing(null).setViewerid(m.getFileListingRq().getViewerid()))
+				.build());
 	}
 
 }

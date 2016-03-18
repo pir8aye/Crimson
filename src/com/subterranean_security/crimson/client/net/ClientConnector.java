@@ -31,6 +31,7 @@ import com.subterranean_security.crimson.core.proto.net.Auth.Auth_1W;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.sc.SystemInfo;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -48,18 +49,19 @@ public class ClientConnector implements AutoCloseable {
 	private final SslContext sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE)
 			.build();
 
-	public ClientHandler handle = new ClientHandler(this);
-	public ClientExecutor executor = new ClientExecutor(this);
-
 	// Buffers
 	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
 	public final BlockingHashMap<Integer, Message> cq = new BlockingHashMap<Integer, Message>();
 	public final BlockingQueue<Message> uq = new LinkedBlockingQueue<Message>();
 
+	public ClientHandler handle = new ClientHandler(this);
+	public ClientExecutor executor = new ClientExecutor(this);
+
 	// state
 	private ConnectionState state = ConnectionState.NOT_CONNECTED;
 
 	public void setState(ConnectionState cs) {
+		System.out.println("New connection state: " + cs);
 		state = cs;
 	}
 
@@ -103,8 +105,13 @@ public class ClientConnector implements AutoCloseable {
 				return;
 			}
 			auth.setGroupName(group.getName());
+			setState(ConnectionState.AUTH_STAGE1);
+			handle.write(Message.newBuilder().setId(IDGen.get()).setAuth1W(auth).build());
 			break;
 		case NO_AUTH:
+			setState(ConnectionState.AUTHENTICATED);
+			handle.write(Message.newBuilder().setId(IDGen.get()).setAuth1W(auth).build());
+			handle.write(Message.newBuilder().setId(IDGen.get()).setProfileDeltaEv(SystemInfo.getStatic()).build());
 			break;
 		case PASSWORD:
 			try {
@@ -114,14 +121,13 @@ public class ClientConnector implements AutoCloseable {
 				e.printStackTrace();
 				return;
 			}
+			setState(ConnectionState.AUTH_STAGE1);
+			handle.write(Message.newBuilder().setId(IDGen.get()).setAuth1W(auth).build());
 			break;
 		default:
 			break;
 
 		}
-
-		setState(ConnectionState.AUTH_STAGE1);
-		handle.write(Message.newBuilder().setId(IDGen.get()).setAuth1W(auth).build());
 
 	}
 
