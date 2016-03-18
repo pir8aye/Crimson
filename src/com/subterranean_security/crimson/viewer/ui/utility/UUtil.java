@@ -22,7 +22,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -50,11 +49,10 @@ public enum UUtil {
 
 	public static ImageIcon getIcon(String rpath) {
 		try {
-			return new ImageIcon(ImageIO.read(UUtil.class.getResource(
-					"/com/subterranean_security/crimson/viewer/ui/res/image/" + rpath)));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return new ImageIcon(ImageIO
+					.read(UUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/" + rpath)));
+		} catch (Exception e) {
+			System.out.println("Icon not found: " + rpath);
 			return null;
 		}
 	}
