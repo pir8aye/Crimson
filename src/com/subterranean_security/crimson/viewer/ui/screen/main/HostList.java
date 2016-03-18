@@ -158,7 +158,8 @@ public class HostList extends JPanel {
 	}
 
 	public void refreshTM() {
-		tm.fireTableDataChanged();
+		tm.refreshHeaders();
+		tm.fireTableStructureChanged();
 	}
 }
 
@@ -214,7 +215,7 @@ class TM extends AbstractTableModel {
 
 		}
 		case LANGUAGE: {
-
+			return ViewerStore.Profiles.profiles.get(rowIndex).getLanguage();
 		}
 		case ACTIVE_WINDOW: {
 
@@ -222,13 +223,13 @@ class TM extends AbstractTableModel {
 		case COUNTRY: {
 
 		}
-		case CPU_NAME: {
+		case CPU_MODEL: {
 
 		}
 		case CPU_USAGE: {
 
 		}
-		case CPU_TEMPERATURE: {
+		case CPU_TEMP: {
 
 		}
 		case RAM_CAPACITY: {
@@ -256,7 +257,7 @@ class TM extends AbstractTableModel {
 
 		}
 		case TIMEZONE: {
-
+			return ViewerStore.Profiles.profiles.get(rowIndex).getTimezone();
 		}
 
 		}
