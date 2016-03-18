@@ -52,6 +52,15 @@ public enum ServerStore {
 			}
 		}
 
+		public static Receptor getConnection(int i) {
+			for (Receptor r : connections) {
+				if (r.getClientid() == i) {
+					return r;
+				}
+			}
+			return null;
+		}
+
 	}
 
 	public static class Streams {
@@ -108,7 +117,7 @@ public enum ServerStore {
 	public static class Profiles {
 		private static MemMap<Integer, ClientProfile> clientProfiles;
 		private static MemMap<Integer, ViewerProfile> viewerProfiles;
-		private static int idCounter;
+		private static int svidCounter;
 
 		static {
 			try {
@@ -128,31 +137,31 @@ public enum ServerStore {
 			}
 
 			try {
-				idCounter = Databases.system.getInteger("profiles.idcount");
+				svidCounter = Databases.system.getInteger("profiles.idcount");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
-		public static ClientProfile getClient(int id) throws Exception {
-			return clientProfiles.get(id);
+		public static ClientProfile getClient(int svid) throws Exception {
+			return clientProfiles.get(svid);
 		}
 
 		public static void addClient(ClientProfile p) {
-			clientProfiles.put(p.getClientid(), p);
+			clientProfiles.put(p.getSvid(), p);
 		}
 
-		public static ViewerProfile getViewer(int id) throws Exception {
-			return viewerProfiles.get(id);
+		public static ViewerProfile getViewer(int svid) throws Exception {
+			return viewerProfiles.get(svid);
 		}
 
 		public static void addViewer(ViewerProfile p) {
-			viewerProfiles.put(p.getClientid(), p);
+			viewerProfiles.put(p.getSvid(), p);
 		}
 
 		public static int nextID() {
-			return idCounter++;
+			return svidCounter++;
 		}
 	}
 
