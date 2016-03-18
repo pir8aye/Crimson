@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.component;
+package com.subterranean_security.crimson.viewer.ui.screen.main;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -24,6 +24,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -32,7 +33,8 @@ import javax.swing.border.LineBorder;
 
 public class WideMenuItem extends JPanel {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
+	private JLabel lbl_title;
 
 	public WideMenuItem(String text, String desc) {
 
@@ -50,10 +52,12 @@ public class WideMenuItem extends JPanel {
 		});
 		setLayout(new BorderLayout(0, 0));
 
-		JLabel lbl_title = new JLabel(text);
+		lbl_title = new JLabel(text);
+		lbl_title.setFont(new Font("Dialog", Font.PLAIN, 11));
 		add(lbl_title, BorderLayout.CENTER);
 
 		JLabel lbl_desc = new JLabel(desc);
+		lbl_desc.setForeground(new Color(105, 105, 105));
 		lbl_desc.setHorizontalAlignment(SwingConstants.CENTER);
 		lbl_desc.setFont(new Font("Dialog", Font.BOLD, 9));
 		add(lbl_desc, BorderLayout.SOUTH);
@@ -61,6 +65,14 @@ public class WideMenuItem extends JPanel {
 		add(Box.createHorizontalStrut(5), BorderLayout.WEST);
 		add(Box.createHorizontalStrut(15), BorderLayout.EAST);
 
+	}
+
+	/**
+	 * @wbp.parser.constructor
+	 */
+	public WideMenuItem(ImageIcon ico, String title, String desc) {
+		this(title, desc);
+		lbl_title.setIcon(ico);
 	}
 
 	public void resetBG() {

@@ -20,7 +20,11 @@ package com.subterranean_security.crimson.viewer.ui.screen.main;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.URL;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -28,13 +32,13 @@ import javax.swing.MenuSelectionManager;
 import javax.swing.UIManager;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-import com.subterranean_security.crimson.viewer.ui.component.WideMenuItem;
 import com.subterranean_security.crimson.viewer.ui.screen.about.AboutDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.GenDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SettingsDialog;
+import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class MainMenu extends JPanel {
 
@@ -60,7 +64,8 @@ public class MainMenu extends JPanel {
 		JMenu mnManagement = new JMenu("Management");
 		menuBar.add(mnManagement);
 
-		final WideMenuItem wmFiles = new WideMenuItem("Files", "Manage Files");
+		final WideMenuItem wmFiles = new WideMenuItem(UUtil.getIcon("icons16/general/folder.png"), "Files",
+				"Manage Filesystems");
 		wmFiles.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -74,21 +79,23 @@ public class MainMenu extends JPanel {
 
 		mnManagement.add(wmFiles);
 
-		WideMenuItem wmNetwork = new WideMenuItem("Network", "Manage Networking");
+		WideMenuItem wmNetwork = new WideMenuItem(UUtil.getIcon("icons16/general/computer.png"), "Network",
+				"Manage Networking");
 		wmNetwork.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				NetMan nm = new NetMan();
 				nm.setVisible(true);
 
-				wmFiles.resetBG();
+				wmNetwork.resetBG();
 				MenuSelectionManager.defaultManager().clearSelectedPath();
 			}
 		});
 
 		mnManagement.add(wmNetwork);
 
-		final WideMenuItem wmGen = new WideMenuItem("Generator", "Create an Installer");
+		final WideMenuItem wmGen = new WideMenuItem(UUtil.getIcon("icons16/general/linechart.png"), "Generator",
+				"Create an Installer");
 		wmGen.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -102,7 +109,8 @@ public class MainMenu extends JPanel {
 
 		mnManagement.add(wmGen);
 
-		WideMenuItem wmGlobalControl = new WideMenuItem("Control Panel", "Global Control Panel");
+		WideMenuItem wmGlobalControl = new WideMenuItem(UUtil.getIcon("icons16/general/cog.png"), "Control Panel",
+				"Global Control Panel");
 		wmGlobalControl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -111,7 +119,7 @@ public class MainMenu extends JPanel {
 
 		mnManagement.add(wmGlobalControl);
 
-		WideMenuItem wmLogs = new WideMenuItem("Logs", "View Logs");
+		WideMenuItem wmLogs = new WideMenuItem(UUtil.getIcon("icons16/general/error_log.png"), "Logs", "View Crimson Logs");
 		wmLogs.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -120,7 +128,8 @@ public class MainMenu extends JPanel {
 
 		mnManagement.add(wmLogs);
 
-		WideMenuItem wmUsers = new WideMenuItem("Users", "Manage Users/Groups");
+		WideMenuItem wmUsers = new WideMenuItem(UUtil.getIcon("icons16/general/clients.png"), "Users",
+				"Manage Users/Groups");
 		wmUsers.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -129,7 +138,8 @@ public class MainMenu extends JPanel {
 
 		mnManagement.add(wmUsers);
 
-		final WideMenuItem wmSettings = new WideMenuItem("Settings", "Change Local or Server Settings");
+		final WideMenuItem wmSettings = new WideMenuItem(UUtil.getIcon("icons16/general/setting_tools.png"), "Settings",
+				"Edit Preferences/Settings");
 		wmSettings.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -147,7 +157,7 @@ public class MainMenu extends JPanel {
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
 
-		final WideMenuItem wmAbout = new WideMenuItem("About Crimson", "Info on Crimson");
+		final WideMenuItem wmAbout = new WideMenuItem(UUtil.getIcon("c-16.png"), "About Crimson", "Info on Crimson");
 		wmAbout.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -162,7 +172,8 @@ public class MainMenu extends JPanel {
 
 		mnAbout.add(wmAbout);
 
-		final WideMenuItem wmUpgrade = new WideMenuItem("Serial Codes", "Add/Remove Keys");
+		final WideMenuItem wmUpgrade = new WideMenuItem(UUtil.getIcon("icons16/general/barcode_2d.png"), "Serial Codes",
+				"Add/Remove Keys");
 		wmUpgrade.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -174,7 +185,8 @@ public class MainMenu extends JPanel {
 
 		mnAbout.add(wmUpgrade);
 
-		final WideMenuItem wmHelp = new WideMenuItem("Help", "Open help center");
+		final WideMenuItem wmHelp = new WideMenuItem(UUtil.getIcon("icons16/general/health.png"), "Help",
+				"Open help center");
 		wmHelp.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -186,7 +198,8 @@ public class MainMenu extends JPanel {
 
 		mnAbout.add(wmHelp);
 
-		final WideMenuItem wmTour = new WideMenuItem("Tour", "Explore the interface");
+		final WideMenuItem wmTour = new WideMenuItem(UUtil.getIcon("icons16/general/steering_wheel.png"), "Tour",
+				"Explore the interface");
 		wmTour.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
