@@ -588,9 +588,11 @@ public class GenPanel extends JPanel {
 		authpanel_none.add(lblNewLabel);
 
 		JLabel lblThisClientWill = new JLabel("This client will be able to authenticate with any server!");
+		lblThisClientWill.setFont(new Font("Dialog", Font.BOLD, 10));
 		authpanel_none.add(lblThisClientWill);
 		
 		JLabel lblSslEncryptionWill = new JLabel("SSL encryption will still be used");
+		lblSslEncryptionWill.setFont(new Font("Dialog", Font.BOLD, 10));
 		authpanel_none.add(lblSslEncryptionWill);
 		tabbedPane.setTabComponentAt(4, new GenTabComponent("lock", "Auth"));
 
