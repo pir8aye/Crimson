@@ -41,7 +41,7 @@ public class SystemInfo {
 	static {
 		try {
 			cpu.gather(sigar);
-			cpuInfo.gather(sigar);
+			cpuInfo = sigar.getCpuInfoList()[0];//TODO
 			netInfo.gather(sigar);
 		} catch (SigarException e) {
 			// TODO Auto-generated catch block
