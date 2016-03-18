@@ -23,8 +23,10 @@ import java.io.IOException;
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.proto.net.Auth.AuthType;
 import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
+import com.subterranean_security.crimson.core.proto.net.Gen.NetworkTarget;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
@@ -72,7 +74,7 @@ public final class Server {
 
 		start();
 
-		// generateDebugInstaller();
+		generateDebugInstaller();
 	}
 
 	public static boolean isRunning() {
@@ -95,12 +97,14 @@ public final class Server {
 	private static void generateDebugInstaller() {
 		log.debug("Generating debug installer");
 
-		Group group = Group.newBuilder().setName("BESTGROUP").setKey("INSECUREKEY").build();
-		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setGroup(group).setReconnectPeriod(10)
-				.build();
+		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.NO_AUTH)
+				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
+				.setPathWin("C:\\Users\\dev\\Documents\\Crimson").setPathBsd("/").setPathLin("/").setPathOsx("/")
+				.setPathSol("/").setReconnectPeriod(10).build();
 		try {
 			Generator g = new Generator(cc);
 			byte[] res = g.getResult();
+			CUtil.Files.writeFile(res, new File("C:\\Users\\dev\\Desktop\\client.jar"));
 			log.info("Installer size: " + res.length + " bytes");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

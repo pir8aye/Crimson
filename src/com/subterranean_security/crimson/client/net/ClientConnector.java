@@ -111,7 +111,7 @@ public class ClientConnector implements AutoCloseable {
 		case NO_AUTH:
 			setState(ConnectionState.AUTHENTICATED);
 			handle.write(Message.newBuilder().setId(IDGen.get()).setAuth1W(auth).build());
-			handle.write(Message.newBuilder().setId(IDGen.get()).setProfileDeltaEv(SystemInfo.getStatic()).build());
+			handle.write(Message.newBuilder().setUrgent(true).setProfileDeltaEv(SystemInfo.getStatic()).build());
 			break;
 		case PASSWORD:
 			try {

@@ -68,6 +68,9 @@ public class ServerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
+					if (m.hasProfileDeltaEv()) {
+						profileDelta(m.getProfileDeltaEv());
+					}
 
 					ReferenceCountUtil.release(m);
 				}
@@ -117,12 +120,14 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void profileDelta(ProfileDelta_EV pd) {
+		// TODO move this
 		if (pd.getClientid() == 0) {
 			// no id has been assigned yet
 			int newId = ServerStore.Profiles.nextID();
 			pd = ProfileDelta_EV.newBuilder().mergeFrom(pd).setClientid(newId).build();
 			ServerCommands.setSvid(receptor, newId);
 		}
+		//
 		for (Receptor r : ServerStore.Connections.connections) {
 			// somehow check permissions TODO
 

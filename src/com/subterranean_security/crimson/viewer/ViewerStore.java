@@ -137,6 +137,7 @@ public enum ViewerStore {
 		}
 
 		public static void update(ProfileDelta_EV change) {
+			// TODO do this without flag. Probably convert profiles into hashmap
 			boolean flag = true;
 			for (ClientProfile p : profiles) {
 				if (p.getSvid() == change.getClientid()) {
