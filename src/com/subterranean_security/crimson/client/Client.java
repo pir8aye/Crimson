@@ -49,36 +49,39 @@ public class Client {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Load native libraries
-		File lib = null;
-		String arch = null;
-		switch (PlatformInfo.jreArch) {
-		case ARM:
-			arch = "ARM";
-			break;
-		case X64:
-			arch = "64";
-			break;
-		case X86:
-			arch = "32";
-			break;
-		}
 		switch (PlatformInfo.os) {
 		case BSD:
+			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/bsd");
 			break;
 		case LINUX:
-			lib = new File(Common.base.getAbsolutePath() + "/lib/jni/lin/crimson" + arch + ".so");
+			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/osx");
 			break;
 		case OSX:
+			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/osx");
 			break;
 		case SOLARIS:
+			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/sol");
 			break;
 		case WINDOWS:
-			lib = new File(Common.base.getAbsolutePath() + "/lib/jni/win/crimson" + arch + ".dll");
+			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/win");
+			break;
+		default:
 			break;
 
 		}
-		System.out.println("Loading library: " + lib.getAbsolutePath());
-		System.load(lib.getAbsolutePath());
+		switch (PlatformInfo.javaArch) {
+		case X64:
+			System.loadLibrary("crimson64");
+			break;
+		case X86:
+			System.loadLibrary("crimson32");
+			break;
+		case SPARC:
+			System.loadLibrary("crimsonSPARC");
+			break;
+		default:
+			break;
+		}
 
 		List<NetworkTarget> nts = null;
 		try {
