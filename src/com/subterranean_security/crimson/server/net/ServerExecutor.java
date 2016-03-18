@@ -31,12 +31,13 @@ import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallengeResul
 import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RQ;
 import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RS;
 import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.proto.net.Delta.ServerInfoDelta_EV;
 import com.subterranean_security.crimson.core.proto.net.FM.FileListing_RS;
 import com.subterranean_security.crimson.core.proto.net.Gen.GenReport;
 import com.subterranean_security.crimson.core.proto.net.Gen.Generate_RS;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
+import com.subterranean_security.crimson.core.proto.net.Login.LoginChallenge_RQ;
 import com.subterranean_security.crimson.core.proto.net.Login.Login_RS;
-import com.subterranean_security.crimson.core.proto.net.Login.ServerInfoDelta_EV;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.proto.net.State.StateChange_RQ;
 import com.subterranean_security.crimson.core.storage.ClientDB;
@@ -84,7 +85,12 @@ public class ServerExecutor extends BasicExecutor {
 						return;
 					}
 					if (m.hasLoginRq()) {
-						login_rq(m);
+						new Thread(new Runnable() {
+							public void run() {
+								login_rq(m);
+							}
+						}).start();
+
 					} else if (m.hasGenerateRq()) {
 						generate_rq(m);
 					} else if (m.hasStateChangeRq()) {
@@ -232,44 +238,64 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void login_rq(Message m) {
-		Login_RS.Builder rs = Login_RS.newBuilder().setResponse(
-				ServerStore.Databases.system.validLogin(m.getLoginRq().getUsername(), m.getLoginRq().getHash()));
-		if (rs.getResponse()) {
-			log.debug("Accepting Login");
-			receptor.setInstance(Instance.VIEWER);
-			receptor.setState(ConnectionState.AUTHENTICATED);
-			ViewerProfile vp = null;
+		receptor.setInstance(Instance.VIEWER);
+		String user = m.getLoginRq().getUsername();
+		int svid = m.getLoginRq().getSvid();
+		ServerInfoDelta_EV.Builder sid = ServerInfoDelta_EV.newBuilder();
+		boolean pass = false;
+		try {
+			if (!ServerStore.Databases.system.userExists(user)) {
+				pass = false;
+				return;
+			}
+			LoginChallenge_RQ.Builder lcrq = LoginChallenge_RQ.newBuilder()
+					.setSalt(ServerStore.Databases.system.getSalt(user));
+			receptor.handle.write(Message.newBuilder().setId(m.getId()).setLoginChallengeRq(lcrq).build());
+			Message lcrs = null;
 			try {
-				vp = ServerStore.Profiles.getViewer(m.getLoginRq().getSvid());
-			} catch (Exception e1) {
-				int svid = ServerStore.Profiles.nextID();
-				ServerCommands.setSvid(receptor, svid);
-				vp = new ViewerProfile(svid);
-				vp.setUser(m.getLoginRq().getUsername());
-				ServerStore.Profiles.addViewer(vp);
+				lcrs = receptor.cq.take(m.getId(), 5, TimeUnit.SECONDS);
+				log.debug("Received login challenge response: {}", lcrs.getLoginChallengeRs().getResult());
+			} catch (InterruptedException e) {
+				log.error("No response to login challenge");
+				pass = false;
+				return;
 			}
-			ServerStore.Connections.add(receptor);
-			ClientDB vdb = ServerStore.Databases.loaded_viewers
-					.get(ServerStore.Databases.system.getUID(m.getLoginRq().getUsername()));
-			ServerInfoDelta_EV.Builder builder = ServerInfoDelta_EV.newBuilder();
+			pass = ServerStore.Databases.system.validLogin(m.getLoginRq().getUsername(),
+					lcrs.getLoginChallengeRs().getResult());
+			if (pass) {
+				log.debug("Accepting Login");
+				receptor.setState(ConnectionState.AUTHENTICATED);
+				ViewerProfile vp = null;
+				try {
+					vp = ServerStore.Profiles.getViewer(svid);
+				} catch (Exception e1) {
+					vp = new ViewerProfile(ServerStore.Profiles.nextID());
+					vp.setUser(user);
+					ServerStore.Profiles.addViewer(vp);
+				}
+				ServerStore.Connections.add(receptor);
 
-			ArrayList<String> ips = vp.getLogin_ip();
-			ArrayList<Date> times = vp.getLogin_times();
-			if (times.size() != 0) {
-				log.debug("Last login: " + times.get(0));
-				builder.setLastLogin(times.get(0).getTime());
+				ArrayList<Date> times = vp.getLogin_times();
+				if (times.size() != 0) {
+					log.debug("Last login: " + times.get(times.size() - 1));
+					sid.setLastLogin(times.get(times.size() - 1).getTime());
+				}
+				times.add(new Date());
+
+				ArrayList<String> ips = vp.getLogin_ip();
+				if (ips.size() != 0) {
+					log.debug("Last login: " + ips.get(ips.size() - 1));
+					sid.setLastIp(ips.get(ips.size() - 1));
+				}
+				ips.add(receptor.getRemoteAddress());
+
+				sid.setServerStatus(Server.isRunning());
 			}
 
-			// TODO set last ip
-			times.add(new Date());
-			ips.add("cha.nge.me");// TODO
-
-			builder.setServerStatus(Server.isRunning());
-			rs.setInitialInfo(builder.build());
-		}
-		receptor.handle.write(Message.newBuilder().setId(m.getId()).setLoginRs(rs).build());
-		if (!rs.getResponse()) {
-			log.info("Rejecting Login");
+		} finally {
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setLoginRs(Login_RS.newBuilder().setResponse(pass).setInitialInfo(sid)).build());
+			log.info("Login outcome: " + pass);
 			receptor.close();
 		}
 	}

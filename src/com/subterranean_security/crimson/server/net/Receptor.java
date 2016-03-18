@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -82,6 +83,10 @@ public class Receptor implements AutoCloseable {
 
 	public int getClientid() {
 		return getProfile().getSvid();
+	}
+
+	public String getRemoteAddress() {
+		return ((InetSocketAddress) handle.channel.remoteAddress()).getAddress().getHostAddress();
 	}
 
 }

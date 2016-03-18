@@ -30,15 +30,16 @@ import com.subterranean_security.crimson.core.proto.net.FM.FileListlet;
 import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
 import com.subterranean_security.crimson.core.proto.net.Gen.GenReport;
 import com.subterranean_security.crimson.core.proto.net.Gen.Generate_RQ;
+import com.subterranean_security.crimson.core.proto.net.Login.LoginChallenge_RS;
 import com.subterranean_security.crimson.core.proto.net.Login.Login_RQ;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.proto.net.State.STATES;
 import com.subterranean_security.crimson.core.proto.net.State.StateChange_RQ;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
-import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerCommands {
@@ -47,25 +48,49 @@ public enum ViewerCommands {
 
 	public static boolean login(String user, char[] pass) {
 		int id = IDGen.get();
-		int svid = 0;
+		int svid;
 		try {
 			svid = ViewerStore.Databases.local.getInteger("svid");
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			svid = 0;
 		}
-		Login_RQ.Builder rq = Login_RQ.newBuilder().setSvid(svid).setUsername(user).setHash(new String(pass));// TODO
 
-		ViewerConnector.connector.handle.write(Message.newBuilder().setId(id).setLoginRq(rq).build());
+		ViewerConnector.connector.handle.write(Message.newBuilder().setId(id)
+				.setLoginRq(Login_RQ.newBuilder().setSvid(svid).setUsername(user)).build());
+
 		try {
-			Message rs = ViewerConnector.connector.cq.take(id, 7, TimeUnit.SECONDS);
-			if (rs != null) {
-				log.debug("Received login response: " + rs.getLoginRs().getResponse());
-				if (rs.getLoginRs().getResponse()) {
-					ViewerStore.ServerInfo.integrate(rs.getLoginRs().getInitialInfo());
+			Message lcrq = ViewerConnector.connector.cq.take(id, 5, TimeUnit.SECONDS);
+			if (lcrq.hasLoginChallengeRq()) {
+				log.debug("Received login challenge: {}", lcrq.getLoginChallengeRq().getSalt());
+
+				String result = Crypto.hashPass(pass, lcrq.getLoginChallengeRq().getSalt());
+				log.debug("Sending hash: " + result);
+				ViewerConnector.connector.handle.write(Message.newBuilder().setId(id)
+						.setLoginChallengeRs(LoginChallenge_RS.newBuilder().setResult(result)).build());
+			} else if (lcrq.hasLoginRs()) {
+				log.debug("Received login response: Invalid user");
+				return false;
+			} else {
+				log.debug("Expected login challenge");
+				return false;
+			}
+		} catch (InterruptedException e) {
+			log.debug("Login interrupted");
+			return false;
+		}
+
+		try {
+			Message lrs = ViewerConnector.connector.cq.take(id, 5, TimeUnit.SECONDS);
+			if (lrs.hasLoginRs()) {
+				log.debug("Received login response: " + lrs.getLoginRs().getResponse());
+				if (lrs.getLoginRs().getResponse()) {
+					ViewerStore.ServerInfo.integrate(lrs.getLoginRs().getInitialInfo());
 					return true;
 				}
 
+			} else {
+				log.debug("Expected login response");
+				return false;
 			}
 		} catch (InterruptedException e) {
 			log.debug("Login interrupted");

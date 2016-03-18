@@ -24,7 +24,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 public abstract class BasicHandler extends SimpleChannelInboundHandler<Message> {
 
-	protected volatile Channel channel;
+	public volatile Channel channel;
 
 	public void write(Message msg) {
 		channel.writeAndFlush(msg);

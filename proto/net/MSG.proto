@@ -25,6 +25,8 @@ message Message {
 	//RQRS
 	optional Login_RQ login_rq = 4;
 	optional Login_RS login_rs = 5;
+	optional LoginChallenge_RQ login_challenge_rq = 190;
+	optional LoginChallenge_RS login_challenge_rs = 200;
 	optional GroupChallenge_RQ challenge_rq = 6;
 	optional GroupChallenge_RS challenge_rs = 7;
 	optional Generate_RQ generate_rq = 8;

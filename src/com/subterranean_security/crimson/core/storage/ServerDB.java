@@ -84,12 +84,12 @@ public class ServerDB extends Database {
 			stmt.setString(1, user);
 
 			ResultSet rs = stmt.executeQuery();
-			String salt = "";
 			String UID = "";
+			String hash = "";
 
 			if (rs.next()) {
 				UID = rs.getString("UID");
-				salt = rs.getString("Salt");
+				hash = rs.getString("Hash");
 			} else {
 				log.debug("Could not get UID and Salt");
 				throw new Exception();
@@ -100,7 +100,8 @@ public class ServerDB extends Database {
 						new ClientDB(new File(Common.var + File.separator + UID + ".db")));
 			}
 
-			return ServerStore.Databases.loaded_viewers.get(UID).getString("MAGIC").equals("subterranean");
+			System.out.println("Testing hashes: " + hash + " , " + password);
+			return hash.equals(password);
 
 		} catch (Exception e) {
 			log.error("Error during login query");
@@ -137,13 +138,16 @@ public class ServerDB extends Database {
 		}
 
 		String salt = Crypto.genSalt();
+		String hash = Crypto.hashPass(password, salt);
 		String UID = CUtil.Misc.randString(4);
 
 		try {
-			PreparedStatement stmt = db.prepareStatement("INSERT INTO users (Username, Salt, UID ) VALUES (?,?,?);");
+			PreparedStatement stmt = db
+					.prepareStatement("INSERT INTO users (Username, Salt, UID, Hash ) VALUES (?,?,?,?);");
 			stmt.setString(1, user);
 			stmt.setString(2, salt);
 			stmt.setString(3, UID);
+			stmt.setString(4, hash);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
