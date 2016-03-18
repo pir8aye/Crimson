@@ -86,9 +86,50 @@ public class SettingsPanel extends JPanel {
 		db.storeObject("show_helps", lg.neverShowHelp.isSelected());
 
 		ArrayList<Headers> h = new ArrayList<Headers>();
-		if (hlh.chckbxActiveWindow.isSelected()) {
+		if (hlh.chckbxActiveWindow.isSelected())
 			h.add(Headers.ACTIVE_WINDOW);
-		} // TODO REPEAT
+		if (hlh.chckbxCountry.isSelected())
+			h.add(Headers.COUNTRY);
+		if (hlh.chckbxCpuModel.isSelected())
+			h.add(Headers.CPU_MODEL);
+		if (hlh.chckbxCpuTemp.isSelected())
+			h.add(Headers.CPU_TEMP);
+		if (hlh.chckbxCpuUsage.isSelected())
+			h.add(Headers.CPU_USAGE);
+		if (hlh.chckbxCrimsonVersion.isSelected())
+			h.add(Headers.CRIMSON_VERSION);
+		if (hlh.chckbxExternalIp.isSelected())
+			h.add(Headers.EXTERNAL_IP);
+		if (hlh.chckbxHostname.isSelected())
+			h.add(Headers.HOSTNAME);
+		if (hlh.chckbxInternalIp.isSelected())
+			h.add(Headers.INTERNAL_IP);
+		if (hlh.chckbxJavaVersion.isSelected())
+			h.add(Headers.JAVA_VERSION);
+		if (hlh.chckbxLanguage.isSelected())
+			h.add(Headers.LANGUAGE);
+		if (hlh.chckbxMessagePing.isSelected())
+			h.add(Headers.MESSAGE_PING);
+		if (hlh.chckbxMonitorCount.isSelected())
+			h.add(Headers.MONITOR_COUNT);
+		if (hlh.chckbxOSArch.isSelected())
+			h.add(Headers.OS_ARCH);
+		if (hlh.chckbxOSFamily.isSelected())
+			h.add(Headers.OS_FAMILY);
+		if (hlh.chckbxRamCapacity.isSelected())
+			h.add(Headers.RAM_CAPACITY);
+		if (hlh.chckbxRamUsage.isSelected())
+			h.add(Headers.RAM_USAGE);
+		if (hlh.chckbxScreenPreview.isSelected())
+			h.add(Headers.SCREEN_PREVIEW);
+		if (hlh.chckbxTimezone.isSelected())
+			h.add(Headers.TIMEZONE);
+		if (hlh.chckbxUsername.isSelected())
+			h.add(Headers.USERNAME);
+		if (hlh.chckbxUserStatus.isSelected())
+			h.add(Headers.USER_STATUS);
+		if (hlh.chckbxVirtualization.isSelected())
+			h.add(Headers.VIRTUALIZATION);
 
 		Headers[] headers = new Headers[h.size()];
 		for (int i = 0; i < h.size(); i++) {
@@ -119,11 +160,11 @@ public class SettingsPanel extends JPanel {
 					hlh.chckbxActiveWindow.setSelected(true);
 					break;
 				case COUNTRY:
-					hlh.chckbxLocation.setSelected(true);
+					hlh.chckbxCountry.setSelected(true);
 					break;
-				case CPU_NAME:
+				case CPU_MODEL:
 					break;
-				case CPU_TEMPERATURE:
+				case CPU_TEMP:
 					hlh.chckbxCpuTemp.setSelected(true);
 					break;
 				case CPU_USAGE:
@@ -157,7 +198,7 @@ public class SettingsPanel extends JPanel {
 					hlh.chckbxOSArch.setSelected(true);
 					break;
 				case OS_FAMILY:
-					hlh.chckbxOperatingSystem.setSelected(true);
+					hlh.chckbxOSFamily.setSelected(true);
 					break;
 				case RAM_CAPACITY:
 					hlh.chckbxRamCapacity.setSelected(true);
