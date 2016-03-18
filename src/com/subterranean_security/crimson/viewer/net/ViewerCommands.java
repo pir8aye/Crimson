@@ -62,7 +62,7 @@ public enum ViewerCommands {
 			if (rs != null) {
 				log.debug("Received login response: " + rs.getLoginRs().getResponse());
 				if (rs.getLoginRs().getResponse()) {
-					LoginDialog.initial = rs.getLoginRs().getInitialInfo();
+					ViewerStore.ServerInfo.integrate(rs.getLoginRs().getInitialInfo());
 					return true;
 				}
 

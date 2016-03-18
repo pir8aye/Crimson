@@ -39,3 +39,9 @@ message NetworkInterface {
 	optional string ip = 2;
 	required string mac = 3;
 }
+
+message ServerInfoDelta_EV {
+	optional bool server_status = 1;
+	optional int64 last_login = 2;
+	optional string last_ip = 3;
+}

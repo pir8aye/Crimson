@@ -21,6 +21,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.UIManager;
@@ -140,9 +141,10 @@ public class Viewer {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if (LoginDialog.initial.hasLastLogin()) {
-					MainFrame.main.np
-							.addNote("info:Last Login: " + new Date(LoginDialog.initial.getLastLogin()).toString());
+
+				if (!ViewerStore.ServerInfo.getLastLoginLocation().isEmpty()) {
+					MainFrame.main.np.addNote("info:Last Login: " + ViewerStore.ServerInfo.getLastLoginTime().toString()
+							+ " from " + ViewerStore.ServerInfo.getLastLoginLocation());
 				}
 
 			}

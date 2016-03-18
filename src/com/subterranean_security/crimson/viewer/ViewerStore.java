@@ -21,14 +21,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.proto.net.Login.ServerInfoDelta_EV;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
-import com.subterranean_security.crimson.sv.Listener;
 import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.Listener;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerStore {
@@ -92,6 +94,24 @@ public enum ViewerStore {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public static class ServerInfo {
+		private static Date lastLoginTime;
+		private static String lastLoginLocation;
+
+		public static void integrate(ServerInfoDelta_EV ev) {
+			// TODO
+		}
+
+		public static Date getLastLoginTime() {
+			return lastLoginTime;
+		}
+
+		public static String getLastLoginLocation() {
+			return lastLoginLocation;
+		}
+
 	}
 
 	public static class Profiles {
