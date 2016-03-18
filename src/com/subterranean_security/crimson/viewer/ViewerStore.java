@@ -138,13 +138,34 @@ public enum ViewerStore {
 		}
 
 		private static void amalgamate(ClientProfile p, ProfileDelta_EV c) {
-			// TODO possibly use merge on a protobuffer for this
+			if (c.hasActiveWindow()) {
+				p.setActiveWindow(c.getActiveWindow());
+			}
+			if (c.hasCpuModel()) {
+				p.setCpuModel(c.getCpuModel());
+			}
+			if (c.hasCpuTemp()) {
+				p.setCpuTemp(c.getCpuTemp());
+			}
+			if (c.hasCrimsonVersion()) {
+				p.setCrimsonVersion(c.getCrimsonVersion());
+			}
 			if (c.hasNetHostname()) {
 				p.setHostname(c.getNetHostname());
+			}
+			if (c.hasJavaVersion()) {
+				p.setJavaVersion(c.getJavaArch());
+			}
+			if (c.hasLanguage()) {
+				p.setLanguage(c.getLanguage());
+			}
+			if (c.hasOsFamily()) {
+				p.setOsFamily(c.getOsFamily());
 			}
 			if (c.hasUserName()) {
 				p.setUsername(c.getUserName());
 			}
+
 		}
 
 	}
