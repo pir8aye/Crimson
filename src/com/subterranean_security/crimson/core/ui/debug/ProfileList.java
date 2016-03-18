@@ -30,8 +30,6 @@ import javax.swing.table.AbstractTableModel;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
@@ -135,7 +133,7 @@ class ProfileTM extends AbstractTableModel {
 		}
 		switch (headers[columnIndex]) {
 		case "ClientID": {
-			return "" + p.getClientid();
+			return "" + p.getSvid();
 		}
 		case "Hostname": {
 			return p.getHostname();
