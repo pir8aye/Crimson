@@ -44,6 +44,7 @@ public class Receptor implements AutoCloseable {
 	private ConnectionState state = ConnectionState.CONNECTED;
 
 	public void setState(ConnectionState cs) {
+		System.out.println("New connection state: " + cs);
 		state = cs;
 	}
 
@@ -80,7 +81,7 @@ public class Receptor implements AutoCloseable {
 	}
 
 	public int getClientid() {
-		return getProfile().getClientid();
+		return getProfile().getSvid();
 	}
 
 }
