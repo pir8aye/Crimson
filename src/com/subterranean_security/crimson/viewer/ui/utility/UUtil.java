@@ -22,7 +22,11 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 public enum UUtil {
 	;
@@ -42,6 +46,17 @@ public enum UUtil {
 		icons.add(Toolkit.getDefaultToolkit()
 				.getImage(UUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-16.png")));
 		return icons;
+	}
+
+	public static ImageIcon getIcon(String rpath) {
+		try {
+			return new ImageIcon(ImageIO.read(UUtil.class.getResource(
+					"/com/subterranean_security/crimson/viewer/ui/res/image/" + rpath)));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }
