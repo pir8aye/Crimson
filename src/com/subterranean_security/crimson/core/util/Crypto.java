@@ -43,7 +43,7 @@ public enum Crypto {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return B64.encodeString(new String(hash, StandardCharsets.UTF_16));
+		return new String(B64.encode(hash));
 	}
 
 	public static String hashPass(String pass, String salt) {
