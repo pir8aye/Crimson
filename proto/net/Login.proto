@@ -3,7 +3,7 @@ package com.subterranean_security.crimson.core.proto.net;
 message Login_RQ {
 	required string username = 1;
 	required string hash = 2;
-	optional int32 VID = 3;
+	required int32 svid = 3;
 }
 
 message Login_RS {

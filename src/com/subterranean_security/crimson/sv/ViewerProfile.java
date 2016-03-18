@@ -17,11 +17,47 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sv;
 
-public class ViewerProfile {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 
-	public Integer getClientid() {
-		// TODO Auto-generated method stub
-		return null;
+import com.subterranean_security.crimson.sv.permissions.Permissions;
+
+public class ViewerProfile implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	private String user;
+	private int svid;
+	private ArrayList<Date> login_times = new ArrayList<Date>();
+	private ArrayList<String> login_ip = new ArrayList<String>();
+	private Permissions permissions = new Permissions();
+
+	public ViewerProfile(int svid) {
+		this.svid = svid;
+	}
+
+	public Permissions getPermissions() {
+		return permissions;
+	}
+
+	public Integer getSvid() {
+		return svid;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public ArrayList<Date> getLogin_times() {
+		return login_times;
+	}
+
+	public ArrayList<String> getLogin_ip() {
+		return login_ip;
 	}
 
 }

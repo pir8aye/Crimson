@@ -104,7 +104,7 @@ public enum ViewerStore {
 		public static void remove(Integer id) {
 			Iterator<ClientProfile> pp = profiles.iterator();
 			while (pp.hasNext()) {
-				if (pp.next().getClientid() == id) {
+				if (pp.next().getSvid() == id) {
 					pp.remove();
 					return;
 				}
@@ -114,7 +114,7 @@ public enum ViewerStore {
 		public static void update(ProfileDelta_EV change) {
 			boolean flag = true;
 			for (ClientProfile p : profiles) {
-				if (p.getClientid() == change.getClientid()) {
+				if (p.getSvid() == change.getClientid()) {
 					flag = false;
 					amalgamate(p, change);
 
