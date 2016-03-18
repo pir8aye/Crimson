@@ -43,20 +43,15 @@ public enum Crypto {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new String(hash, StandardCharsets.UTF_16);
+		return B64.encodeString(new String(hash, StandardCharsets.UTF_16));
+	}
+
+	public static String hashPass(String pass, String salt) {
+		return hashPass(pass.toCharArray(), salt);
 	}
 
 	public static String hashPass(char[] pass) {
-		byte[] hash = new String(pass).getBytes(StandardCharsets.UTF_16);
-		try {
-			for (int i = 0; i < 999; i++) {
-				hash = hash("SHA-256", hash);
-			}
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new String(hash, StandardCharsets.UTF_16);
+		return hashPass(pass, "");
 	}
 
 	public static String genSalt() {
@@ -71,8 +66,7 @@ public enum Crypto {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return CUtil.Misc.randString(8);// return something random because signing
-										// failed
+		return CUtil.Misc.randString(8);
 	}
 
 }
