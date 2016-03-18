@@ -19,9 +19,10 @@ package com.subterranean_security.crimson.viewer.ui.screen.generator;
 
 import java.awt.Dimension;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class GenTabComponent extends JPanel {
 
@@ -37,8 +38,7 @@ public class GenTabComponent extends JPanel {
 		tabLabel.setHorizontalAlignment(JLabel.CENTER);
 		add(tabLabel);
 
-		JLabel label_1 = new JLabel(new ImageIcon(GenTabComponent.class
-				.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/icons16/" + icon + ".png")));
+		JLabel label_1 = new JLabel(UUtil.getIcon("icons16/general/" + icon + ".png"));
 		label_1.setBounds(0, 0, 19, 16);
 		add(label_1);
 
