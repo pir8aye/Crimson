@@ -70,6 +70,7 @@ public class SettingsDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				// save to databases
 				settingsPanel.save(ViewerStore.Databases.local);
+				dispose();
 
 			}
 		});
