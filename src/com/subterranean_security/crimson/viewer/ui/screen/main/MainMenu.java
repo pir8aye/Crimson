@@ -33,6 +33,7 @@ import com.subterranean_security.crimson.viewer.ui.screen.about.AboutDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.GenDialog;
+import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SettingsDialog;
 
 public class MainMenu extends JPanel {
@@ -77,6 +78,11 @@ public class MainMenu extends JPanel {
 		wmNetwork.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
+				NetMan nm = new NetMan();
+				nm.setVisible(true);
+
+				wmFiles.resetBG();
+				MenuSelectionManager.defaultManager().clearSelectedPath();
 			}
 		});
 
