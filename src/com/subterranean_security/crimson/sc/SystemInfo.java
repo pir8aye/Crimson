@@ -17,38 +17,75 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sc;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.hyperic.sigar.Cpu;
 import org.hyperic.sigar.CpuInfo;
+import org.hyperic.sigar.NetInfo;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+
+import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
 
 public class SystemInfo {
 
 	private static Sigar sigar = new Sigar();
 
-	public static class CPU extends SystemInfo {
+	private static Cpu cpu = new Cpu();
+	private static CpuInfo cpuInfo = new CpuInfo();
+	private static NetInfo netInfo = new NetInfo();
 
-		private static Cpu cpu = new Cpu();
-		private static CpuInfo cpuInfo = new CpuInfo();
+	static {
+		try {
+			cpu.gather(sigar);
+			cpuInfo.gather(sigar);
+			netInfo.gather(sigar);
+		} catch (SigarException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-		static {
-			try {
-				cpu.gather(sigar);
-				cpuInfo.gather(sigar);
-			} catch (SigarException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	public static String getModel() {
+		return cpuInfo.getModel();
+	}
+
+	public static String getLogicalCores() {
+		return "" + cpuInfo.getTotalCores();
+	}
+
+	public static ProfileDelta_EV getStatic() {
+		ProfileDelta_EV.Builder info = ProfileDelta_EV.newBuilder();
+
+		try {
+			info.setClientid(Client.clientDB.getInteger("svid"));
+		} catch (Exception e1) {
+			// TODO handle
+			info.setClientid(0);
 		}
 
-		public static String getModel() {
-			return cpuInfo.getModel();
+		try {
+			info.setNetHostname(InetAddress.getLocalHost().getHostName());
+		} catch (UnknownHostException e) {
+			info.setNetHostname("unknown");
 		}
 
-		public static String getLogicalCores() {
-			return "" + cpuInfo.getTotalCores();
-		}
+		info.setCrimsonVersion(Common.version);
 
+		info.setUserName(System.getProperty("user.name"));
+		info.setUserDir(System.getProperty("user.dir"));
+		info.setUserHome(System.getProperty("user.home"));
+		info.setJavaVersion(System.getProperty("java.version"));
+		info.setJavaVendor(System.getProperty("java.vendor"));
+		info.setJavaHome(System.getProperty("java.home"));
+		info.setJavaArch(System.getProperty("os.arch"));
+
+		info.setCpuModel(cpuInfo.getModel());
+
+		return info.build();
 	}
 
 }
