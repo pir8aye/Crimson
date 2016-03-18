@@ -18,18 +18,18 @@
 package com.subterranean_security.crimson.core.storage;
 
 public enum Headers {
-	COUNTRY, LANGUAGE, CRIMSON_VERSION, JAVA_VERSION, TIMEZONE, HOSTNAME, USERNAME, INTERNAL_IP, EXTERNAL_IP, OS_FAMILY, OS_ARCH, RAM_CAPACITY, USER_STATUS, MESSAGE_PING, RAM_USAGE, CPU_TEMPERATURE, CPU_NAME, CPU_USAGE, ACTIVE_WINDOW, SCREEN_PREVIEW, VIRTUALIZATION, MONITOR_COUNT;
-	
+	COUNTRY, LANGUAGE, CRIMSON_VERSION, JAVA_VERSION, TIMEZONE, HOSTNAME, USERNAME, INTERNAL_IP, EXTERNAL_IP, OS_FAMILY, OS_ARCH, RAM_CAPACITY, USER_STATUS, MESSAGE_PING, RAM_USAGE, CPU_TEMP, CPU_MODEL, CPU_USAGE, ACTIVE_WINDOW, SCREEN_PREVIEW, VIRTUALIZATION, MONITOR_COUNT;
+
 	@Override
 	public String toString() {
-		switch(this){
+		switch (this) {
 		case ACTIVE_WINDOW:
 			return "Active Window";
 		case COUNTRY:
 			return "Country";
-		case CPU_NAME:
+		case CPU_MODEL:
 			return "CPU Model";
-		case CPU_TEMPERATURE:
+		case CPU_TEMP:
 			return "CPU Temperature";
 		case CPU_USAGE:
 			return "CPU Usage";
@@ -67,7 +67,7 @@ public enum Headers {
 			return "User Status";
 		case VIRTUALIZATION:
 			return "Virtualization";
-		
+
 		}
 		return super.toString();
 	}

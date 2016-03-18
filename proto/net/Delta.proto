@@ -3,7 +3,6 @@ package com.subterranean_security.crimson.core.proto.net;
 message ProfileDelta_EV {
 	required int32 clientid = 1;
 	optional int64 date = 2;
-	optional string net_hostname = 100;
 	repeated NetworkInterface net_interface = 101;
 	optional string crimson_version = 102;
 	optional string user_name = 103;
@@ -17,8 +16,21 @@ message ProfileDelta_EV {
 	optional string os_version = 111;
 	optional string language = 112;
 	optional string active_window = 113;
-	optional string cpu_name = 114;
-	optional string cpu_temp = 115;
+	
+	optional string fqdn = 116;
+	
+	//CPU
+	optional string cpu_model = 117;
+	optional string cpu_temp = 118;
+	optional string cpu_speed = 119;
+	optional string cpu_logical_cores = 120;
+	optional string cpu_cache = 121;
+	
+	//NET
+	optional string net_dns1 = 122;
+	optional string net_dns2 = 123;
+	optional string net_hostname = 124;
+	
 	
 }
 

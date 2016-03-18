@@ -21,35 +21,47 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.ImageIcon;
+
 import com.subterranean_security.crimson.core.proto.net.Keylogger.KLog;
 
 public class ClientProfile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private int clientid;
+	private int svid;
 
+	private String activeWindow;
+	private ImageIcon country;
+	private String cpuModel;
+	private String cpuTemp;
+	private String cpuUsage;
+	private String crimsonVersion;
+	private ArrayList<String> external_ip = new ArrayList<String>();
 	private String hostname;
+	private ArrayList<String> internal_ip = new ArrayList<String>();
+	private String javaVersion;
+	private String language;
+	private String messagePing;
+	private String monitorCount;
+	private String osArch;
+	private String osFamily;
+	private String ramCapacity;
+	private String ramUsage;
+	private String timezone;
 	private ArrayList<String> username = new ArrayList<String>();
 	private ArrayList<Date> username_dates = new ArrayList<Date>();
-	private String timezone;
-	private String language;
-	private ArrayList<String> internal_ip = new ArrayList<String>();
-	private ArrayList<String> external_ip = new ArrayList<String>();
-	private float cpu_usage;
+	private String userStatus;
+	private String virtualization;
 
 	private KLog klog;
 
-	public ClientProfile(int clientid) {
-		this.clientid = clientid;
+	public ClientProfile(int svid) {
+		this.svid = svid;
 	}
 
-	public int getClientid() {
-		return clientid;
-	}
-
-	public void setClientid(int clientid) {
-		this.clientid = clientid;
+	public int getSvid() {
+		return svid;
 	}
 
 	public String getHostname() {
@@ -71,6 +83,142 @@ public class ClientProfile implements Serializable {
 	public void setUsername(Date date, String username) {
 		this.username.add(username);
 		this.username_dates.add(date);
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	public String getTimezone() {
+		return timezone;
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
+	}
+
+	public String getActiveWindow() {
+		return activeWindow;
+	}
+
+	public void setActiveWindow(String activeWindow) {
+		this.activeWindow = activeWindow;
+	}
+
+	public ImageIcon getCountry() {
+		return country;
+	}
+
+	public void setCountry(ImageIcon country) {
+		this.country = country;
+	}
+
+	public String getCpuModel() {
+		return cpuModel;
+	}
+
+	public void setCpuModel(String cpuModel) {
+		this.cpuModel = cpuModel;
+	}
+
+	public String getCpuTemp() {
+		return cpuTemp;
+	}
+
+	public void setCpuTemp(String cpuTemp) {
+		this.cpuTemp = cpuTemp;
+	}
+
+	public String getCpuUsage() {
+		return cpuUsage;
+	}
+
+	public void setCpuUsage(String cpu_usage) {
+		this.cpuUsage = cpu_usage;
+	}
+
+	public String getCrimsonVersion() {
+		return crimsonVersion;
+	}
+
+	public void setCrimsonVersion(String crimsonVersion) {
+		this.crimsonVersion = crimsonVersion;
+	}
+
+	public String getJavaVersion() {
+		return javaVersion;
+	}
+
+	public void setJavaVersion(String javaVersion) {
+		this.javaVersion = javaVersion;
+	}
+
+	public String getMessagePing() {
+		return messagePing;
+	}
+
+	public void setMessagePing(String messagePing) {
+		this.messagePing = messagePing;
+	}
+
+	public String getMonitorCount() {
+		return monitorCount;
+	}
+
+	public void setMonitorCount(String monitorCount) {
+		this.monitorCount = monitorCount;
+	}
+
+	public String getOsArch() {
+		return osArch;
+	}
+
+	public void setOsArch(String osArch) {
+		this.osArch = osArch;
+	}
+
+	public String getOsFamily() {
+		return osFamily;
+	}
+
+	public void setOsFamily(String osFamily) {
+		this.osFamily = osFamily;
+	}
+
+	public String getRamCapacity() {
+		return ramCapacity;
+	}
+
+	public void setRamCapacity(String ramCapacity) {
+		this.ramCapacity = ramCapacity;
+	}
+
+	public String getRamUsage() {
+		return ramUsage;
+	}
+
+	public void setRamUsage(String ramUsage) {
+		this.ramUsage = ramUsage;
+	}
+
+	public String getUserStatus() {
+		return userStatus;
+	}
+
+	public void setUserStatus(String userStatus) {
+		this.userStatus = userStatus;
+	}
+
+	public String getVirtualization() {
+		return virtualization;
+	}
+
+	public void setVirtualization(String virtualization) {
+		this.virtualization = virtualization;
 	}
 
 }
