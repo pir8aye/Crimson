@@ -17,8 +17,9 @@ message GroupChallengeResult_1W {
 
 message Auth_1W {
 	required AuthType type = 1;
-	optional string group_name = 2;
-	optional string password = 3;
+	required int32 cvid = 2;
+	optional string group_name = 3;
+	optional string password = 4;
 }
 
 enum AuthType {

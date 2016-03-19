@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallengeResult_1W;
@@ -38,8 +37,6 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sc.SystemInfo;
-import com.subterranean_security.crimson.server.ServerStore;
-import com.subterranean_security.crimson.server.net.Receptor;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -86,6 +83,8 @@ public class ClientExecutor extends BasicExecutor {
 						challengeResult_1w(m);
 					} else if (m.hasFileListingRq()) {
 						file_listing_rq(m);
+					} else if (m.hasAssign1W()) {
+						assign_1w(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -191,6 +190,10 @@ public class ClientExecutor extends BasicExecutor {
 				.setFileListingRs(
 						FileListing_RS.newBuilder().addAllListing(null).setViewerid(m.getFileListingRq().getViewerid()))
 				.build());
+	}
+
+	private void assign_1w(Message m) {
+		Client.clientDB.storeObject("svid", m.getAssign1W().getId());
 	}
 
 }

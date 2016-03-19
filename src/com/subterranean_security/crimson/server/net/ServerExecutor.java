@@ -27,6 +27,7 @@ import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
+import com.subterranean_security.crimson.core.proto.net.Auth.Auth_1W;
 import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallengeResult_1W;
 import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RQ;
 import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RS;
@@ -40,7 +41,6 @@ import com.subterranean_security.crimson.core.proto.net.Login.LoginChallenge_RQ;
 import com.subterranean_security.crimson.core.proto.net.Login.Login_RS;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.core.proto.net.State.StateChange_RQ;
-import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -125,10 +125,11 @@ public class ServerExecutor extends BasicExecutor {
 			// no id has been assigned yet
 			int newId = ServerStore.Profiles.nextID();
 			pd = ProfileDelta_EV.newBuilder().mergeFrom(pd).setClientid(newId).build();
-			ServerCommands.setSvid(receptor, newId);
+			ServerCommands.setCvid(receptor, newId);
 		}
 		//
-		for (Receptor r : ServerStore.Connections.connections) {
+		for (int svid : ServerStore.Connections.getKeySet()) {
+			Receptor r = ServerStore.Connections.getConnection(svid);
 			// somehow check permissions TODO
 
 			if (r.getInstance() == Instance.VIEWER) {
@@ -155,17 +156,26 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
+	// TODO eliminate repetition
 	private void auth_1w(Message m) {
 		if (receptor.getState() != ConnectionState.CONNECTED) {
 			return;
 		} else {
 			receptor.setState(ConnectionState.AUTH_STAGE1);
 		}
-		switch (m.getAuth1W().getType()) {
+		Auth_1W auth = m.getAuth1W();
+		if (auth.getCvid() != 0) {
+			receptor.setCvid(auth.getCvid());
+		} else {
+			ServerCommands.setCvid(receptor, IDGen.getCvid());
+		}
+
+		switch (auth.getType()) {
+
 		case GROUP:
-			final Group group = ServerStore.Authentication.getGroup(m.getAuth1W().getGroupName());
+			final Group group = ServerStore.Authentication.getGroup(auth.getGroupName());
 			if (group == null) {
-				log.debug("Authentication failed: Invalid Group: {}", m.getAuth1W().getGroupName());
+				log.debug("Authentication failed: Invalid Group: {}", auth.getGroupName());
 				receptor.setState(ConnectionState.CONNECTED);
 				return;
 			}
@@ -200,7 +210,7 @@ public class ServerExecutor extends BasicExecutor {
 			break;
 
 		case PASSWORD:
-			String password = m.getAuth1W().getPassword();
+			String password = auth.getPassword();
 			if (ServerStore.Authentication.tryPassword(password)) {
 				receptor.setState(ConnectionState.AUTHENTICATED);
 				receptor.setInstance(Instance.CLIENT);
@@ -245,8 +255,14 @@ public class ServerExecutor extends BasicExecutor {
 	private void login_rq(Message m) {
 		receptor.setInstance(Instance.VIEWER);
 		String user = m.getLoginRq().getUsername();
-		int svid = m.getLoginRq().getSvid();
 		ServerInfoDelta_EV.Builder sid = ServerInfoDelta_EV.newBuilder();
+
+		if (m.getLoginRq().getSvid() != 0) {
+			receptor.setCvid(m.getLoginRq().getSvid());
+		} else {
+			ServerCommands.setCvid(receptor, IDGen.getCvid());
+		}
+
 		boolean pass = false;
 		try {
 			if (!ServerStore.Databases.system.userExists(user)) {
@@ -272,7 +288,7 @@ public class ServerExecutor extends BasicExecutor {
 				receptor.setState(ConnectionState.AUTHENTICATED);
 				ViewerProfile vp = null;
 				try {
-					vp = ServerStore.Profiles.getViewer(svid);
+					vp = ServerStore.Profiles.getViewer(receptor.getCvid());
 				} catch (Exception e1) {
 					vp = new ViewerProfile(ServerStore.Profiles.nextID());
 					vp.setUser(user);
@@ -373,6 +389,19 @@ public class ServerExecutor extends BasicExecutor {
 	private void file_listing_rs(Message m) {
 		Receptor r = ServerStore.Connections.getConnection(m.getFileListingRq().getViewerid());
 		r.handle.write(m);
+	}
+
+	private void stream_start_ev(Message m) {
+		if (m.getStreamStartEv().getParam().hasCID()) {
+
+		} else {
+
+		}
+
+	}
+
+	private void stream_stop_ev(Message m) {
+
 	}
 
 }

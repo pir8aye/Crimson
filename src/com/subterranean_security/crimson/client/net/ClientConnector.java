@@ -93,7 +93,12 @@ public class ClientConnector implements AutoCloseable {
 			return;
 		}
 
-		Auth_1W.Builder auth = Auth_1W.newBuilder().setType(authType);
+		int cvid = 0;
+		try {
+			cvid = Client.clientDB.getInteger("svid");
+		} catch (Exception e2) {
+		}
+		Auth_1W.Builder auth = Auth_1W.newBuilder().setCvid(cvid).setType(authType);
 
 		switch (authType) {
 		case GROUP:

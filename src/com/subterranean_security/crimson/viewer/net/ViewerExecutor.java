@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net;
 
+import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
 import com.subterranean_security.crimson.viewer.ViewerStore;
@@ -57,8 +58,11 @@ public class ViewerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-
-					connector.cq.put(m.getId(), m);
+					if (m.hasAssign1W()) {
+						assign_1w(m);
+					} else {
+						connector.cq.put(m.getId(), m);
+					}
 
 				}
 			}
@@ -68,6 +72,10 @@ public class ViewerExecutor extends BasicExecutor {
 
 	private void profileDelta_ev(Message m) {
 		ViewerStore.Profiles.update(m.getProfileDeltaEv());
+	}
+
+	private void assign_1w(Message m) {
+		ViewerStore.Databases.local.storeObject("svid", m.getAssign1W().getId());
 	}
 
 }
