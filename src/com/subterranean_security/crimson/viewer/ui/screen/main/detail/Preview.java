@@ -22,6 +22,8 @@ import javax.swing.JPanel;
 import com.subterranean_security.crimson.sv.ClientProfile;
 
 public class Preview extends JPanel implements DModule {
+	public Preview() {
+	}
 
 	private static final long serialVersionUID = 1L;
 
