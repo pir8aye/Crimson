@@ -30,7 +30,7 @@ public class DebugFrame extends JFrame {
 	private JPanel contentPane;
 
 	public DebugFrame() {
-		setTitle("Debug");
+		setTitle("Crimson - Debug");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
