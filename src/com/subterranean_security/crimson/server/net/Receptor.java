@@ -32,6 +32,8 @@ import com.subterranean_security.crimson.sv.ClientProfile;
 public class Receptor implements AutoCloseable {
 
 	private Instance instance;
+	private int profile;
+	private int cvid;
 
 	public ServerHandler handle;
 	public ServerExecutor executor = new ServerExecutor(this);
@@ -52,8 +54,6 @@ public class Receptor implements AutoCloseable {
 	public ConnectionState getState() {
 		return state;
 	}
-
-	private int profile;
 
 	public Receptor(ServerHandler handle) {
 		this.handle = handle;
@@ -81,12 +81,16 @@ public class Receptor implements AutoCloseable {
 		instance = i;
 	}
 
-	public int getClientid() {
-		return getProfile().getSvid();
+	public int getCvid() {
+		return cvid;
 	}
 
 	public String getRemoteAddress() {
 		return ((InetSocketAddress) handle.channel.remoteAddress()).getAddress().getHostAddress();
+	}
+
+	public void setCvid(int cvid) {
+		this.cvid = cvid;
 	}
 
 }
