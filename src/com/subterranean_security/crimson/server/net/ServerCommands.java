@@ -17,14 +17,15 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net;
 
-import com.subterranean_security.crimson.core.proto.net.SVID.AssignID_1W;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
+import com.subterranean_security.crimson.core.proto.net.SVID.AssignID_1W;
 
 public enum ServerCommands {
 	;
 
-	public static void setSvid(Receptor r, int svid) {
-		r.handle.write(Message.newBuilder().setAssign1W(AssignID_1W.newBuilder().setId(svid)).build());
+	public static void setCvid(Receptor r, int cvid) {
+		r.setCvid(cvid);
+		r.handle.write(Message.newBuilder().setAssign1W(AssignID_1W.newBuilder().setId(cvid)).build());
 	}
 
 }
