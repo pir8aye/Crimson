@@ -19,13 +19,25 @@ package com.subterranean_security.crimson.core.stream;
 
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+
+import com.subterranean_security.crimson.core.util.CUtil;
+
+/**
+ * Stream storage for endpoints only
+ *
+ */
 public enum StreamStore {
 	;
-
+	private static Logger log = CUtil.Logging.getLogger(StreamStore.class);
 	private static HashMap<Integer, Stream> streams = new HashMap<Integer, Stream>();
 
 	public static Stream getStream(int id) {
 		return streams.get(id);
+	}
+
+	public static HashMap<Integer, Stream> getStreams() {
+		return streams;
 	}
 
 	public static void removeStream(int id) {
