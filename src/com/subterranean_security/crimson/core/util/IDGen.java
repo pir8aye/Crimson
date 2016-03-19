@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
+import java.util.Random;
+
 public enum IDGen {
 	;
 	private static byte counter = 0;
@@ -28,6 +30,12 @@ public enum IDGen {
 			counter++;
 		}
 		return counter;
+	}
+
+	private static Random random = new Random();
+
+	public static int getCvid() {
+		return random.nextInt();
 	}
 
 }
