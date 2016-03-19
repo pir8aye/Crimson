@@ -49,4 +49,16 @@ public class WorldMap extends JPanel implements DModule {
 		return 0;
 	}
 
+	@Override
+	public int compareTo(DModule o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getDWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

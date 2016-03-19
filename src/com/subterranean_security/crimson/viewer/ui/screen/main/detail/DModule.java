@@ -30,6 +30,8 @@ public interface DModule extends Comparable<DModule> {
 	void updateGraphics();
 
 	int getWeight();
+	
+	int getDWidth();
 
 	default int compareTo(DModule o) {
 		return (getWeight() - o.getWeight());

@@ -45,7 +45,9 @@ public class Processor extends JPanel implements DModule {
 
 	private static final long serialVersionUID = 1L;
 
-	ITrace2D trace = new Trace2DLtd(60);
+	private ITrace2D trace = new Trace2DLtd(60);
+	private boolean speed = true;// TODO configurable
+	private boolean usage = true;
 
 	public Processor() {
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -98,15 +100,15 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblTotalCpuUsage.gridy = 0;
 		panel_2.add(lblTotalCpuUsage, gbc_lblTotalCpuUsage);
 
-		JLabel lblLoading = new JLabel("Loading...");
-		lblLoading.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblLoading.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblCpuModel = new JLabel("Loading...");
+		lblCpuModel.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblCpuModel.setHorizontalAlignment(SwingConstants.TRAILING);
 		GridBagConstraints gbc_lblLoading = new GridBagConstraints();
 		gbc_lblLoading.fill = GridBagConstraints.BOTH;
 		gbc_lblLoading.insets = new Insets(0, 0, 5, 0);
 		gbc_lblLoading.gridx = 1;
 		gbc_lblLoading.gridy = 0;
-		panel_2.add(lblLoading, gbc_lblLoading);
+		panel_2.add(lblCpuModel, gbc_lblLoading);
 
 		JLabel lblNewLabel = new JLabel("Clock Speed:");
 		lblNewLabel.setFont(new Font("Dialog", Font.BOLD, 10));
@@ -155,27 +157,33 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblNewLabel_4.gridy = 3;
 		panel_2.add(lblNewLabel_4, gbc_lblNewLabel_4);
 
-		JLabel lblNewLabel_5 = new JLabel("Loading...");
-		lblNewLabel_5.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblNewLabel_5.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblCpuUsage = new JLabel("Loading...");
+		lblCpuUsage.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblCpuUsage.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblNewLabel_5 = new GridBagConstraints();
 		gbc_lblNewLabel_5.fill = GridBagConstraints.BOTH;
 		gbc_lblNewLabel_5.gridx = 1;
 		gbc_lblNewLabel_5.gridy = 3;
-		panel_2.add(lblNewLabel_5, gbc_lblNewLabel_5);
+		panel_2.add(lblCpuUsage, gbc_lblNewLabel_5);
 
 	}
 
-	private int streamID;
 	private ClientProfile profile;
 	private InfoMaster im;
 
+	private JLabel lblCpuModel;
+
+	private JLabel lblCpuUsage;
+
 	@Override
 	public void setTarget(ClientProfile p) {
-		StreamStore.removeStream(streamID);
+		if (im != null) {
+			StreamStore.removeStream(im.getStreamID());
+		}
 		if (p != null) {
 			profile = p;
-			im = new InfoMaster(InfoParam.newBuilder().build());
+			lblCpuModel.setText(profile.getCpuModel());
+			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).build());
 			StreamStore.addStream(im.getStreamID(), im);
 			im.start();
 		}
@@ -201,6 +209,17 @@ public class Processor extends JPanel implements DModule {
 	@Override
 	public int getWeight() {
 		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int compareTo(DModule arg0) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getDWidth() {
 		return 0;
 	}
 
