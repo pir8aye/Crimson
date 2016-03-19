@@ -17,27 +17,21 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.files;
 
-import java.awt.Image;
-import java.awt.Toolkit;
-
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.event.ListDataListener;
 
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class FileComboBoxModel extends AbstractListModel implements ComboBoxModel {
 
-	ImageIcon viewer = new ImageIcon(Toolkit.getDefaultToolkit().getImage(FileComboBoxModel.class
-			.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/icons16/viewer.png")));
+	ImageIcon viewer = UUtil.getIcon("icons16/general/viewer.png");
 
-	ImageIcon server = new ImageIcon(Toolkit.getDefaultToolkit().getImage(FileComboBoxModel.class
-			.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/icons16/server.png")));
+	ImageIcon server = UUtil.getIcon("icons16/general/server.png");
 
-	// base for creating client entries
-	Image clientImage = Toolkit.getDefaultToolkit().getImage(FileComboBoxModel.class
-			.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/icons16/clients.png"));
+	ImageIcon client = UUtil.getIcon("icons16/general/clients.png");
 
 	private Object selected = null;
 
@@ -61,7 +55,6 @@ public class FileComboBoxModel extends AbstractListModel implements ComboBoxMode
 			return server;
 		}
 
-		ImageIcon client = new ImageIcon(clientImage);
 		client.setDescription(ViewerStore.Profiles.profiles.get(arg0 - 2).getHostname());
 		return client;
 
