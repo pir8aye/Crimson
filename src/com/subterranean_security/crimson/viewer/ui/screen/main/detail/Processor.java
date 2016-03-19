@@ -36,6 +36,7 @@ import com.subterranean_security.crimson.core.proto.net.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 
 import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.ITrace2D;
@@ -183,7 +184,13 @@ public class Processor extends JPanel implements DModule {
 		if (p != null) {
 			profile = p;
 			lblCpuModel.setText(profile.getCpuModel());
-			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).build());
+			int VID = 0;
+			try {
+				VID = ViewerStore.Databases.local.getInteger("svid");
+			} catch (Exception e) {
+			}
+			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).build(), profile.getSvid(),
+					VID);
 			StreamStore.addStream(im.getStreamID(), im);
 			im.start();
 		}

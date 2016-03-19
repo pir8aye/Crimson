@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.core.stream.info;
 import java.util.Random;
 
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
-import com.subterranean_security.crimson.core.proto.net.Stream.InfoData;
 import com.subterranean_security.crimson.core.proto.net.Stream.InfoParam;
 import com.subterranean_security.crimson.core.proto.net.Stream.Param;
 import com.subterranean_security.crimson.core.proto.net.Stream.StreamStart_EV;
@@ -30,16 +29,13 @@ import com.subterranean_security.crimson.viewer.net.Router;
 
 public class InfoMaster extends Stream {
 
-	public InfoMaster(InfoParam ip) {
-		param = Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).build();
+	public InfoMaster(InfoParam ip, int CID, int VID) {
+		param = Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).setCID(CID).setVID(VID).build();
 	}
 
 	@Override
 	public void received(Message m) {
-		InfoData infoData = m.getStreamDataEv().getInfoData();
-		if (infoData.hasRamUsage()) {
-			// update profile
-		}
+		// receiving is handled by executor
 
 	}
 

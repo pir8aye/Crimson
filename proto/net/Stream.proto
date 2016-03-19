@@ -10,18 +10,19 @@ message StreamStop_EV {
 
 message StreamData_EV {
 	required int32 streamID = 1;
-	optional InfoData info_data = 2;
-}
-
-message InfoData {
-	optional string ram_usage = 1;
 }
 
 message Param {
 	required int32 streamID = 1;
-	optional InfoParam info_param = 2;
+	required int32 VID = 2;
+	optional int32 CID = 3;
+	optional InfoParam info_param = 4;
 }
 
 message InfoParam {
-	optional bool ram_usage = 1;
+	optional bool active_window = 1;
+	optional bool cpu_speed = 2;
+	optional bool cpu_temp = 3;
+	optional bool cpu_usage = 4;
+	optional bool ram_usage = 5;
 }
