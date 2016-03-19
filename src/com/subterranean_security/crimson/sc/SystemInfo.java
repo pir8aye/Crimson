@@ -41,16 +41,12 @@ public class SystemInfo {
 	static {
 		try {
 			cpu.gather(sigar);
-			cpuInfo = sigar.getCpuInfoList()[0];//TODO
+			cpuInfo = sigar.getCpuInfoList()[0];// TODO
 			netInfo.gather(sigar);
 		} catch (SigarException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public static String getModel() {
-		return cpuInfo.getModel();
 	}
 
 	public static String getLogicalCores() {
@@ -78,12 +74,14 @@ public class SystemInfo {
 		info.setUserName(System.getProperty("user.name"));
 		info.setUserDir(System.getProperty("user.dir"));
 		info.setUserHome(System.getProperty("user.home"));
+		info.setLanguage(System.getProperty("user.language"));
 		info.setJavaVersion(System.getProperty("java.version"));
 		info.setJavaVendor(System.getProperty("java.vendor"));
 		info.setJavaHome(System.getProperty("java.home"));
 		info.setJavaArch(System.getProperty("os.arch"));
 
-		info.setCpuModel(cpuInfo.getModel());
+		String model = cpuInfo.getModel().replaceAll("\\(.+?\\)", "");
+		info.setCpuModel(model.substring(0, model.indexOf("CPU @")).trim());
 
 		return info.build();
 	}
