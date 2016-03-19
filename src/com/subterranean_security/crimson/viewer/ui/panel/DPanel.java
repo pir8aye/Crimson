@@ -59,15 +59,19 @@ public class DPanel extends SLPanel {
 
 		// replace these configs
 		pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f).place(0, 0, movingMain);
-		pos2 = new SLConfig(this).gap(0, 0).row(6f).col(3f).col(1f).place(0, 0, movingMain).place(0, 1, movingBar);
+		pos2 = new SLConfig(this).gap(0, 0).row(5f).col(3f).col(1f).place(0, 0, movingMain).place(0, 1, movingBar);
 
 		this.setTweenManager(SLAnimator.createTweenManager());
 		this.initialize(pos1);
 
 	}
 
-	public synchronized void showDetail(ClientProfile sp) {
+	public void refreshWidth() {
+		pos2 = new SLConfig(this).gap(0, 0).row(6f).col(3f).col(detail.getDWidth()).place(0, 0, movingMain).place(0, 1,
+				movingBar);
+	}
 
+	public synchronized void showDetail(ClientProfile sp) {
 		if (!showing) {
 			// move the detail panel out
 			movingMain.runAction();
@@ -94,12 +98,12 @@ public class DPanel extends SLPanel {
 
 			thisDP.createTransition().push(new SLKeyframe(pos2, 0.9f).setStartSide(SLSide.RIGHT, movingBar)
 					.setCallback(new SLKeyframe.Callback() {
-				@Override
-				public void done() {
-					movingMain.setAction(actionDN);
-					movingMain.enableAction();
-				}
-			})).play();
+						@Override
+						public void done() {
+							movingMain.setAction(actionDN);
+							movingMain.enableAction();
+						}
+					})).play();
 		}
 	};
 
@@ -109,12 +113,12 @@ public class DPanel extends SLPanel {
 
 			thisDP.createTransition().push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.RIGHT, movingBar)
 					.setCallback(new SLKeyframe.Callback() {
-				@Override
-				public void done() {
-					movingMain.setAction(actionUP);
+						@Override
+						public void done() {
+							movingMain.setAction(actionUP);
 
-				}
-			})).play();
+						}
+					})).play();
 		}
 	};
 
@@ -173,6 +177,14 @@ class Detail extends JPanel {
 		for (DModule dm : modules) {
 			dm.setShowing(false);
 		}
+	}
+
+	public int getDWidth() {
+		int max = 0;
+		for (DModule dm : modules) {
+			max = Math.max(max, dm.getDWidth());
+		}
+		return max;
 	}
 
 }
