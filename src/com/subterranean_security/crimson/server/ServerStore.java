@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.net.Gen.Group;
@@ -38,32 +39,23 @@ public enum ServerStore {
 	}
 
 	public static class Connections {
-		public static ArrayList<Receptor> connections = new ArrayList<Receptor>();
+		private static HashMap<Integer, Receptor> receptors = new HashMap<Integer, Receptor>();
 
 		public static void add(Receptor connection) {
-			synchronized (connections) {
-				connections.add(connection);
-			}
+			receptors.put(connection.getCvid(), connection);
 		}
 
 		public static void remove(Receptor connection) {
-			synchronized (connections) {
-				connections.remove(connection);
-			}
+			receptors.remove(connection.getCvid());
 		}
 
-		public static Receptor getConnection(int i) {
-			for (Receptor r : connections) {
-				if (r.getClientid() == i) {
-					return r;
-				}
-			}
-			return null;
+		public static Receptor getConnection(int svid) {
+			return receptors.get(svid);
 		}
 
-	}
-
-	public static class Streams {
+		public static Set<Integer> getKeySet() {
+			return receptors.keySet();
+		}
 
 	}
 
