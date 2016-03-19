@@ -20,6 +20,8 @@ package com.subterranean_security.crimson.core.ui.debug;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Set;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -28,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 
 public class StreamList extends JPanel {
@@ -116,12 +119,14 @@ class StreamTM extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		HashMap<Integer, Stream> streams = StreamStore.getStreams();
+		Object[] set = streams.keySet().toArray();
 		switch (headers[columnIndex]) {
 		case "ID": {
-
+			return streams.get((Integer) set[rowIndex]).getStreamID();
 		}
 		case "Type": {
-
+			return streams.get((Integer) set[rowIndex]).getClass().getName();
 		}
 		}
 		return null;
