@@ -17,11 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.stream.info;
 
+import com.subterranean_security.crimson.client.Native;
 import com.subterranean_security.crimson.client.net.Router;
+import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
 import com.subterranean_security.crimson.core.proto.net.MSG.Message;
-import com.subterranean_security.crimson.core.proto.net.Stream.InfoData;
 import com.subterranean_security.crimson.core.proto.net.Stream.Param;
-import com.subterranean_security.crimson.core.proto.net.Stream.StreamData_EV;
 import com.subterranean_security.crimson.core.stream.Stream;
 
 public class InfoSlave extends Stream {
@@ -39,13 +39,18 @@ public class InfoSlave extends Stream {
 	@Override
 	public void send() {
 		System.out.println("Pumping stream");
-		InfoData.Builder id = InfoData.newBuilder();
-		if (param.getInfoParam().hasRamUsage()) {
-			// add ram usage
+		ProfileDelta_EV.Builder pd = ProfileDelta_EV.newBuilder();
+		if (param.getInfoParam().hasActiveWindow()) {
+			pd.setActiveWindow(Native.getActiveWindow());
+		}
+		if (param.getInfoParam().hasCpuSpeed()) {
+			pd.setCpuSpeed(null);
+		}
+		if (param.getInfoParam().hasCpuTemp()) {
+			pd.setCpuTemp(null);
 		}
 
-		Router.route(Message.newBuilder().setUrgent(true)
-				.setStreamDataEv(StreamData_EV.newBuilder().setStreamID(param.getStreamID()).setInfoData(id)));
+		Router.route(Message.newBuilder().setUrgent(true).setProfileDeltaEv(pd));
 
 	}
 
