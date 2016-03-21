@@ -19,9 +19,9 @@ package com.subterranean_security.crimson.core.stream.info;
 
 import com.subterranean_security.crimson.client.Native;
 import com.subterranean_security.crimson.client.net.Router;
-import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
-import com.subterranean_security.crimson.core.proto.net.Stream.Param;
+import com.subterranean_security.crimson.core.proto.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.Stream;
 
 public class InfoSlave extends Stream {

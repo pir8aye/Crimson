@@ -17,9 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net;
 
-import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
 import io.netty.util.ReferenceCountUtil;

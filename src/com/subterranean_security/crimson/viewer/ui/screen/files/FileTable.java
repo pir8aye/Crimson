@@ -33,7 +33,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import com.subterranean_security.crimson.core.proto.net.FM.FileListlet;
+import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public class FileTable extends JPanel {

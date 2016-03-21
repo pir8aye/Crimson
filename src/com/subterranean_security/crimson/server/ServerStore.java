@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
-import com.subterranean_security.crimson.core.proto.net.Gen.Group;
+import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;

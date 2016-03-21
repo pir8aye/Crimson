@@ -29,7 +29,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
-import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.panel.HPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;

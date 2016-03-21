@@ -25,7 +25,7 @@ import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.net.ConnectionState;
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.sv.ClientProfile;
 

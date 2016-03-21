@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
-import com.subterranean_security.crimson.core.proto.net.Delta.ServerInfoDelta_EV;
+import com.subterranean_security.crimson.core.proto.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.proto.Delta.ServerInfoDelta_EV;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.Listener;

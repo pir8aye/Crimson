@@ -20,8 +20,8 @@ package com.subterranean_security.crimson.core.stream;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
-import com.subterranean_security.crimson.core.proto.net.Stream.Param;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Stream.Param;
 
 public abstract class Stream {
 

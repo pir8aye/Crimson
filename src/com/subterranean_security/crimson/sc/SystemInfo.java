@@ -28,7 +28,7 @@ import org.hyperic.sigar.SigarException;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.net.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.proto.Delta.ProfileDelta_EV;
 
 public class SystemInfo {
 

@@ -26,15 +26,13 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.proto.net.FM.FileListlet;
-import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
-import com.subterranean_security.crimson.core.proto.net.Gen.GenReport;
-import com.subterranean_security.crimson.core.proto.net.Gen.Generate_RQ;
-import com.subterranean_security.crimson.core.proto.net.Login.LoginChallenge_RS;
-import com.subterranean_security.crimson.core.proto.net.Login.Login_RQ;
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
-import com.subterranean_security.crimson.core.proto.net.State.STATES;
-import com.subterranean_security.crimson.core.proto.net.State.StateChange_RQ;
+import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
+import com.subterranean_security.crimson.core.proto.Generator.GenReport;
+import com.subterranean_security.crimson.core.proto.Generator.RQ_Generate;
+import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
+import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -56,18 +54,18 @@ public enum ViewerCommands {
 		}
 
 		ViewerConnector.connector.handle.write(Message.newBuilder().setId(id)
-				.setLoginRq(Login_RQ.newBuilder().setSvid(svid).setUsername(user)).build());
+				.setRqLogin(RQ_Login.newBuilder().setSvid(svid).setUsername(user)).build());
 
 		try {
 			Message lcrq = ViewerConnector.connector.cq.take(id, 5, TimeUnit.SECONDS);
-			if (lcrq.hasLoginChallengeRq()) {
-				log.debug("Received login challenge: {}", lcrq.getLoginChallengeRq().getSalt());
+			if (lcrq.hasRqLoginChallenge()) {
+				log.debug("Received login challenge: {}", lcrq.getRqLoginChallenge().getSalt());
 
-				String result = Crypto.hashPass(pass, lcrq.getLoginChallengeRq().getSalt());
+				String result = Crypto.hashPass(pass, lcrq.getRqLoginChallenge().getSalt());
 				log.debug("Sending hash: " + result);
 				ViewerConnector.connector.handle.write(Message.newBuilder().setId(id)
-						.setLoginChallengeRs(LoginChallenge_RS.newBuilder().setResult(result)).build());
-			} else if (lcrq.hasLoginRs()) {
+						.setRsLoginChallenge(RS_LoginChallenge.newBuilder().setResult(result)).build());
+			} else if (lcrq.hasRsLogin()) {
 				log.debug("Received login response: Invalid user");
 				return false;
 			} else {
@@ -81,10 +79,10 @@ public enum ViewerCommands {
 
 		try {
 			Message lrs = ViewerConnector.connector.cq.take(id, 5, TimeUnit.SECONDS);
-			if (lrs.hasLoginRs()) {
-				log.debug("Received login response: " + lrs.getLoginRs().getResponse());
-				if (lrs.getLoginRs().getResponse()) {
-					ViewerStore.ServerInfo.integrate(lrs.getLoginRs().getInitialInfo());
+			if (lrs.hasRsLogin()) {
+				log.debug("Received login response: " + lrs.getRsLogin().getResponse());
+				if (lrs.getRsLogin().getResponse()) {
+					ViewerStore.ServerInfo.integrate(lrs.getRsLogin().getInitialInfo());
 					return true;
 				}
 
@@ -99,9 +97,6 @@ public enum ViewerCommands {
 	}
 
 	public static void changeServerState(boolean state) {
-		int id = IDGen.get();
-		StateChange_RQ.Builder rq = StateChange_RQ.newBuilder().setChange(state).setType(STATES.SERVER);
-		ViewerConnector.connector.handle.write(Message.newBuilder().setId(id).setStateChangeRq(rq).build());
 	}
 
 	public static boolean getServerState() {
@@ -110,15 +105,15 @@ public enum ViewerCommands {
 
 	public static void generate(ClientConfig config, String output, Date creation) {
 		int id = IDGen.get();
-		Generate_RQ.Builder rq = Generate_RQ.newBuilder().setInternalConfig(config);
+		RQ_Generate.Builder rq = RQ_Generate.newBuilder().setInternalConfig(config);
 
-		ViewerConnector.connector.handle.write(Message.newBuilder().setId(id).setGenerateRq(rq).build());
+		ViewerConnector.connector.handle.write(Message.newBuilder().setId(id).setRqGenerate(rq).build());
 
 		try {
 			Message rs = ViewerConnector.connector.cq.take(id, 20, TimeUnit.SECONDS);
 			if (rs != null) {
 				// success
-				final GenReport gr = rs.getGenerateRs().getReport();
+				final GenReport gr = rs.getRsGenerate().getReport();
 				Runnable r = new Runnable() {
 					public void run() {
 						Report rep = new Report(gr);
@@ -129,7 +124,7 @@ public enum ViewerCommands {
 
 				if (gr.getResult()) {
 					MainFrame.main.np.addNote("Info: Generation complete! Click for report.", r);
-					CUtil.Files.writeFile(rs.getGenerateRs().getInstaller().toByteArray(), new File(output));
+					CUtil.Files.writeFile(rs.getRsGenerate().getInstaller().toByteArray(), new File(output));
 				} else {
 					MainFrame.main.np.addNote("Error: Generation failed! Click for report.", r);
 					log.error("Could not generate an installer");

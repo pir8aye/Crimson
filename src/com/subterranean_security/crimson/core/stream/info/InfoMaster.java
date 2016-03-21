@@ -19,11 +19,11 @@ package com.subterranean_security.crimson.core.stream.info;
 
 import java.util.Random;
 
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
-import com.subterranean_security.crimson.core.proto.net.Stream.InfoParam;
-import com.subterranean_security.crimson.core.proto.net.Stream.Param;
-import com.subterranean_security.crimson.core.proto.net.Stream.StreamStart_EV;
-import com.subterranean_security.crimson.core.proto.net.Stream.StreamStop_EV;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
+import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
+import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
+import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.viewer.net.Router;
 
@@ -48,14 +48,14 @@ public class InfoMaster extends Stream {
 	@Override
 	public void start() {
 		Router.route(
-				Message.newBuilder().setUrgent(true).setStreamStartEv(StreamStart_EV.newBuilder().setParam(param)));
+				Message.newBuilder().setUrgent(true).setStreamStartEv(MI_StreamStart.newBuilder().setParam(param)));
 
 	}
 
 	@Override
 	public void stop() {
 		Router.route(Message.newBuilder().setUrgent(true)
-				.setStreamStopEv(StreamStop_EV.newBuilder().setStreamID(param.getStreamID())));
+				.setStreamStopEv(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
 
 	}
 

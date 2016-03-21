@@ -22,7 +22,7 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 
-import com.subterranean_security.crimson.core.proto.net.Reports.Report;
+import com.subterranean_security.crimson.core.proto.Reports.MI_Report;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.PlatformInfo;
 import com.subterranean_security.services.Services;
@@ -35,7 +35,7 @@ public class Reporter {
 
 	private static final Logger log = CUtil.Logging.getLogger(Reporter.class);
 
-	public static void report(final Report r) {
+	public static void report(final MI_Report r) {
 		// add report to buffer TODO
 		new Thread(new Runnable() {
 
@@ -51,8 +51,8 @@ public class Reporter {
 
 	}
 
-	public static Report.Builder newReport() {
-		Report.Builder rb = Report.newBuilder();
+	public static MI_Report.Builder newReport() {
+		MI_Report.Builder rb = MI_Report.newBuilder();
 		rb.setInitDate(new Date().getTime());
 		rb.setCrVersion(Common.version);
 		rb.setJreVersion(System.getProperty("java.version"));

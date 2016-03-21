@@ -17,7 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
-import com.subterranean_security.crimson.core.proto.net.MSG;
+import com.subterranean_security.crimson.core.proto.MSG;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -46,7 +46,7 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel> {
 	public void initChannel(SocketChannel sc) {
 		ChannelPipeline p = sc.pipeline();
 		if (sslCtx != null) {
-//			p.addLast(sslCtx.newHandler(sc.alloc(), host, port));
+			// p.addLast(sslCtx.newHandler(sc.alloc(), host, port));
 		}
 
 		p.addLast(new ProtobufVarint32FrameDecoder());

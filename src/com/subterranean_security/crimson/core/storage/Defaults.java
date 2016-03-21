@@ -18,13 +18,12 @@
 package com.subterranean_security.crimson.core.storage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.net.Gen.Group;
-import com.subterranean_security.crimson.core.proto.net.Reports.Report;
+import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.ViewerProfile;
+import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 
 public enum Defaults {
 	;

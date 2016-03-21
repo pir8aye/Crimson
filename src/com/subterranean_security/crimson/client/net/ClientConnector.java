@@ -26,10 +26,10 @@ import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.net.ConnectionState;
-import com.subterranean_security.crimson.core.proto.net.Auth.AuthType;
-import com.subterranean_security.crimson.core.proto.net.Auth.Auth_1W;
-import com.subterranean_security.crimson.core.proto.net.Gen.Group;
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
+import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
+import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sc.SystemInfo;
 
@@ -98,7 +98,7 @@ public class ClientConnector implements AutoCloseable {
 			cvid = Client.clientDB.getInteger("svid");
 		} catch (Exception e2) {
 		}
-		Auth_1W.Builder auth = Auth_1W.newBuilder().setCvid(cvid).setType(authType);
+		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(cvid).setType(authType);
 
 		switch (authType) {
 		case GROUP:
@@ -111,11 +111,11 @@ public class ClientConnector implements AutoCloseable {
 			}
 			auth.setGroupName(group.getName());
 			setState(ConnectionState.AUTH_STAGE1);
-			handle.write(Message.newBuilder().setId(IDGen.get()).setAuth1W(auth).build());
+			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
 			break;
 		case NO_AUTH:
 			setState(ConnectionState.AUTHENTICATED);
-			handle.write(Message.newBuilder().setId(IDGen.get()).setAuth1W(auth).build());
+			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
 			handle.write(Message.newBuilder().setUrgent(true).setProfileDeltaEv(SystemInfo.getStatic()).build());
 			break;
 		case PASSWORD:
@@ -127,7 +127,7 @@ public class ClientConnector implements AutoCloseable {
 				return;
 			}
 			setState(ConnectionState.AUTH_STAGE1);
-			handle.write(Message.newBuilder().setId(IDGen.get()).setAuth1W(auth).build());
+			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
 			break;
 		default:
 			break;

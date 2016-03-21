@@ -23,7 +23,7 @@ import java.util.Date;
 
 import javax.swing.ImageIcon;
 
-import com.subterranean_security.crimson.core.proto.net.Keylogger.KLog;
+import com.subterranean_security.crimson.core.proto.Keylogger.KLog;
 
 public class ClientProfile implements Serializable {
 

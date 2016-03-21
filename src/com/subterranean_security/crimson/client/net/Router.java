@@ -18,7 +18,7 @@
 package com.subterranean_security.crimson.client.net;
 
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
 
 public enum Router {
 	;

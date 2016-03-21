@@ -17,8 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net;
 
-import com.subterranean_security.crimson.core.proto.net.MSG.Message;
-import com.subterranean_security.crimson.core.proto.net.SVID.AssignID_1W;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.SVID.AssignID_1W;
 
 public enum ServerCommands {
 	;

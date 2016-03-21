@@ -23,10 +23,9 @@ import java.io.IOException;
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.net.Auth.AuthType;
-import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
-import com.subterranean_security.crimson.core.proto.net.Gen.Group;
-import com.subterranean_security.crimson.core.proto.net.Gen.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
+import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;

