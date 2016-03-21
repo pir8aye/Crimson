@@ -1,7 +1,0 @@
-package com.subterranean_security.crimson.core.proto.net;
-
-message Ping_RQ {
-}
-
-message Ping_RS {
-}

@@ -1,21 +1,19 @@
-package com.subterranean_security.crimson.core.proto.net;
+package com.subterranean_security.crimson.core.proto;
 
-import "net/Delta.proto";
-message GroupChallenge_RQ {
+message RQ_GroupChallenge {
 	required string group_name = 1;
 	required string magic = 2;
 }
 
-message GroupChallenge_RS {
+message RS_GroupChallenge {
 	required string result = 1;
 }
 
-message GroupChallengeResult_1W {
+message MI_GroupChallengeResult {
 	required bool result = 1;
-	optional ProfileDelta_EV initial_info = 2; //for clients
 }
 
-message Auth_1W {
+message MI_AuthRequest {
 	required AuthType type = 1;
 	required int32 cvid = 2;
 	optional string group_name = 3;
@@ -24,4 +22,9 @@ message Auth_1W {
 
 enum AuthType {
 	GROUP = 0; PASSWORD = 1; NO_AUTH = 2;
+}
+
+message Group {
+	required string name = 1;
+	required string key = 2;
 }

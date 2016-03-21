@@ -1,14 +1,14 @@
-package com.subterranean_security.crimson.core.proto.net;
+package com.subterranean_security.crimson.core.proto;
 
-message StreamStart_EV {
+message MI_StreamStart {
 	required Param param = 1;
 }
 
-message StreamStop_EV {
+message MI_StreamStop {
 	required int32 streamID = 1;
 }
 
-message StreamData_EV {
+message EV_StreamData {
 	required int32 streamID = 1;
 }
 

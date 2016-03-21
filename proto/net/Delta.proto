@@ -1,4 +1,6 @@
-package com.subterranean_security.crimson.core.proto.net;
+package com.subterranean_security.crimson.core.proto;
+
+import "net/sequences/Listener.proto";
 
 message ProfileDelta_EV {
 	required int32 clientid = 1;
@@ -44,4 +46,5 @@ message ServerInfoDelta_EV {
 	optional bool server_status = 1;
 	optional int64 last_login = 2;
 	optional string last_ip = 3;
+	repeated ListenerConfig listeners = 4;
 }

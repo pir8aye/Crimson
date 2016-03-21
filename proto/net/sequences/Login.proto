@@ -1,21 +1,21 @@
-package com.subterranean_security.crimson.core.proto.net;
+package com.subterranean_security.crimson.core.proto;
 
 import "net/Delta.proto";
 
-message Login_RQ {
+message RQ_Login {
 	required string username = 1;
 	required int32 svid = 3;
 }
 
-message LoginChallenge_RQ{
+message RQ_LoginChallenge {
 	required string salt = 1;
 }
 
-message LoginChallenge_RS{
+message RS_LoginChallenge {
 	required string result = 1;
 }
 
-message Login_RS {
+message RS_Login {
 	required bool response = 1;
 	optional ServerInfoDelta_EV initial_info = 2;
 }

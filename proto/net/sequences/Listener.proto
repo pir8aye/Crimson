@@ -1,0 +1,21 @@
+package com.subterranean_security.crimson.core.proto;
+
+message RQ_AddListener {
+	required ListenerConfig config = 1;
+}
+
+message RS_AddListener {
+	required bool result = 1;
+	optional string comment = 2;
+}
+
+message ListenerConfig {
+	required string ID = 1;
+	required int32 port = 2;
+	optional string name = 3;
+	optional bool localhost_exclusive = 4;
+	optional bool upnp = 5;
+	optional bool client_acceptor = 6;
+	optional bool viewer_acceptor = 7;
+	
+}

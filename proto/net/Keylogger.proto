@@ -1,4 +1,4 @@
-package com.subterranean_security.crimson.core.proto.net;
+package com.subterranean_security.crimson.core.proto;
 
 enum State {
 	UNINSTALLED = 0;

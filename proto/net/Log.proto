@@ -1,4 +1,4 @@
-package com.subterranean_security.crimson.core.proto.net;
+package com.subterranean_security.crimson.core.proto;
 
 message Log_RQ {
 	

@@ -1,8 +1,7 @@
-package com.subterranean_security.crimson.core.proto.net;
+package com.subterranean_security.crimson.core.proto;
 
-message Report {
+message MI_Report {
 
-//general information//
 	required int64 init_date = 1;
 	optional string hwid = 2;
 	optional string cr_version = 3;
@@ -21,10 +20,5 @@ message Report {
 	optional string log = 16;
 	optional string comment = 17;
 
-	//error information//
 	optional string stack_trace = 18;
-}
-
-message Report_1W {
-	required Report report = 1;
 }

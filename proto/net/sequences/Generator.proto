@@ -1,7 +1,6 @@
-package com.subterranean_security.crimson.core.proto.net;
+package com.subterranean_security.crimson.core.proto;
 
-import "net/Auth.proto";
-
+import "net/sequences/ClientAuth.proto";
 
 message GenReport {
 	required bool result = 1;
@@ -13,13 +12,8 @@ message GenReport {
 	optional string output_type = 7;
 }
 
-message Group {
-	required string name = 1;
-	required string key = 2;
-}
-
 message ClientConfig {
-//general
+	//general
 	required string output_type = 1;
 	
 	optional int32 delay = 3;
@@ -57,18 +51,11 @@ message NetworkTarget {
 	required int32 port = 2;
 }
 
-message Generate_RQ {
+message RQ_Generate {
 	required ClientConfig internal_config = 1;
 }
 
-message Generate_RS {
+message RS_Generate {
 	required GenReport report = 1;
 	optional bytes installer = 2;
-}
-
-message GenInfo_RQ {
-}
-
-message GenInfo_RS {
-	required int32 size_jar_dl = 1;
 }
