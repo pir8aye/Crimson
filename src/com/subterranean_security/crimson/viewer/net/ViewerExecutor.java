@@ -39,7 +39,7 @@ public class ViewerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-					if (m.hasProfileDeltaEv()) {
+					if (m.hasEvProfileDelta()) {
 						profileDelta_ev(m);
 					}
 					ReferenceCountUtil.release(m);
@@ -57,7 +57,7 @@ public class ViewerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-					if (m.hasAssign1W()) {
+					if (m.hasMiAssignCvid()) {
 						assign_1w(m);
 					} else {
 						connector.cq.put(m.getId(), m);
@@ -70,11 +70,11 @@ public class ViewerExecutor extends BasicExecutor {
 	}
 
 	private void profileDelta_ev(Message m) {
-		ViewerStore.Profiles.update(m.getProfileDeltaEv());
+		ViewerStore.Profiles.update(m.getEvProfileDelta());
 	}
 
 	private void assign_1w(Message m) {
-		ViewerStore.Databases.local.storeObject("svid", m.getAssign1W().getId());
+		ViewerStore.Databases.local.storeObject("svid", m.getMiAssignCvid().getId());
 	}
 
 }

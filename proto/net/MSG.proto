@@ -1,21 +1,21 @@
 package com.subterranean_security.crimson.core.proto;
 
 import "net/sequences/Login.proto";
-import "net/Keylogger.proto";
+import "net/sequences/Keylogger.proto";
 import "net/sequences/ClientAuth.proto";
 import "net/sequences/Generator.proto";
-import "net/Reports.proto";
-import "net/Delta.proto";
+import "net/sequences/Report.proto";
+import "net/sequences/Delta.proto";
 import "net/sequences/FileManager.proto";
 import "net/sequences/Stream.proto";
-import "net/SVID.proto";
+import "net/sequences/CVID.proto";
 message Message {
 	optional bool urgent = 1;
 	optional int32 id = 2;
 
 	optional EV_StreamData ev_stream_data = 3;
 
-	optional ProfileDelta_EV profile_delta_ev = 14;
+	optional EV_ProfileDelta ev_profile_delta = 14;
 	optional MI_StreamStart stream_start_ev = 19;
 	optional MI_StreamStop stream_stop_ev = 20;
 	
@@ -36,5 +36,5 @@ message Message {
 	
 	optional MI_AuthRequest mi_auth_request = 141;
 	optional MI_Report mi_report = 142;
-	optional AssignID_1W assign_1w = 143;
+	optional MI_AssignCVID mi_assign_cvid = 143;
 }

@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.Delta.ProfileDelta_EV;
-import com.subterranean_security.crimson.core.proto.Delta.ServerInfoDelta_EV;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.Listener;
@@ -100,7 +100,7 @@ public enum ViewerStore {
 		private static Date lastLoginTime;
 		private static String lastLoginLocation = "";
 
-		public static void integrate(ServerInfoDelta_EV ev) {
+		public static void integrate(EV_ServerInfoDelta ev) {
 			if (ev.hasLastLogin()) {
 				lastLoginTime = new Date(ev.getLastLogin());
 			}
@@ -136,7 +136,7 @@ public enum ViewerStore {
 			}
 		}
 
-		public static void update(ProfileDelta_EV change) {
+		public static void update(EV_ProfileDelta change) {
 			// TODO do this without flag. Probably convert profiles into hashmap
 			boolean flag = true;
 			for (ClientProfile p : profiles) {
@@ -163,7 +163,7 @@ public enum ViewerStore {
 
 		}
 
-		private static void amalgamate(ClientProfile p, ProfileDelta_EV c) {
+		private static void amalgamate(ClientProfile p, EV_ProfileDelta c) {
 			if (c.hasActiveWindow()) {
 				p.setActiveWindow(c.getActiveWindow());
 			}

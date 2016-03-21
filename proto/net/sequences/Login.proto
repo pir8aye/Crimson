@@ -1,6 +1,6 @@
 package com.subterranean_security.crimson.core.proto;
 
-import "net/Delta.proto";
+import "net/sequences/Delta.proto";
 
 message RQ_Login {
 	required string username = 1;
@@ -17,6 +17,6 @@ message RS_LoginChallenge {
 
 message RS_Login {
 	required bool response = 1;
-	optional ServerInfoDelta_EV initial_info = 2;
+	optional EV_ServerInfoDelta initial_info = 2;
 }
 

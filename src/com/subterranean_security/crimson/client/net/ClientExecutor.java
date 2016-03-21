@@ -82,7 +82,7 @@ public class ClientExecutor extends BasicExecutor {
 						challengeResult_1w(m);
 					} else if (m.hasRqFileListing()) {
 						file_listing_rq(m);
-					} else if (m.hasAssign1W()) {
+					} else if (m.hasMiAssignCvid()) {
 						assign_1w(m);
 					} else {
 						connector.cq.put(m.getId(), m);
@@ -190,7 +190,7 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void assign_1w(Message m) {
-		Client.clientDB.storeObject("svid", m.getAssign1W().getId());
+		Client.clientDB.storeObject("svid", m.getMiAssignCvid().getId());
 	}
 
 }

@@ -22,7 +22,7 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 
-import com.subterranean_security.crimson.core.proto.Reports.MI_Report;
+import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.PlatformInfo;
 import com.subterranean_security.services.Services;

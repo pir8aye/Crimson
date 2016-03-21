@@ -28,7 +28,7 @@ import org.hyperic.sigar.SigarException;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 
 public class SystemInfo {
 
@@ -53,8 +53,8 @@ public class SystemInfo {
 		return "" + cpuInfo.getTotalCores();
 	}
 
-	public static ProfileDelta_EV getStatic() {
-		ProfileDelta_EV.Builder info = ProfileDelta_EV.newBuilder();
+	public static EV_ProfileDelta getStatic() {
+		EV_ProfileDelta.Builder info = EV_ProfileDelta.newBuilder();
 
 		try {
 			info.setClientid(Client.clientDB.getInteger("svid"));

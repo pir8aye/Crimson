@@ -1,5 +1,5 @@
 package com.subterranean_security.crimson.core.proto;
 
-message AssignID_1W {
+message MI_AssignCVID {
 	required int32 id = 1;
 }

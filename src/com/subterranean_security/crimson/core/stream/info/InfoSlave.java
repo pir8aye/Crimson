@@ -19,7 +19,7 @@ package com.subterranean_security.crimson.core.stream.info;
 
 import com.subterranean_security.crimson.client.Native;
 import com.subterranean_security.crimson.client.net.Router;
-import com.subterranean_security.crimson.core.proto.Delta.ProfileDelta_EV;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.Stream;
@@ -39,7 +39,7 @@ public class InfoSlave extends Stream {
 	@Override
 	public void send() {
 		System.out.println("Pumping stream");
-		ProfileDelta_EV.Builder pd = ProfileDelta_EV.newBuilder();
+		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder();
 		if (param.getInfoParam().hasActiveWindow()) {
 			pd.setActiveWindow(Native.getActiveWindow());
 		}
@@ -50,7 +50,7 @@ public class InfoSlave extends Stream {
 			pd.setCpuTemp(null);
 		}
 
-		Router.route(Message.newBuilder().setUrgent(true).setProfileDeltaEv(pd));
+		Router.route(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd));
 
 	}
 

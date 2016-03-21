@@ -32,8 +32,8 @@ import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
-import com.subterranean_security.crimson.core.proto.Delta.ProfileDelta_EV;
-import com.subterranean_security.crimson.core.proto.Delta.ServerInfoDelta_EV;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
@@ -67,8 +67,8 @@ public class ServerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-					if (m.hasProfileDeltaEv()) {
-						profileDelta(m.getProfileDeltaEv());
+					if (m.hasEvProfileDelta()) {
+						profileDelta(m.getEvProfileDelta());
 					}
 
 					ReferenceCountUtil.release(m);
@@ -116,12 +116,12 @@ public class ServerExecutor extends BasicExecutor {
 		nbt.start();
 	}
 
-	private void profileDelta(ProfileDelta_EV pd) {
+	private void profileDelta(EV_ProfileDelta pd) {
 		// TODO move this
 		if (pd.getClientid() == 0) {
 			// no id has been assigned yet
 			int newId = ServerStore.Profiles.nextID();
-			pd = ProfileDelta_EV.newBuilder().mergeFrom(pd).setClientid(newId).build();
+			pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setClientid(newId).build();
 			ServerCommands.setCvid(receptor, newId);
 		}
 		//
@@ -130,7 +130,7 @@ public class ServerExecutor extends BasicExecutor {
 			// somehow check permissions TODO
 
 			if (r.getInstance() == Instance.VIEWER) {
-				r.handle.write(Message.newBuilder().setUrgent(true).setProfileDeltaEv(pd).build());
+				r.handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd).build());
 
 			}
 		}
@@ -251,7 +251,7 @@ public class ServerExecutor extends BasicExecutor {
 	private void login_rq(Message m) {
 		receptor.setInstance(Instance.VIEWER);
 		String user = m.getRqLogin().getUsername();
-		ServerInfoDelta_EV.Builder sid = ServerInfoDelta_EV.newBuilder();
+		EV_ServerInfoDelta.Builder sid = EV_ServerInfoDelta.newBuilder();
 
 		if (m.getRqLogin().getSvid() != 0) {
 			receptor.setCvid(m.getRqLogin().getSvid());
