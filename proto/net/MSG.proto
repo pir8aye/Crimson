@@ -12,24 +12,27 @@ import "net/sequences/CVID.proto";
 message Message {
 	optional bool urgent = 1;
 	optional int32 id = 2;
+	
+	optional int32 cid = 3;
+	optional int32 vid = 4;
 
-	optional EV_StreamData ev_stream_data = 3;
+	optional EV_StreamData ev_stream_data = 5;
 
-	optional EV_ProfileDelta ev_profile_delta = 14;
+	optional EV_ProfileDelta ev_profile_delta = 6;
 	optional MI_StreamStart mi_stream_start = 19;
 	optional MI_StreamStop mi_stream_stop = 20;
 	
 	
 
-	optional RQ_Login rq_login = 4;
-	optional RS_Login rs_login = 5;
+	optional RQ_Login rq_login = 7;
+	optional RS_Login rs_login = 8;
 	optional RQ_LoginChallenge rq_login_challenge = 190;
 	optional RS_LoginChallenge rs_login_challenge = 200;
-	optional RQ_GroupChallenge rq_group_challenge = 6;
-	optional RS_GroupChallenge rs_group_challenge = 7;
+	optional RQ_GroupChallenge rq_group_challenge = 9;
+	optional RS_GroupChallenge rs_group_challenge = 10;
 	optional MI_GroupChallengeResult mi_challengeresult = 140;
-	optional RQ_Generate rq_generate = 8;
-	optional RS_Generate rs_generate = 9;
+	optional RQ_Generate rq_generate = 11;
+	optional RS_Generate rs_generate = 12;
 	optional RQ_FileListing rq_file_listing = 15;
 	optional RS_FileListing rs_file_listing = 16;
 

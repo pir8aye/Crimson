@@ -185,8 +185,7 @@ public class ClientExecutor extends BasicExecutor {
 	private void file_listing_rq(Message m) {
 
 		Client.connector.handle.write(Message.newBuilder()
-				.setRsFileListing(RS_FileListing.newBuilder().addAllListing(null).setVid(m.getRqFileListing().getVid()))
-				.build());
+				.setRsFileListing(RS_FileListing.newBuilder().addAllListing(null)).setVid(m.getVid()).build());
 	}
 
 	private void assign_1w(Message m) {

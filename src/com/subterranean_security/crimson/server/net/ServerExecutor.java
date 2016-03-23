@@ -348,18 +348,18 @@ public class ServerExecutor extends BasicExecutor {
 	private void file_listing_rq(Message m) {
 		ViewerProfile vp = null;
 		try {
-			vp = ServerStore.Profiles.getViewer(m.getRqFileListing().getCid());
+			vp = ServerStore.Profiles.getViewer(m.getVid());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
-		if (m.getRqFileListing().hasCid()) {
-			if (vp.getPermissions().verify(m.getRqFileListing().getCid(), "fs.read")) {
+		if (m.hasCid()) {
+			if (vp.getPermissions().verify(m.getCid(), "fs.read")) {
 				System.out.println("Permissions error");
 				return;
 			}
-			Receptor r = ServerStore.Connections.getConnection(m.getRqFileListing().getCid());
+			Receptor r = ServerStore.Connections.getConnection(m.getCid());
 			r.handle.write(m);
 
 		} else {
@@ -367,16 +367,14 @@ public class ServerExecutor extends BasicExecutor {
 				System.out.println("Permissions error");
 				return;
 			}
-			receptor.handle.write(Message.newBuilder()
-					.setRsFileListing(
-							RS_FileListing.newBuilder().addAllListing(null).setVid(m.getRqFileListing().getVid()))
-					.build());
+			receptor.handle.write(Message.newBuilder().setRsFileListing(RS_FileListing.newBuilder().addAllListing(null))
+					.setVid(m.getVid()).build());
 		}
 
 	}
 
 	private void file_listing_rs(Message m) {
-		Receptor r = ServerStore.Connections.getConnection(m.getRqFileListing().getVid());
+		Receptor r = ServerStore.Connections.getConnection(m.getVid());
 		r.handle.write(m);
 	}
 
