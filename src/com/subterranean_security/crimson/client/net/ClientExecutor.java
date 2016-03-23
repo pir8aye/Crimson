@@ -57,7 +57,7 @@ public class ClientExecutor extends BasicExecutor {
 						return;
 					}
 
-					if (m.hasStreamStartEv()) {
+					if (m.hasMiStreamStart()) {
 						stream_start_ev(m);
 					}
 
@@ -97,7 +97,7 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void stream_start_ev(Message m) {
-		Param p = m.getStreamStartEv().getParam();
+		Param p = m.getMiStreamStart().getParam();
 		if (p.hasInfoParam()) {
 			StreamStore.addStream(p.getStreamID(), new InfoSlave(p));
 		}

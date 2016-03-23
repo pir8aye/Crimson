@@ -3,7 +3,7 @@ package com.subterranean_security.crimson.core.proto;
 import "net/sequences/Listener.proto";
 
 message EV_ProfileDelta {
-	required int32 clientid = 1;
+	required int32 cvid = 1;
 	optional int64 date = 2;
 	repeated NetworkInterface net_interface = 101;
 	optional string crimson_version = 102;
@@ -32,6 +32,9 @@ message EV_ProfileDelta {
 	optional string net_dns1 = 122;
 	optional string net_dns2 = 123;
 	optional string net_hostname = 124;
+	
+	//RAM
+	optional int64 ram_crimson_usage = 125;
 	
 	
 }

@@ -40,6 +40,8 @@ import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -105,6 +107,10 @@ public class ServerExecutor extends BasicExecutor {
 						file_listing_rq(m);
 					} else if (m.hasRsFileListing()) {
 						file_listing_rs(m);
+					} else if (m.hasMiStreamStart()) {
+						stream_start_ev(m);
+					} else if (m.hasMiStreamStop()) {
+						stream_stop_ev(m);
 					} else {
 						receptor.cq.put(m.getId(), m);
 					}
@@ -118,10 +124,10 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void profileDelta(EV_ProfileDelta pd) {
 		// TODO move this
-		if (pd.getClientid() == 0) {
+		if (pd.getCvid() == 0) {
 			// no id has been assigned yet
 			int newId = ServerStore.Profiles.nextID();
-			pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setClientid(newId).build();
+			pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCvid(newId).build();
 			ServerCommands.setCvid(receptor, newId);
 		}
 		//
@@ -375,16 +381,23 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void stream_start_ev(Message m) {
-		if (m.getStreamStartEv().getParam().hasCID()) {
+		System.out.println("Received stream start instruction");
+		if (m.getMiStreamStart().getParam().hasCID()) {
 
 		} else {
-
+			InfoSlave is = new InfoSlave(m.getMiStreamStart().getParam());
+			StreamStore.addStream(is.getStreamID(), is);
 		}
 
 	}
 
 	private void stream_stop_ev(Message m) {
+		if (m.getMiStreamStop().hasCID()) {
 
+		} else {
+
+			StreamStore.removeStream(m.getMiStreamStop().getStreamID());
+		}
 	}
 
 }

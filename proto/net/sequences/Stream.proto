@@ -6,6 +6,7 @@ message MI_StreamStart {
 
 message MI_StreamStop {
 	required int32 streamID = 1;
+	optional int32 CID = 2;
 }
 
 message EV_StreamData {
@@ -25,4 +26,5 @@ message InfoParam {
 	optional bool cpu_temp = 3;
 	optional bool cpu_usage = 4;
 	optional bool ram_usage = 5;
+	optional bool crimson_ram_usage = 6;
 }

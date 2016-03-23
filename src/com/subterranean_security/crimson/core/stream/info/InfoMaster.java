@@ -25,12 +25,33 @@ import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
 import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.Stream;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.Router;
 
 public class InfoMaster extends Stream {
 
-	public InfoMaster(InfoParam ip, int CID, int VID) {
+	public InfoMaster(InfoParam ip, int CID) {
+		int VID = 0;
+		try {
+			VID = ViewerStore.Databases.local.getInteger("svid");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		param = Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).setCID(CID).setVID(VID).build();
+		start();
+	}
+
+	public InfoMaster(InfoParam ip) {
+		int VID = 0;
+		try {
+			VID = ViewerStore.Databases.local.getInteger("svid");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		param = Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).setVID(VID).build();
+		start();
 	}
 
 	@Override
@@ -47,15 +68,13 @@ public class InfoMaster extends Stream {
 
 	@Override
 	public void start() {
-		Router.route(
-				Message.newBuilder().setUrgent(true).setStreamStartEv(MI_StreamStart.newBuilder().setParam(param)));
+		Router.route(Message.newBuilder().setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
 
 	}
 
 	@Override
 	public void stop() {
-		Router.route(Message.newBuilder().setUrgent(true)
-				.setStreamStopEv(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
+		Router.route(Message.newBuilder().setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
 
 	}
 

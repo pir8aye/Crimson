@@ -16,8 +16,8 @@ message Message {
 	optional EV_StreamData ev_stream_data = 3;
 
 	optional EV_ProfileDelta ev_profile_delta = 14;
-	optional MI_StreamStart stream_start_ev = 19;
-	optional MI_StreamStop stream_stop_ev = 20;
+	optional MI_StreamStart mi_stream_start = 19;
+	optional MI_StreamStop mi_stream_stop = 20;
 	
 	
 

@@ -20,17 +20,19 @@ package com.subterranean_security.crimson.viewer.ui.screen.main;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URL;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.MenuSelectionManager;
 import javax.swing.UIManager;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
+import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
+import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.core.stream.info.InfoMaster;
+import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.screen.about.AboutDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame;
@@ -44,6 +46,8 @@ public class MainMenu extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	public ProgressArea progressArea;
+	private InfoMaster im;
+	private InfoSlave is;
 
 	public MainMenu() {
 		setForeground(UICommon.bg);
@@ -56,9 +60,29 @@ public class MainMenu extends JPanel {
 		add(menuBar, BorderLayout.CENTER);
 
 		JMenu mnControls = new JMenu("Controls");
+		mnControls.addMenuListener(new MenuListener() {
+
+			@Override
+			public void menuSelected(MenuEvent e) {
+				im = new InfoMaster(InfoParam.newBuilder().setCpuTemp(true).build());
+				StreamStore.addStream(im.getStreamID(), im);
+			}
+
+			@Override
+			public void menuDeselected(MenuEvent e) {
+				StreamStore.removeStream(im.getStreamID());
+			}
+
+			@Override
+			public void menuCanceled(MenuEvent e) {
+				System.out.println("menuCanceled");
+
+			}
+		});
 		menuBar.add(mnControls);
 
 		MenuControls mc = new MenuControls();
+
 		mnControls.add(mc);
 
 		JMenu mnManagement = new JMenu("Management");
@@ -119,7 +143,8 @@ public class MainMenu extends JPanel {
 
 		mnManagement.add(wmGlobalControl);
 
-		WideMenuItem wmLogs = new WideMenuItem(UUtil.getIcon("icons16/general/error_log.png"), "Logs", "View Crimson Logs");
+		WideMenuItem wmLogs = new WideMenuItem(UUtil.getIcon("icons16/general/error_log.png"), "Logs",
+				"View Crimson Logs");
 		wmLogs.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {

@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.core.stream.info;
 
 import com.subterranean_security.crimson.client.Native;
 import com.subterranean_security.crimson.client.net.Router;
+import com.subterranean_security.crimson.core.SystemInfo;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
@@ -39,15 +40,16 @@ public class InfoSlave extends Stream {
 	@Override
 	public void send() {
 		System.out.println("Pumping stream");
-		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder();
+		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(0);// TODO
 		if (param.getInfoParam().hasActiveWindow()) {
 			pd.setActiveWindow(Native.getActiveWindow());
 		}
 		if (param.getInfoParam().hasCpuSpeed()) {
-			pd.setCpuSpeed(null);
 		}
 		if (param.getInfoParam().hasCpuTemp()) {
-			pd.setCpuTemp(null);
+		}
+		if (param.getInfoParam().hasCrimsonRamUsage()) {
+			pd.setRamCrimsonUsage(SystemInfo.getCrMemUsage());
 		}
 
 		Router.route(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd));
@@ -56,7 +58,7 @@ public class InfoSlave extends Stream {
 
 	@Override
 	public void start() {
-		timer.schedule(sendTask, 0, 1000);
+		timer.schedule(sendTask, 0, 1000);// use configurable period
 
 	}
 

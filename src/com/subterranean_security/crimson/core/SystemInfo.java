@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.sc;
+package com.subterranean_security.crimson.core;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -23,11 +23,12 @@ import java.net.UnknownHostException;
 import org.hyperic.sigar.Cpu;
 import org.hyperic.sigar.CpuInfo;
 import org.hyperic.sigar.NetInfo;
+import org.hyperic.sigar.ProcMem;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+import org.hyperic.sigar.ptql.ProcessFinder;
 
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 
 public class SystemInfo {
@@ -38,8 +39,12 @@ public class SystemInfo {
 	private static CpuInfo cpuInfo = new CpuInfo();
 	private static NetInfo netInfo = new NetInfo();
 
+	private static long pid = 0;
+
 	static {
+
 		try {
+			pid = new ProcessFinder(sigar).findSingleProcess("");
 			cpu.gather(sigar);
 			cpuInfo = sigar.getCpuInfoList()[0];// TODO
 			netInfo.gather(sigar);
@@ -49,18 +54,26 @@ public class SystemInfo {
 		}
 	}
 
-	public static String getLogicalCores() {
-		return "" + cpuInfo.getTotalCores();
+	public static long getCrMemUsage() {
+		ProcMem mem = new ProcMem();
+		try {
+			mem.gather(sigar, pid);
+		} catch (SigarException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Gathered Crimson memory footprint: " + mem.getSize());
+		return mem.getSize();
 	}
 
 	public static EV_ProfileDelta getStatic() {
 		EV_ProfileDelta.Builder info = EV_ProfileDelta.newBuilder();
 
 		try {
-			info.setClientid(Client.clientDB.getInteger("svid"));
+			info.setCvid(Client.clientDB.getInteger("svid"));
 		} catch (Exception e1) {
 			// TODO handle
-			info.setClientid(0);
+			info.setCvid(0);
 		}
 
 		try {

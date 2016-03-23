@@ -184,13 +184,9 @@ public class Processor extends JPanel implements DModule {
 		if (p != null) {
 			profile = p;
 			lblCpuModel.setText(profile.getCpuModel());
-			int VID = 0;
-			try {
-				VID = ViewerStore.Databases.local.getInteger("svid");
-			} catch (Exception e) {
-			}
-			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).build(), profile.getSvid(),
-					VID);
+
+			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).build(),
+					profile.getSvid());
 			StreamStore.addStream(im.getStreamID(), im);
 			im.start();
 		}

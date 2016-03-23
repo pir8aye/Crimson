@@ -25,13 +25,13 @@ import javax.net.ssl.SSLException;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.core.SystemInfo;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.sc.SystemInfo;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;

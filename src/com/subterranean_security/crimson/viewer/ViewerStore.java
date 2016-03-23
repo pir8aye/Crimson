@@ -99,6 +99,7 @@ public enum ViewerStore {
 	public static class ServerInfo {
 		private static Date lastLoginTime;
 		private static String lastLoginLocation = "";
+		private static int cpuTemp;
 
 		public static void integrate(EV_ServerInfoDelta ev) {
 			if (ev.hasLastLogin()) {
@@ -115,6 +116,14 @@ public enum ViewerStore {
 
 		public static String getLastLoginLocation() {
 			return lastLoginLocation;
+		}
+
+		public static int getCpuTemp() {
+			return cpuTemp;
+		}
+
+		public static void setCpuTemp(int cpuTemp) {
+			ServerInfo.cpuTemp = cpuTemp;
 		}
 
 	}
@@ -140,7 +149,7 @@ public enum ViewerStore {
 			// TODO do this without flag. Probably convert profiles into hashmap
 			boolean flag = true;
 			for (ClientProfile p : profiles) {
-				if (p.getSvid() == change.getClientid()) {
+				if (p.getSvid() == change.getCvid()) {
 					flag = false;
 					amalgamate(p, change);
 
@@ -149,7 +158,7 @@ public enum ViewerStore {
 			}
 
 			if (flag) {
-				ClientProfile np = new ClientProfile(change.getClientid());
+				ClientProfile np = new ClientProfile(change.getCvid());
 				amalgamate(np, change);
 				profiles.add(np);
 			}
