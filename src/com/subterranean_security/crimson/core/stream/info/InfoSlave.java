@@ -19,7 +19,7 @@ package com.subterranean_security.crimson.core.stream.info;
 
 import com.subterranean_security.crimson.client.Native;
 import com.subterranean_security.crimson.client.net.Router;
-import com.subterranean_security.crimson.core.SystemInfo;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
@@ -49,7 +49,7 @@ public class InfoSlave extends Stream {
 		if (param.getInfoParam().hasCpuTemp()) {
 		}
 		if (param.getInfoParam().hasCrimsonRamUsage()) {
-			pd.setRamCrimsonUsage(SystemInfo.getCrMemUsage());
+			pd.setRamCrimsonUsage(Platform.getCrimsonMemoryUsage());
 		}
 
 		Router.route(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd));

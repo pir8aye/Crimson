@@ -23,6 +23,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
@@ -54,6 +55,9 @@ public final class Server {
 		} else {
 			FileLocking.lock(Common.instance);
 		}
+
+		// Load native libraries
+		Platform.loadSigar();
 
 		// Clear /tmp/
 		log.debug("Clearing local temporary directory");

@@ -21,18 +21,16 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Date;
 
 import javax.swing.UIManager;
 
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.ui.debug.DebugFrame;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
-import com.subterranean_security.crimson.core.util.PlatformInfo;
 import com.subterranean_security.crimson.viewer.ui.panel.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.eula.EULADialog;
 import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
@@ -58,8 +56,11 @@ public class Viewer {
 		// Establish the custom shutdown hook
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
+		// Load native libraries
+		Platform.loadSigar();
+
 		try {
-			switch (PlatformInfo.os) {
+			switch (Platform.os) {
 
 			case LINUX:
 				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");

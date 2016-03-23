@@ -70,6 +70,7 @@ import org.w3c.dom.NodeList;
 import com.subterranean_security.cinstaller.Main;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.viewer.Viewer;
 
@@ -447,7 +448,7 @@ public enum CUtil {
 
 		public static void runBackgroundCommand(String c) throws IOException {
 			String command = "";
-			switch (PlatformInfo.os) {
+			switch (Platform.os) {
 			case SOLARIS:
 			case BSD:
 			case LINUX:

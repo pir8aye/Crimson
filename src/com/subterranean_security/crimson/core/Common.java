@@ -25,7 +25,6 @@ import java.util.Date;
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.PlatformInfo;
 
 public enum Common {
 	;
@@ -146,7 +145,7 @@ public enum Common {
 		if (instance == Instance.INSTALLER) {
 			return null;
 		}
-		switch (PlatformInfo.os) {
+		switch (Platform.os) {
 		case WINDOWS:
 			return new File(System.getProperty("user.home") + "/AppData/Local/Subterranean Security/Crimson/var");
 		default:

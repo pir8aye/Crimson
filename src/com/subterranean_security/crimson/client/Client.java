@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.storage.ClientDB;
-import com.subterranean_security.crimson.core.util.PlatformInfo;
 
 public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
@@ -49,39 +49,8 @@ public class Client {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Load native libraries
-		switch (PlatformInfo.os) {
-		case BSD:
-			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/bsd");
-			break;
-		case LINUX:
-			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/osx");
-			break;
-		case OSX:
-			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/osx");
-			break;
-		case SOLARIS:
-			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/sol");
-			break;
-		case WINDOWS:
-			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/win");
-			break;
-		default:
-			break;
-
-		}
-		switch (PlatformInfo.javaArch) {
-		case X64:
-			System.loadLibrary("crimson64");
-			break;
-		case X86:
-			System.loadLibrary("crimson32");
-			break;
-		case SPARC:
-			System.loadLibrary("crimsonSPARC");
-			break;
-		default:
-			break;
-		}
+		Platform.loadLapis();
+		Platform.loadSigar();
 
 		List<NetworkTarget> nts = null;
 		try {

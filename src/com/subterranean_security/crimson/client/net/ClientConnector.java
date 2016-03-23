@@ -25,7 +25,7 @@ import javax.net.ssl.SSLException;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.core.SystemInfo;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
@@ -116,7 +116,7 @@ public class ClientConnector implements AutoCloseable {
 		case NO_AUTH:
 			setState(ConnectionState.AUTHENTICATED);
 			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
-			handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(SystemInfo.getStatic()).build());
+			handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(Platform.getFullProfile()).build());
 			break;
 		case PASSWORD:
 			try {

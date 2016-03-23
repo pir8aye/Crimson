@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.PlatformInfo;
 import com.subterranean_security.services.Services;
 
 /**
@@ -57,7 +56,7 @@ public class Reporter {
 		rb.setCrVersion(Common.version);
 		rb.setJreVersion(System.getProperty("java.version"));
 		rb.setInstance(Common.instance.toString());
-		rb.setOsFamily(PlatformInfo.os.toString());
+		rb.setOsFamily(Platform.os.toString());
 		// rb.setSysArch(PlatformInfo.sysArch.toString());
 		// rb.setJreArch(PlatformInfo.jreArch.toString());
 
