@@ -107,7 +107,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>1.6.4</EVersion>
 			<License>Apache 2</License>
-			<Requisites>SC</Requisites>
+			<Requisites>SVC</Requisites>
 		</Lib>
 
 		<Lib CID="c14">

@@ -57,7 +57,7 @@ public final class Server {
 		}
 
 		// Load native libraries
-		Platform.loadSigar();
+		Platform.Advanced.loadSigar();
 
 		// Clear /tmp/
 		log.debug("Clearing local temporary directory");

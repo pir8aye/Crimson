@@ -57,7 +57,7 @@ public class Viewer {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Load native libraries
-		Platform.loadSigar();
+		Platform.Advanced.loadSigar();
 
 		try {
 			switch (Platform.os) {

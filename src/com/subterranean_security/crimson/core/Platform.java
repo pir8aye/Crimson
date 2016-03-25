@@ -79,7 +79,7 @@ public enum Platform {
 	}
 
 	public static ARCH getJVMArch() {
-		String osArch = getJavaArch().toLowerCase();
+		String osArch = System.getProperty("os.arch").toLowerCase();
 
 		if (osArch.equals("sparc")) {
 			return ARCH.SPARC;
@@ -93,176 +93,179 @@ public enum Platform {
 		}
 	}
 
-	private static Sigar sigar;
+	public static enum Advanced {
+		;
 
-	private static Cpu cpu;
-	private static CpuInfo[] cpuInfo;
-	private static NetInfo netInfo;
-	private static ProcMem crimsonProcess;
+		private static Sigar sigar;
 
-	private static long pid = 0;
+		private static Cpu cpu;
+		private static CpuInfo[] cpuInfo;
+		private static NetInfo netInfo;
+		private static ProcMem crimsonProcess;
 
-	public static void setLibraryPath() {
-		switch (Platform.os) {
-		case BSD:
-			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/bsd");
-			break;
-		case LINUX:
-			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/osx");
-			break;
-		case OSX:
-			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/osx");
-			break;
-		case SOLARIS:
-			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/sol");
-			break;
-		case WINDOWS:
-			System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/win");
-			break;
-		default:
-			break;
-		}
-	}
+		private static long pid = 0;
 
-	public static void loadSigar() {
-		setLibraryPath();
-		sigar = new Sigar();
-		cpu = new Cpu();
-		netInfo = new NetInfo();
-		crimsonProcess = new ProcMem();
-
-		try {
-			pid = new ProcessFinder(sigar).findSingleProcess("");
-			cpu.gather(sigar);
-			cpuInfo = sigar.getCpuInfoList();
-			netInfo.gather(sigar);
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public static void loadLapis() {
-		setLibraryPath();
-		switch (Platform.javaArch) {
-		case X64:
-			System.loadLibrary("crimson64");
-			break;
-		case X86:
-			System.loadLibrary("crimson32");
-			break;
-		case SPARC:
-			System.loadLibrary("crimsonSPARC");
-			break;
-		default:
-			break;
+		public static void setLibraryPath() {
+			switch (Platform.os) {
+			case BSD:
+				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/bsd");
+				break;
+			case LINUX:
+				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/osx");
+				break;
+			case OSX:
+				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/osx");
+				break;
+			case SOLARIS:
+				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/sol");
+				break;
+			case WINDOWS:
+				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/win");
+				break;
+			default:
+				break;
+			}
 		}
 
-	}
+		public static void loadSigar() {
+			setLibraryPath();
+			sigar = new Sigar();
+			cpu = new Cpu();
+			netInfo = new NetInfo();
+			crimsonProcess = new ProcMem();
 
-	public static String getHostname() {
-		try {
-			return InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			return "unknown";
-		}
-	}
-
-	public static String getUsername() {
-		return System.getProperty("user.name");
-	}
-
-	public static String getUserDirectory() {
-		return System.getProperty("user.dir");
-	}
-
-	public static String getUserHome() {
-		return System.getProperty("user.home");
-	}
-
-	public static String getLanguage() {
-		return System.getProperty("user.language");
-	}
-
-	public static String getJavaVersion() {
-		return System.getProperty("java.version");
-	}
-
-	public static String getJavaVendor() {
-		return System.getProperty("java.vendor");
-	}
-
-	public static String getJavaHome() {
-		return System.getProperty("java.home");
-	}
-
-	public static String getJavaArch() {
-		return System.getProperty("os.arch");
-	}
-
-	public static String getCPUModel() {
-		String model = cpuInfo[0].getModel().replaceAll("\\(.+?\\)", "");
-		return model.substring(0, model.indexOf("CPU @")).trim();
-	}
-
-	public static float[] getCPUSpeed() {
-		try {
-			cpuInfo = sigar.getCpuInfoList();
-		} catch (SigarException e) {
-			return null;
-		}
-		float[] speeds = new float[cpuInfo.length];
-		for (int i = 0; i < cpuInfo.length; i++) {
-			speeds[i] = cpuInfo[i].getMhz();
-		}
-		return speeds;
-	}
-
-	public static float getAverageCPUSpeed() {
-		float[] speeds = getCPUSpeed();
-		float speed = 0;
-		for (float f : speeds) {
-			speed += f;
-		}
-		return speed / speeds.length;
-	}
-
-	public static long getCrimsonMemoryUsage() {
-
-		try {
-			crimsonProcess.gather(sigar, pid);
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("Gathered Crimson memory footprint: " + crimsonProcess.getSize());
-		return crimsonProcess.getSize();
-	}
-
-	public static EV_ProfileDelta getFullProfile() {
-		EV_ProfileDelta.Builder info = EV_ProfileDelta.newBuilder();
-
-		try {
-			info.setCvid(Client.clientDB.getInteger("svid"));
-		} catch (Exception e1) {
-			// TODO handle
-			info.setCvid(0);
+			try {
+				pid = sigar.getPid();
+				cpu.gather(sigar);
+				cpuInfo = sigar.getCpuInfoList();
+				netInfo.gather(sigar);
+			} catch (SigarException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
-		info.setCrimsonVersion(Common.version);
+		public static void loadLapis() {
+			setLibraryPath();
+			switch (Platform.javaArch) {
+			case X64:
+				System.loadLibrary("crimson64");
+				break;
+			case X86:
+				System.loadLibrary("crimson32");
+				break;
+			case SPARC:
+				System.loadLibrary("crimsonSPARC");
+				break;
+			default:
+				break;
+			}
 
-		info.setUserName(getUsername());
-		info.setNetHostname(getHostname());
-		info.setUserDir(getUserDirectory());
-		info.setUserHome(getUserHome());
-		info.setLanguage(getLanguage());
-		info.setJavaVersion(getJavaVersion());
-		info.setJavaVendor(getJavaVersion());
-		info.setJavaHome(getJavaHome());
-		info.setJavaArch(getJavaArch());
-		info.setCpuModel(getCPUModel());
+		}
 
-		return info.build();
+		public static String getHostname() {
+			try {
+				return InetAddress.getLocalHost().getHostName();
+			} catch (UnknownHostException e) {
+				return "unknown";
+			}
+		}
+
+		public static String getUsername() {
+			return System.getProperty("user.name");
+		}
+
+		public static String getUserDirectory() {
+			return System.getProperty("user.dir");
+		}
+
+		public static String getUserHome() {
+			return System.getProperty("user.home");
+		}
+
+		public static String getLanguage() {
+			return System.getProperty("user.language");
+		}
+
+		public static String getJavaVersion() {
+			return System.getProperty("java.version");
+		}
+
+		public static String getJavaVendor() {
+			return System.getProperty("java.vendor");
+		}
+
+		public static String getJavaHome() {
+			return System.getProperty("java.home");
+		}
+
+		public static String getJavaArch() {
+			return System.getProperty("os.arch");
+		}
+
+		public static String getCPUModel() {
+			String model = cpuInfo[0].getModel().replaceAll("\\(.+?\\)", "");
+			return model.substring(0, model.indexOf("CPU @")).trim();
+		}
+
+		public static float[] getCPUSpeed() {
+			try {
+				cpuInfo = sigar.getCpuInfoList();
+			} catch (SigarException e) {
+				return null;
+			}
+			float[] speeds = new float[cpuInfo.length];
+			for (int i = 0; i < cpuInfo.length; i++) {
+				speeds[i] = cpuInfo[i].getMhz();
+			}
+			return speeds;
+		}
+
+		public static float getAverageCPUSpeed() {
+			float[] speeds = getCPUSpeed();
+			float speed = 0;
+			for (float f : speeds) {
+				speed += f;
+			}
+			return speed / speeds.length;
+		}
+
+		public static long getCrimsonMemoryUsage() {
+
+			try {
+				crimsonProcess.gather(sigar, pid);
+			} catch (SigarException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("Gathered Crimson memory footprint: " + crimsonProcess.getSize());
+			return crimsonProcess.getSize();
+		}
+
+		public static EV_ProfileDelta getFullProfile() {
+			EV_ProfileDelta.Builder info = EV_ProfileDelta.newBuilder();
+
+			try {
+				info.setCvid(Client.clientDB.getInteger("svid"));
+			} catch (Exception e1) {
+				// TODO handle
+				info.setCvid(0);
+			}
+
+			info.setCrimsonVersion(Common.version);
+
+			info.setUserName(getUsername());
+			info.setNetHostname(getHostname());
+			info.setUserDir(getUserDirectory());
+			info.setUserHome(getUserHome());
+			info.setLanguage(getLanguage());
+			info.setJavaVersion(getJavaVersion());
+			info.setJavaVendor(getJavaVersion());
+			info.setJavaHome(getJavaHome());
+			info.setJavaArch(getJavaArch());
+			info.setCpuModel(getCPUModel());
+
+			return info.build();
+		}
 	}
-
 }

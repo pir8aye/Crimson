@@ -49,8 +49,8 @@ public class Client {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Load native libraries
-		Platform.loadLapis();
-		Platform.loadSigar();
+		Platform.Advanced.loadLapis();
+		Platform.Advanced.loadSigar();
 
 		List<NetworkTarget> nts = null;
 		try {

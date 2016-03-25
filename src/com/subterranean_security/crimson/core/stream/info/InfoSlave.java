@@ -49,7 +49,7 @@ public class InfoSlave extends Stream {
 		if (param.getInfoParam().hasCpuTemp()) {
 		}
 		if (param.getInfoParam().hasCrimsonRamUsage()) {
-			pd.setRamCrimsonUsage(Platform.getCrimsonMemoryUsage());
+			pd.setRamCrimsonUsage(Platform.Advanced.getCrimsonMemoryUsage());
 		}
 
 		Router.route(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd));
