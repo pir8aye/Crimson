@@ -36,9 +36,9 @@ import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.sv.ClientProfile;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 
 import info.monitorenter.gui.chart.Chart2D;
+import info.monitorenter.gui.chart.IAxis.AxisTitle;
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
 
@@ -60,19 +60,23 @@ public class Processor extends JPanel implements DModule {
 		add(panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWeights = new double[] { 1.0 };
-		gbl_panel.rowHeights = new int[] { 57, 0, 0 };
-		gbl_panel.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+		gbl_panel.rowHeights = new int[] { 57, 0, 0, 0 };
+		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
 		trace.setColor(Color.RED);
 
 		Chart2D chart = new Chart2D();
+		chart.getAxisX().setVisible(false);
+		chart.getAxisX().setPaintGrid(false);
 		chart.addTrace(trace);
+		chart.setUseAntialiasing(true);
 		chart.setFont(new Font("Dialog", Font.PLAIN, 8));
 		chart.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		chart.setPaintLabels(false);
 		chart.setAutoscrolls(true);
 		GridBagConstraints gbc_lblGraph = new GridBagConstraints();
+		gbc_lblGraph.insets = new Insets(0, 0, 5, 0);
 		gbc_lblGraph.fill = GridBagConstraints.BOTH;
 		gbc_lblGraph.gridx = 0;
 		gbc_lblGraph.gridy = 0;
@@ -80,6 +84,7 @@ public class Processor extends JPanel implements DModule {
 
 		JPanel panel_2 = new JPanel();
 		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
+		gbc_panel_2.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_2.anchor = GridBagConstraints.NORTH;
 		gbc_panel_2.fill = GridBagConstraints.HORIZONTAL;
 		gbc_panel_2.gridx = 0;
@@ -111,7 +116,7 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblLoading.gridy = 0;
 		panel_2.add(lblCpuModel, gbc_lblLoading);
 
-		JLabel lblNewLabel = new JLabel("Clock Speed:");
+		JLabel lblNewLabel = new JLabel("Max Clock Speed:");
 		lblNewLabel.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.fill = GridBagConstraints.BOTH;
@@ -130,7 +135,7 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblNewLabel_1.gridy = 1;
 		panel_2.add(lblNewLabel_1, gbc_lblNewLabel_1);
 
-		JLabel lblNewLabel_2 = new JLabel("Logical Processors:");
+		JLabel lblNewLabel_2 = new JLabel("Temperature:");
 		lblNewLabel_2.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
 		gbc_lblNewLabel_2.fill = GridBagConstraints.BOTH;
@@ -166,6 +171,13 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblNewLabel_5.gridx = 1;
 		gbc_lblNewLabel_5.gridy = 3;
 		panel_2.add(lblCpuUsage, gbc_lblNewLabel_5);
+		
+		JPanel panel_1 = new JPanel();
+		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.fill = GridBagConstraints.BOTH;
+		gbc_panel_1.gridx = 0;
+		gbc_panel_1.gridy = 2;
+		panel.add(panel_1, gbc_panel_1);
 
 	}
 
