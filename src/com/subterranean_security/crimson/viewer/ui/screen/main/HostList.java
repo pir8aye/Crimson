@@ -45,8 +45,19 @@ public class HostList extends JPanel {
 	private TM tm = new TM();
 	private TR tr = new TR();
 
+	private JPopupMenu popup;
+	private JMenuItem control;
+	private JMenuItem graph;
+
+	private JMenuItem poweroff;
+	private JMenuItem restart;
+	private JMenuItem refresh;
+
+	private JMenuItem uninstall;
+
 	public HostList() {
 		setLayout(new BorderLayout());
+		initContextMenu();
 		table.setModel(tm);
 		table.setDefaultRenderer(Object.class, tr);
 		table.setFillsViewportHeight(true);
@@ -69,83 +80,7 @@ public class HostList extends JPanel {
 				final ClientProfile sp = ViewerStore.Profiles.clients.get(sourceRow);
 
 				if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
-
-					// right click on table
-					JPopupMenu popup = new JPopupMenu();
-					JMenuItem control = new JMenuItem();
-					control.setText("Control Panel");
-					control.setIcon(UUtil.getIcon("icons16/general/cog.png"));
-					control.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mousePressed(MouseEvent e) {
-
-							new Thread() {
-								public void run() {
-
-								}
-							}.start();
-
-						}
-
-					});
-					popup.add(control);
-
-					JMenu quick = new JMenu();
-					quick.setText("Quick Commands");
-					quick.setIcon(UUtil.getIcon("icons16/general/bow.png"));
-					popup.add(quick);
-
-					JMenuItem poweroff = new JMenuItem();
-					poweroff.setText("Shutdown");
-					poweroff.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mousePressed(MouseEvent e) {
-
-							new Thread() {
-								public void run() {
-
-								}
-							}.start();
-
-						}
-
-					});
-					quick.add(poweroff);
-
-					JMenuItem restart = new JMenuItem();
-					restart.setText("Restart");
-					restart.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mousePressed(MouseEvent e) {
-
-							new Thread() {
-								public void run() {
-
-								}
-							}.start();
-
-						}
-
-					});
-					quick.add(restart);
-
-					JMenuItem refresh = new JMenuItem();
-					refresh.setText("Refresh Information");
-					refresh.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mousePressed(MouseEvent e) {
-
-							new Thread() {
-								public void run() {
-
-								}
-							}.start();
-
-						}
-
-					});
-					quick.add(refresh);
-
+					initContextActions();
 					popup.show(table, e.getX(), e.getY());
 
 				} else {
@@ -158,6 +93,106 @@ public class HostList extends JPanel {
 		JScrollPane jsp = new JScrollPane(table);
 
 		add(jsp, BorderLayout.CENTER);
+	}
+
+	private void initContextActions() {// TODO argument
+		control.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				new Thread() {
+					public void run() {
+
+					}
+				}.start();
+
+			}
+
+		});
+		poweroff.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				new Thread() {
+					public void run() {
+
+					}
+				}.start();
+
+			}
+
+		});
+		restart.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				new Thread() {
+					public void run() {
+
+					}
+				}.start();
+
+			}
+
+		});
+		refresh.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				new Thread() {
+					public void run() {
+
+					}
+				}.start();
+
+			}
+
+		});
+	}
+
+	private void initContextMenu() {
+		popup = new JPopupMenu();
+		control = new JMenuItem();
+		control.setText("Control Panel");
+		control.setIcon(UUtil.getIcon("icons16/general/cog.png"));
+
+		popup.add(control);
+
+		graph = new JMenuItem();
+		graph.setText("Find in Graph");
+		graph.setIcon(UUtil.getIcon("icons16/general/diagramm.png"));
+		popup.add(graph);
+
+		JMenu quick = new JMenu();
+		quick.setText("Quick Commands");
+		quick.setIcon(UUtil.getIcon("icons16/general/bow.png"));
+		popup.add(quick);
+
+		JMenu state = new JMenu();
+		state.setText("Change State");
+		state.setIcon(UUtil.getIcon("icons16/general/power_surge.png"));
+		quick.add(state);
+
+		poweroff = new JMenuItem();
+		poweroff.setText("Shutdown");
+		poweroff.setIcon(UUtil.getIcon("icons16/general/lcd_tv_off.png"));
+		state.add(poweroff);
+
+		restart = new JMenuItem();
+		restart.setText("Restart");
+		restart.setIcon(UUtil.getIcon("icons16/general/arrow_redo.png"));
+		state.add(restart);
+
+		uninstall = new JMenuItem();
+		uninstall.setText("Uninstall Crimson");
+		uninstall.setIcon(UUtil.getIcon("icons16/general/radioactivity.png"));
+		state.add(uninstall);
+
+		refresh = new JMenuItem();
+		refresh.setText("Refresh");
+		refresh.setIcon(UUtil.getIcon("icons16/general/inbox_download.png"));
+
+		quick.add(refresh);
 	}
 
 	public void refreshTM() {
@@ -205,15 +240,19 @@ class TM extends AbstractTableModel {
 		case USERNAME:
 			return ViewerStore.Profiles.clients.get(rowIndex).getUsername();
 		case USER_STATUS:
+			return null;
 		case HOSTNAME:
 			return ViewerStore.Profiles.clients.get(rowIndex).getHostname();
 		case INTERNAL_IP:
+			return null;
 		case EXTERNAL_IP:
+			return null;
 		case LANGUAGE:
 			return ViewerStore.Profiles.clients.get(rowIndex).getLanguage();
 		case ACTIVE_WINDOW:
 			return ViewerStore.Profiles.clients.get(rowIndex).getActiveWindow();
 		case COUNTRY:
+			return null;
 		case CPU_MODEL:
 			return ViewerStore.Profiles.clients.get(rowIndex).getCpuModel();
 		case CPU_USAGE:
@@ -237,12 +276,15 @@ class TM extends AbstractTableModel {
 		case MONITOR_COUNT:
 			return ViewerStore.Profiles.clients.get(rowIndex).getMonitorCount();
 		case VIRTUALIZATION:
+			return null;
 		case TIMEZONE:
 			return ViewerStore.Profiles.clients.get(rowIndex).getTimezone();
 		case CPU_SPEED:
+			return null;
 		case MESSAGE_PING:
 			return ViewerStore.Profiles.clients.get(rowIndex).getMessagePing();
 		case SCREEN_PREVIEW:
+			return null;
 
 		}
 		return null;
