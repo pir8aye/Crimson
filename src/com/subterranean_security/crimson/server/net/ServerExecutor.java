@@ -48,6 +48,7 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.server.ServerStore;
+import com.subterranean_security.crimson.server.stream.SInfoSlave;
 import com.subterranean_security.crimson.sv.ViewerProfile;
 
 import io.netty.util.ReferenceCountUtil;
@@ -383,8 +384,8 @@ public class ServerExecutor extends BasicExecutor {
 		if (m.getMiStreamStart().getParam().hasCID()) {
 
 		} else {
-			InfoSlave is = new InfoSlave(m.getMiStreamStart().getParam());
-			StreamStore.addStream(is.getStreamID(), is);
+			InfoSlave is = new SInfoSlave(m.getMiStreamStart().getParam());
+			StreamStore.addStream(is);
 		}
 
 	}

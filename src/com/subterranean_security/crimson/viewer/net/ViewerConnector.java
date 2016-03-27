@@ -24,6 +24,7 @@ import javax.net.ssl.SSLException;
 
 import org.thavam.util.concurrent.BlockingHashMap;
 
+import com.subterranean_security.crimson.core.net.BasicConnector;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
 import io.netty.bootstrap.Bootstrap;
@@ -35,10 +36,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
-public class ViewerConnector implements AutoCloseable {
-
-	// Only one connector is needed for viewers
-	public static ViewerConnector connector;
+public class ViewerConnector extends BasicConnector implements AutoCloseable {
 
 	// Buffers
 	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
@@ -69,6 +67,11 @@ public class ViewerConnector implements AutoCloseable {
 		f.channel().closeFuture().sync();
 		workerGroup.shutdownGracefully();
 
+	}
+
+	@Override
+	public void write(Message m) {
+		handle.write(m);
 	}
 
 }

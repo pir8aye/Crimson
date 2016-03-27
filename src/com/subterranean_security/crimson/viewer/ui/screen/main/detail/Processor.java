@@ -186,8 +186,8 @@ public class Processor extends JPanel implements DModule {
 			lblCpuModel.setText(profile.getCpuModel());
 
 			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).build(),
-					profile.getSvid());
-			StreamStore.addStream(im.getStreamID(), im);
+					profile.getCvid());
+			StreamStore.addStream(im);
 			im.start();
 		}
 

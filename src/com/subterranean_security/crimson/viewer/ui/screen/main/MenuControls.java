@@ -45,8 +45,19 @@ public class MenuControls extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int width = 400;
 	private static final int length = 240;
+	private JLabel valViewerRamUsage;
+	private JLabel lblServerMemUsage;
+	private JLabel lblViewerCpuUsage;
+	private JLabel valViewerCpuUsage;
+	private JLabel valViewerCpuTemp;
+	private JLabel valServerRamUsage;
+	private JLabel valServerCpuUsage;
+	private JLabel valServerCpuTemp;
+
+	public static MenuControls mc;
 
 	public MenuControls() {
+		mc = this;
 		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		setSize(new Dimension(400, 240));
 		setLayout(new BorderLayout(0, 0));
@@ -64,7 +75,7 @@ public class MenuControls extends JPanel {
 
 		JLabel lblConnections = new JLabel("Status:");
 		lblConnections.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblConnections.setBounds(8, 17, 67, 17);
+		lblConnections.setBounds(6, 17, 67, 17);
 		panel_1.add(lblConnections);
 
 		JLabel lblStopped = new JLabel("Stopped");
@@ -88,58 +99,58 @@ public class MenuControls extends JPanel {
 
 		JLabel lblLoggedInUsers = new JLabel("Users connected:");
 		lblLoggedInUsers.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblLoggedInUsers.setBounds(8, 34, 115, 17);
+		lblLoggedInUsers.setBounds(6, 34, 115, 17);
 		panel_1.add(lblLoggedInUsers);
 
 		JLabel lblTotalConn = new JLabel("Clients connected:");
 		lblTotalConn.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblTotalConn.setBounds(8, 51, 115, 17);
+		lblTotalConn.setBounds(6, 51, 115, 17);
 		panel_1.add(lblTotalConn);
 
 		JLabel lblCpuTemperature_1 = new JLabel("CPU temperature:");
 		lblCpuTemperature_1.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblCpuTemperature_1.setBounds(8, 74, 130, 17);
+		lblCpuTemperature_1.setBounds(6, 74, 115, 17);
 		panel_1.add(lblCpuTemperature_1);
 
-		JLabel lblCpuTemperature = new JLabel("Crimson CPU usage:");
+		JLabel lblCpuTemperature = new JLabel("Server CPU usage:");
 		lblCpuTemperature.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblCpuTemperature.setBounds(8, 91, 130, 17);
+		lblCpuTemperature.setBounds(6, 91, 115, 17);
 		panel_1.add(lblCpuTemperature);
 
-		JLabel lblCrimsonMemoryFootprint = new JLabel("Crimson RAM footprint:");
-		lblCrimsonMemoryFootprint.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblCrimsonMemoryFootprint.setBounds(8, 109, 130, 17);
-		panel_1.add(lblCrimsonMemoryFootprint);
+		lblServerMemUsage = new JLabel("Server RAM footprint:");
+		lblServerMemUsage.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblServerMemUsage.setBounds(6, 109, 115, 17);
+		panel_1.add(lblServerMemUsage);
 
-		JLabel label_1 = new JLabel("1");
-		label_1.setHorizontalAlignment(SwingConstants.TRAILING);
-		label_1.setFont(new Font("Dialog", Font.BOLD, 10));
-		label_1.setBounds(138, 34, 50, 17);
-		panel_1.add(label_1);
+		JLabel lblLoading_4 = new JLabel("loading...");
+		lblLoading_4.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblLoading_4.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblLoading_4.setBounds(121, 34, 70, 17);
+		panel_1.add(lblLoading_4);
 
-		JLabel label_2 = new JLabel("0");
-		label_2.setHorizontalAlignment(SwingConstants.TRAILING);
-		label_2.setFont(new Font("Dialog", Font.BOLD, 10));
-		label_2.setBounds(138, 51, 50, 17);
-		panel_1.add(label_2);
+		JLabel lblLoading_3 = new JLabel("loading...");
+		lblLoading_3.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblLoading_3.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblLoading_3.setBounds(121, 51, 70, 17);
+		panel_1.add(lblLoading_3);
 
-		JLabel lblC = new JLabel("" + ViewerStore.ServerInfo.getCpuTemp());
-		lblC.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblC.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblC.setBounds(138, 74, 50, 17);
-		panel_1.add(lblC);
+		valServerCpuTemp = new JLabel("loading...");
+		valServerCpuTemp.setHorizontalAlignment(SwingConstants.TRAILING);
+		valServerCpuTemp.setFont(new Font("Dialog", Font.BOLD, 10));
+		valServerCpuTemp.setBounds(121, 74, 70, 17);
+		panel_1.add(valServerCpuTemp);
 
-		JLabel label_4 = new JLabel("2%");
-		label_4.setHorizontalAlignment(SwingConstants.TRAILING);
-		label_4.setFont(new Font("Dialog", Font.BOLD, 10));
-		label_4.setBounds(138, 91, 50, 17);
-		panel_1.add(label_4);
+		valServerCpuUsage = new JLabel("loading...");
+		valServerCpuUsage.setHorizontalAlignment(SwingConstants.TRAILING);
+		valServerCpuUsage.setFont(new Font("Dialog", Font.BOLD, 10));
+		valServerCpuUsage.setBounds(121, 91, 70, 17);
+		panel_1.add(valServerCpuUsage);
 
-		JLabel lblMb = new JLabel("3.4 MB");
-		lblMb.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblMb.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblMb.setBounds(138, 109, 50, 17);
-		panel_1.add(lblMb);
+		valServerRamUsage = new JLabel("loading...");
+		valServerRamUsage.setHorizontalAlignment(SwingConstants.TRAILING);
+		valServerRamUsage.setFont(new Font("Dialog", Font.BOLD, 10));
+		valServerRamUsage.setBounds(121, 109, 70, 17);
+		panel_1.add(valServerRamUsage);
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "Local",
@@ -150,13 +161,13 @@ public class MenuControls extends JPanel {
 
 		JLabel lblUsername = new JLabel("Username:");
 		lblUsername.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblUsername.setBounds(12, 17, 69, 17);
+		lblUsername.setBounds(6, 17, 69, 17);
 		panel_2.add(lblUsername);
 
 		JLabel lblAdmin = new JLabel("admin");
 		lblAdmin.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblAdmin.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblAdmin.setBounds(103, 17, 83, 17);
+		lblAdmin.setBounds(87, 17, 99, 17);
 		panel_2.add(lblAdmin);
 
 		JButton btnCloseToTray = new JButton("Run in Tray");
@@ -188,38 +199,38 @@ public class MenuControls extends JPanel {
 		btnLogOff.setBounds(12, 155, 88, 20);
 		panel_2.add(btnLogOff);
 
-		JLabel label_3 = new JLabel("Crimson RAM footprint:");
-		label_3.setFont(new Font("Dialog", Font.BOLD, 10));
-		label_3.setBounds(6, 109, 130, 17);
-		panel_2.add(label_3);
+		JLabel lblViewerRamFootprint = new JLabel("Viewer RAM footprint:");
+		lblViewerRamFootprint.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblViewerRamFootprint.setBounds(6, 109, 115, 17);
+		panel_2.add(lblViewerRamFootprint);
 
-		JLabel label_5 = new JLabel("Crimson CPU usage:");
-		label_5.setFont(new Font("Dialog", Font.BOLD, 10));
-		label_5.setBounds(6, 91, 130, 17);
-		panel_2.add(label_5);
+		lblViewerCpuUsage = new JLabel("Viewer CPU usage:");
+		lblViewerCpuUsage.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblViewerCpuUsage.setBounds(6, 91, 115, 17);
+		panel_2.add(lblViewerCpuUsage);
 
 		JLabel label_6 = new JLabel("CPU temperature:");
 		label_6.setFont(new Font("Dialog", Font.BOLD, 10));
-		label_6.setBounds(6, 74, 130, 17);
+		label_6.setBounds(6, 74, 115, 17);
 		panel_2.add(label_6);
 
-		JLabel label_7 = new JLabel("40 C");
-		label_7.setHorizontalAlignment(SwingConstants.TRAILING);
-		label_7.setFont(new Font("Dialog", Font.BOLD, 10));
-		label_7.setBounds(136, 74, 50, 17);
-		panel_2.add(label_7);
+		valViewerCpuTemp = new JLabel("loading...");
+		valViewerCpuTemp.setHorizontalAlignment(SwingConstants.TRAILING);
+		valViewerCpuTemp.setFont(new Font("Dialog", Font.BOLD, 10));
+		valViewerCpuTemp.setBounds(121, 74, 70, 17);
+		panel_2.add(valViewerCpuTemp);
 
-		JLabel label_8 = new JLabel("2%");
-		label_8.setHorizontalAlignment(SwingConstants.TRAILING);
-		label_8.setFont(new Font("Dialog", Font.BOLD, 10));
-		label_8.setBounds(136, 91, 50, 17);
-		panel_2.add(label_8);
+		valViewerCpuUsage = new JLabel("loading...");
+		valViewerCpuUsage.setHorizontalAlignment(SwingConstants.TRAILING);
+		valViewerCpuUsage.setFont(new Font("Dialog", Font.BOLD, 10));
+		valViewerCpuUsage.setBounds(121, 91, 70, 17);
+		panel_2.add(valViewerCpuUsage);
 
-		JLabel label_9 = new JLabel("3.4 MB");
-		label_9.setHorizontalAlignment(SwingConstants.TRAILING);
-		label_9.setFont(new Font("Dialog", Font.BOLD, 10));
-		label_9.setBounds(136, 109, 50, 17);
-		panel_2.add(label_9);
+		valViewerRamUsage = new JLabel("loading...");
+		valViewerRamUsage.setHorizontalAlignment(SwingConstants.TRAILING);
+		valViewerRamUsage.setFont(new Font("Dialog", Font.BOLD, 10));
+		valViewerRamUsage.setBounds(121, 109, 70, 17);
+		panel_2.add(valViewerRamUsage);
 
 		JPanel panel_4 = new JPanel();
 		panel_4.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "Views",
@@ -273,6 +284,16 @@ public class MenuControls extends JPanel {
 
 		add(Box.createHorizontalStrut(width), BorderLayout.SOUTH);
 		add(Box.createVerticalStrut(length), BorderLayout.EAST);
+
+	}
+
+	public void refresh() {
+		valViewerRamUsage.setText(ViewerStore.Profiles.viewer.getCrimsonRamUsage());
+		valViewerCpuTemp.setText(ViewerStore.Profiles.viewer.getCpuTemp());
+		valViewerCpuUsage.setText(ViewerStore.Profiles.viewer.getCrimsonCpuUsage());
+		valServerRamUsage.setText(ViewerStore.Profiles.server.getCrimsonRamUsage());
+		valServerCpuTemp.setText(ViewerStore.Profiles.server.getCpuTemp());
+		valServerCpuUsage.setText(ViewerStore.Profiles.server.getCrimsonCpuUsage());
 
 	}
 }

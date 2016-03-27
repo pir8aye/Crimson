@@ -17,19 +17,36 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net;
 
+import java.util.concurrent.TimeUnit;
+
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 
-public enum Router {
+public enum ViewerRouter {
 	;
-
 	public static void route(Message m) {
-		// TODO check if direct connection exists
-		ViewerConnector.connector.handle.write(m);
+
+		if (m.hasCid()) {
+			ViewerStore.Connections.get(m.getCid()).write(m);
+		} else {
+			// assume 0
+			ViewerStore.Connections.get(0).write(m);
+		}
+
 	}
 
 	public static void route(Message.Builder m) {
 
 		route(m.build());
+	}
+
+	public static Message getReponse(int cvid, int mid, int timeout) throws InterruptedException {
+		return ViewerStore.Connections.getVC(cvid).cq.take(mid, timeout, TimeUnit.SECONDS);
+	}
+
+	public static Message routeAndWait(Message m, int timeout) throws InterruptedException {
+		route(m);
+		return getReponse(m.getCid(), m.getId(), timeout);
 	}
 
 }

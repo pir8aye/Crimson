@@ -141,7 +141,7 @@ public enum ServerStore {
 		}
 
 		public static void addClient(ClientProfile p) {
-			clientProfiles.put(p.getSvid(), p);
+			clientProfiles.put(p.getCvid(), p);
 		}
 
 		public static ViewerProfile getViewer(int svid) throws Exception {
@@ -149,7 +149,7 @@ public enum ServerStore {
 		}
 
 		public static void addViewer(ViewerProfile p) {
-			viewerProfiles.put(p.getSvid(), p);
+			viewerProfiles.put(p.getCvid(), p);
 		}
 
 		public static int nextID() {

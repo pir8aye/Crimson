@@ -21,21 +21,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.swing.ImageIcon;
-
-import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.core.proto.Keylogger.KLog;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.util.CUtil;
 
-public class ClientProfile implements Serializable {
+public class ServerProfile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private int cvid;
+	private final int cvid = 0;
 	private Date updateTimestamp = new Date();
 
-	private String activeWindow;
-	private ImageIcon country;
 	private String cpuModel;
 	private String cpuTemp;
 	private String cpuUsage;
@@ -44,38 +39,23 @@ public class ClientProfile implements Serializable {
 	private String javaVersion;
 	private String language;
 	private String messagePing;
-	private String monitorCount;
 	private String osArch;
 	private String osFamily;
 	private String ramCapacity;
 	private String ramUsage;
+	private String timezone;
 	private String crimsonRamUsage;
 	private String crimsonCpuUsage;
-	private String timezone;
-	private String userStatus;
-	private String virtualization;
 
 	// historical attributes
-	private ArrayList<String> username = new ArrayList<String>();
-	private ArrayList<Date> username_dates = new ArrayList<Date>();
 	private ArrayList<String> internal_ip = new ArrayList<String>();
 	private ArrayList<String> external_ip = new ArrayList<String>();
 
-	private KLog klog;
-
-	public ClientProfile(int cvid) {
-		this.cvid = cvid;
-	}
-
-	public ClientProfile() {
+	public ServerProfile() {
 	}
 
 	public int getCvid() {
 		return cvid;
-	}
-
-	public void setCvid(int cvid) {
-		this.cvid = cvid;
 	}
 
 	public String getHostname() {
@@ -84,20 +64,6 @@ public class ClientProfile implements Serializable {
 
 	public void setHostname(String hostname) {
 		this.hostname = hostname;
-	}
-
-	public String getUsername() {
-		return null;
-		// return username.get(username.size() - 1);
-	}
-
-	public void setUsername(String username) {
-		setUsername(new Date(), username);
-	}
-
-	public void setUsername(Date date, String username) {
-		this.username.add(username);
-		this.username_dates.add(date);
 	}
 
 	public String getLanguage() {
@@ -114,22 +80,6 @@ public class ClientProfile implements Serializable {
 
 	public void setTimezone(String timezone) {
 		this.timezone = timezone;
-	}
-
-	public String getActiveWindow() {
-		return activeWindow;
-	}
-
-	public void setActiveWindow(String activeWindow) {
-		this.activeWindow = activeWindow;
-	}
-
-	public ImageIcon getCountry() {
-		return country;
-	}
-
-	public void setCountry(ImageIcon country) {
-		this.country = country;
 	}
 
 	public String getCpuModel() {
@@ -180,14 +130,6 @@ public class ClientProfile implements Serializable {
 		this.messagePing = messagePing;
 	}
 
-	public String getMonitorCount() {
-		return monitorCount;
-	}
-
-	public void setMonitorCount(String monitorCount) {
-		this.monitorCount = monitorCount;
-	}
-
 	public String getOsArch() {
 		return osArch;
 	}
@@ -220,22 +162,6 @@ public class ClientProfile implements Serializable {
 		this.ramUsage = ramUsage;
 	}
 
-	public String getUserStatus() {
-		return userStatus;
-	}
-
-	public void setUserStatus(String userStatus) {
-		this.userStatus = userStatus;
-	}
-
-	public String getVirtualization() {
-		return virtualization;
-	}
-
-	public void setVirtualization(String virtualization) {
-		this.virtualization = virtualization;
-	}
-
 	public Date getUpdateTimestamp() {
 		return updateTimestamp;
 	}
@@ -256,10 +182,7 @@ public class ClientProfile implements Serializable {
 		this.crimsonCpuUsage = crimsonCpuUsage;
 	}
 
-	public void amalgamate(EV_ProfileDelta c) {
-		if (c.hasActiveWindow()) {
-			setActiveWindow(c.getActiveWindow());
-		}
+	public void amalgamate(EV_ServerInfoDelta c) {
 		if (c.hasCpuModel()) {
 			setCpuModel(c.getCpuModel());
 		}
@@ -273,22 +196,16 @@ public class ClientProfile implements Serializable {
 			setHostname(c.getNetHostname());
 		}
 		if (c.hasJavaVersion()) {
-			setJavaVersion(c.getJavaArch());
-		}
-		if (c.hasLanguage()) {
-			setLanguage(c.getLanguage());
+			setJavaVersion(c.getJavaVersion());
 		}
 		if (c.hasOsFamily()) {
 			setOsFamily(c.getOsFamily());
-		}
-		if (c.hasUserName()) {
-			setUsername(c.getUserName());
 		}
 		if (c.hasRamCrimsonUsage()) {
 			setCrimsonRamUsage(CUtil.Misc.familiarize(c.getRamCrimsonUsage(), CUtil.Misc.BYTES));
 		}
 		if (c.hasCpuCrimsonUsage()) {
-			setCrimsonCpuUsage(String.format("%.2f%%", 100 * c.getCpuCrimsonUsage()));
+			setCrimsonCpuUsage(String.format("%.2f%%", c.getCpuCrimsonUsage()));
 		}
 
 	}

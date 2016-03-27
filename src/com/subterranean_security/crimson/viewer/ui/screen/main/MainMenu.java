@@ -33,6 +33,7 @@ import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
+import com.subterranean_security.crimson.viewer.stream.VInfoSlave;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.screen.about.AboutDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame;
@@ -64,13 +65,18 @@ public class MainMenu extends JPanel {
 
 			@Override
 			public void menuSelected(MenuEvent e) {
-				im = new InfoMaster(InfoParam.newBuilder().setCpuTemp(true).build());
-				StreamStore.addStream(im.getStreamID(), im);
+				im = new InfoMaster(
+						InfoParam.newBuilder().setCpuTemp(true).setCrimsonCpuUsage(true).setCrimsonRamUsage(true).build());
+				StreamStore.addStream(im);
+				is = new VInfoSlave(
+						InfoParam.newBuilder().setCpuTemp(true).setCrimsonCpuUsage(true).setCrimsonRamUsage(true).build());
+				StreamStore.addStream(is);
 			}
 
 			@Override
 			public void menuDeselected(MenuEvent e) {
 				StreamStore.removeStream(im.getStreamID());
+				StreamStore.removeStream(is.getStreamID());
 			}
 
 			@Override

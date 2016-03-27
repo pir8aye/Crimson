@@ -17,7 +17,8 @@ message Param {
 	required int32 streamID = 1;
 	required int32 VID = 2;
 	optional int32 CID = 3;
-	optional InfoParam info_param = 4;
+	optional int32 period = 4;
+	optional InfoParam info_param = 5;
 }
 
 message InfoParam {
@@ -27,4 +28,5 @@ message InfoParam {
 	optional bool cpu_usage = 4;
 	optional bool ram_usage = 5;
 	optional bool crimson_ram_usage = 6;
+	optional bool crimson_cpu_usage = 7;
 }

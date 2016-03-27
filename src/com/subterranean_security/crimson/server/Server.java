@@ -66,6 +66,7 @@ public final class Server {
 		// initialize system database
 		try {
 			ServerStore.Databases.system = new ServerDB(new File(Common.var.getAbsolutePath() + "/system.db"));
+			Common.cvid = ServerStore.Databases.system.getInteger("cvid");
 		} catch (Exception e) {
 			log.error("Could not initialize system database");
 

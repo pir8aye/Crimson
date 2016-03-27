@@ -95,7 +95,7 @@ public class ClientConnector implements AutoCloseable {
 
 		int cvid = 0;
 		try {
-			cvid = Client.clientDB.getInteger("svid");
+			cvid = Client.clientDB.getInteger("cvid");
 		} catch (Exception e2) {
 		}
 		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(cvid).setType(authType);

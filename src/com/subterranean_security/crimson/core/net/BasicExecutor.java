@@ -17,7 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.net;
 
-public class BasicExecutor {
+public abstract class BasicExecutor {
 
 	protected Thread nbt;
 	protected Thread ubt;

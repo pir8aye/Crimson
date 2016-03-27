@@ -24,12 +24,11 @@ import java.net.UnknownHostException;
 import org.hyperic.sigar.Cpu;
 import org.hyperic.sigar.CpuInfo;
 import org.hyperic.sigar.NetInfo;
+import org.hyperic.sigar.ProcCpu;
 import org.hyperic.sigar.ProcMem;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
-import org.hyperic.sigar.ptql.ProcessFinder;
 
-import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 
 public enum Platform {
@@ -102,6 +101,7 @@ public enum Platform {
 		private static CpuInfo[] cpuInfo;
 		private static NetInfo netInfo;
 		private static ProcMem crimsonProcess;
+		private static ProcCpu crimsonProcessCpu;
 
 		private static long pid = 0;
 
@@ -133,6 +133,7 @@ public enum Platform {
 			cpu = new Cpu();
 			netInfo = new NetInfo();
 			crimsonProcess = new ProcMem();
+			crimsonProcessCpu = new ProcCpu();
 
 			try {
 				pid = sigar.getPid();
@@ -238,15 +239,25 @@ public enum Platform {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("Gathered Crimson memory footprint: " + crimsonProcess.getSize());
-			return crimsonProcess.getSize();
+			return crimsonProcess.getResident();
+		}
+
+		public static double getCrimsonCpuUsage() {
+
+			try {
+				crimsonProcessCpu.gather(sigar, pid);
+			} catch (SigarException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return crimsonProcessCpu.getPercent();
 		}
 
 		public static EV_ProfileDelta getFullProfile() {
 			EV_ProfileDelta.Builder info = EV_ProfileDelta.newBuilder();
 
 			try {
-				info.setCvid(Client.clientDB.getInteger("svid"));
+				info.setCvid(Common.cvid);
 			} catch (Exception e1) {
 				// TODO handle
 				info.setCvid(0);

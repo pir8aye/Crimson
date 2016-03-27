@@ -21,11 +21,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
@@ -46,24 +46,18 @@ public enum ViewerCommands {
 
 	public static boolean login(String user, char[] pass) {
 		int id = IDGen.get();
-		int svid;
-		try {
-			svid = ViewerStore.Databases.local.getInteger("svid");
-		} catch (Exception e1) {
-			svid = 0;
-		}
 
-		ViewerConnector.connector.handle.write(Message.newBuilder().setId(id)
-				.setRqLogin(RQ_Login.newBuilder().setSvid(svid).setUsername(user)).build());
+		ViewerRouter.route(Message.newBuilder().setId(id)
+				.setRqLogin(RQ_Login.newBuilder().setSvid(Common.cvid).setUsername(user)).build());
 
 		try {
-			Message lcrq = ViewerConnector.connector.cq.take(id, 5, TimeUnit.SECONDS);
+			Message lcrq = ViewerRouter.getReponse(0, id, 5);
 			if (lcrq.hasRqLoginChallenge()) {
 				log.debug("Received login challenge: {}", lcrq.getRqLoginChallenge().getSalt());
 
 				String result = Crypto.hashPass(pass, lcrq.getRqLoginChallenge().getSalt());
 				log.debug("Sending hash: " + result);
-				ViewerConnector.connector.handle.write(Message.newBuilder().setId(id)
+				ViewerRouter.route(Message.newBuilder().setId(id)
 						.setRsLoginChallenge(RS_LoginChallenge.newBuilder().setResult(result)).build());
 			} else if (lcrq.hasRsLogin()) {
 				log.debug("Received login response: Invalid user");
@@ -78,7 +72,7 @@ public enum ViewerCommands {
 		}
 
 		try {
-			Message lrs = ViewerConnector.connector.cq.take(id, 5, TimeUnit.SECONDS);
+			Message lrs = ViewerRouter.getReponse(0, id, 5);
 			if (lrs.hasRsLogin()) {
 				log.debug("Received login response: " + lrs.getRsLogin().getResponse());
 				if (lrs.getRsLogin().getResponse()) {
@@ -107,10 +101,10 @@ public enum ViewerCommands {
 		int id = IDGen.get();
 		RQ_Generate.Builder rq = RQ_Generate.newBuilder().setInternalConfig(config);
 
-		ViewerConnector.connector.handle.write(Message.newBuilder().setId(id).setRqGenerate(rq).build());
+		ViewerRouter.route(Message.newBuilder().setId(id).setRqGenerate(rq).build());
 
 		try {
-			Message rs = ViewerConnector.connector.cq.take(id, 20, TimeUnit.SECONDS);
+			Message rs = ViewerRouter.getReponse(0, id, 20);
 			if (rs != null) {
 				// success
 				final GenReport gr = rs.getRsGenerate().getReport();
@@ -147,7 +141,7 @@ public enum ViewerCommands {
 		;
 		public static ArrayList<FileListlet> down(String s, boolean mtime, boolean size) {
 			int id = IDGen.get();
-			ViewerConnector.connector.handle.write(Message.newBuilder().setId(id).build());
+			ViewerRouter.route(Message.newBuilder().setId(id).build());
 			// TODO finish message sequence
 			return null;
 		}

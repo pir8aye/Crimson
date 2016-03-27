@@ -15,22 +15,12 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.client.net;
+package com.subterranean_security.crimson.core.net;
 
-import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
-public enum Router {
-	;
+public abstract class BasicConnector {
 
-	public static void route(Message m) {
-		// TODO check if direct connection exists
-		Client.connector.handle.write(m);
-	}
-
-	public static void route(Message.Builder m) {
-
-		route(m.build());
-	}
+	public abstract void write(Message m);
 
 }

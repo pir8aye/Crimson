@@ -31,6 +31,8 @@ import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.ui.debug.DebugFrame;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.ServerProfile;
 import com.subterranean_security.crimson.viewer.ui.panel.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.eula.EULADialog;
 import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
@@ -55,6 +57,8 @@ public class Viewer {
 
 		// Establish the custom shutdown hook
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
+
+		loadDatabaseValues();
 
 		// Load native libraries
 		Platform.Advanced.loadSigar();
@@ -163,6 +167,19 @@ public class Viewer {
 		Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { URL.class });
 		method.setAccessible(true);
 		method.invoke(ClassLoader.getSystemClassLoader(), new Object[] { target.toURI().toURL() });
+	}
+
+	public static void loadDatabaseValues() {
+		try {
+			Common.cvid = ViewerStore.Databases.local.getInteger("cvid");
+			System.out.println("CVID: " + Common.cvid);
+			ViewerStore.Profiles.server = (ServerProfile) ViewerStore.Databases.local.getObject("server.profile");
+			ViewerStore.Profiles.viewer = (ClientProfile) ViewerStore.Databases.local.getObject("viewer.profile");
+			ViewerStore.Profiles.viewer.setCvid(Common.cvid);
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 	}
 
 }

@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
@@ -32,7 +33,6 @@ import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -99,7 +99,7 @@ public class ClientExecutor extends BasicExecutor {
 	private void stream_start_ev(Message m) {
 		Param p = m.getMiStreamStart().getParam();
 		if (p.hasInfoParam()) {
-			StreamStore.addStream(p.getStreamID(), new InfoSlave(p));
+			StreamStore.addStream(new CInfoSlave(p));
 		}
 	}
 
@@ -189,7 +189,7 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void assign_1w(Message m) {
-		Client.clientDB.storeObject("svid", m.getMiAssignCvid().getId());
+		Client.clientDB.storeObject("cvid", m.getMiAssignCvid().getId());
 	}
 
 }

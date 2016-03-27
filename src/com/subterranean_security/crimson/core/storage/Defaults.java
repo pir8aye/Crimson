@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.ServerProfile;
 import com.subterranean_security.crimson.sv.ViewerProfile;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 
@@ -66,7 +67,7 @@ public enum Defaults {
 		db.storeObject("show_helps", true);
 		db.storeObject("show_detail", true);
 		db.storeObject("hostlist.headers",
-				new Headers[] { Headers.COUNTRY, Headers.USERNAME, Headers.HOSTNAME, Headers.LANGUAGE });
+				new Headers[] { Headers.COUNTRY, Headers.CVID, Headers.USERNAME, Headers.HOSTNAME, Headers.LANGUAGE });
 		db.storeObject("login.recents", new ArrayList<String>());
 		db.storeObject("view.last", "list");
 	}
@@ -74,6 +75,8 @@ public enum Defaults {
 	public static void hardReset(LViewerDB db) {
 		softReset(db);
 		hardResetUniversal(db);
+		db.storeObject("viewer.profile", new ClientProfile());
+		db.storeObject("server.profile", new ServerProfile());
 	}
 
 	private static void softResetUniversal(Database db) {
@@ -83,7 +86,7 @@ public enum Defaults {
 	}
 
 	private static void hardResetUniversal(Database db) {
-		db.storeObject("svid", 0);
+		db.storeObject("cvid", 0);
 		db.storeObject("report_buffer", new ArrayList<Report>());
 		db.storeObject("crimson.version", Common.version);
 	}

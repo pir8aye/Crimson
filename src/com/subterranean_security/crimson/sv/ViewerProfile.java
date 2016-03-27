@@ -27,21 +27,22 @@ public class ViewerProfile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String user;
-	private int svid;
+	private int cvid;
+	private Date updateTimestamp = new Date();
 	private ArrayList<Date> login_times = new ArrayList<Date>();
 	private ArrayList<String> login_ip = new ArrayList<String>();
 	private Permissions permissions = new Permissions();
 
-	public ViewerProfile(int svid) {
-		this.svid = svid;
+	public ViewerProfile(int cvid) {
+		this.cvid = cvid;
 	}
 
 	public Permissions getPermissions() {
 		return permissions;
 	}
 
-	public Integer getSvid() {
-		return svid;
+	public Integer getCvid() {
+		return cvid;
 	}
 
 	public String getUser() {

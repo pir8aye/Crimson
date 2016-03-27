@@ -77,7 +77,7 @@ public class Generator {
 		try {
 			ClientDB database = new ClientDB(clientDB);
 			database.storeObject("generation_date", start);
-			database.storeObject("svid", 0);
+			database.storeObject("cvid", 0);
 			database.storeObject("reconnect_period", ic.getReconnectPeriod());
 
 			database.storeObject("nts", ic.getTargetList());

@@ -65,7 +65,7 @@ public class HostList extends JPanel {
 				if (!source.isRowSelected(sourceRow)) {
 					source.changeSelection(sourceRow, 0, false, false);
 				}
-				final ClientProfile sp = ViewerStore.Profiles.profiles.get(sourceRow);
+				final ClientProfile sp = ViewerStore.Profiles.clients.get(sourceRow);
 
 				if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
 
@@ -188,7 +188,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerStore.Profiles.profiles.size();
+		return ViewerStore.Profiles.clients.size();
 	}
 
 	@Override
@@ -200,43 +200,45 @@ class TM extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		switch (headers[columnIndex]) {
 		case USERNAME:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getUsername();
+			return ViewerStore.Profiles.clients.get(rowIndex).getUsername();
 		case USER_STATUS:
 		case HOSTNAME:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getHostname();
+			return ViewerStore.Profiles.clients.get(rowIndex).getHostname();
 		case INTERNAL_IP:
 		case EXTERNAL_IP:
 		case LANGUAGE:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getLanguage();
+			return ViewerStore.Profiles.clients.get(rowIndex).getLanguage();
 		case ACTIVE_WINDOW:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getActiveWindow();
+			return ViewerStore.Profiles.clients.get(rowIndex).getActiveWindow();
 		case COUNTRY:
 		case CPU_MODEL:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getCpuModel();
+			return ViewerStore.Profiles.clients.get(rowIndex).getCpuModel();
 		case CPU_USAGE:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getCpuUsage();
+			return ViewerStore.Profiles.clients.get(rowIndex).getCpuUsage();
 		case CPU_TEMP:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getCpuTemp();
+			return ViewerStore.Profiles.clients.get(rowIndex).getCpuTemp();
+		case CVID:
+			return ViewerStore.Profiles.clients.get(rowIndex).getCvid();
 		case RAM_CAPACITY:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getRamCapacity();
+			return ViewerStore.Profiles.clients.get(rowIndex).getRamCapacity();
 		case RAM_USAGE:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getRamUsage();
+			return ViewerStore.Profiles.clients.get(rowIndex).getRamUsage();
 		case CRIMSON_VERSION:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getCrimsonVersion();
+			return ViewerStore.Profiles.clients.get(rowIndex).getCrimsonVersion();
 		case OS_FAMILY:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getOsFamily();
+			return ViewerStore.Profiles.clients.get(rowIndex).getOsFamily();
 		case OS_ARCH:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getOsArch();
+			return ViewerStore.Profiles.clients.get(rowIndex).getOsArch();
 		case JAVA_VERSION:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getJavaVersion();
+			return ViewerStore.Profiles.clients.get(rowIndex).getJavaVersion();
 		case MONITOR_COUNT:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getMonitorCount();
+			return ViewerStore.Profiles.clients.get(rowIndex).getMonitorCount();
 		case VIRTUALIZATION:
 		case TIMEZONE:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getTimezone();
+			return ViewerStore.Profiles.clients.get(rowIndex).getTimezone();
 		case CPU_SPEED:
 		case MESSAGE_PING:
-			return ViewerStore.Profiles.profiles.get(rowIndex).getMessagePing();
+			return ViewerStore.Profiles.clients.get(rowIndex).getMessagePing();
 		case SCREEN_PREVIEW:
 
 		}

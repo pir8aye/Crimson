@@ -22,15 +22,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.net.BasicConnector;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.Listener;
+import com.subterranean_security.crimson.sv.ServerProfile;
+import com.subterranean_security.crimson.sv.ViewerProfile;
+import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerStore {
@@ -40,6 +45,22 @@ public enum ViewerStore {
 	public static class Listeners {
 		public static ArrayList<Listener> listeners = new ArrayList<Listener>();
 
+	}
+
+	public static class Connections {
+		private static HashMap<Integer, BasicConnector> connections = new HashMap<Integer, BasicConnector>();
+
+		public static void put(int cvid, BasicConnector vc) {
+			connections.put(cvid, vc);
+		}
+
+		public static BasicConnector get(int cvid) {
+			return connections.get(cvid);
+		}
+
+		public static ViewerConnector getVC(int cvid) {
+			return (ViewerConnector) connections.get(cvid);
+		}
 	}
 
 	public static class LocalServer {
@@ -129,38 +150,41 @@ public enum ViewerStore {
 	}
 
 	public static class Profiles {
-		public static ArrayList<ClientProfile> profiles = new ArrayList<ClientProfile>();
+		public static ServerProfile server;
+		public static ClientProfile viewer;
+		public static ViewerProfile vp;
 
-		public static void add(ClientProfile p) {
-			profiles.add(p);
-		}
+		public static ArrayList<ClientProfile> clients = new ArrayList<ClientProfile>();
 
 		public static void remove(Integer id) {
-			Iterator<ClientProfile> pp = profiles.iterator();
+			Iterator<ClientProfile> pp = clients.iterator();
 			while (pp.hasNext()) {
-				if (pp.next().getSvid() == id) {
+				if (pp.next().getCvid() == id) {
 					pp.remove();
 					return;
 				}
 			}
 		}
 
+		public static void update(EV_ServerInfoDelta change) {
+			server.amalgamate(change);
+		}
+
 		public static void update(EV_ProfileDelta change) {
-			// TODO do this without flag. Probably convert profiles into hashmap
+			System.out.println("Got PUPDATE for cvid: " + change.getCvid());
 			boolean flag = true;
-			for (ClientProfile p : profiles) {
-				if (p.getSvid() == change.getCvid()) {
+			for (ClientProfile p : clients) {
+				if (p.getCvid() == change.getCvid()) {
 					flag = false;
-					amalgamate(p, change);
+					p.amalgamate(change);
 
 					break;
 				}
 			}
-
 			if (flag) {
 				ClientProfile np = new ClientProfile(change.getCvid());
-				amalgamate(np, change);
-				profiles.add(np);
+				np.amalgamate(change);
+				clients.add(np);
 			}
 
 			if (MainFrame.main.panel.listLoaded) {
@@ -168,37 +192,6 @@ public enum ViewerStore {
 			}
 			if (MainFrame.main.panel.graphLoaded) {
 				// TODO refresh graph
-			}
-
-		}
-
-		private static void amalgamate(ClientProfile p, EV_ProfileDelta c) {
-			if (c.hasActiveWindow()) {
-				p.setActiveWindow(c.getActiveWindow());
-			}
-			if (c.hasCpuModel()) {
-				p.setCpuModel(c.getCpuModel());
-			}
-			if (c.hasCpuTemp()) {
-				p.setCpuTemp(c.getCpuTemp());
-			}
-			if (c.hasCrimsonVersion()) {
-				p.setCrimsonVersion(c.getCrimsonVersion());
-			}
-			if (c.hasNetHostname()) {
-				p.setHostname(c.getNetHostname());
-			}
-			if (c.hasJavaVersion()) {
-				p.setJavaVersion(c.getJavaArch());
-			}
-			if (c.hasLanguage()) {
-				p.setLanguage(c.getLanguage());
-			}
-			if (c.hasOsFamily()) {
-				p.setOsFamily(c.getOsFamily());
-			}
-			if (c.hasUserName()) {
-				p.setUsername(c.getUserName());
 			}
 
 		}

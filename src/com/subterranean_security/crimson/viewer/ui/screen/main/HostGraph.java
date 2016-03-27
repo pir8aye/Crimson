@@ -198,7 +198,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 			Object v = graph.insertVertex(parent, null, "\n\n\n" + text, x, y, 80, 30,
 					"shape=image;image=/com/subterranean_security/crimson/viewer/ui/res/image/icons16/viewer.png");
-			vertices.put(v, p.getSvid());
+			vertices.put(v, p.getCvid());
 
 			graph.insertEdge(parent, null, "", serverVertex, v);
 
@@ -216,7 +216,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		Object target = null;
 
 		for (Entry<Object, Integer> entry : vertices.entrySet()) {
-			if (entry.getValue() == p.getSvid()) {
+			if (entry.getValue() == p.getCvid()) {
 				// found the connection to remove
 				target = entry.getKey();
 

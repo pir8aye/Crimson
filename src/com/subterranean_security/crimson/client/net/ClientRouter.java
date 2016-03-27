@@ -15,56 +15,21 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.info;
+package com.subterranean_security.crimson.client.net;
 
-import java.util.Random;
-
-import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
-import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
-import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
-import com.subterranean_security.crimson.core.proto.Stream.Param;
-import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
-public class InfoMaster extends Stream {
-
-	public InfoMaster(InfoParam ip, int CID) {
-
-		param = Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).setCID(CID).setVID(Common.cvid)
-				.build();
-		start();
+public enum ClientRouter {
+	;
+	public static void route(Message m) {
+		// TODO check if direct connection exists
+		Client.connector.handle.write(m);
 	}
 
-	public InfoMaster(InfoParam ip) {
+	public static void route(Message.Builder m) {
 
-		param = Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).setVID(Common.cvid).build();
-		start();
-	}
-
-	@Override
-	public void received(Message m) {
-		// receiving is handled by executor
-
-	}
-
-	@Override
-	public void send() {
-		// do nothing
-
-	}
-
-	@Override
-	public void start() {
-		ViewerRouter.route(Message.newBuilder().setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
-
-	}
-
-	@Override
-	public void stop() {
-		ViewerRouter.route(Message.newBuilder().setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
-
+		route(m.build());
 	}
 
 }

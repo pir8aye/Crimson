@@ -15,55 +15,25 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.info;
+package com.subterranean_security.crimson.client.stream;
 
-import java.util.Random;
-
-import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.client.net.ClientRouter;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
-import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
-import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
-import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.viewer.net.ViewerRouter;
+import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 
-public class InfoMaster extends Stream {
+public class CInfoSlave extends InfoSlave {
 
-	public InfoMaster(InfoParam ip, int CID) {
-
-		param = Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).setCID(CID).setVID(Common.cvid)
-				.build();
-		start();
-	}
-
-	public InfoMaster(InfoParam ip) {
-
-		param = Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).setVID(Common.cvid).build();
-		start();
-	}
-
-	@Override
-	public void received(Message m) {
-		// receiving is handled by executor
-
+	public CInfoSlave(Param p) {
+		super(p);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void send() {
-		// do nothing
-
-	}
-
-	@Override
-	public void start() {
-		ViewerRouter.route(Message.newBuilder().setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
-
-	}
-
-	@Override
-	public void stop() {
-		ViewerRouter.route(Message.newBuilder().setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
+		ClientRouter.route(Message.newBuilder().setEvProfileDelta(gatherDefaultInfo()));// TODO
+																					// add
+																					// addresses
 
 	}
 

@@ -50,6 +50,8 @@ public enum Common {
 		setDebug(new File("/debug.txt").exists());
 	}
 
+	public static int cvid = 0;
+
 	/**
 	 * Version Syntax: X.X.X.X with major versions being on the left and minor
 	 * versions and fixes on the right

@@ -15,56 +15,41 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.info;
+package com.subterranean_security.crimson.server.stream;
 
-import java.util.Random;
-
-import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
-import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
-import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
-import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.viewer.net.ViewerRouter;
+import com.subterranean_security.crimson.core.stream.info.InfoSlave;
+import com.subterranean_security.crimson.server.ServerStore;
 
-public class InfoMaster extends Stream {
+public class SInfoSlave extends InfoSlave {
 
-	public InfoMaster(InfoParam ip, int CID) {
-
-		param = Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).setCID(CID).setVID(Common.cvid)
-				.build();
-		start();
-	}
-
-	public InfoMaster(InfoParam ip) {
-
-		param = Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).setVID(Common.cvid).build();
-		start();
-	}
-
-	@Override
-	public void received(Message m) {
-		// receiving is handled by executor
-
+	public SInfoSlave(Param p) {
+		super(p);
 	}
 
 	@Override
 	public void send() {
-		// do nothing
+		ServerStore.Connections.getConnection(param.getVID()).handle.write(Message.newBuilder().setUrgent(true)
+				.setCid(param.getCID()).setVid(param.getVID()).setEvServerInfoDelta(gatherServerInfo()).build());
 
 	}
 
-	@Override
-	public void start() {
-		ViewerRouter.route(Message.newBuilder().setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
-
-	}
-
-	@Override
-	public void stop() {
-		ViewerRouter.route(Message.newBuilder().setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
-
+	private EV_ServerInfoDelta gatherServerInfo() {
+		EV_ServerInfoDelta.Builder sid = EV_ServerInfoDelta.newBuilder();
+		if (param.getInfoParam().hasCpuSpeed()) {
+		}
+		if (param.getInfoParam().hasCpuTemp()) {
+		}
+		if (param.getInfoParam().hasCrimsonRamUsage()) {
+			sid.setRamCrimsonUsage(Platform.Advanced.getCrimsonMemoryUsage());
+		}
+		if (param.getInfoParam().hasCrimsonCpuUsage()) {
+			sid.setCpuCrimsonUsage(Platform.Advanced.getCrimsonCpuUsage());
+		}
+		return sid.build();
 	}
 
 }

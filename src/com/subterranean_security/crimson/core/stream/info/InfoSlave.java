@@ -17,19 +17,27 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.stream.info;
 
+import java.util.Random;
+
 import com.subterranean_security.crimson.client.Native;
-import com.subterranean_security.crimson.client.net.Router;
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.Stream;
 
-public class InfoSlave extends Stream {
+public abstract class InfoSlave extends Stream {
 
 	public InfoSlave(Param p) {
 		param = p;
+		System.out.println("Starting InfoSlave. CID: " + param.getCID() + ". VID: " + param.getVID());
 		start();
+	}
+
+	public InfoSlave(InfoParam ip) {
+		this(Param.newBuilder().setInfoParam(ip).setStreamID(new Random().nextInt()).setVID(Common.cvid).build());
 	}
 
 	@Override
@@ -37,10 +45,8 @@ public class InfoSlave extends Stream {
 		// do nothing
 	}
 
-	@Override
-	public void send() {
-		System.out.println("Pumping stream");
-		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(0);// TODO
+	protected EV_ProfileDelta gatherDefaultInfo() {
+		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(Common.cvid);
 		if (param.getInfoParam().hasActiveWindow()) {
 			pd.setActiveWindow(Native.getActiveWindow());
 		}
@@ -51,14 +57,16 @@ public class InfoSlave extends Stream {
 		if (param.getInfoParam().hasCrimsonRamUsage()) {
 			pd.setRamCrimsonUsage(Platform.Advanced.getCrimsonMemoryUsage());
 		}
-
-		Router.route(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd));
-
+		if (param.getInfoParam().hasCrimsonCpuUsage()) {
+			pd.setCpuCrimsonUsage(Platform.Advanced.getCrimsonCpuUsage());
+		}
+		return pd.build();
 	}
 
 	@Override
 	public void start() {
-		timer.schedule(sendTask, 0, 1000);// use configurable period
+
+		timer.schedule(sendTask, 0, param.hasPeriod() ? param.getPeriod() : 1000);
 
 	}
 

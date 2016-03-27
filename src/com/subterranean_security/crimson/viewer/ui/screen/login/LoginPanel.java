@@ -299,7 +299,7 @@ public class LoginPanel extends JPanel {
 		try {
 
 			try {
-				ViewerConnector.connector = new ViewerConnector(server, Integer.parseInt(port));
+				ViewerStore.Connections.put(0, new ViewerConnector(server, Integer.parseInt(port)));
 			} catch (Throwable e) {
 				e.printStackTrace();
 				btn_login.setEnabled(true);
@@ -338,7 +338,7 @@ public class LoginPanel extends JPanel {
 				}
 				parent.dispose();
 			} else {
-				ViewerConnector.connector = null;
+				ViewerStore.Connections.put(0, null);
 				lbl_status.unfreeze();
 				lbl_status.setBad("Failed to Login");
 				btn_login.setEnabled(true);

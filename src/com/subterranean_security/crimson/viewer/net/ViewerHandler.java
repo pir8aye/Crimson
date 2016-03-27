@@ -53,4 +53,13 @@ public class ViewerHandler extends BasicHandler {
 
 	}
 
+	public void execute(Message msg) {
+		try {
+			channelRead0(null, msg);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }

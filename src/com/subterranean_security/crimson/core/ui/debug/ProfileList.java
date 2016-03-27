@@ -111,7 +111,7 @@ class ProfileTM extends AbstractTableModel {
 	public int getRowCount() {
 		if (Common.instance == Instance.VIEWER) {
 
-			return ViewerStore.Profiles.profiles.size();
+			return ViewerStore.Profiles.clients.size();
 
 		} else {
 			return 0;// TODO
@@ -128,12 +128,12 @@ class ProfileTM extends AbstractTableModel {
 		ClientProfile p = null;
 		if (Common.instance == Instance.VIEWER) {
 
-			p = ViewerStore.Profiles.profiles.get(rowIndex);
+			p = ViewerStore.Profiles.clients.get(rowIndex);
 
 		}
 		switch (headers[columnIndex]) {
 		case "ClientID": {
-			return "" + p.getSvid();
+			return "" + p.getCvid();
 		}
 		case "Hostname": {
 			return p.getHostname();

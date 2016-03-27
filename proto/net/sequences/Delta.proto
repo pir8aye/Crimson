@@ -27,14 +27,15 @@ message EV_ProfileDelta {
 	optional string cpu_speed = 119;
 	optional string cpu_logical_cores = 120;
 	optional string cpu_cache = 121;
+	optional double cpu_crimson_usage = 122;
 	
 	//NET
-	optional string net_dns1 = 122;
-	optional string net_dns2 = 123;
-	optional string net_hostname = 124;
+	optional string net_dns1 = 123;
+	optional string net_dns2 = 124;
+	optional string net_hostname = 125;
 	
 	//RAM
-	optional int64 ram_crimson_usage = 125;
+	optional int64 ram_crimson_usage = 126;
 	
 	
 }
@@ -50,4 +51,14 @@ message EV_ServerInfoDelta {
 	optional int64 last_login = 2;
 	optional string last_ip = 3;
 	repeated ListenerConfig listeners = 4;
+	optional string cpu_model = 117;
+	optional string cpu_temp = 118;
+	optional string cpu_speed = 119;
+	optional double cpu_crimson_usage = 122;
+	optional int64 ram_crimson_usage = 126;
+	optional string java_version = 106;
+	optional string os_family = 110;
+	optional string os_version = 111;
+	optional string crimson_version = 102;
+	optional string net_hostname = 125;
 }
