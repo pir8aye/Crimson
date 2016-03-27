@@ -35,6 +35,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class HostList extends JPanel {
 
@@ -73,6 +74,7 @@ public class HostList extends JPanel {
 					JPopupMenu popup = new JPopupMenu();
 					JMenuItem control = new JMenuItem();
 					control.setText("Control Panel");
+					control.setIcon(UUtil.getIcon("icons16/general/cog.png"));
 					control.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mousePressed(MouseEvent e) {
@@ -90,6 +92,7 @@ public class HostList extends JPanel {
 
 					JMenu quick = new JMenu();
 					quick.setText("Quick Commands");
+					quick.setIcon(UUtil.getIcon("icons16/general/bow.png"));
 					popup.add(quick);
 
 					JMenuItem poweroff = new JMenuItem();
