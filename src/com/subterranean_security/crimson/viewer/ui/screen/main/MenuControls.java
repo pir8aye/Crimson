@@ -55,6 +55,11 @@ public class MenuControls extends JPanel {
 	private JLabel valServerCpuTemp;
 
 	public static MenuControls mc;
+	private JLabel valClients;
+	private JLabel valUsers;
+	private JLabel valStatus;
+	private JButton btnStartServer;
+	private JButton btnStopServer;
 
 	public MenuControls() {
 		mc = this;
@@ -78,20 +83,19 @@ public class MenuControls extends JPanel {
 		lblConnections.setBounds(6, 17, 67, 17);
 		panel_1.add(lblConnections);
 
-		JLabel lblStopped = new JLabel("Stopped");
-		lblStopped.setForeground(Color.RED);
-		lblStopped.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblStopped.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblStopped.setBounds(91, 17, 95, 17);
-		panel_1.add(lblStopped);
+		valStatus = new JLabel("Loading...");
+		valStatus.setFont(new Font("Dialog", Font.BOLD, 10));
+		valStatus.setHorizontalAlignment(SwingConstants.TRAILING);
+		valStatus.setBounds(91, 17, 95, 17);
+		panel_1.add(valStatus);
 
-		JButton btnStartServer = new JButton("Start Server");
+		btnStartServer = new JButton("Start Server");
 		btnStartServer.setBounds(12, 130, 88, 20);
 		panel_1.add(btnStartServer);
 		btnStartServer.setMargin(new Insets(2, 4, 2, 4));
 		btnStartServer.setFont(new Font("Dialog", Font.BOLD, 10));
 
-		JButton btnStopServer = new JButton("Stop Server");
+		btnStopServer = new JButton("Stop Server");
 		btnStopServer.setBounds(100, 130, 88, 20);
 		panel_1.add(btnStopServer);
 		btnStopServer.setMargin(new Insets(2, 4, 2, 4));
@@ -112,27 +116,27 @@ public class MenuControls extends JPanel {
 		lblCpuTemperature_1.setBounds(6, 74, 115, 17);
 		panel_1.add(lblCpuTemperature_1);
 
-		JLabel lblCpuTemperature = new JLabel("Server CPU usage:");
+		JLabel lblCpuTemperature = new JLabel("Crimson CPU usage:");
 		lblCpuTemperature.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblCpuTemperature.setBounds(6, 91, 115, 17);
 		panel_1.add(lblCpuTemperature);
 
-		lblServerMemUsage = new JLabel("Server RAM footprint:");
+		lblServerMemUsage = new JLabel("Crimson RAM footprint:");
 		lblServerMemUsage.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblServerMemUsage.setBounds(6, 109, 115, 17);
 		panel_1.add(lblServerMemUsage);
 
-		JLabel lblLoading_4 = new JLabel("loading...");
-		lblLoading_4.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblLoading_4.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblLoading_4.setBounds(121, 34, 70, 17);
-		panel_1.add(lblLoading_4);
+		valUsers = new JLabel("loading...");
+		valUsers.setHorizontalAlignment(SwingConstants.TRAILING);
+		valUsers.setFont(new Font("Dialog", Font.BOLD, 10));
+		valUsers.setBounds(121, 34, 70, 17);
+		panel_1.add(valUsers);
 
-		JLabel lblLoading_3 = new JLabel("loading...");
-		lblLoading_3.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblLoading_3.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblLoading_3.setBounds(121, 51, 70, 17);
-		panel_1.add(lblLoading_3);
+		valClients = new JLabel("loading...");
+		valClients.setHorizontalAlignment(SwingConstants.TRAILING);
+		valClients.setFont(new Font("Dialog", Font.BOLD, 10));
+		valClients.setBounds(121, 51, 70, 17);
+		panel_1.add(valClients);
 
 		valServerCpuTemp = new JLabel("loading...");
 		valServerCpuTemp.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -199,12 +203,12 @@ public class MenuControls extends JPanel {
 		btnLogOff.setBounds(12, 155, 88, 20);
 		panel_2.add(btnLogOff);
 
-		JLabel lblViewerRamFootprint = new JLabel("Viewer RAM footprint:");
+		JLabel lblViewerRamFootprint = new JLabel("Crimson RAM footprint:");
 		lblViewerRamFootprint.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblViewerRamFootprint.setBounds(6, 109, 115, 17);
 		panel_2.add(lblViewerRamFootprint);
 
-		lblViewerCpuUsage = new JLabel("Viewer CPU usage:");
+		lblViewerCpuUsage = new JLabel("Crimson CPU usage:");
 		lblViewerCpuUsage.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblViewerCpuUsage.setBounds(6, 91, 115, 17);
 		panel_2.add(lblViewerCpuUsage);
@@ -294,6 +298,19 @@ public class MenuControls extends JPanel {
 		valServerRamUsage.setText(ViewerStore.Profiles.server.getCrimsonRamUsage());
 		valServerCpuTemp.setText(ViewerStore.Profiles.server.getCpuTemp());
 		valServerCpuUsage.setText(ViewerStore.Profiles.server.getCrimsonCpuUsage());
+		valClients.setText("" + ViewerStore.Profiles.server.getConnectedClients());
+		valUsers.setText("" + ViewerStore.Profiles.server.getConnectedUsers());
+		if (ViewerStore.Profiles.server.getStatus()) {
+			valStatus.setText("Running");
+			valStatus.setForeground(new Color(0, 149, 39));
+			btnStartServer.setEnabled(false);
+			btnStopServer.setEnabled(true);
+		} else {
+			valStatus.setText("Stopped");
+			valStatus.setForeground(new Color(200, 0, 0));
+			btnStartServer.setEnabled(true);
+			btnStopServer.setEnabled(false);
+		}
 
 	}
 }

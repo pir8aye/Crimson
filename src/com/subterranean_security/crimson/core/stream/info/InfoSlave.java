@@ -32,7 +32,6 @@ public abstract class InfoSlave extends Stream {
 
 	public InfoSlave(Param p) {
 		param = p;
-		System.out.println("Starting InfoSlave. CID: " + param.getCID() + ". VID: " + param.getVID());
 		start();
 	}
 

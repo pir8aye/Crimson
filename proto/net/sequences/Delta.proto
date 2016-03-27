@@ -48,17 +48,26 @@ message NetworkInterface {
 
 message EV_ServerInfoDelta {
 	optional bool server_status = 1;
-	optional int64 last_login = 2;
-	optional string last_ip = 3;
+	optional int32 user_count = 2;
+	optional int32 client_count = 3;
+	
 	repeated ListenerConfig listeners = 4;
-	optional string cpu_model = 117;
-	optional string cpu_temp = 118;
-	optional string cpu_speed = 119;
-	optional double cpu_crimson_usage = 122;
-	optional int64 ram_crimson_usage = 126;
-	optional string java_version = 106;
-	optional string os_family = 110;
-	optional string os_version = 111;
-	optional string crimson_version = 102;
-	optional string net_hostname = 125;
+	optional string net_hostname = 5;
+	
+	optional string cpu_model = 6;
+	optional string cpu_temp = 7;
+	optional string cpu_speed = 8;
+	optional double cpu_crimson_usage = 9;
+	
+	optional int64 ram_crimson_usage = 10;
+	
+	optional string java_version = 11;
+	optional string os_family = 12;
+	optional string os_version = 13;
+	optional string crimson_version = 14;
+	
+	
+	//current user info
+	optional int64 last_login = 15;
+	optional string last_ip = 16;
 }

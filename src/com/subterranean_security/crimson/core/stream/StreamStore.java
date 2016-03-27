@@ -49,7 +49,6 @@ public enum StreamStore {
 	}
 
 	public static void addStream(Stream s) {
-		System.out.println("Created stream: " + s.getStreamID());
 		streams.put(s.getStreamID(), s);
 	}
 

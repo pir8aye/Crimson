@@ -31,6 +31,10 @@ public class ServerProfile implements Serializable {
 	private final int cvid = 0;
 	private Date updateTimestamp = new Date();
 
+	private boolean status;
+	private int connectedUsers;
+	private int connectedClients;
+
 	private String cpuModel;
 	private String cpuTemp;
 	private String cpuUsage;
@@ -182,7 +186,37 @@ public class ServerProfile implements Serializable {
 		this.crimsonCpuUsage = crimsonCpuUsage;
 	}
 
+	public int getConnectedClients() {
+		return connectedClients;
+	}
+
+	public void setConnectedClients(int connectedClients) {
+		this.connectedClients = connectedClients;
+	}
+
+	public int getConnectedUsers() {
+		return connectedUsers;
+	}
+
+	public void setConnectedUsers(int connectedUsers) {
+		this.connectedUsers = connectedUsers;
+	}
+
+	public boolean getStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+
 	public void amalgamate(EV_ServerInfoDelta c) {
+		if (c.hasClientCount()) {
+			setConnectedClients(c.getClientCount());
+		}
+		if (c.hasUserCount()) {
+			setConnectedUsers(c.getUserCount());
+		}
 		if (c.hasCpuModel()) {
 			setCpuModel(c.getCpuModel());
 		}

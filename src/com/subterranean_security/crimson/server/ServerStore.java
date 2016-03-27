@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.storage.ClientDB;
@@ -40,12 +41,24 @@ public enum ServerStore {
 
 	public static class Connections {
 		private static HashMap<Integer, Receptor> receptors = new HashMap<Integer, Receptor>();
+		private static int users = 0;
+		private static int clients = 0;
 
 		public static void add(Receptor connection) {
+			if (connection.getInstance() == Instance.VIEWER) {
+				users++;
+			} else {
+				clients++;
+			}
 			receptors.put(connection.getCvid(), connection);
 		}
 
 		public static void remove(Receptor connection) {
+			if (connection.getInstance() == Instance.VIEWER) {
+				users--;
+			} else {
+				clients--;
+			}
 			receptors.remove(connection.getCvid());
 		}
 
@@ -55,6 +68,14 @@ public enum ServerStore {
 
 		public static Set<Integer> getKeySet() {
 			return receptors.keySet();
+		}
+
+		public static int countUsers() {
+			return users;
+		}
+
+		public static int countClients() {
+			return clients;
 		}
 
 	}
