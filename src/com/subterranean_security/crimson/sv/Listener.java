@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.sv;
 
 import java.io.Serializable;
 
+import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.server.net.ServerInitializer;
 
@@ -36,23 +37,15 @@ public class Listener implements AutoCloseable, Serializable {
 	private transient EventLoopGroup bossGroup;
 	private transient EventLoopGroup workerGroup;
 
-	public String name;
-	public int port;
-	public boolean local;
-	public boolean upnp;
-	public boolean clientAcceptor;
-	public boolean viewerAcceptor;
-	public final String id = CUtil.Misc.randString(8);// ensure this wont
-														// change
+	private ListenerConfig config;
 
-	public Listener(String name, int port, boolean local, boolean acceptClients, boolean acceptViewers, boolean upnp) {
-		this.port = port;
-		this.name = name;
-		this.local = local;
-		this.upnp = upnp;
-		this.clientAcceptor = acceptClients;
-		this.viewerAcceptor = acceptViewers;
+	public Listener(ListenerConfig lc) {
+		config = lc;
 		start();
+	}
+
+	public ListenerConfig getConfig() {
+		return config;
 	}
 
 	public void start() {
@@ -65,7 +58,7 @@ public class Listener implements AutoCloseable, Serializable {
 				.option(ChannelOption.SO_BACKLOG, 128)//
 				.childOption(ChannelOption.SO_KEEPALIVE, true);
 
-		future = b.bind(port);
+		future = b.bind(config.getPort());
 
 	}
 

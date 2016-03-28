@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
+import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public class ServerProfile implements Serializable {
@@ -34,6 +35,11 @@ public class ServerProfile implements Serializable {
 	private boolean status;
 	private int connectedUsers;
 	private int connectedClients;
+
+	public ArrayList<ListenerConfig> listeners = new ArrayList<ListenerConfig>();
+
+	private String lastIp;
+	private Date lastTime;
 
 	private String cpuModel;
 	private String cpuTemp;
@@ -210,6 +216,22 @@ public class ServerProfile implements Serializable {
 		this.status = status;
 	}
 
+	public String getLastLoginIp() {
+		return lastIp;
+	}
+
+	public Date getLastLoginTime() {
+		return lastTime;
+	}
+
+	public void setLastLoginIp(String s) {
+		lastIp = s;
+	}
+
+	public void setLastLoginTime(Date d) {
+		lastTime = d;
+	}
+
 	public void amalgamate(EV_ServerInfoDelta c) {
 		if (c.hasClientCount()) {
 			setConnectedClients(c.getClientCount());
@@ -240,6 +262,24 @@ public class ServerProfile implements Serializable {
 		}
 		if (c.hasCpuCrimsonUsage()) {
 			setCrimsonCpuUsage(String.format("%.2f%%", c.getCpuCrimsonUsage()));
+		}
+		if (c.getListenersCount() != 0) {
+			for (ListenerConfig lc : c.getListenersList()) {
+				for (ListenerConfig l : listeners) {
+					if (lc.getID().equals(l.getID())) {
+						listeners.remove(l);
+						break;
+					}
+				}
+				System.out.println("Adding listener to profile");
+				listeners.add(lc);
+			}
+		}
+		if (c.hasLastIp()) {
+			setLastLoginIp(c.getLastIp());
+		}
+		if (c.hasLastLogin()) {
+			setLastLoginTime(new Date(c.getLastLogin()));
 		}
 
 	}

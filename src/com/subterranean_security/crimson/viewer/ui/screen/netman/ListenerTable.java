@@ -24,7 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.subterranean_security.crimson.sv.Listener;
+import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public class ListenerTable extends JScrollPane {
@@ -55,7 +55,7 @@ public class ListenerTable extends JScrollPane {
 				}
 
 				if (e.getButton() == MouseEvent.BUTTON3) {
-					Listener selected = tm.getAt(sourceRow);
+					ListenerConfig selected = tm.getAt(sourceRow);
 					// right click
 
 				}
@@ -68,7 +68,7 @@ public class ListenerTable extends JScrollPane {
 class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private final String[] headers = new String[] { "Name", "Port", "UPnP", "Owner" };
+	private final String[] headers = new String[] { "ID", "Name", "Port", "UPnP", "Owner" };
 
 	@Override
 	public int getColumnCount() {
@@ -77,7 +77,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerStore.Listeners.listeners.size();
+		return ViewerStore.Profiles.server.listeners.size();
 	}
 
 	@Override
@@ -89,26 +89,29 @@ class TM extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 
 		switch (headers[columnIndex]) {
+		case "ID": {
+			return ViewerStore.Profiles.server.listeners.get(rowIndex).getID();
+		}
 		case "Name": {
-			return ViewerStore.Listeners.listeners.get(rowIndex).name;
+			return ViewerStore.Profiles.server.listeners.get(rowIndex).getName();
 		}
 		case "Port": {
-			return "" + ViewerStore.Listeners.listeners.get(rowIndex).port;
+			return ViewerStore.Profiles.server.listeners.get(rowIndex).getPort();
 		}
 		case "UPnP": {
-			return ViewerStore.Listeners.listeners.get(rowIndex).upnp ? "true" : "false";
+			return ViewerStore.Profiles.server.listeners.get(rowIndex).getUpnp() ? "yes" : "no";
 		}
 
 		}
 		return null;
 	}
 
-	public Listener getAt(int row) {
-		return ViewerStore.Listeners.listeners.get(row);
+	public ListenerConfig getAt(int row) {
+		return ViewerStore.Profiles.server.listeners.get(row);
 	}
 
 	public void removeAt(int row) {
-		ViewerStore.Listeners.listeners.remove(row);
+		ViewerStore.Profiles.server.listeners.remove(row);
 	}
 
 }

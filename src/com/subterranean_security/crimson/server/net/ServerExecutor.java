@@ -49,6 +49,7 @@ import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
+import com.subterranean_security.crimson.sv.Listener;
 import com.subterranean_security.crimson.sv.ViewerProfile;
 
 import io.netty.util.ReferenceCountUtil;
@@ -112,6 +113,8 @@ public class ServerExecutor extends BasicExecutor {
 						stream_start_ev(m);
 					} else if (m.hasMiStreamStop()) {
 						stream_stop_ev(m);
+					} else if (m.hasRsAddListener()) {
+						rs_add_listener(m);
 					} else {
 						receptor.cq.put(m.getId(), m);
 					}
@@ -301,18 +304,19 @@ public class ServerExecutor extends BasicExecutor {
 
 				ArrayList<Date> times = vp.getLogin_times();
 				if (times.size() != 0) {
-					log.debug("Last login: " + times.get(times.size() - 1));
 					sid.setLastLogin(times.get(times.size() - 1).getTime());
 				}
 				times.add(new Date());
 
 				ArrayList<String> ips = vp.getLogin_ip();
 				if (ips.size() != 0) {
-					log.debug("Last login: " + ips.get(ips.size() - 1));
 					sid.setLastIp(ips.get(ips.size() - 1));
 				}
 				ips.add(receptor.getRemoteAddress());
 
+				for (Listener l : ServerStore.Listeners.listeners) {
+					sid.addListeners(l.getConfig());
+				}
 				sid.setServerStatus(Server.isRunning());
 			}
 
@@ -397,6 +401,10 @@ public class ServerExecutor extends BasicExecutor {
 
 			StreamStore.removeStream(m.getMiStreamStop().getStreamID());
 		}
+	}
+
+	private void rs_add_listener(Message m) {
+		
 	}
 
 }

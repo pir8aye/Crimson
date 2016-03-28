@@ -147,9 +147,9 @@ public class Viewer {
 					e.printStackTrace();
 				}
 
-				if (!ViewerStore.ServerInfo.getLastLoginLocation().isEmpty()) {
-					MainFrame.main.np.addNote("info:Last Login: " + ViewerStore.ServerInfo.getLastLoginTime().toString()
-							+ " from " + ViewerStore.ServerInfo.getLastLoginLocation());
+				if (!ViewerStore.Profiles.server.getLastLoginIp().isEmpty()) {
+					MainFrame.main.np.addNote("info:Last Login: " + ViewerStore.Profiles.server.getLastLoginTime().toString()
+							+ " from " + ViewerStore.Profiles.server.getLastLoginIp());
 				}
 
 			}

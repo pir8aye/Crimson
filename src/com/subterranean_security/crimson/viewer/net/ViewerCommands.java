@@ -30,6 +30,8 @@ import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RQ_Generate;
+import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
+import com.subterranean_security.crimson.core.proto.Listener.RQ_AddListener;
 import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
 import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
@@ -76,7 +78,7 @@ public enum ViewerCommands {
 			if (lrs.hasRsLogin()) {
 				log.debug("Received login response: " + lrs.getRsLogin().getResponse());
 				if (lrs.getRsLogin().getResponse()) {
-					ViewerStore.ServerInfo.integrate(lrs.getRsLogin().getInitialInfo());
+					ViewerStore.Profiles.server.amalgamate(lrs.getRsLogin().getInitialInfo());
 					return true;
 				}
 
@@ -93,7 +95,21 @@ public enum ViewerCommands {
 	public static void changeServerState(boolean state) {
 	}
 
-	public static boolean getServerState() {
+	public static boolean addListener(StringBuffer error, ListenerConfig lf) {
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get())
+					.setRqAddListener(RQ_AddListener.newBuilder().setConfig(lf)).build(), 3);
+			if (!m.getRsAddListener().getResult()) {
+				if (m.getRsAddListener().hasComment()) {
+					error.append(m.getRsAddListener().getComment());
+				}
+				return false;
+			}
+		} catch (InterruptedException e) {
+			error.append("No response");
+			return false;
+		}
+
 		return true;
 	}
 

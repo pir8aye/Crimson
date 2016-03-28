@@ -32,7 +32,6 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
 import com.subterranean_security.crimson.sv.ClientProfile;
-import com.subterranean_security.crimson.sv.Listener;
 import com.subterranean_security.crimson.sv.ServerProfile;
 import com.subterranean_security.crimson.sv.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
@@ -41,11 +40,6 @@ import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 public enum ViewerStore {
 
 	;
-
-	public static class Listeners {
-		public static ArrayList<Listener> listeners = new ArrayList<Listener>();
-
-	}
 
 	public static class Connections {
 		private static HashMap<Integer, BasicConnector> connections = new HashMap<Integer, BasicConnector>();
@@ -117,41 +111,9 @@ public enum ViewerStore {
 		}
 	}
 
-	public static class ServerInfo {
-		private static Date lastLoginTime;
-		private static String lastLoginLocation = "";
-		private static int cpuTemp;
-
-		public static void integrate(EV_ServerInfoDelta ev) {
-			if (ev.hasLastLogin()) {
-				lastLoginTime = new Date(ev.getLastLogin());
-			}
-			if (ev.hasLastIp()) {
-				lastLoginLocation = ev.getLastIp();
-			}
-		}
-
-		public static Date getLastLoginTime() {
-			return lastLoginTime;
-		}
-
-		public static String getLastLoginLocation() {
-			return lastLoginLocation;
-		}
-
-		public static int getCpuTemp() {
-			return cpuTemp;
-		}
-
-		public static void setCpuTemp(int cpuTemp) {
-			ServerInfo.cpuTemp = cpuTemp;
-		}
-
-	}
-
 	public static class Profiles {
-		public static ServerProfile server;
-		public static ClientProfile viewer;
+		public static ServerProfile server = new ServerProfile();
+		public static ClientProfile viewer = new ClientProfile();
 		public static ViewerProfile vp;
 
 		public static ArrayList<ClientProfile> clients = new ArrayList<ClientProfile>();

@@ -27,6 +27,7 @@ import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
@@ -35,8 +36,7 @@ import com.subterranean_security.crimson.sv.Listener;
 public final class Server {
 	private static final Logger log = CUtil.Logging.getLogger(Server.class);
 
-	private static boolean running;
-	private static Listener localListener;
+	private static boolean running = false;
 
 	public static void main(String[] argv) {
 
@@ -72,9 +72,10 @@ public final class Server {
 
 		}
 
-		// start a localhost listener (dont add it to the store)
+		// start a localhost listener
 		log.debug("Initializing local listener");
-		localListener = new Listener("Local Listener", 10101, true, true, true, false);
+		ServerStore.Listeners.listeners.add(new Listener(ListenerConfig.newBuilder().setID(CUtil.Misc.randString(8))
+				.setPort(10101).setName("Default Local Listener").build()));
 
 		start();
 
@@ -87,13 +88,14 @@ public final class Server {
 
 	public static void stop() {
 		if (running) {
-
+			running = false;
 		}
 
 	}
 
 	public static void start() {
 		if (!running) {
+			running = false;
 
 		}
 	}
