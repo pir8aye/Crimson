@@ -113,8 +113,12 @@ public class ServerExecutor extends BasicExecutor {
 						stream_start_ev(m);
 					} else if (m.hasMiStreamStop()) {
 						stream_stop_ev(m);
-					} else if (m.hasRsAddListener()) {
-						rs_add_listener(m);
+					} else if (m.hasRqAddListener()) {
+						rq_add_listener(m);
+					} else if (m.hasRqChangeServerState()) {
+						rq_change_server_state(m);
+					} else if (m.hasRqChangeClientState()) {
+						rq_change_client_state(m);
 					} else {
 						receptor.cq.put(m.getId(), m);
 					}
@@ -403,8 +407,22 @@ public class ServerExecutor extends BasicExecutor {
 		}
 	}
 
-	private void rs_add_listener(Message m) {
-		
+	private void rq_add_listener(Message m) {
+		// TODO check permissions
+		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));
+		Message update = Message.newBuilder()
+				.setEvServerInfoDelta(EV_ServerInfoDelta.newBuilder().addListeners(m.getRqAddListener().getConfig()))
+				.build();
+		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
+
+	}
+
+	private void rq_change_server_state(Message m) {
+
+	}
+
+	private void rq_change_client_state(Message m) {
+
 	}
 
 }

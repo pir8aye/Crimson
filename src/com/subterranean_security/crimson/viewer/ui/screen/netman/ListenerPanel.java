@@ -10,6 +10,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class ListenerPanel extends JPanel {
 
@@ -40,6 +42,12 @@ public class ListenerPanel extends JPanel {
 		panel_3.setLayout(gbl_panel_3);
 
 		JButton btnNewButton_1 = new JButton("New");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				AddDialog ad = new AddDialog();
+				ad.setVisible(true);
+			}
+		});
 		btnNewButton_1.setFont(new Font("Dialog", Font.BOLD, 11));
 		btnNewButton_1.setMargin(new Insets(0, 4, 0, 4));
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();

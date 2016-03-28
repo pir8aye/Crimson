@@ -1,0 +1,28 @@
+package com.subterranean_security.crimson.core.proto;
+
+enum StateType {
+	FUNCTIONING_ON = 0;
+	FUNCTIONING_OFF = 1;
+	SHUTDOWN = 2;
+	RESTART = 3;
+	UNINSTALL = 4;
+	
+}
+
+message RQ_ChangeServerState {
+	required StateType new_state = 1;
+}
+
+message RS_ChangeServerState {
+	required bool result = 1;
+	optional string comment = 2;
+}
+
+message RQ_ChangeClientState {
+	required StateType new_state = 1;
+}
+
+message RS_ChangeClientState {
+	required bool result = 1;
+	optional string comment = 2;
+}

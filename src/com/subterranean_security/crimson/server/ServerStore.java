@@ -24,6 +24,7 @@ import java.util.Set;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
@@ -78,6 +79,13 @@ public enum ServerStore {
 			return clients;
 		}
 
+		public static void sendToAll(Instance i, Message m) {
+			for (int cvid : getKeySet()) {
+				if (receptors.get(cvid).getInstance() == i) {
+					receptors.get(cvid).handle.write(m);
+				}
+			}
+		}
 	}
 
 	public static class Databases {

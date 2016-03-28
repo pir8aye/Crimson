@@ -10,6 +10,7 @@ import "net/sequences/FileManager.proto";
 import "net/sequences/Stream.proto";
 import "net/sequences/CVID.proto";
 import "net/sequences/Listener.proto";
+import "net/sequences/State.proto";
 message Message {
 	optional bool urgent = 1;
 	optional int32 id = 2;
@@ -19,26 +20,30 @@ message Message {
 
 	optional EV_StreamData ev_stream_data = 5;
 	optional EV_ProfileDelta ev_profile_delta = 6;
-	optional EV_ServerInfoDelta ev_server_info_delta = 102;
-	optional RQ_AddListener rq_add_listener = 213;
-	optional RS_AddListener rs_add_listener = 214;
-	optional MI_StreamStart mi_stream_start = 19;
-	optional MI_StreamStop mi_stream_stop = 20;
-
-	optional RQ_Login rq_login = 7;
-	optional RS_Login rs_login = 8;
-	optional RQ_LoginChallenge rq_login_challenge = 190;
-	optional RS_LoginChallenge rs_login_challenge = 200;
-	optional RQ_GroupChallenge rq_group_challenge = 9;
-	optional RS_GroupChallenge rs_group_challenge = 10;
-	optional MI_GroupChallengeResult mi_challengeresult = 140;
-	optional RQ_Generate rq_generate = 11;
-	optional RS_Generate rs_generate = 12;
-	optional RQ_FileListing rq_file_listing = 15;
-	optional RS_FileListing rs_file_listing = 16;
-
+	optional EV_ServerInfoDelta ev_server_info_delta = 7;
 	
-	optional MI_AuthRequest mi_auth_request = 141;
-	optional MI_Report mi_report = 142;
-	optional MI_AssignCVID mi_assign_cvid = 143;
+	
+	optional RQ_Login rq_login = 100;
+	optional RS_Login rs_login = 101;
+	optional RQ_LoginChallenge rq_login_challenge = 102;
+	optional RS_LoginChallenge rs_login_challenge = 103;
+	optional RQ_GroupChallenge rq_group_challenge = 104;
+	optional RS_GroupChallenge rs_group_challenge = 105;
+	optional MI_GroupChallengeResult mi_challengeresult = 106;
+	optional RQ_Generate rq_generate = 107;
+	optional RS_Generate rs_generate = 108;
+	optional RQ_FileListing rq_file_listing = 109;
+	optional RS_FileListing rs_file_listing = 110;
+	optional RQ_ChangeServerState rq_change_server_state = 111;
+	optional RS_ChangeServerState rs_change_server_state = 112;
+	optional RQ_ChangeClientState rq_change_client_state = 113;
+	optional RS_ChangeClientState rs_change_client_state = 114;
+	optional RQ_AddListener rq_add_listener = 115;
+	optional RS_AddListener rs_add_listener = 116;
+
+	optional MI_StreamStart mi_stream_start = 200;
+	optional MI_StreamStop mi_stream_stop = 201;
+	optional MI_AuthRequest mi_auth_request = 202;
+	optional MI_Report mi_report = 203;
+	optional MI_AssignCVID mi_assign_cvid = 204;
 }

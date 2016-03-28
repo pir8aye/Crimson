@@ -35,6 +35,8 @@ import com.subterranean_security.crimson.core.proto.Listener.RQ_AddListener;
 import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
 import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.State.RQ_ChangeServerState;
+import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -92,7 +94,42 @@ public enum ViewerCommands {
 		return false;
 	}
 
-	public static void changeServerState(boolean state) {
+	public static boolean changeServerState(StringBuffer error, boolean state) {
+		try {
+			Message m = ViewerRouter.routeAndWait(
+					Message.newBuilder()
+							.setRqChangeServerState(RQ_ChangeServerState.newBuilder()
+									.setNewState(state ? StateType.FUNCTIONING_ON : StateType.FUNCTIONING_OFF))
+							.build(),
+					3);
+			if (!m.getRsChangeServerState().getResult()) {
+				if (m.getRsChangeServerState().hasComment()) {
+					error.append(m.getRsChangeServerState().getComment());
+				}
+				return false;
+			}
+		} catch (InterruptedException e) {
+			error.append("Interrupted");
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean changeClientState(StringBuffer error, StateType st) {
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder()
+					.setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)).build(), 3);
+			if (!m.getRsChangeServerState().getResult()) {
+				if (m.getRsChangeServerState().hasComment()) {
+					error.append(m.getRsChangeServerState().getComment());
+				}
+				return false;
+			}
+		} catch (InterruptedException e) {
+			error.append("Interrupted");
+			return false;
+		}
+		return true;
 	}
 
 	public static boolean addListener(StringBuffer error, ListenerConfig lf) {
@@ -106,7 +143,7 @@ public enum ViewerCommands {
 				return false;
 			}
 		} catch (InterruptedException e) {
-			error.append("No response");
+			error.append("Interrupted");
 			return false;
 		}
 
