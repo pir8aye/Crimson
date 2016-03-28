@@ -888,7 +888,8 @@ public enum CUtil {
 			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 			PatternLayoutEncoder ple = new PatternLayoutEncoder();
 
-			ple.setPattern("[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%thread] %logger{10} %msg%n");
+			//ple.setPattern("[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%thread] %logger{10} %msg%n");
+			ple.setPattern("[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n");
 			ple.setContext(lc);
 			ple.start();
 
