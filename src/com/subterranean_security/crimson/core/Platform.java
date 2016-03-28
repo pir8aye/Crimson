@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public enum Platform {
 	;

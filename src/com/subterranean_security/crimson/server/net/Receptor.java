@@ -28,7 +28,6 @@ import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.sv.ClientProfile;
 

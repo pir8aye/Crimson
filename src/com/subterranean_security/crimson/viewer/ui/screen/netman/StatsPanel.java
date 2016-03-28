@@ -1,15 +1,11 @@
 package com.subterranean_security.crimson.viewer.ui.screen.netman;
 
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import javax.swing.SwingConstants;
-import javax.swing.BoxLayout;
 
 public class StatsPanel extends JPanel {
 

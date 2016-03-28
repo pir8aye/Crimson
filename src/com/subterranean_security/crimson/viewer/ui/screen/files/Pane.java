@@ -18,21 +18,18 @@
 package com.subterranean_security.crimson.viewer.ui.screen.files;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Date;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
-import java.awt.CardLayout;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.Font;
 
 public class Pane extends JPanel {
 

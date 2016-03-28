@@ -17,10 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.files;
 
-import javax.swing.JPanel;
-import java.awt.CardLayout;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
+
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class PathPanel extends JPanel {

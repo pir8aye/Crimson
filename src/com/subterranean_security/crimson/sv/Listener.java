@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.sv;
 import java.io.Serializable;
 
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.server.net.ServerInitializer;
 
 import io.netty.bootstrap.ServerBootstrap;
