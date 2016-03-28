@@ -22,6 +22,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.net.ssl.SSLException;
 
+import org.slf4j.Logger;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.client.Client;
@@ -31,6 +32,7 @@ import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 
 import io.netty.bootstrap.Bootstrap;
@@ -43,6 +45,8 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 public class ClientConnector implements AutoCloseable {
+
+	private static final Logger log = CUtil.Logging.getLogger(ClientConnector.class);
 
 	private EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private ChannelFuture f;
@@ -61,7 +65,7 @@ public class ClientConnector implements AutoCloseable {
 	private ConnectionState state = ConnectionState.NOT_CONNECTED;
 
 	public void setState(ConnectionState cs) {
-		System.out.println("New connection state: " + cs);
+		log.debug("New connection state: {}", cs.toString());
 		state = cs;
 	}
 
@@ -116,7 +120,8 @@ public class ClientConnector implements AutoCloseable {
 		case NO_AUTH:
 			setState(ConnectionState.AUTHENTICATED);
 			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
-			handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(Platform.Advanced.getFullProfile()).build());
+			handle.write(
+					Message.newBuilder().setUrgent(true).setEvProfileDelta(Platform.Advanced.getFullProfile()).build());
 			break;
 		case PASSWORD:
 			try {

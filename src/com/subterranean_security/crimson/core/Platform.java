@@ -28,11 +28,16 @@ import org.hyperic.sigar.ProcCpu;
 import org.hyperic.sigar.ProcMem;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public enum Platform {
 	;
+	
+	private static final Logger log = CUtil.Logging.getLogger(Platform.class);
 
 	public static final ARCH sysArch = null;
 	public static final ARCH javaArch = getJVMArch();
@@ -125,10 +130,13 @@ public enum Platform {
 			default:
 				break;
 			}
+			log.debug("Set native library path: {}", System.getProperty("java.library.path"));
 		}
 
 		public static void loadSigar() {
 			setLibraryPath();
+			log.debug("Loading SIGAR native library");
+			
 			sigar = new Sigar();
 			cpu = new Cpu();
 			netInfo = new NetInfo();
@@ -148,6 +156,8 @@ public enum Platform {
 
 		public static void loadLapis() {
 			setLibraryPath();
+			log.debug("Loading LAPIS native library");
+			
 			switch (Platform.javaArch) {
 			case X64:
 				System.loadLibrary("crimson64");
@@ -254,6 +264,7 @@ public enum Platform {
 		}
 
 		public static EV_ProfileDelta getFullProfile() {
+			
 			EV_ProfileDelta.Builder info = EV_ProfileDelta.newBuilder();
 
 			try {

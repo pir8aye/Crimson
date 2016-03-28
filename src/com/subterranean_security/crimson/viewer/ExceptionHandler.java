@@ -17,11 +17,15 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer;
 
+import org.slf4j.Logger;
+
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+
+	private static final Logger log = CUtil.Logging.getLogger(ExceptionHandler.class);
 
 	@Override
 	public void uncaughtException(Thread arg0, Throwable arg1) {

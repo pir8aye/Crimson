@@ -19,15 +19,21 @@ package com.subterranean_security.crimson.client;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+
 import com.subterranean_security.crimson.client.net.ClientConnector;
+import com.subterranean_security.crimson.core.util.CUtil;
 
 public enum ClientStore {
 	;
 
+	private static final Logger log = CUtil.Logging.getLogger(ClientStore.class);
+
 	public static class Connections {
-		private static ArrayList<ClientConnector>	connections	= new ArrayList<ClientConnector>();
-		
-		public static void add(ClientConnector c){
+		private static ArrayList<ClientConnector> connections = new ArrayList<ClientConnector>();
+
+		public static void add(ClientConnector c) {
+			log.debug("Adding new connection");
 			connections.add(c);
 		}
 	}

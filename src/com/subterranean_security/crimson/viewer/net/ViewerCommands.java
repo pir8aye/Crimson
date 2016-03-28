@@ -57,10 +57,8 @@ public enum ViewerCommands {
 		try {
 			Message lcrq = ViewerRouter.getReponse(0, id, 5);
 			if (lcrq.hasRqLoginChallenge()) {
-				log.debug("Received login challenge: {}", lcrq.getRqLoginChallenge().getSalt());
 
 				String result = Crypto.hashPass(pass, lcrq.getRqLoginChallenge().getSalt());
-				log.debug("Sending hash: " + result);
 				ViewerRouter.route(Message.newBuilder().setId(id)
 						.setRsLoginChallenge(RS_LoginChallenge.newBuilder().setResult(result)).build());
 			} else if (lcrq.hasRsLogin()) {
@@ -78,7 +76,6 @@ public enum ViewerCommands {
 		try {
 			Message lrs = ViewerRouter.getReponse(0, id, 5);
 			if (lrs.hasRsLogin()) {
-				log.debug("Received login response: " + lrs.getRsLogin().getResponse());
 				if (lrs.getRsLogin().getResponse()) {
 					ViewerStore.Profiles.server.amalgamate(lrs.getRsLogin().getInitialInfo());
 					return true;

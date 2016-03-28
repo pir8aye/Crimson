@@ -25,7 +25,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
+import com.subterranean_security.crimson.core.util.CUtil;
 
 /**
  * @author subterranean For file system browsing
@@ -33,7 +37,11 @@ import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
  */
 public class LocalFilesystem {
 
+	private static final Logger log = CUtil.Logging.getLogger(LocalFilesystem.class);
+
 	private Path ref;
+
+	private int fmid;
 
 	private boolean mtime;
 	private boolean size;
@@ -44,6 +52,8 @@ public class LocalFilesystem {
 
 	public LocalFilesystem(String start) {
 		ref = Paths.get(start);
+		fmid = CUtil.Misc.rand(Integer.MIN_VALUE, Integer.MAX_VALUE);
+		log.debug("Initialized local filesystem handle (FMID: {}, PATH: {})", fmid, pwd());
 	}
 
 	public String pwd() {
@@ -82,6 +92,10 @@ public class LocalFilesystem {
 			}
 			return list;
 		}
+	}
+
+	public int getFmid() {
+		return fmid;
 	}
 
 }

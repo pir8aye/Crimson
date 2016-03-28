@@ -17,12 +17,18 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client;
 
+import org.slf4j.Logger;
+
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
 
 public class ShutdownHook extends Thread {
 
+	private static final Logger log = CUtil.Logging.getLogger(ShutdownHook.class);
+
 	@Override
 	public void run() {
+		log.debug("Executing ShutdownHook");
 		FileLocking.unlock();
 	}
 }

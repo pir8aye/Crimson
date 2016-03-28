@@ -26,11 +26,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.BasicConnector;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.ServerProfile;
 import com.subterranean_security.crimson.sv.ViewerProfile;
@@ -41,10 +44,13 @@ public enum ViewerStore {
 
 	;
 
+	private static final Logger log = CUtil.Logging.getLogger(ViewerStore.class);
+
 	public static class Connections {
 		private static HashMap<Integer, BasicConnector> connections = new HashMap<Integer, BasicConnector>();
 
 		public static void put(int cvid, BasicConnector vc) {
+			log.debug("Added new connection (CVID: {})", cvid);
 			connections.put(cvid, vc);
 		}
 
@@ -68,8 +74,10 @@ public enum ViewerStore {
 		private static OutputStream os;
 
 		public static boolean startLocalServer() {
+			String command = "java -jar \"" + bundledServer.getAbsolutePath() + "\"";
+			log.debug("Starting local server ({})", command);
 			try {
-				process = Runtime.getRuntime().exec("java -jar \"" + bundledServer.getAbsolutePath() + "\"");
+				process = Runtime.getRuntime().exec(command);
 				os = process.getOutputStream();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

@@ -69,6 +69,8 @@ public class Generator {
 	private GenReport.Builder genJar(ClientConfig ic) throws IOException {
 		GenReport.Builder gReport = GenReport.newBuilder();
 		Date start = new Date();
+		log.debug("Generating jar installer (auth.type: {}, net.period: {})", ic.getAuthType().toString(), ic.getReconnectPeriod());
+		
 		File clientJar = new File(temp.getAbsolutePath() + "/installer.jar");
 		File clientDB = new File(temp.getAbsolutePath() + "/client.db");
 		File internal = new File(temp.getAbsolutePath() + "/internal.txt");
@@ -98,6 +100,7 @@ public class Generator {
 			}
 
 			database.close();
+			log.debug("Created client database successfully");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

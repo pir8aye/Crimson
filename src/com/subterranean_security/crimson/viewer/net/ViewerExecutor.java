@@ -17,14 +17,19 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net;
 
+import org.slf4j.Logger;
+
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
 import io.netty.util.ReferenceCountUtil;
 
 public class ViewerExecutor extends BasicExecutor {
+
+	private static final Logger log = CUtil.Logging.getLogger(ViewerExecutor.class);
 
 	private ViewerConnector connector;
 
@@ -75,6 +80,7 @@ public class ViewerExecutor extends BasicExecutor {
 	private void assign_1w(Message m) {
 		Common.cvid = m.getMiAssignCvid().getId();
 		ViewerStore.Databases.local.storeObject("cvid", Common.cvid);
+		log.debug("Assigned new CVID: {}", Common.cvid);
 	}
 
 }

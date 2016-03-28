@@ -21,15 +21,20 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.slf4j.Logger;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.sv.ClientProfile;
 
 public class Receptor implements AutoCloseable {
+
+	private static final Logger log = CUtil.Logging.getLogger(Receptor.class);
 
 	private Instance instance;
 	private int profile;
@@ -47,7 +52,7 @@ public class Receptor implements AutoCloseable {
 	private ConnectionState state = ConnectionState.CONNECTED;
 
 	public void setState(ConnectionState cs) {
-		System.out.println("New connection state: " + cs);
+		log.debug("New connection state: {} (CVID: {})", cs.toString(), cvid);
 		state = cs;
 	}
 
