@@ -233,6 +233,9 @@ public class ServerProfile implements Serializable {
 	}
 
 	public void amalgamate(EV_ServerInfoDelta c) {
+		if (c.hasServerStatus()) {
+			setStatus(c.getServerStatus());
+		}
 		if (c.hasClientCount()) {
 			setConnectedClients(c.getClientCount());
 		}

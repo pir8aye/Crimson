@@ -40,6 +40,7 @@ import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.State.RS_ChangeServerState;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -388,7 +389,6 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void stream_start_ev(Message m) {
-		System.out.println("Received stream start instruction");
 		if (m.getMiStreamStart().getParam().hasCID()) {
 
 		} else {
@@ -408,9 +408,10 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_add_listener(Message m) {
+		log.debug("Executing: rq_add_listener");
 		// TODO check permissions
 		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));
-		Message update = Message.newBuilder()
+		Message update = Message.newBuilder().setId(m.getId())
 				.setEvServerInfoDelta(EV_ServerInfoDelta.newBuilder().addListeners(m.getRqAddListener().getConfig()))
 				.build();
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
@@ -418,11 +419,19 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_change_server_state(Message m) {
+		log.debug("Executing: rq_change_server_state");
+		// TODO check permissions
+		String comment = "";
+		boolean result = true;
 
+		receptor.handle.write(Message.newBuilder().setId(m.getId())
+				.setRsChangeServerState(RS_ChangeServerState.newBuilder().setResult(result).setComment(comment))
+				.build());
+		Server.setState(m.getRqChangeServerState().getNewState());
 	}
 
 	private void rq_change_client_state(Message m) {
-
+		log.debug("Executing: rq_change_client_state");
 	}
 
 }

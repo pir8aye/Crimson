@@ -91,48 +91,52 @@ public enum ViewerCommands {
 		return false;
 	}
 
-	public static boolean changeServerState(StringBuffer error, boolean state) {
+	public static boolean changeServerState(StringBuffer error, StateType st) {
+		log.debug("Changing server state: {}", st.toString());
 		try {
 			Message m = ViewerRouter.routeAndWait(
-					Message.newBuilder()
-							.setRqChangeServerState(RQ_ChangeServerState.newBuilder()
-									.setNewState(state ? StateType.FUNCTIONING_ON : StateType.FUNCTIONING_OFF))
-							.build(),
-					3);
-			if (!m.getRsChangeServerState().getResult()) {
+					Message.newBuilder().setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)), 3);
+			if (m == null) {
+				error.append("No response");
+			} else if (!m.getRsChangeServerState().getResult()) {
 				if (m.getRsChangeServerState().hasComment()) {
 					error.append(m.getRsChangeServerState().getComment());
 				}
-				return false;
+			} else {
+				return true;
 			}
 		} catch (InterruptedException e) {
 			error.append("Interrupted");
-			return false;
 		}
-		return true;
+		log.debug("error: {}", error.toString());
+		return false;
 	}
 
 	public static boolean changeClientState(StringBuffer error, StateType st) {
+		log.debug("Changing client state: {}", st.toString());
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder()
-					.setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)).build(), 3);
-			if (!m.getRsChangeServerState().getResult()) {
+			Message m = ViewerRouter.routeAndWait(
+					Message.newBuilder().setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)), 3);
+			if (m == null) {
+				error.append("No response");
+			} else if (!m.getRsChangeServerState().getResult()) {
 				if (m.getRsChangeServerState().hasComment()) {
 					error.append(m.getRsChangeServerState().getComment());
 				}
-				return false;
+			} else {
+				return true;
 			}
 		} catch (InterruptedException e) {
 			error.append("Interrupted");
-			return false;
 		}
-		return true;
+		log.debug("error: {}", error.toString());
+		return false;
 	}
 
 	public static boolean addListener(StringBuffer error, ListenerConfig lf) {
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get())
-					.setRqAddListener(RQ_AddListener.newBuilder().setConfig(lf)).build(), 3);
+			Message m = ViewerRouter
+					.routeAndWait(Message.newBuilder().setRqAddListener(RQ_AddListener.newBuilder().setConfig(lf)), 3);
 			if (!m.getRsAddListener().getResult()) {
 				if (m.getRsAddListener().hasComment()) {
 					error.append(m.getRsAddListener().getComment());

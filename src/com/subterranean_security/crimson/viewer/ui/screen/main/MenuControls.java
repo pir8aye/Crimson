@@ -37,7 +37,9 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.component.Tray;
 
 public class MenuControls extends JPanel {
@@ -90,12 +92,53 @@ public class MenuControls extends JPanel {
 		panel_1.add(valStatus);
 
 		btnStartServer = new JButton("Start Server");
+		btnStartServer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				new Thread(new Runnable() {
+					public void run() {
+						// TODO handle errors
+						btnStartServer.setEnabled(false);
+						btnStopServer.setEnabled(false);
+						StringBuffer error = new StringBuffer();
+						ViewerCommands.changeServerState(error, StateType.FUNCTIONING_ON);
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						refresh();
+					}
+				}).start();
+
+			}
+		});
 		btnStartServer.setBounds(12, 130, 88, 20);
 		panel_1.add(btnStartServer);
 		btnStartServer.setMargin(new Insets(2, 4, 2, 4));
 		btnStartServer.setFont(new Font("Dialog", Font.BOLD, 10));
 
 		btnStopServer = new JButton("Stop Server");
+		btnStopServer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					public void run() {
+						// TODO handle errors
+						btnStartServer.setEnabled(false);
+						btnStopServer.setEnabled(false);
+						StringBuffer error = new StringBuffer();
+						ViewerCommands.changeServerState(error, StateType.FUNCTIONING_OFF);
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						refresh();
+					}
+				}).start();
+			}
+		});
 		btnStopServer.setBounds(100, 130, 88, 20);
 		panel_1.add(btnStopServer);
 		btnStopServer.setMargin(new Insets(2, 4, 2, 4));

@@ -24,10 +24,14 @@ import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
@@ -88,6 +92,7 @@ public final class Server {
 
 	public static void stop() {
 		if (running) {
+			log.info("Stopping server");
 			running = false;
 		}
 
@@ -95,7 +100,8 @@ public final class Server {
 
 	public static void start() {
 		if (!running) {
-			running = false;
+			log.info("Starting server");
+			running = true;
 
 		}
 	}
@@ -121,8 +127,26 @@ public final class Server {
 		}
 	}
 
-	public static void setState(boolean change) {
-		// TODO Auto-generated method stub
+	public static void setState(StateType stateType) {
+		switch (stateType) {
+		case FUNCTIONING_OFF:
+			stop();
+			break;
+		case FUNCTIONING_ON:
+			start();
+			break;
+		case RESTART:
+			break;
+		case SHUTDOWN:
+			break;
+		case UNINSTALL:
+			break;
+		default:
+			break;
+		}
+		// notify viewers
+		ServerStore.Connections.sendToAll(Instance.VIEWER, Message.newBuilder()
+				.setEvServerInfoDelta(EV_ServerInfoDelta.newBuilder().setServerStatus(running)).build());
 
 	}
 

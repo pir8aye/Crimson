@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer.net;
 import java.util.concurrent.TimeUnit;
 
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public enum ViewerRouter {
@@ -44,7 +45,10 @@ public enum ViewerRouter {
 		return ViewerStore.Connections.getVC(cvid).cq.take(mid, timeout, TimeUnit.SECONDS);
 	}
 
-	public static Message routeAndWait(Message m, int timeout) throws InterruptedException {
+	public static Message routeAndWait(Message.Builder m, int timeout) throws InterruptedException {
+		if (!m.hasId()) {
+			m.setId(IDGen.get());
+		}
 		route(m);
 		return getReponse(m.getCid(), m.getId(), timeout);
 	}
