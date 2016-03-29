@@ -19,7 +19,6 @@ package com.subterranean_security.crimson.server.net;
 
 import com.subterranean_security.crimson.core.net.BasicHandler;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.server.ServerStore;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -31,7 +30,6 @@ public class ServerHandler extends BasicHandler {
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 		this.channel = ctx.channel();
 		receptor = new Receptor(this);
-		ServerStore.Connections.add(receptor);
 	};
 
 	@Override

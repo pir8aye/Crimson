@@ -39,7 +39,7 @@ public class NetworkTargetTable extends JScrollPane {
 		table.setShowVerticalLines(false);
 		setViewportView(table);
 
-		addMouseListener(new MouseAdapter() {
+		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// get source of click

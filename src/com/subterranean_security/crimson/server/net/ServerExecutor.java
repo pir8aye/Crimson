@@ -37,6 +37,7 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
+import com.subterranean_security.crimson.core.proto.Listener.RS_AddListener;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
@@ -410,8 +411,10 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_add_listener(Message m) {
 		log.debug("Executing: rq_add_listener");
 		// TODO check permissions
+		receptor.handle
+				.write(Message.newBuilder().setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
 		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));
-		Message update = Message.newBuilder().setId(m.getId())
+		Message update = Message.newBuilder().setUrgent(true)
 				.setEvServerInfoDelta(EV_ServerInfoDelta.newBuilder().addListeners(m.getRqAddListener().getConfig()))
 				.build();
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);

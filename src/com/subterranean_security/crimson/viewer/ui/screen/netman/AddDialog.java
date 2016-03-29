@@ -23,7 +23,10 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
+import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
+import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class AddDialog extends JDialog {
 
@@ -36,9 +39,13 @@ public class AddDialog extends JDialog {
 	private JCheckBox chckbxAcceptClients;
 	private JCheckBox chckbxAcceptViewers;
 	private JComboBox owner;
+	private StatusLabel sl;
+	private JPanel panel_1;
 
 	public AddDialog() {
+		setResizable(false);
 		setTitle("Add Listener");
+		setIconImages(UUtil.getIconList());
 		setBounds(100, 100, 250, 320);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -147,6 +154,7 @@ public class AddDialog extends JDialog {
 			}
 			{
 				chckbxAcceptClients = new JCheckBox("Accept clients");
+				chckbxAcceptClients.setSelected(true);
 				chckbxAcceptClients.setFont(new Font("Dialog", Font.BOLD, 11));
 				GridBagConstraints gbc_chckbxAcceptClients = new GridBagConstraints();
 				gbc_chckbxAcceptClients.anchor = GridBagConstraints.WEST;
@@ -157,12 +165,22 @@ public class AddDialog extends JDialog {
 			}
 			{
 				chckbxAcceptViewers = new JCheckBox("Accept viewers");
+				chckbxAcceptViewers.setSelected(true);
 				chckbxAcceptViewers.setFont(new Font("Dialog", Font.BOLD, 11));
 				GridBagConstraints gbc_chckbxAcceptViewers = new GridBagConstraints();
 				gbc_chckbxAcceptViewers.anchor = GridBagConstraints.WEST;
 				gbc_chckbxAcceptViewers.gridx = 0;
 				gbc_chckbxAcceptViewers.gridy = 3;
 				panel.add(chckbxAcceptViewers, gbc_chckbxAcceptViewers);
+			}
+		}
+		{
+			panel_1 = new JPanel();
+			contentPanel.add(panel_1);
+			panel_1.setLayout(new BorderLayout(0, 0));
+			{
+				sl = new StatusLabel();
+				panel_1.add(sl);
 			}
 		}
 		{
@@ -175,6 +193,7 @@ public class AddDialog extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						new Thread(new Runnable() {
 							public void run() {
+								// TODO input verification
 								StringBuffer error = new StringBuffer();
 								ViewerCommands.addListener(error, ListenerConfig.newBuilder()
 										.setName(fld_name.getText()).setClientAcceptor(chckbxAcceptClients.isSelected())
@@ -191,9 +210,20 @@ public class AddDialog extends JDialog {
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						dispose();
+					}
+				});
 				buttonPane.add(cancelButton);
 			}
 		}
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		UIStore.addDialog = null;
 	}
 
 }

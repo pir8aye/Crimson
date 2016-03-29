@@ -24,6 +24,7 @@ import java.util.Date;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
 
 public class ServerProfile implements Serializable {
 
@@ -274,7 +275,10 @@ public class ServerProfile implements Serializable {
 						break;
 					}
 				}
-				System.out.println("Adding listener to profile");
+				if (UIStore.netMan != null) {
+					UIStore.netMan.lp.lt.fireTableDataChanged();
+				}
+
 				listeners.add(lc);
 			}
 		}

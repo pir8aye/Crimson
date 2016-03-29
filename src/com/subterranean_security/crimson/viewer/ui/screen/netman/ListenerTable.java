@@ -33,18 +33,19 @@ public class ListenerTable extends JScrollPane {
 	private JTable table = new JTable();
 	private TM tm = new TM();
 
-	public ListenerTable() {
+	public ListenerTable(ListenerPanel parent) {
 		table.setModel(tm);
 		table.setFillsViewportHeight(true);
 		table.setShowVerticalLines(false);
 		setViewportView(table);
 
-		addMouseListener(new MouseAdapter() {
+		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// get source of click
 				JTable source = (JTable) e.getSource();
 				final int sourceRow = source.rowAtPoint(e.getPoint());
+				parent.btnRemove.setEnabled(sourceRow >= 0);
 				if (sourceRow == -1) {
 					source.clearSelection();
 					return;
@@ -61,6 +62,10 @@ public class ListenerTable extends JScrollPane {
 				}
 			}
 		});
+	}
+
+	public void fireTableDataChanged() {
+		tm.fireTableDataChanged();
 	}
 
 }

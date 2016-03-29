@@ -9,12 +9,14 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
+import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class NetMan extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	public ListenerPanel lp;
 
 	public NetMan() {
 		setIconImages(UUtil.getIconList());
@@ -33,13 +35,19 @@ public class NetMan extends JFrame {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane);
 
-		ListenerPanel lp = new ListenerPanel();
+		lp = new ListenerPanel();
 		tabbedPane.add(lp);
 		tabbedPane.setTitleAt(0, "Listeners");
 
 		AuthPanel ap = new AuthPanel();
 		tabbedPane.add(ap);
 		tabbedPane.setTitleAt(1, "Authentication");
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		UIStore.netMan = null;
 	}
 
 }

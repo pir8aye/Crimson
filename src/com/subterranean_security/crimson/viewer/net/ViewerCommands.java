@@ -137,7 +137,9 @@ public enum ViewerCommands {
 		try {
 			Message m = ViewerRouter
 					.routeAndWait(Message.newBuilder().setRqAddListener(RQ_AddListener.newBuilder().setConfig(lf)), 3);
-			if (!m.getRsAddListener().getResult()) {
+			if (m == null) {
+				error.append("No response");
+			} else if (!m.getRsAddListener().getResult()) {
 				if (m.getRsAddListener().hasComment()) {
 					error.append(m.getRsAddListener().getComment());
 				}

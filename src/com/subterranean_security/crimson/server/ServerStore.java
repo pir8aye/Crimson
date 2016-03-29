@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.slf4j.Logger;
+
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
@@ -28,6 +30,7 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.Listener;
@@ -35,6 +38,9 @@ import com.subterranean_security.crimson.sv.ViewerProfile;
 
 public enum ServerStore {
 	;
+
+	private static final Logger log = CUtil.Logging.getLogger(ServerStore.class);
+
 	public static class Listeners {
 		public static ArrayList<Listener> listeners = new ArrayList<Listener>();
 
@@ -82,6 +88,7 @@ public enum ServerStore {
 		public static void sendToAll(Instance i, Message m) {
 			for (int cvid : getKeySet()) {
 				if (receptors.get(cvid).getInstance() == i) {
+					log.debug("Sending mass update (CVID: {})", cvid);
 					receptors.get(cvid).handle.write(m);
 				}
 			}

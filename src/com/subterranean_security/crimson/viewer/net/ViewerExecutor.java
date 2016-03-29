@@ -48,6 +48,7 @@ public class ViewerExecutor extends BasicExecutor {
 					if (m.hasEvProfileDelta()) {
 						ViewerStore.Profiles.update(m.getEvProfileDelta());
 					} else if (m.hasEvServerInfoDelta()) {
+						log.debug("Executing: ev_server_info_delta");
 						ViewerStore.Profiles.update(m.getEvServerInfoDelta());
 					}
 					ReferenceCountUtil.release(m);

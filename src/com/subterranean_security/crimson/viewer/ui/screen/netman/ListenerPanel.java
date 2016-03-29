@@ -13,11 +13,15 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
+
 public class ListenerPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private ListenerTable lt = new ListenerTable();
+	public ListenerTable lt = new ListenerTable(this);
+
+	public JButton btnRemove;
 
 	public ListenerPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -41,29 +45,35 @@ public class ListenerPanel extends JPanel {
 		gbl_panel_3.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		panel_3.setLayout(gbl_panel_3);
 
-		JButton btnNewButton_1 = new JButton("New");
-		btnNewButton_1.addActionListener(new ActionListener() {
+		JButton btnNew = new JButton("New");
+		btnNew.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				AddDialog ad = new AddDialog();
-				ad.setVisible(true);
+				if (UIStore.addDialog == null) {
+					UIStore.addDialog = new AddDialog();
+					UIStore.addDialog.setLocationRelativeTo(null);
+					UIStore.addDialog.setVisible(true);
+				} else {
+					UIStore.addDialog.setLocationRelativeTo(null);
+				}
+
 			}
 		});
-		btnNewButton_1.setFont(new Font("Dialog", Font.BOLD, 11));
-		btnNewButton_1.setMargin(new Insets(0, 4, 0, 4));
+		btnNew.setFont(new Font("Dialog", Font.BOLD, 11));
+		btnNew.setMargin(new Insets(0, 4, 0, 4));
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
 		gbc_btnNewButton_1.insets = new Insets(0, 0, 0, 5);
 		gbc_btnNewButton_1.gridx = 1;
 		gbc_btnNewButton_1.gridy = 0;
-		panel_3.add(btnNewButton_1, gbc_btnNewButton_1);
+		panel_3.add(btnNew, gbc_btnNewButton_1);
 
-		JButton btnNewButton = new JButton("Remove");
-		btnNewButton.setEnabled(false);
-		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 11));
-		btnNewButton.setMargin(new Insets(0, 4, 0, 4));
+		btnRemove = new JButton("Remove");
+		btnRemove.setEnabled(false);
+		btnRemove.setFont(new Font("Dialog", Font.BOLD, 11));
+		btnRemove.setMargin(new Insets(0, 4, 0, 4));
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.gridx = 2;
 		gbc_btnNewButton.gridy = 0;
-		panel_3.add(btnNewButton, gbc_btnNewButton);
+		panel_3.add(btnRemove, gbc_btnNewButton);
 	}
 
 }
