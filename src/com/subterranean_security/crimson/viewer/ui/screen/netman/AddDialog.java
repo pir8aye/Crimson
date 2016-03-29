@@ -24,6 +24,7 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
@@ -195,11 +196,13 @@ public class AddDialog extends JDialog {
 							public void run() {
 								// TODO input verification
 								StringBuffer error = new StringBuffer();
-								ViewerCommands.addListener(error, ListenerConfig.newBuilder()
-										.setName(fld_name.getText()).setClientAcceptor(chckbxAcceptClients.isSelected())
-										.setViewerAcceptor(chckbxAcceptViewers.isSelected())
-										.setLocalhostExclusive(chckbxRestrictToLocalhost.isSelected())
-										.setPort(Integer.parseInt(fld_port.getText())).setID("temp id").build());// TODO
+								ViewerCommands.addListener(error,
+										ListenerConfig.newBuilder().setName(fld_name.getText())
+												.setClientAcceptor(chckbxAcceptClients.isSelected())
+												.setViewerAcceptor(chckbxAcceptViewers.isSelected())
+												.setLocalhostExclusive(chckbxRestrictToLocalhost.isSelected())
+												.setPort(Integer.parseInt(fld_port.getText()))
+												.setID(IDGen.getListenerID()).build());
 							}
 						}).start();
 

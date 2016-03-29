@@ -35,6 +35,7 @@ import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.Listener;
 
 public final class Server {
@@ -78,7 +79,7 @@ public final class Server {
 
 		// start a localhost listener
 		log.debug("Initializing local listener");
-		ServerStore.Listeners.listeners.add(new Listener(ListenerConfig.newBuilder().setID(CUtil.Misc.randString(8))
+		ServerStore.Listeners.listeners.add(new Listener(ListenerConfig.newBuilder().setID(IDGen.getListenerID())
 				.setPort(10101).setName("Default Local Listener").build()));
 
 		start();

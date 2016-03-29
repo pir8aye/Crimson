@@ -38,4 +38,8 @@ public enum IDGen {
 		return random.nextInt();
 	}
 
+	public static int getListenerID() {
+		return random.nextInt();
+	}
+
 }
