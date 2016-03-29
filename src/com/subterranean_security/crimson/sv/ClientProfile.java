@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.sv;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.swing.ImageIcon;
 
@@ -105,7 +106,7 @@ public class ClientProfile implements Serializable {
 	}
 
 	public void setLanguage(String language) {
-		this.language = language;
+		this.language = new Locale(language).getDisplayName();
 	}
 
 	public String getTimezone() {
