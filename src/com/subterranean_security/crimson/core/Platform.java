@@ -60,7 +60,7 @@ public enum Platform {
 	}
 
 	public static OSFAMILY getFamily() {
-		String name = osName.toLowerCase();
+		String name = System.getProperty("os.name").toLowerCase();
 		if (name.endsWith("bsd")) {
 			return OSFAMILY.BSD;
 		} else if (name.equals("mac os x")) {
@@ -220,6 +220,11 @@ public enum Platform {
 			return System.getProperty("os.arch");
 		}
 
+		public static String getExtIp() {
+			// if resolution is enabled
+			return "0.0.0.0";// TODO
+		}
+
 		public static String getCPUModel() {
 			String model = cpuInfo[0].getModel().replaceAll("\\(.+?\\)", "");
 			return model.substring(0, model.indexOf("CPU @")).trim();
@@ -290,6 +295,7 @@ public enum Platform {
 			info.setJavaVendor(getJavaVersion());
 			info.setJavaArch(getJavaArch());
 			info.setCpuModel(getCPUModel());
+			info.setExtIp(getExtIp());
 
 			return info.build();
 		}

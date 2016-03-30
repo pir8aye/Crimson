@@ -740,9 +740,10 @@ public enum CUtil {
 		}
 
 		public static HashMap<String, String> resolve(String ip) throws IOException, XMLStreamException {
+			log.debug("Resolving location for: {}", ip);
 			HashMap<String, String> info = new HashMap<String, String>();
 			XMLStreamReader reader = XMLInputFactory.newInstance()
-					.createXMLStreamReader(new URL("http://freegeoip.net/xml/" + ip).openStream());
+					.createXMLStreamReader(new URL("https://freegeoip.lwan.ws/xml/" + ip).openStream());
 
 			while (reader.hasNext()) {
 				switch (reader.next()) {
@@ -888,7 +889,8 @@ public enum CUtil {
 			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 			PatternLayoutEncoder ple = new PatternLayoutEncoder();
 
-			//ple.setPattern("[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%thread] %logger{10} %msg%n");
+			// ple.setPattern("[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%thread]
+			// %logger{10} %msg%n");
 			ple.setPattern("[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n");
 			ple.setContext(lc);
 			ple.start();

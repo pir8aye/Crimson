@@ -141,6 +141,12 @@ public class ServerExecutor extends BasicExecutor {
 			ServerCommands.setCvid(receptor, newId);
 		}
 		//
+
+		if (pd.hasExtIp()) {
+			if (pd.getExtIp().equals("0.0.0.0") && !receptor.getRemoteAddress().equals("127.0.0.1")) {
+				pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
+			}
+		}
 		for (int svid : ServerStore.Connections.getKeySet()) {
 			Receptor r = ServerStore.Connections.getConnection(svid);
 			// somehow check permissions TODO

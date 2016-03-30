@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sv;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import javax.swing.ImageIcon;
+import javax.xml.stream.XMLStreamException;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.NetworkInterface;
@@ -97,22 +99,31 @@ public class ClientProfile implements Serializable {
 		osArch = new UntrackedAttribute();
 		javaArch = new UntrackedAttribute();
 		javaVersion = new UntrackedAttribute();
+		javaVendor = new UntrackedAttribute();
 		crimsonVersion = new UntrackedAttribute();
 		timezone = new UntrackedAttribute();
 		language = new UntrackedAttribute();
 		username = new UntrackedAttribute();
 		userStatus = new UntrackedAttribute();
+		userHome = new UntrackedAttribute();
 		activeWindow = new UntrackedAttribute();
 		virtualization = new UntrackedAttribute();
+		messageLatency = new UntrackedAttribute();
 		systemRamCapacity = new UntrackedAttribute();
 		systemRamUsage = new UntrackedAttribute();
 		crimsonRamUsage = new UntrackedAttribute();
 		cpuModel = new UntrackedAttribute();
+		cpuCache = new UntrackedAttribute();
 		cpuTemp = new UntrackedAttribute();
 		crimsonCpuUsage = new UntrackedAttribute();
+		// core_speeds
+		// core_temps
 		hostname = new UntrackedAttribute();
 		extIp = new UntrackedAttribute();
-		setInterfaces(new ArrayList<NetworkInterface>());
+		dns1 = new UntrackedAttribute();
+		dns2 = new UntrackedAttribute();
+		fqdn = new UntrackedAttribute();
+		interfaces = new ArrayList<NetworkInterface>();
 		latitude = new UntrackedAttribute();
 		longitude = new UntrackedAttribute();
 		country = new UntrackedAttribute();
@@ -520,6 +531,14 @@ public class ClientProfile implements Serializable {
 		}
 		if (c.hasExtIp()) {
 			setExtIp(c.getExtIp());
+			// TODO resolve only if viewer location resolution is enabled
+			try {
+				setLocation(CUtil.Location.resolve(c.getExtIp()));
+				loadTransientAttributes();
+			} catch (IOException | XMLStreamException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if (c.hasNetDns1()) {
 			setDns1(c.getNetDns1());
