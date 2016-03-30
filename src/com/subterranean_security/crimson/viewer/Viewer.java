@@ -64,7 +64,7 @@ public class Viewer {
 		Platform.Advanced.loadSigar();
 
 		try {
-			switch (Platform.os) {
+			switch (Platform.osFamily) {
 
 			case LINUX:
 				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");

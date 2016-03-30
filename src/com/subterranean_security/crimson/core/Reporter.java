@@ -56,7 +56,7 @@ public class Reporter {
 		rb.setCrVersion(Common.version);
 		rb.setJreVersion(System.getProperty("java.version"));
 		rb.setInstance(Common.instance.toString());
-		rb.setOsFamily(Platform.os.toString());
+		rb.setOsFamily(Platform.osFamily.toString());
 		// rb.setSysArch(PlatformInfo.sysArch.toString());
 		// rb.setJreArch(PlatformInfo.jreArch.toString());
 

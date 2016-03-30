@@ -448,7 +448,7 @@ public enum CUtil {
 
 		public static void runBackgroundCommand(String c) throws IOException {
 			String command = "";
-			switch (Platform.os) {
+			switch (Platform.osFamily) {
 			case SOLARIS:
 			case BSD:
 			case LINUX:

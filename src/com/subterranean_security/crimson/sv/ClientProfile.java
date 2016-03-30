@@ -20,55 +20,405 @@ package com.subterranean_security.crimson.sv;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 import javax.swing.ImageIcon;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.core.proto.Keylogger.KLog;
+import com.subterranean_security.crimson.core.proto.Delta.NetworkInterface;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class ClientProfile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private int cvid;
-	private Date updateTimestamp = new Date();
 
-	private String activeWindow;
-	private ImageIcon country;
-	private String cpuModel;
-	private String cpuTemp;
-	private String cpuUsage;
-	private String crimsonVersion;
-	private String hostname;
-	private String javaVersion;
-	private String language;
-	private String messagePing;
-	private String monitorCount;
-	private String osArch;
-	private String osFamily;
-	private String ramCapacity;
-	private String ramUsage;
-	private String crimsonRamUsage;
-	private String crimsonCpuUsage;
-	private String timezone;
-	private String userStatus;
-	private String virtualization;
+	// Transient attributes
+	private transient ImageIcon locationIcon;
+	private transient ImageIcon osIcon;
 
-	// historical attributes
-	private ArrayList<String> username = new ArrayList<String>();
-	private ArrayList<Date> username_dates = new ArrayList<Date>();
-	private ArrayList<String> internal_ip = new ArrayList<String>();
-	private ArrayList<String> external_ip = new ArrayList<String>();
+	// General attributes
+	private Attribute osFamily;
+	private Attribute osName;
+	private Attribute osArch;
+	private Attribute javaArch;
+	private Attribute javaVersion;
+	private Attribute javaVendor;
+	private Attribute crimsonVersion;
+	private Attribute timezone;
+	private Attribute language;
+	private Attribute username;
+	private Attribute userStatus;
+	private Attribute userHome;
+	private Attribute activeWindow;
+	private Attribute virtualization;
+	private Attribute messageLatency;
 
-	private KLog klog;
+	// RAM attributes
+	private Attribute systemRamCapacity;
+	private Attribute systemRamUsage;
+	private Attribute crimsonRamUsage;
+
+	// CPU attributes
+	private Attribute cpuModel;
+	private Attribute cpuCache;
+	private Attribute cpuTemp;
+	private Attribute crimsonCpuUsage;
+	private ArrayList<Double> coreSpeeds;
+	private ArrayList<Double> coreUsages;
+
+	// Network attributes
+	private Attribute hostname;
+	private Attribute extIp;
+	private Attribute dns1;
+	private Attribute dns2;
+	private Attribute fqdn;
+	private ArrayList<NetworkInterface> interfaces;
+
+	// Location attributes
+	private Attribute latitude;
+	private Attribute longitude;
+	private Attribute country;
+	private Attribute countryCode;
+	private Attribute region;
+	private Attribute city;
 
 	public ClientProfile(int cvid) {
+		this();
 		this.cvid = cvid;
 	}
 
 	public ClientProfile() {
+		osFamily = new UntrackedAttribute();
+		osName = new UntrackedAttribute();
+		osArch = new UntrackedAttribute();
+		javaArch = new UntrackedAttribute();
+		javaVersion = new UntrackedAttribute();
+		crimsonVersion = new UntrackedAttribute();
+		timezone = new UntrackedAttribute();
+		language = new UntrackedAttribute();
+		username = new UntrackedAttribute();
+		userStatus = new UntrackedAttribute();
+		activeWindow = new UntrackedAttribute();
+		virtualization = new UntrackedAttribute();
+		systemRamCapacity = new UntrackedAttribute();
+		systemRamUsage = new UntrackedAttribute();
+		crimsonRamUsage = new UntrackedAttribute();
+		cpuModel = new UntrackedAttribute();
+		cpuTemp = new UntrackedAttribute();
+		crimsonCpuUsage = new UntrackedAttribute();
+		hostname = new UntrackedAttribute();
+		extIp = new UntrackedAttribute();
+		setInterfaces(new ArrayList<NetworkInterface>());
+		latitude = new UntrackedAttribute();
+		longitude = new UntrackedAttribute();
+		country = new UntrackedAttribute();
+		countryCode = new UntrackedAttribute();
+		region = new UntrackedAttribute();
+		city = new UntrackedAttribute();
+	}
+
+	public void loadTransientAttributes() {
+		if (countryCode.get() != null && country.get() != null) {
+			locationIcon = UUtil.getIcon("flags/" + countryCode.get() + ".png");
+			locationIcon.setDescription(country.get());
+		}
+		if (osName.get() != null) {
+			osIcon = UUtil.getIcon("platform/" + osName.get().replaceAll(" ", "_").toLowerCase() + ".png");
+			osIcon.setDescription(osName.get());
+		}
+
+	}
+
+	public String getOsFamily() {
+		return osFamily.get();
+	}
+
+	public void setOsFamily(String osFamily) {
+		this.osFamily.set(osFamily);
+	}
+
+	public String getOsName() {
+		return osName.get();
+	}
+
+	public void setOsName(String osName) {
+		this.osName.set(osName);
+	}
+
+	public String getOsArch() {
+		return osArch.get();
+	}
+
+	public void setOsArch(String osArch) {
+		this.osArch.set(osArch);
+	}
+
+	public String getJavaArch() {
+		return javaArch.get();
+	}
+
+	public void setJavaArch(String javaArch) {
+		this.javaArch.set(javaArch);
+	}
+
+	public String getJavaVersion() {
+		return javaVersion.get();
+	}
+
+	public void setJavaVersion(String javaVersion) {
+		this.javaVersion.set(javaVersion);
+	}
+
+	public String getJavaVendor() {
+		return javaVendor.get();
+	}
+
+	public void setJavaVendor(String javaVendor) {
+		this.javaVendor.set(javaVendor);
+	}
+
+	public String getCrimsonVersion() {
+		return crimsonVersion.get();
+	}
+
+	public void setCrimsonVersion(String crimsonVersion) {
+		this.crimsonVersion.set(crimsonVersion);
+	}
+
+	public String getTimezone() {
+		return timezone.get();
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone.set(timezone);
+	}
+
+	public String getLanguage() {
+		return language.get();
+	}
+
+	public void setLanguage(String language) {
+		this.language.set(new Locale(language).getDisplayName());
+	}
+
+	public String getUsername() {
+		return username.get();
+	}
+
+	public void setUsername(String username) {
+		this.username.set(username);
+	}
+
+	public String getUserStatus() {
+		return userStatus.get();
+	}
+
+	public void setUserStatus(String userStatus) {
+		this.userStatus.set(userStatus);
+	}
+
+	public String getUserHome() {
+		return userHome.get();
+	}
+
+	public void setUserHome(String userHome) {
+		this.userHome.set(userHome);
+	}
+
+	public String getActiveWindow() {
+		return activeWindow.get();
+	}
+
+	public void setActiveWindow(String activeWindow) {
+		this.activeWindow.set(activeWindow);
+	}
+
+	public String getVirtualization() {
+		return virtualization.get();
+	}
+
+	public void setVirtualization(String virtualization) {
+		this.virtualization.set(virtualization);
+	}
+
+	public String getMessageLatency() {
+		return messageLatency.get();
+	}
+
+	public void setMessageLatency(String messageLatency) {
+		this.messageLatency.set(messageLatency);
+	}
+
+	public String getSystemRamCapacity() {
+		return systemRamCapacity.get();
+	}
+
+	public void setSystemRamCapacity(String ramCapacity) {
+		this.systemRamCapacity.set(ramCapacity);
+	}
+
+	public String getSystemRamUsage() {
+		return systemRamUsage.get();
+	}
+
+	public void setSystemRamUsage(String ramUsage) {
+		this.systemRamUsage.set(ramUsage);
+	}
+
+	public String getCrimsonRamUsage() {
+		return crimsonRamUsage.get();
+	}
+
+	public void setCrimsonRamUsage(String crimsonRamUsage) {
+		this.crimsonRamUsage.set(crimsonRamUsage);
+	}
+
+	public String getCpuModel() {
+		return cpuModel.get();
+	}
+
+	public void setCpuModel(String cpuModel) {
+		this.cpuModel.set(cpuModel);
+	}
+
+	public String getCpuCache() {
+		return cpuCache.get();
+	}
+
+	public void setCpuCache(String cpuCache) {
+		this.cpuCache.set(cpuCache);
+	}
+
+	public String getCpuTemp() {
+		return cpuTemp.get();
+	}
+
+	public void setCpuTemp(String cpuTemp) {
+		this.cpuTemp.set(cpuTemp);
+	}
+
+	public String getCrimsonCpuUsage() {
+		return crimsonCpuUsage.get();
+	}
+
+	public void setCrimsonCpuUsage(String crimsonCpuUsage) {
+		this.crimsonCpuUsage.set(crimsonCpuUsage);
+	}
+
+	public ArrayList<Double> getCoreSpeeds() {
+		return coreSpeeds;
+	}
+
+	public void setCoreSpeeds(ArrayList<Double> coreSpeeds) {
+		this.coreSpeeds = coreSpeeds;
+	}
+
+	public ArrayList<Double> getCoreUsages() {
+		return coreUsages;
+	}
+
+	public void setCoreUsages(ArrayList<Double> coreUsages) {
+		this.coreUsages = coreUsages;
+	}
+
+	public String getHostname() {
+		return hostname.get();
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname.set(hostname);
+	}
+
+	public String getExtIp() {
+		return extIp.get();
+	}
+
+	public void setExtIp(String extIp) {
+		this.extIp.set(extIp);
+	}
+
+	public String getDns1() {
+		return dns1.get();
+	}
+
+	public void setDns1(String dns1) {
+		this.dns1.set(dns1);
+	}
+
+	public String getDns2() {
+		return dns2.get();
+	}
+
+	public void setDns2(String dns2) {
+		this.dns2.set(dns2);
+	}
+
+	public String getFqdn() {
+		return fqdn.get();
+	}
+
+	public void setFqdn(String fqdn) {
+		this.fqdn.set(fqdn);
+	}
+
+	public ArrayList<NetworkInterface> getInterfaces() {
+		return interfaces;
+	}
+
+	public void setInterfaces(ArrayList<NetworkInterface> interfaces) {
+		this.interfaces = interfaces;
+	}
+
+	public String getLatitude() {
+		return latitude.get();
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude.set(latitude);
+	}
+
+	public String getLongitude() {
+		return longitude.get();
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude.set(longitude);
+	}
+
+	public String getCountry() {
+		return country.get();
+	}
+
+	public void setCountry(String country) {
+		this.country.set(country);
+	}
+
+	public String getCountryCode() {
+		return countryCode.get();
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode.set(countryCode);
+	}
+
+	public String getRegion() {
+		return region.get();
+	}
+
+	public void setRegion(String region) {
+		this.region.set(region);
+	}
+
+	public String getCity() {
+		return city.get();
+	}
+
+	public void setCity(String city) {
+		this.city.set(city);
 	}
 
 	public int getCvid() {
@@ -79,218 +429,108 @@ public class ClientProfile implements Serializable {
 		this.cvid = cvid;
 	}
 
-	public String getHostname() {
-		return hostname;
+	public void setLocation(HashMap<String, String> map) {
+		setCountryCode(map.get("CountryCode").toLowerCase());
+		setCountry(map.get("CountryName"));
+		setRegion(map.get("RegionName"));
+		setCity(map.get("City"));
+		setLatitude(map.get("Latitude"));
+		setLongitude(map.get("Longitude"));
 	}
 
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
+	public ImageIcon getLocationIcon() {
+		return locationIcon;
 	}
 
-	public String getUsername() {
-		return null;
-		// return username.get(username.size() - 1);
-	}
-
-	public void setUsername(String username) {
-		setUsername(new Date(), username);
-	}
-
-	public void setUsername(Date date, String username) {
-		this.username.add(username);
-		this.username_dates.add(date);
-	}
-
-	public String getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(String language) {
-		this.language = new Locale(language).getDisplayName();
-	}
-
-	public String getTimezone() {
-		return timezone;
-	}
-
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
-	}
-
-	public String getActiveWindow() {
-		return activeWindow;
-	}
-
-	public void setActiveWindow(String activeWindow) {
-		this.activeWindow = activeWindow;
-	}
-
-	public ImageIcon getCountry() {
-		return country;
-	}
-
-	public void setCountry(ImageIcon country) {
-		this.country = country;
-	}
-
-	public String getCpuModel() {
-		return cpuModel;
-	}
-
-	public void setCpuModel(String cpuModel) {
-		this.cpuModel = cpuModel;
-	}
-
-	public String getCpuTemp() {
-		return cpuTemp;
-	}
-
-	public void setCpuTemp(String cpuTemp) {
-		this.cpuTemp = cpuTemp;
-	}
-
-	public String getCpuUsage() {
-		return cpuUsage;
-	}
-
-	public void setCpuUsage(String cpu_usage) {
-		this.cpuUsage = cpu_usage;
-	}
-
-	public String getCrimsonVersion() {
-		return crimsonVersion;
-	}
-
-	public void setCrimsonVersion(String crimsonVersion) {
-		this.crimsonVersion = crimsonVersion;
-	}
-
-	public String getJavaVersion() {
-		return javaVersion;
-	}
-
-	public void setJavaVersion(String javaVersion) {
-		this.javaVersion = javaVersion;
-	}
-
-	public String getMessagePing() {
-		return messagePing;
-	}
-
-	public void setMessagePing(String messagePing) {
-		this.messagePing = messagePing;
-	}
-
-	public String getMonitorCount() {
-		return monitorCount;
-	}
-
-	public void setMonitorCount(String monitorCount) {
-		this.monitorCount = monitorCount;
-	}
-
-	public String getOsArch() {
-		return osArch;
-	}
-
-	public void setOsArch(String osArch) {
-		this.osArch = osArch;
-	}
-
-	public String getOsFamily() {
-		return osFamily;
-	}
-
-	public void setOsFamily(String osFamily) {
-		this.osFamily = osFamily;
-	}
-
-	public String getRamCapacity() {
-		return ramCapacity;
-	}
-
-	public void setRamCapacity(String ramCapacity) {
-		this.ramCapacity = ramCapacity;
-	}
-
-	public String getRamUsage() {
-		return ramUsage;
-	}
-
-	public void setRamUsage(String ramUsage) {
-		this.ramUsage = ramUsage;
-	}
-
-	public String getUserStatus() {
-		return userStatus;
-	}
-
-	public void setUserStatus(String userStatus) {
-		this.userStatus = userStatus;
-	}
-
-	public String getVirtualization() {
-		return virtualization;
-	}
-
-	public void setVirtualization(String virtualization) {
-		this.virtualization = virtualization;
-	}
-
-	public Date getUpdateTimestamp() {
-		return updateTimestamp;
-	}
-
-	public String getCrimsonRamUsage() {
-		return crimsonRamUsage;
-	}
-
-	public void setCrimsonRamUsage(String crimsonRamUsage) {
-		this.crimsonRamUsage = crimsonRamUsage;
-	}
-
-	public String getCrimsonCpuUsage() {
-		return crimsonCpuUsage;
-	}
-
-	public void setCrimsonCpuUsage(String crimsonCpuUsage) {
-		this.crimsonCpuUsage = crimsonCpuUsage;
+	public ImageIcon getOsIcon() {
+		return osIcon;
 	}
 
 	public void amalgamate(EV_ProfileDelta c) {
-		if (c.hasActiveWindow()) {
-			setActiveWindow(c.getActiveWindow());
-		}
-		if (c.hasCpuModel()) {
-			setCpuModel(c.getCpuModel());
-		}
-		if (c.hasCpuTemp()) {
-			setCpuTemp(c.getCpuTemp());
-		}
-		if (c.hasCrimsonVersion()) {
-			setCrimsonVersion(c.getCrimsonVersion());
-		}
-		if (c.hasNetHostname()) {
-			setHostname(c.getNetHostname());
-		}
-		if (c.hasJavaVersion()) {
-			setJavaVersion(c.getJavaArch());
-		}
-		if (c.hasLanguage()) {
-			setLanguage(c.getLanguage());
+		if (c.hasDepartureTime()) {
+			setMessageLatency("" + (new Date().getTime() - c.getDepartureTime()));
 		}
 		if (c.hasOsFamily()) {
 			setOsFamily(c.getOsFamily());
 		}
+		if (c.hasOsName()) {
+			setOsName(c.getOsName());
+		}
+		if (c.hasOsArch()) {
+			setOsArch(c.getOsArch());
+		}
+		if (c.hasJavaArch()) {
+			setJavaArch(c.getJavaArch());
+		}
+		if (c.hasJavaVersion()) {
+			setJavaVersion(c.getJavaVersion());
+		}
+		if (c.hasJavaVendor()) {
+			setJavaVendor(c.getJavaVendor());
+		}
+		if (c.hasCrimsonVersion()) {
+			setCrimsonVersion(c.getCrimsonVersion());
+		}
+		if (c.hasTimezone()) {
+			setTimezone(c.getTimezone());
+		}
+		if (c.hasLanguage()) {
+			setLanguage(c.getLanguage());
+		}
 		if (c.hasUserName()) {
 			setUsername(c.getUserName());
 		}
-		if (c.hasRamCrimsonUsage()) {
-			setCrimsonRamUsage(CUtil.Misc.familiarize(c.getRamCrimsonUsage(), CUtil.Misc.BYTES));
+		if (c.hasUserStatus()) {
+			setUserStatus(c.getUserStatus());
 		}
-		if (c.hasCpuCrimsonUsage()) {
-			setCrimsonCpuUsage(String.format("%.2f%%", 100 * c.getCpuCrimsonUsage()));
+		if (c.hasUserHome()) {
+			setUserHome(c.getUserHome());
 		}
+		if (c.hasActiveWindow()) {
+			setActiveWindow(c.getActiveWindow());
+		}
+		if (c.hasVirtualization()) {
+			setVirtualization(c.getVirtualization());
+		}
+		if (c.hasSystemRamCapacity()) {
+			setSystemRamCapacity(CUtil.Misc.familiarize(c.getSystemRamCapacity(), CUtil.Misc.BYTES));
+		}
+		if (c.hasSystemRamUsage()) {
+			setSystemRamUsage(CUtil.Misc.familiarize(c.getSystemRamUsage(), CUtil.Misc.BYTES));
+		}
+		if (c.hasCrimsonRamUsage()) {
+			setCrimsonRamUsage(CUtil.Misc.familiarize(c.getCrimsonRamUsage(), CUtil.Misc.BYTES));
+		}
+		if (c.hasCpuModel()) {
+			setCpuModel(c.getCpuModel());
+		}
+		if (c.hasCpuCache()) {
+			setCpuCache(c.getCpuCache());
+		}
+		if (c.hasCpuTemp()) {
+			setCpuTemp(c.getCpuTemp());
+		}
+		if (c.hasCrimsonCpuUsage()) {
+			setCrimsonCpuUsage(String.format("%.2f%%", 100 * c.getCrimsonCpuUsage()));
+		}
+		// core_speed
+		// core_usage
+		if (c.hasHostname()) {
+			setHostname(c.getHostname());
+		}
+		if (c.hasExtIp()) {
+			setExtIp(c.getExtIp());
+		}
+		if (c.hasNetDns1()) {
+			setDns1(c.getNetDns1());
+		}
+		if (c.hasNetDns2()) {
+			setDns2(c.getNetDns2());
+		}
+		if (c.hasFqdn()) {
+			setFqdn(c.getFqdn());
+		}
+		// network interfaces
 
 	}
 

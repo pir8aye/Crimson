@@ -147,7 +147,7 @@ public enum Common {
 		if (instance == Instance.INSTALLER) {
 			return null;
 		}
-		switch (Platform.os) {
+		switch (Platform.osFamily) {
 		case WINDOWS:
 			return new File(System.getProperty("user.home") + "/AppData/Local/Subterranean Security/Crimson/var");
 		default:

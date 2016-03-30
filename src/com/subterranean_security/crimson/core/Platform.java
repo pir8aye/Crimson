@@ -35,13 +35,13 @@ import com.subterranean_security.crimson.core.util.CUtil;
 
 public enum Platform {
 	;
-	
+
 	private static final Logger log = CUtil.Logging.getLogger(Platform.class);
 
 	public static final ARCH sysArch = null;
 	public static final ARCH javaArch = getJVMArch();
-	public static final OSFAMILY os = getFamily();
-	public static final OSVERSION sos = null;
+	public static final OSFAMILY osFamily = getFamily();
+	public static final String osName = getOsName();
 
 	public enum OSFAMILY {
 		BSD, OSX, SOLARIS, LINUX, WINDOWS, UNSUPPORTED;
@@ -59,26 +59,33 @@ public enum Platform {
 		}
 	}
 
-	public enum OSVERSION {
-		LINUX_UBUNTU, LINUX_SLACKWARE, LINUX_ARCH, LINUX_MINT, LINUX_FEDORA, WINDOWS_XP, WINDOWS_VISTA, WINDOWS_7, WINDOWS_8, WINDOWS_10,
-
-	}
-
 	public static OSFAMILY getFamily() {
-		String osName = System.getProperty("os.name").toLowerCase();
-		if (osName.endsWith("bsd")) {
+		String name = osName.toLowerCase();
+		if (name.endsWith("bsd")) {
 			return OSFAMILY.BSD;
-		} else if (osName.equals("mac os x")) {
+		} else if (name.equals("mac os x")) {
 			return OSFAMILY.OSX;
-		} else if (osName.equals("solaris") || osName.equals("sunos")) {
+		} else if (name.equals("solaris") || name.equals("sunos")) {
 			return OSFAMILY.SOLARIS;
-		} else if (osName.equals("linux")) {
+		} else if (name.equals("linux")) {
 			return OSFAMILY.LINUX;
-		} else if (osName.contains("windows")) {
+		} else if (name.startsWith("windows")) {
 			return OSFAMILY.WINDOWS;
 		} else {
 			return OSFAMILY.UNSUPPORTED;
 		}
+	}
+
+	public static String getOsName() {
+		switch (osFamily) {
+		case LINUX:
+			String distro = "";// TODO get output (cat /etc/issue)
+			break;
+		default:
+			return System.getProperty("os.name");
+
+		}
+		return null;
 	}
 
 	public static ARCH getJVMArch() {
@@ -110,7 +117,7 @@ public enum Platform {
 		private static long pid = 0;
 
 		public static void setLibraryPath() {
-			switch (Platform.os) {
+			switch (Platform.osFamily) {
 			case BSD:
 				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/bsd");
 				break;
@@ -135,7 +142,7 @@ public enum Platform {
 		public static void loadSigar() {
 			setLibraryPath();
 			log.debug("Loading SIGAR native library");
-			
+
 			sigar = new Sigar();
 			cpu = new Cpu();
 			netInfo = new NetInfo();
@@ -156,7 +163,7 @@ public enum Platform {
 		public static void loadLapis() {
 			setLibraryPath();
 			log.debug("Loading LAPIS native library");
-			
+
 			switch (Platform.javaArch) {
 			case X64:
 				System.loadLibrary("crimson64");
@@ -263,7 +270,7 @@ public enum Platform {
 		}
 
 		public static EV_ProfileDelta getFullProfile() {
-			
+
 			EV_ProfileDelta.Builder info = EV_ProfileDelta.newBuilder();
 
 			try {
@@ -276,13 +283,11 @@ public enum Platform {
 			info.setCrimsonVersion(Common.version);
 
 			info.setUserName(getUsername());
-			info.setNetHostname(getHostname());
-			info.setUserDir(getUserDirectory());
+			info.setHostname(getHostname());
 			info.setUserHome(getUserHome());
 			info.setLanguage(getLanguage());
 			info.setJavaVersion(getJavaVersion());
 			info.setJavaVendor(getJavaVersion());
-			info.setJavaHome(getJavaHome());
 			info.setJavaArch(getJavaArch());
 			info.setCpuModel(getCPUModel());
 

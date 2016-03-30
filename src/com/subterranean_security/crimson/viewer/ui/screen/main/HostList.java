@@ -240,31 +240,31 @@ class TM extends AbstractTableModel {
 		case USERNAME:
 			return ViewerStore.Profiles.clients.get(rowIndex).getUsername();
 		case USER_STATUS:
-			return null;
+			return ViewerStore.Profiles.clients.get(rowIndex).getUserStatus();
 		case HOSTNAME:
 			return ViewerStore.Profiles.clients.get(rowIndex).getHostname();
 		case INTERNAL_IP:
 			return null;
 		case EXTERNAL_IP:
-			return null;
+			return ViewerStore.Profiles.clients.get(rowIndex).getExtIp();
 		case LANGUAGE:
 			return ViewerStore.Profiles.clients.get(rowIndex).getLanguage();
 		case ACTIVE_WINDOW:
 			return ViewerStore.Profiles.clients.get(rowIndex).getActiveWindow();
 		case COUNTRY:
-			return null;
+			return ViewerStore.Profiles.clients.get(rowIndex).getLocationIcon();
 		case CPU_MODEL:
 			return ViewerStore.Profiles.clients.get(rowIndex).getCpuModel();
 		case CPU_USAGE:
-			return ViewerStore.Profiles.clients.get(rowIndex).getCpuUsage();
+			return null;
 		case CPU_TEMP:
 			return ViewerStore.Profiles.clients.get(rowIndex).getCpuTemp();
 		case CVID:
 			return ViewerStore.Profiles.clients.get(rowIndex).getCvid();
 		case RAM_CAPACITY:
-			return ViewerStore.Profiles.clients.get(rowIndex).getRamCapacity();
+			return ViewerStore.Profiles.clients.get(rowIndex).getSystemRamCapacity();
 		case RAM_USAGE:
-			return ViewerStore.Profiles.clients.get(rowIndex).getRamUsage();
+			return ViewerStore.Profiles.clients.get(rowIndex).getSystemRamUsage();
 		case CRIMSON_VERSION:
 			return ViewerStore.Profiles.clients.get(rowIndex).getCrimsonVersion();
 		case OS_FAMILY:
@@ -274,15 +274,15 @@ class TM extends AbstractTableModel {
 		case JAVA_VERSION:
 			return ViewerStore.Profiles.clients.get(rowIndex).getJavaVersion();
 		case MONITOR_COUNT:
-			return ViewerStore.Profiles.clients.get(rowIndex).getMonitorCount();
-		case VIRTUALIZATION:
 			return null;
+		case VIRTUALIZATION:
+			return ViewerStore.Profiles.clients.get(rowIndex).getVirtualization();
 		case TIMEZONE:
 			return ViewerStore.Profiles.clients.get(rowIndex).getTimezone();
 		case CPU_SPEED:
 			return null;
 		case MESSAGE_PING:
-			return ViewerStore.Profiles.clients.get(rowIndex).getMessagePing();
+			return ViewerStore.Profiles.clients.get(rowIndex).getMessageLatency();
 		case SCREEN_PREVIEW:
 			return null;
 
