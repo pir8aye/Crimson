@@ -23,6 +23,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -35,12 +37,14 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.ClientProfile;
 
 import info.monitorenter.gui.chart.Chart2D;
-import info.monitorenter.gui.chart.IAxis.AxisTitle;
 import info.monitorenter.gui.chart.ITrace2D;
+import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
+import info.monitorenter.util.Range;
 
 public class Processor extends JPanel implements DModule {
 
@@ -67,8 +71,17 @@ public class Processor extends JPanel implements DModule {
 		trace.setColor(Color.RED);
 
 		Chart2D chart = new Chart2D();
+		chart.setUseAntialiasing(true);
+		chart.setBackground(Color.WHITE);
+		chart.setGridColor(Color.black);
 		chart.getAxisX().setVisible(false);
+		chart.getAxisY().setRangePolicy(new RangePolicyFixedViewport(new Range(0, 100)));
+		chart.getAxisX().setPixelXLeft(0);
 		chart.getAxisX().setPaintGrid(false);
+		chart.getAxisX().setPaintScale(false);
+		chart.getAxisY().setVisible(false);
+		chart.getAxisY().setPaintGrid(true);
+		chart.getAxisY().setPaintScale(false);
 		chart.addTrace(trace);
 		chart.setUseAntialiasing(true);
 		chart.setFont(new Font("Dialog", Font.PLAIN, 8));
@@ -171,13 +184,24 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblNewLabel_5.gridx = 1;
 		gbc_lblNewLabel_5.gridy = 3;
 		panel_2.add(lblCpuUsage, gbc_lblNewLabel_5);
-		
+
 		JPanel panel_1 = new JPanel();
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 		gbc_panel_1.fill = GridBagConstraints.BOTH;
 		gbc_panel_1.gridx = 0;
 		gbc_panel_1.gridy = 2;
 		panel.add(panel_1, gbc_panel_1);
+
+		new Timer().schedule(new TimerTask() {
+
+			private long m_starttime = System.currentTimeMillis();
+
+			@Override
+			public void run() {
+				trace.addPoint(((double) System.currentTimeMillis() - this.m_starttime), 0);
+			}
+
+		}, 1000, 100);
 
 	}
 
