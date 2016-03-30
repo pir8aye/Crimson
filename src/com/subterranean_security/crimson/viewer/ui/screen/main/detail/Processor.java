@@ -192,28 +192,26 @@ public class Processor extends JPanel implements DModule {
 		gbc_panel_1.gridy = 2;
 		panel.add(panel_1, gbc_panel_1);
 
-		new Timer().schedule(new TimerTask() {
-
-			private long m_starttime = System.currentTimeMillis();
-
-			@Override
-			public void run() {
-				trace.addPoint(((double) System.currentTimeMillis() - this.m_starttime), 0);
-			}
-
-		}, 1000, 100);
-
 	}
 
 	private ClientProfile profile;
 	private InfoMaster im;
+	private Timer updateTimer = new Timer();
 
 	private JLabel lblCpuModel;
 
 	private JLabel lblCpuUsage;
 
+	private long updatePeriod;
+
 	@Override
 	public void setTarget(ClientProfile p) {
+		updateTimer.cancel();
+		
+		// clear chart only if the new profile differs from the old
+		if (p.getCvid() != profile.getCvid()) {
+			trace.removeAllPoints();
+		}
 		if (im != null) {
 			StreamStore.removeStream(im.getStreamID());
 		}
@@ -222,9 +220,22 @@ public class Processor extends JPanel implements DModule {
 			lblCpuModel.setText(profile.getCpuModel());
 
 			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).build(),
-					profile.getCvid());
+					profile.getCvid()); // TODO set period in param
 			StreamStore.addStream(im);
 			im.start();
+
+			updateTimer.schedule(new TimerTask() {
+
+				private long m_starttime = System.currentTimeMillis();
+
+				@Override
+				public void run() {
+					// TODO get average cpu usage from profile
+					trace.addPoint(((double) System.currentTimeMillis() - this.m_starttime), 0);
+				}
+
+			}, 0, updatePeriod);
+
 		}
 
 	}
