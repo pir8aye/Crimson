@@ -532,13 +532,13 @@ public class ClientProfile implements Serializable {
 		if (c.hasExtIp()) {
 			setExtIp(c.getExtIp());
 			// TODO resolve only if viewer location resolution is enabled
-			try {
-				setLocation(CUtil.Location.resolve(c.getExtIp()));
-				loadTransientAttributes();
-			} catch (IOException | XMLStreamException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			//try {
+			//	setLocation(CUtil.Location.resolve(c.getExtIp()));
+			//	loadTransientAttributes();
+			//} catch (IOException | XMLStreamException e) {
+			//	// TODO Auto-generated catch block
+			//	e.printStackTrace();
+			//}
 		}
 		if (c.hasNetDns1()) {
 			setDns1(c.getNetDns1());
