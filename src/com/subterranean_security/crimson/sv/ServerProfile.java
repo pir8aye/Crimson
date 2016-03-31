@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.sv;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
@@ -40,138 +39,46 @@ public class ServerProfile implements Serializable {
 
 	public ArrayList<ListenerConfig> listeners = new ArrayList<ListenerConfig>();
 
-	private String lastIp;
+	// User specific attributes
+	private Attribute lastIp;
 	private Date lastTime;
 
-	private String cpuModel;
-	private String cpuTemp;
-	private String cpuUsage;
-	private String crimsonVersion;
-	private String hostname;
-	private String javaVersion;
-	private String language;
-	private String messagePing;
-	private String osArch;
-	private String osFamily;
-	private String ramCapacity;
-	private String ramUsage;
-	private String timezone;
-	private String crimsonRamUsage;
-	private String crimsonCpuUsage;
+	// General attributes
+	private Attribute messageLatency;
 
-	// historical attributes
-	private ArrayList<String> internal_ip = new ArrayList<String>();
-	private ArrayList<String> external_ip = new ArrayList<String>();
+	// RAM attributes
+	private Attribute crimsonRamUsage;
+
+	// CPU attributes
+	private Attribute cpuTemp;
+	private Attribute crimsonCpuUsage;
 
 	public ServerProfile() {
+		lastIp = new UntrackedAttribute();
+		messageLatency = new UntrackedAttribute();
+		crimsonRamUsage = new UntrackedAttribute();
+		cpuTemp = new UntrackedAttribute();
+		crimsonCpuUsage = new UntrackedAttribute();
 	}
 
 	public int getCvid() {
 		return cvid;
 	}
 
-	public String getHostname() {
-		return hostname;
-	}
-
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
-
-	public String getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(String language) {
-		this.language = new Locale(language).getDisplayName();
-	}
-
-	public String getTimezone() {
-		return timezone;
-	}
-
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
-	}
-
-	public String getCpuModel() {
-		return cpuModel;
-	}
-
-	public void setCpuModel(String cpuModel) {
-		this.cpuModel = cpuModel;
-	}
-
 	public String getCpuTemp() {
-		return cpuTemp;
+		return cpuTemp.get();
 	}
 
 	public void setCpuTemp(String cpuTemp) {
-		this.cpuTemp = cpuTemp;
+		this.cpuTemp.set(cpuTemp);
 	}
 
-	public String getCpuUsage() {
-		return cpuUsage;
+	public String getMessageLatency() {
+		return messageLatency.get();
 	}
 
-	public void setCpuUsage(String cpu_usage) {
-		this.cpuUsage = cpu_usage;
-	}
-
-	public String getCrimsonVersion() {
-		return crimsonVersion;
-	}
-
-	public void setCrimsonVersion(String crimsonVersion) {
-		this.crimsonVersion = crimsonVersion;
-	}
-
-	public String getJavaVersion() {
-		return javaVersion;
-	}
-
-	public void setJavaVersion(String javaVersion) {
-		this.javaVersion = javaVersion;
-	}
-
-	public String getMessagePing() {
-		return messagePing;
-	}
-
-	public void setMessagePing(String messagePing) {
-		this.messagePing = messagePing;
-	}
-
-	public String getOsArch() {
-		return osArch;
-	}
-
-	public void setOsArch(String osArch) {
-		this.osArch = osArch;
-	}
-
-	public String getOsFamily() {
-		return osFamily;
-	}
-
-	public void setOsFamily(String osFamily) {
-		this.osFamily = osFamily;
-	}
-
-	public String getRamCapacity() {
-		return ramCapacity;
-	}
-
-	public void setRamCapacity(String ramCapacity) {
-		this.ramCapacity = ramCapacity;
-	}
-
-	public String getRamUsage() {
-		return ramUsage;
-	}
-
-	public void setRamUsage(String ramUsage) {
-		this.ramUsage = ramUsage;
+	public void setMessageLatency(String messageLatency) {
+		this.messageLatency.set(messageLatency);
 	}
 
 	public Date getUpdateTimestamp() {
@@ -179,19 +86,19 @@ public class ServerProfile implements Serializable {
 	}
 
 	public String getCrimsonRamUsage() {
-		return crimsonRamUsage;
+		return crimsonRamUsage.get();
 	}
 
 	public void setCrimsonRamUsage(String crimsonRamUsage) {
-		this.crimsonRamUsage = crimsonRamUsage;
+		this.crimsonRamUsage.set(crimsonRamUsage);
 	}
 
 	public String getCrimsonCpuUsage() {
-		return crimsonCpuUsage;
+		return crimsonCpuUsage.get();
 	}
 
 	public void setCrimsonCpuUsage(String crimsonCpuUsage) {
-		this.crimsonCpuUsage = crimsonCpuUsage;
+		this.crimsonCpuUsage.set(crimsonCpuUsage);
 	}
 
 	public int getConnectedClients() {
@@ -219,7 +126,7 @@ public class ServerProfile implements Serializable {
 	}
 
 	public String getLastLoginIp() {
-		return lastIp;
+		return lastIp.get();
 	}
 
 	public Date getLastLoginTime() {
@@ -227,7 +134,7 @@ public class ServerProfile implements Serializable {
 	}
 
 	public void setLastLoginIp(String s) {
-		lastIp = s;
+		lastIp.set(s);
 	}
 
 	public void setLastLoginTime(Date d) {
@@ -244,23 +151,8 @@ public class ServerProfile implements Serializable {
 		if (c.hasUserCount()) {
 			setConnectedUsers(c.getUserCount());
 		}
-		if (c.hasCpuModel()) {
-			setCpuModel(c.getCpuModel());
-		}
 		if (c.hasCpuTemp()) {
 			setCpuTemp(c.getCpuTemp());
-		}
-		if (c.hasCrimsonVersion()) {
-			setCrimsonVersion(c.getCrimsonVersion());
-		}
-		if (c.hasNetHostname()) {
-			setHostname(c.getNetHostname());
-		}
-		if (c.hasJavaVersion()) {
-			setJavaVersion(c.getJavaVersion());
-		}
-		if (c.hasOsFamily()) {
-			setOsFamily(c.getOsFamily());
 		}
 		if (c.hasRamCrimsonUsage()) {
 			setCrimsonRamUsage(CUtil.Misc.familiarize(c.getRamCrimsonUsage(), CUtil.Misc.BYTES));
