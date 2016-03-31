@@ -39,7 +39,6 @@ import com.subterranean_security.crimson.viewer.ui.screen.about.AboutDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.GenDialog;
-import com.subterranean_security.crimson.viewer.ui.screen.netman.AddDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SettingsDialog;
 import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
@@ -68,7 +67,7 @@ public class MainMenu extends JPanel {
 			@Override
 			public void menuSelected(MenuEvent e) {
 				im = new InfoMaster(InfoParam.newBuilder().setCpuTemp(true).setCrimsonCpuUsage(true)
-						.setCrimsonRamUsage(true).build());
+						.setCrimsonRamUsage(true).build(), 1000);
 				StreamStore.addStream(im);
 				is = new VInfoSlave(InfoParam.newBuilder().setCpuTemp(true).setCrimsonCpuUsage(true)
 						.setCrimsonRamUsage(true).build());

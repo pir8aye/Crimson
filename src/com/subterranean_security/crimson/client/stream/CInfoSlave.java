@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.client.stream;
 
 import com.subterranean_security.crimson.client.net.ClientRouter;
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
@@ -31,9 +32,8 @@ public class CInfoSlave extends InfoSlave {
 
 	@Override
 	public void send() {
-		ClientRouter.route(Message.newBuilder().setEvProfileDelta(gatherDefaultInfo()));// TODO
-																					// add
-																					// addresses
+		ClientRouter.route(Message.newBuilder().setUrgent(true).setCid(Common.cvid).setVid(param.getVID())
+				.setEvProfileDelta(gatherDefaultInfo()));
 
 	}
 

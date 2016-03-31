@@ -50,6 +50,13 @@ public abstract class InfoSlave extends Stream {
 			pd.setActiveWindow(Native.getActiveWindow());
 		}
 		if (param.getInfoParam().hasCpuSpeed()) {
+			for (double d : Platform.Advanced.getCPUSpeed()) {
+				pd.addCoreSpeed(d);
+			}
+
+		}
+		if (param.getInfoParam().hasCpuUsage()) {
+			pd.setCoreUsage(Platform.Advanced.getCPUUsage());
 		}
 		if (param.getInfoParam().hasCpuTemp()) {
 		}

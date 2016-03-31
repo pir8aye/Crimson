@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
@@ -97,12 +98,7 @@ public class ClientConnector implements AutoCloseable {
 			return;
 		}
 
-		int cvid = 0;
-		try {
-			cvid = Client.clientDB.getInteger("cvid");
-		} catch (Exception e2) {
-		}
-		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(cvid).setType(authType);
+		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(Common.cvid).setType(authType);
 
 		switch (authType) {
 		case GROUP:
@@ -120,6 +116,12 @@ public class ClientConnector implements AutoCloseable {
 		case NO_AUTH:
 			setState(ConnectionState.AUTHENTICATED);
 			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			handle.write(
 					Message.newBuilder().setUrgent(true).setEvProfileDelta(Platform.Advanced.getFullProfile()).build());
 			break;

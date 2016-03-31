@@ -23,7 +23,7 @@ public interface DModule extends Comparable<DModule> {
 
 	void setTarget(ClientProfile p);
 
-	boolean isShowing();
+	boolean isDetailOpen();
 
 	void setShowing(boolean showing);
 

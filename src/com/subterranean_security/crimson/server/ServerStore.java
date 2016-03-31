@@ -52,6 +52,7 @@ public enum ServerStore {
 		private static int clients = 0;
 
 		public static void add(Receptor connection) {
+			log.debug("Adding receptor (CVID: {})", connection.getCvid());
 			if (connection.getInstance() == Instance.VIEWER) {
 				users++;
 			} else {
@@ -69,8 +70,8 @@ public enum ServerStore {
 			receptors.remove(connection.getCvid());
 		}
 
-		public static Receptor getConnection(int svid) {
-			return receptors.get(svid);
+		public static Receptor getConnection(int cvid) {
+			return receptors.get(cvid);
 		}
 
 		public static Set<Integer> getKeySet() {

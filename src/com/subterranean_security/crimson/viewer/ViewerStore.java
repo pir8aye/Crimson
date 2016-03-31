@@ -140,7 +140,6 @@ public enum ViewerStore {
 		}
 
 		public static void update(EV_ProfileDelta change) {
-			System.out.println("Got PUPDATE for cvid: " + change.getCvid());
 			boolean flag = true;
 			for (ClientProfile p : clients) {
 				if (p.getCvid() == change.getCvid()) {

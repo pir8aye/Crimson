@@ -20,9 +20,11 @@ package com.subterranean_security.crimson.core;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import org.hyperic.sigar.Cpu;
 import org.hyperic.sigar.CpuInfo;
+import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.NetInfo;
 import org.hyperic.sigar.ProcCpu;
 import org.hyperic.sigar.ProcMem;
@@ -109,6 +111,7 @@ public enum Platform {
 		private static Sigar sigar;
 
 		private static Cpu cpu;
+		private static CpuPerc cpuPerc;
 		private static CpuInfo[] cpuInfo;
 		private static NetInfo netInfo;
 		private static ProcMem crimsonProcess;
@@ -226,30 +229,33 @@ public enum Platform {
 		}
 
 		public static String getCPUModel() {
-			String model = cpuInfo[0].getModel().replaceAll("\\(.+?\\)", "");
+			String model = cpuInfo[0].getVendor();
+			model += " " + cpuInfo[0].getModel().replaceAll("\\(.+?\\)", "");
 			return model.substring(0, model.indexOf("CPU @")).trim();
 		}
 
-		public static float[] getCPUSpeed() {
+		public static int[] getCPUSpeed() {
 			try {
 				cpuInfo = sigar.getCpuInfoList();
 			} catch (SigarException e) {
 				return null;
 			}
-			float[] speeds = new float[cpuInfo.length];
+			int[] speeds = new int[cpuInfo.length];
 			for (int i = 0; i < cpuInfo.length; i++) {
 				speeds[i] = cpuInfo[i].getMhz();
 			}
+			// log.debug("CPU Speeds: {}", Arrays.toString(speeds));
 			return speeds;
 		}
 
-		public static float getAverageCPUSpeed() {
-			float[] speeds = getCPUSpeed();
-			float speed = 0;
-			for (float f : speeds) {
-				speed += f;
+		public static double getCPUUsage() {
+			try {
+				cpuPerc = sigar.getCpuPerc();
+			} catch (SigarException e) {
+				return 0;
 			}
-			return speed / speeds.length;
+
+			return cpuPerc.getCombined();
 		}
 
 		public static long getCrimsonMemoryUsage() {

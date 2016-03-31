@@ -42,8 +42,8 @@ import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeServerState;
+import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -74,7 +74,8 @@ public class ServerExecutor extends BasicExecutor {
 						return;
 					}
 					if (m.hasEvProfileDelta()) {
-						profileDelta(m.getEvProfileDelta());
+
+						profileDelta(m);
 					}
 
 					ReferenceCountUtil.release(m);
@@ -92,7 +93,15 @@ public class ServerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-					if (m.hasRqLogin()) {
+					if (m.hasCid() && m.getCid() != 0) {
+						// route
+						log.debug("Routing message (CVID: {})", m.getCid());
+						try {
+							ServerStore.Connections.getConnection(m.getCid()).handle.write(m);
+						} catch (NullPointerException e) {
+							log.debug("Could not forward message (CVID: {})", m.getCid());
+						}
+					} else if (m.hasRqLogin()) {
 						new Thread(new Runnable() {
 							public void run() {
 								login_rq(m);
@@ -132,41 +141,12 @@ public class ServerExecutor extends BasicExecutor {
 		nbt.start();
 	}
 
-	private void profileDelta(EV_ProfileDelta pd) {
-		// TODO move this
-		if (pd.getCvid() == 0) {
-			// no id has been assigned yet
-			int newId = ServerStore.Profiles.nextID();
-			pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCvid(newId).build();
-			ServerCommands.setCvid(receptor, newId);
-		}
-		//
-
-		if (pd.hasExtIp()) {
-			if (pd.getExtIp().equals("0.0.0.0") && !receptor.getRemoteAddress().equals("127.0.0.1")) {
-				pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
-			}
-		}
-		for (int svid : ServerStore.Connections.getKeySet()) {
-			Receptor r = ServerStore.Connections.getConnection(svid);
-			// somehow check permissions TODO
-
-			if (r.getInstance() == Instance.VIEWER) {
-				r.handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd).build());
-
-			}
-		}
-
-	}
-
 	private void challengeResult_1w(Message m) {
 		if (receptor.getState() != ConnectionState.AUTH_STAGE2) {
 			return;
 		}
 		if (m.getMiChallengeresult().getResult()) {
-			receptor.setState(ConnectionState.AUTHENTICATED);
-			receptor.setInstance(Instance.CLIENT);
-			ServerStore.Connections.add(receptor);
+			acceptClient();
 		} else {
 			log.debug("Authentication failed");
 			receptor.setState(ConnectionState.CONNECTED);
@@ -174,7 +154,6 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	// TODO eliminate repetition
 	private void auth_1w(Message m) {
 		if (receptor.getState() != ConnectionState.CONNECTED) {
 			return;
@@ -228,27 +207,26 @@ public class ServerExecutor extends BasicExecutor {
 			break;
 
 		case PASSWORD:
-			String password = auth.getPassword();
-			if (ServerStore.Authentication.tryPassword(password)) {
-				receptor.setState(ConnectionState.AUTHENTICATED);
-				receptor.setInstance(Instance.CLIENT);
-				ServerStore.Connections.add(receptor);
-			} else {
+			if (!ServerStore.Authentication.tryPassword(auth.getPassword())) {
 				log.debug("Authentication failed");
 				receptor.setState(ConnectionState.CONNECTED);
+				break;
 			}
-			break;
 		case NO_AUTH:
 			// come on in
-			receptor.setState(ConnectionState.AUTHENTICATED);
-			receptor.setInstance(Instance.CLIENT);
-			ServerStore.Connections.add(receptor);
+			acceptClient();
 			break;
 		default:
 			break;
 
 		}
 
+	}
+
+	private void acceptClient() {
+		receptor.setState(ConnectionState.AUTHENTICATED);
+		receptor.setInstance(Instance.CLIENT);
+		ServerStore.Connections.add(receptor);
 	}
 
 	private void challenge_rq(Message m) {
@@ -266,6 +244,30 @@ public class ServerExecutor extends BasicExecutor {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+
+	}
+
+	private void profileDelta(Message m) {
+		if (m.hasVid()) {
+			ServerStore.Connections.getConnection(m.getVid()).handle.write(m);
+		} else {
+			// TODO send original message when pd needs no modification
+			EV_ProfileDelta pd = m.getEvProfileDelta();
+			if (pd.hasExtIp()) {
+				if (pd.getExtIp().equals("0.0.0.0") && !receptor.getRemoteAddress().equals("127.0.0.1")) {
+					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
+				}
+			}
+			for (int svid : ServerStore.Connections.getKeySet()) {
+				Receptor r = ServerStore.Connections.getConnection(svid);
+				// somehow check permissions TODO
+
+				if (r.getInstance() == Instance.VIEWER) {
+					r.handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd).build());
+
+				}
+			}
 		}
 
 	}
@@ -396,22 +398,18 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void stream_start_ev(Message m) {
-		if (m.getMiStreamStart().getParam().hasCID()) {
 
-		} else {
-			InfoSlave is = new SInfoSlave(m.getMiStreamStart().getParam());
-			StreamStore.addStream(is);
+		Param p = m.getMiStreamStart().getParam();
+		if (p.hasInfoParam()) {
+			StreamStore.addStream(new SInfoSlave(p));
 		}
 
 	}
 
 	private void stream_stop_ev(Message m) {
-		if (m.getMiStreamStop().hasCID()) {
 
-		} else {
+		StreamStore.removeStream(m.getMiStreamStop().getStreamID());
 
-			StreamStore.removeStream(m.getMiStreamStop().getStreamID());
-		}
 	}
 
 	private void rq_add_listener(Message m) {

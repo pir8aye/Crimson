@@ -61,6 +61,11 @@ public class Client {
 			System.out.println("Database error");
 		}
 
+		try {
+			Common.cvid = Client.clientDB.getInteger("cvid");
+		} catch (Exception e2) {
+		}
+
 		connectionRoutine(nts);
 
 	}

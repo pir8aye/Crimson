@@ -34,7 +34,7 @@ message EV_ProfileDelta {
 	optional string cpu_temp = 5;
 	optional double crimson_cpu_usage = 6;
 	repeated double core_speed = 7;
-	repeated double core_usage = 8;
+	optional double core_usage = 8;
 	
 	// Network attributes
 	optional string hostname = 34;

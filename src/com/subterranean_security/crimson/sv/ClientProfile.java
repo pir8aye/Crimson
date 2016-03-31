@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sv;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +24,6 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import javax.swing.ImageIcon;
-import javax.xml.stream.XMLStreamException;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.NetworkInterface;
@@ -70,7 +68,7 @@ public class ClientProfile implements Serializable {
 	private Attribute cpuTemp;
 	private Attribute crimsonCpuUsage;
 	private ArrayList<Double> coreSpeeds;
-	private ArrayList<Double> coreUsages;
+	private Attribute cpuUsage;
 
 	// Network attributes
 	private Attribute hostname;
@@ -117,7 +115,7 @@ public class ClientProfile implements Serializable {
 		cpuTemp = new UntrackedAttribute();
 		crimsonCpuUsage = new UntrackedAttribute();
 		// core_speeds
-		// core_temps
+		cpuUsage = new UntrackedAttribute();
 		hostname = new UntrackedAttribute();
 		extIp = new UntrackedAttribute();
 		dns1 = new UntrackedAttribute();
@@ -328,12 +326,12 @@ public class ClientProfile implements Serializable {
 		this.coreSpeeds = coreSpeeds;
 	}
 
-	public ArrayList<Double> getCoreUsages() {
-		return coreUsages;
+	public String getCpuUsage() {
+		return cpuUsage.get();
 	}
 
-	public void setCoreUsages(ArrayList<Double> coreUsages) {
-		this.coreUsages = coreUsages;
+	public void setCpuUsage(String coreUsages) {
+		this.cpuUsage.set(coreUsages);
 	}
 
 	public String getHostname() {
@@ -525,20 +523,22 @@ public class ClientProfile implements Serializable {
 			setCrimsonCpuUsage(String.format("%.2f%%", 100 * c.getCrimsonCpuUsage()));
 		}
 		// core_speed
-		// core_usage
+		if (c.hasCoreUsage()) {
+			setCpuUsage(String.format("%.2f", 100 * c.getCoreUsage()));
+		}
 		if (c.hasHostname()) {
 			setHostname(c.getHostname());
 		}
 		if (c.hasExtIp()) {
 			setExtIp(c.getExtIp());
 			// TODO resolve only if viewer location resolution is enabled
-			//try {
-			//	setLocation(CUtil.Location.resolve(c.getExtIp()));
-			//	loadTransientAttributes();
-			//} catch (IOException | XMLStreamException e) {
-			//	// TODO Auto-generated catch block
-			//	e.printStackTrace();
-			//}
+			// try {
+			// setLocation(CUtil.Location.resolve(c.getExtIp()));
+			// loadTransientAttributes();
+			// } catch (IOException | XMLStreamException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
 		}
 		if (c.hasNetDns1()) {
 			setDns1(c.getNetDns1());

@@ -61,4 +61,10 @@ public class WorldMap extends JPanel implements DModule {
 		return 0;
 	}
 
+	@Override
+	public boolean isDetailOpen() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

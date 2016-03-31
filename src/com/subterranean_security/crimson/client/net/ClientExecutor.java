@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
@@ -57,10 +58,6 @@ public class ClientExecutor extends BasicExecutor {
 						return;
 					}
 
-					if (m.hasMiStreamStart()) {
-						stream_start_ev(m);
-					}
-
 					ReferenceCountUtil.release(m);
 				}
 			}
@@ -84,6 +81,10 @@ public class ClientExecutor extends BasicExecutor {
 						file_listing_rq(m);
 					} else if (m.hasMiAssignCvid()) {
 						assign_1w(m);
+					} else if (m.hasMiStreamStart()) {
+						stream_start_ev(m);
+					} else if (m.hasMiStreamStop()) {
+						stream_stop_ev(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -94,13 +95,6 @@ public class ClientExecutor extends BasicExecutor {
 			}
 		});
 		nbt.start();
-	}
-
-	private void stream_start_ev(Message m) {
-		Param p = m.getMiStreamStart().getParam();
-		if (p.hasInfoParam()) {
-			StreamStore.addStream(new CInfoSlave(p));
-		}
 	}
 
 	private void challenge_rq(Message m) {
@@ -189,7 +183,22 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void assign_1w(Message m) {
-		Client.clientDB.storeObject("cvid", m.getMiAssignCvid().getId());
+		Common.cvid = m.getMiAssignCvid().getId();
+		Client.clientDB.storeObject("cvid", Common.cvid);
+	}
+
+	private void stream_start_ev(Message m) {
+		log.debug("stream_start_ev");
+		Param p = m.getMiStreamStart().getParam();
+		if (p.hasInfoParam()) {
+			StreamStore.addStream(new CInfoSlave(p));
+		}
+	}
+
+	private void stream_stop_ev(Message m) {
+		log.debug("stream_stop_ev");
+		StreamStore.removeStream(m.getMiStreamStop().getStreamID());
+
 	}
 
 }

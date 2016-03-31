@@ -27,12 +27,14 @@ public enum ViewerRouter {
 	;
 	public static void route(Message m) {
 
-		if (m.hasCid()) {
+		try {
 			ViewerStore.Connections.get(m.getCid()).write(m);
-		} else {
-			// assume 0
-			ViewerStore.Connections.get(0).write(m);
+			return;
+		} catch (NullPointerException e) {
+			// try server
 		}
+		// send to server
+		ViewerStore.Connections.get(0).write(m);
 
 	}
 

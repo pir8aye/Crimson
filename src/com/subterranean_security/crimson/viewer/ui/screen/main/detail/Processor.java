@@ -37,14 +37,15 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.ClientProfile;
 
 import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
+import info.monitorenter.gui.chart.rangepolicies.RangePolicyHighestValues;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
 import info.monitorenter.util.Range;
+import javax.swing.border.BevelBorder;
 
 public class Processor extends JPanel implements DModule {
 
@@ -70,30 +71,48 @@ public class Processor extends JPanel implements DModule {
 
 		trace.setColor(Color.RED);
 
+		JPanel panel_3 = new JPanel();
+		panel_3.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		GridBagConstraints gbc_panel_3 = new GridBagConstraints();
+		gbc_panel_3.fill = GridBagConstraints.BOTH;
+		gbc_panel_3.insets = new Insets(0, 0, 5, 0);
+		gbc_panel_3.gridx = 0;
+		gbc_panel_3.gridy = 0;
+		panel.add(panel_3, gbc_panel_3);
+		GridBagLayout gbl_panel_3 = new GridBagLayout();
+		gbl_panel_3.columnWidths = new int[] { 0, 0 };
+		gbl_panel_3.rowHeights = new int[] { 57, 0, 0 };
+		gbl_panel_3.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+		gbl_panel_3.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+		panel_3.setLayout(gbl_panel_3);
+
 		Chart2D chart = new Chart2D();
+		GridBagConstraints gbc_chart = new GridBagConstraints();
+		gbc_chart.insets = new Insets(0, 0, 5, 0);
+		gbc_chart.fill = GridBagConstraints.BOTH;
+		gbc_chart.gridx = 0;
+		gbc_chart.gridy = 0;
+		panel_3.add(chart, gbc_chart);
 		chart.setUseAntialiasing(true);
 		chart.setBackground(Color.WHITE);
-		chart.setGridColor(Color.black);
 		chart.getAxisX().setVisible(false);
 		chart.getAxisY().setRangePolicy(new RangePolicyFixedViewport(new Range(0, 100)));
-		chart.getAxisX().setPixelXLeft(0);
 		chart.getAxisX().setPaintGrid(false);
 		chart.getAxisX().setPaintScale(false);
 		chart.getAxisY().setVisible(false);
 		chart.getAxisY().setPaintGrid(true);
 		chart.getAxisY().setPaintScale(false);
 		chart.addTrace(trace);
-		chart.setUseAntialiasing(true);
-		chart.setFont(new Font("Dialog", Font.PLAIN, 8));
 		chart.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		chart.setPaintLabels(false);
 		chart.setAutoscrolls(true);
-		GridBagConstraints gbc_lblGraph = new GridBagConstraints();
-		gbc_lblGraph.insets = new Insets(0, 0, 5, 0);
-		gbc_lblGraph.fill = GridBagConstraints.BOTH;
-		gbc_lblGraph.gridx = 0;
-		gbc_lblGraph.gridy = 0;
-		panel.add(chart, gbc_lblGraph);
+
+		val_usage = new JLabel("Loading...");
+		val_usage.setFont(new Font("Dialog", Font.BOLD, 9));
+		GridBagConstraints gbc_lblNewLabel_5 = new GridBagConstraints();
+		gbc_lblNewLabel_5.gridx = 0;
+		gbc_lblNewLabel_5.gridy = 1;
+		panel_3.add(val_usage, gbc_lblNewLabel_5);
 
 		JPanel panel_2 = new JPanel();
 		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
@@ -120,7 +139,7 @@ public class Processor extends JPanel implements DModule {
 		panel_2.add(lblTotalCpuUsage, gbc_lblTotalCpuUsage);
 
 		lblCpuModel = new JLabel("Loading...");
-		lblCpuModel.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblCpuModel.setFont(new Font("Dialog", Font.BOLD, 9));
 		lblCpuModel.setHorizontalAlignment(SwingConstants.TRAILING);
 		GridBagConstraints gbc_lblLoading = new GridBagConstraints();
 		gbc_lblLoading.fill = GridBagConstraints.BOTH;
@@ -129,7 +148,7 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblLoading.gridy = 0;
 		panel_2.add(lblCpuModel, gbc_lblLoading);
 
-		JLabel lblNewLabel = new JLabel("Max Clock Speed:");
+		JLabel lblNewLabel = new JLabel("Clock Speed:");
 		lblNewLabel.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.fill = GridBagConstraints.BOTH;
@@ -139,7 +158,7 @@ public class Processor extends JPanel implements DModule {
 		panel_2.add(lblNewLabel, gbc_lblNewLabel);
 
 		JLabel lblNewLabel_1 = new JLabel("Loading...");
-		lblNewLabel_1.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblNewLabel_1.setFont(new Font("Dialog", Font.BOLD, 9));
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.TRAILING);
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.fill = GridBagConstraints.BOTH;
@@ -159,7 +178,7 @@ public class Processor extends JPanel implements DModule {
 
 		JLabel lblNewLabel_3 = new JLabel("Loading...");
 		lblNewLabel_3.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblNewLabel_3.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblNewLabel_3.setFont(new Font("Dialog", Font.BOLD, 9));
 		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
 		gbc_lblNewLabel_3.fill = GridBagConstraints.BOTH;
 		gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 0);
@@ -167,7 +186,7 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblNewLabel_3.gridy = 2;
 		panel_2.add(lblNewLabel_3, gbc_lblNewLabel_3);
 
-		JLabel lblNewLabel_4 = new JLabel("Current Utilization:");
+		JLabel lblNewLabel_4 = new JLabel("Physical Cores:");
 		lblNewLabel_4.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
 		gbc_lblNewLabel_4.fill = GridBagConstraints.BOTH;
@@ -178,12 +197,12 @@ public class Processor extends JPanel implements DModule {
 
 		lblCpuUsage = new JLabel("Loading...");
 		lblCpuUsage.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblCpuUsage.setFont(new Font("Dialog", Font.BOLD, 10));
-		GridBagConstraints gbc_lblNewLabel_5 = new GridBagConstraints();
-		gbc_lblNewLabel_5.fill = GridBagConstraints.BOTH;
-		gbc_lblNewLabel_5.gridx = 1;
-		gbc_lblNewLabel_5.gridy = 3;
-		panel_2.add(lblCpuUsage, gbc_lblNewLabel_5);
+		lblCpuUsage.setFont(new Font("Dialog", Font.BOLD, 9));
+		GridBagConstraints gbc_lblNewLabel_50 = new GridBagConstraints();
+		gbc_lblNewLabel_50.fill = GridBagConstraints.BOTH;
+		gbc_lblNewLabel_50.gridx = 1;
+		gbc_lblNewLabel_50.gridy = 3;
+		panel_2.add(lblCpuUsage, gbc_lblNewLabel_50);
 
 		JPanel panel_1 = new JPanel();
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
@@ -202,36 +221,35 @@ public class Processor extends JPanel implements DModule {
 
 	private JLabel lblCpuUsage;
 
-	private long updatePeriod;
+	private long updatePeriod = 1000;
 
 	@Override
 	public void setTarget(ClientProfile p) {
-		updateTimer.cancel();
-		
+		System.out.println("Setting target: " + (p == null ? "null" : p.getCvid()));
+
 		// clear chart only if the new profile differs from the old
-		if (p.getCvid() != profile.getCvid()) {
+		if ((p != null) && (profile != null) && p.getCvid() != profile.getCvid()) {
+			System.out.println("Clearing chart");
+			updateTimer.cancel();
 			trace.removeAllPoints();
 		}
-		if (im != null) {
-			StreamStore.removeStream(im.getStreamID());
-		}
+
 		if (p != null) {
 			profile = p;
 			lblCpuModel.setText(profile.getCpuModel());
 
-			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).build(),
-					profile.getCvid()); // TODO set period in param
-			StreamStore.addStream(im);
-			im.start();
-
+			updateTimer = new Timer();
 			updateTimer.schedule(new TimerTask() {
-
-				private long m_starttime = System.currentTimeMillis();
+				double i = 59;
 
 				@Override
 				public void run() {
-					// TODO get average cpu usage from profile
-					trace.addPoint(((double) System.currentTimeMillis() - this.m_starttime), 0);
+					if (profile.getCpuUsage() != null && isDetailOpen()) {
+						double usage = Double.parseDouble(profile.getCpuUsage());
+						val_usage.setText(String.format("CPU Utilization: %5.2f%%", usage));
+						trace.addPoint(i++, usage);
+					}
+
 				}
 
 			}, 0, updatePeriod);
@@ -242,12 +260,17 @@ public class Processor extends JPanel implements DModule {
 
 	@Override
 	public void setShowing(boolean showing) {
+		this.showing = showing;
 		if (showing) {
-			im.start();
+			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).build(), profile.getCvid(),
+					(int) updatePeriod);
+			StreamStore.addStream(im);
 		} else {
-			im.stop();
+			if (im != null) {
+				System.out.println("Closing stream");
+				StreamStore.removeStream(im.getStreamID());
+			}
 		}
-
 	}
 
 	@Override
@@ -271,6 +294,15 @@ public class Processor extends JPanel implements DModule {
 	@Override
 	public int getDWidth() {
 		return 0;
+	}
+
+	private boolean showing = false;
+
+	private JLabel val_usage;
+
+	@Override
+	public boolean isDetailOpen() {
+		return showing;
 	}
 
 }
