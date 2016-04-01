@@ -85,6 +85,8 @@ public class ClientExecutor extends BasicExecutor {
 						stream_start_ev(m);
 					} else if (m.hasMiStreamStop()) {
 						stream_stop_ev(m);
+					} else if (m.hasRqChangeClientState()) {
+						rq_change_client_state(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -95,6 +97,25 @@ public class ClientExecutor extends BasicExecutor {
 			}
 		});
 		nbt.start();
+	}
+
+	private void rq_change_client_state(Message m) {
+		// TODO reply
+		log.debug("Received state change request: {}", m.getRqChangeClientState().getNewState().toString());
+		switch (m.getRqChangeClientState().getNewState()) {
+		case FUNCTIONING_OFF:
+			break;
+		case FUNCTIONING_ON:
+			break;
+		case RESTART:
+			break;
+		case SHUTDOWN:
+			break;
+		case UNINSTALL:
+			break;
+
+		}
+
 	}
 
 	private void challenge_rq(Message m) {

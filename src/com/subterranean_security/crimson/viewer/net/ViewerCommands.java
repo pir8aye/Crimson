@@ -112,11 +112,11 @@ public enum ViewerCommands {
 		return false;
 	}
 
-	public static boolean changeClientState(StringBuffer error, StateType st) {
+	public static boolean changeClientState(StringBuffer error, int cid, StateType st) {
 		log.debug("Changing client state: {}", st.toString());
 		try {
-			Message m = ViewerRouter.routeAndWait(
-					Message.newBuilder().setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)), 3);
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setCid(cid)
+					.setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)), 3);
 			if (m == null) {
 				error.append("No response");
 			} else if (!m.getRsChangeServerState().getResult()) {

@@ -32,9 +32,11 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class HostList extends JPanel {
@@ -80,7 +82,7 @@ public class HostList extends JPanel {
 				final ClientProfile sp = ViewerStore.Profiles.clients.get(sourceRow);
 
 				if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
-					initContextActions();
+					initContextActions(sp);
 					popup.show(table, e.getX(), e.getY());
 
 				} else {
@@ -95,7 +97,7 @@ public class HostList extends JPanel {
 		add(jsp, BorderLayout.CENTER);
 	}
 
-	private void initContextActions() {// TODO argument
+	private void initContextActions(ClientProfile cp) {
 		control.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -115,7 +117,10 @@ public class HostList extends JPanel {
 
 				new Thread() {
 					public void run() {
-
+						StringBuffer error = new StringBuffer();
+						if (!ViewerCommands.changeClientState(error, cp.getCvid(), StateType.SHUTDOWN)) {
+							// TODO
+						}
 					}
 				}.start();
 
@@ -128,7 +133,10 @@ public class HostList extends JPanel {
 
 				new Thread() {
 					public void run() {
-
+						StringBuffer error = new StringBuffer();
+						if (!ViewerCommands.changeClientState(error, cp.getCvid(), StateType.RESTART)) {
+							// TODO
+						}
 					}
 				}.start();
 
