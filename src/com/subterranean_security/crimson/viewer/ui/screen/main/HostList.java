@@ -210,10 +210,19 @@ public class HostList extends JPanel {
 		quick.add(refresh);
 	}
 
-	public void refreshTM() {
-		tm.refreshHeaders();
+	public void updateRow(int r) {
+		// TODO update individual cell
+		tm.fireTableRowsUpdated(r, r);
+	}
+
+	public void insertRow(int r) {
+		tm.fireTableRowsInserted(r, r);
+	}
+
+	public void refreshHeaders() {
 		tm.fireTableStructureChanged();
 	}
+
 }
 
 class TM extends AbstractTableModel {
@@ -232,6 +241,7 @@ class TM extends AbstractTableModel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.fireTableStructureChanged();
 	}
 
 	@Override

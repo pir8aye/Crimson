@@ -141,11 +141,14 @@ public enum ViewerStore {
 
 		public static void update(EV_ProfileDelta change) {
 			boolean flag = true;
-			for (ClientProfile p : clients) {
-				if (p.getCvid() == change.getCvid()) {
+			for (int i = 0; i < clients.size(); i++) {
+				// for (ClientProfile p : clients) {
+				if (clients.get(i).getCvid() == change.getCvid()) {
 					flag = false;
-					p.amalgamate(change);
-
+					clients.get(i).amalgamate(change);
+					if (MainFrame.main.panel.listLoaded) {
+						MainFrame.main.panel.list.updateRow(i);
+					}
 					break;
 				}
 			}
@@ -153,11 +156,11 @@ public enum ViewerStore {
 				ClientProfile np = new ClientProfile(change.getCvid());
 				np.amalgamate(change);
 				clients.add(np);
+				if (MainFrame.main.panel.listLoaded) {
+					MainFrame.main.panel.list.insertRow(clients.size() - 1);
+				}
 			}
 
-			if (MainFrame.main.panel.listLoaded) {
-				MainFrame.main.panel.list.refreshTM();
-			}
 			if (MainFrame.main.panel.graphLoaded) {
 				// TODO refresh graph
 			}

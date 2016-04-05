@@ -139,7 +139,7 @@ public class SettingsPanel extends JPanel {
 		db.storeObject("hostlist.headers", headers);
 
 		// refresh list headers
-		MainFrame.main.panel.list.refreshTM();
+		MainFrame.main.panel.list.refreshHeaders();
 	}
 
 	public void setValues(LViewerDB db) {
