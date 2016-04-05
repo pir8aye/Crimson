@@ -71,14 +71,14 @@ public enum Common {
 	public static final File gtmp = new File(System.getProperty("java.io.tmpdir"));
 
 	static {
-		if (instance != Instance.INSTALLER) {
-			try {
-				version = CUtil.Misc.getManifestAttr("Crimson-Version");
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 
+		try {
+			version = CUtil.Misc.getManifestAttr("Crimson-Version");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		if (instance != Instance.INSTALLER) {
 			if ((!base.canRead() || !base.canWrite())) {
 				log.error("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
 
