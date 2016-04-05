@@ -31,15 +31,15 @@ import aurelienribon.tweenengine.TweenManager;
 
 public class MovingPanel extends JPanel {
 
-	private static final long			serialVersionUID	= 1L;
-	private static final Color			BG_COLOR			= new Color(0x3B5998);
-	private static final Color			BORDER_COLOR		= new Color(0x000000);
+	private static final long serialVersionUID = 1L;
+	private static final Color BG_COLOR = new Color(0x3B5998);
+	private static final Color BORDER_COLOR = new Color(0x000000);
 
-	private static final TweenManager	tweenManager		= SLAnimator.createTweenManager();
-	private Runnable					action;
-	private boolean						actionEnabled		= true;
-	private boolean						hover				= false;
-	private int							borderThickness		= 2;
+	private static final TweenManager tweenManager = SLAnimator.createTweenManager();
+	private Runnable action;
+	private boolean actionEnabled = true;
+	private boolean hover = false;
+	private int borderThickness = 2;
 
 	public MovingPanel(JPanel panel) {
 		setBackground(BG_COLOR);
@@ -99,7 +99,7 @@ public class MovingPanel extends JPanel {
 	// -------------------------------------------------------------------------
 
 	public static class Accessor extends SLAnimator.ComponentAccessor {
-		public static final int	BORDER_THICKNESS	= 100;
+		public static final int BORDER_THICKNESS = 100;
 
 		@Override
 		public int getValues(Component target, int tweenType, float[] returnValues) {
