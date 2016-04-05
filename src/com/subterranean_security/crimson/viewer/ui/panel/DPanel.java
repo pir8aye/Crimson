@@ -48,7 +48,8 @@ public class DPanel extends SLPanel {
 	private MovingPanel movingMain;
 
 	public Detail detail = new Detail();
-	private boolean showing = false;
+	public static boolean showing = false;
+	public static boolean moving = false;
 
 	public DPanel(JPanel main) {
 		thisDP = this;
@@ -74,9 +75,11 @@ public class DPanel extends SLPanel {
 	public synchronized void showDetail(ClientProfile sp) {
 		if (!showing) {
 			// move the detail panel out
+			moving = true;
 			movingMain.runAction();
 			detail.nowOpen(sp);
 			showing = true;
+			moving = false;
 		}
 
 	}
@@ -85,9 +88,11 @@ public class DPanel extends SLPanel {
 
 		if (showing) {
 			// move the detail panel back
+			moving = true;
 			movingMain.runAction();
 			detail.nowClosed();
 			showing = false;
+			moving = false;
 		}
 
 	}

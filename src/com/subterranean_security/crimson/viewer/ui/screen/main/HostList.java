@@ -37,6 +37,7 @@ import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.ui.panel.DPanel;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class HostList extends JPanel {
@@ -67,6 +68,10 @@ public class HostList extends JPanel {
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				if (DPanel.moving) {
+					return;
+				}
+
 				// get source of click
 				JTable source = (JTable) e.getSource();
 				final int sourceRow = source.rowAtPoint(e.getPoint());
@@ -75,10 +80,7 @@ public class HostList extends JPanel {
 					MainFrame.main.dp.closeDetail();
 					return;
 				}
-				// select row
-				if (!source.isRowSelected(sourceRow)) {
-					source.changeSelection(sourceRow, 0, false, false);
-				}
+
 				final ClientProfile sp = ViewerStore.Profiles.clients.get(sourceRow);
 
 				if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
@@ -88,6 +90,11 @@ public class HostList extends JPanel {
 				} else {
 					// open up the detail
 					MainFrame.main.dp.showDetail(sp);
+				}
+
+				// select row
+				if (!source.isRowSelected(sourceRow)) {
+					source.changeSelection(sourceRow, 0, false, false);
 				}
 			}
 		});
@@ -318,7 +325,6 @@ class TR extends DefaultTableCellRenderer {
 			setIcon(ico);
 			setText(ico.getDescription());
 		} else {
-			setIcon(null);
 			super.setValue(value);
 		}
 	}
