@@ -23,6 +23,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,6 +31,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -42,14 +44,14 @@ import com.subterranean_security.crimson.sv.ClientProfile;
 import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
-import info.monitorenter.gui.chart.rangepolicies.RangePolicyHighestValues;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
 import info.monitorenter.util.Range;
-import javax.swing.border.BevelBorder;
 
 public class Processor extends JPanel implements DModule {
 
 	private static final long serialVersionUID = 1L;
+
+	private long updatePeriod = 900;
 
 	private ITrace2D trace = new Trace2DLtd(60);
 	private boolean speed = true;// TODO configurable
@@ -211,6 +213,28 @@ public class Processor extends JPanel implements DModule {
 		gbc_panel_1.gridy = 2;
 		panel.add(panel_1, gbc_panel_1);
 
+		startUpdater();
+	}
+
+	private void startUpdater() {
+		updateTimer.schedule(new TimerTask() {
+			Date start = new Date();
+
+			@Override
+			public void run() {
+				if (isDetailOpen()) {
+					double usage = 0;
+					if (profile.getCpuUsage() != null) {
+						usage = Double.parseDouble(profile.getCpuUsage());
+					}
+
+					val_usage.setText(String.format("CPU Utilization: %5.2f%%", usage));
+					trace.addPoint(System.currentTimeMillis() - start.getTime(), usage);
+				}
+
+			}
+
+		}, 0, updatePeriod);
 	}
 
 	private ClientProfile profile;
@@ -221,40 +245,16 @@ public class Processor extends JPanel implements DModule {
 
 	private JLabel lblCpuUsage;
 
-	private long updatePeriod = 1000;
-
 	@Override
 	public void setTarget(ClientProfile p) {
-		System.out.println("Setting target: " + (p == null ? "null" : p.getCvid()));
 
 		// clear chart only if the new profile differs from the old
-		if ((p != null) && (profile != null) && p.getCvid() != profile.getCvid()) {
-			System.out.println("Clearing chart");
-			updateTimer.cancel();
+		if ((profile != null) && p.getCvid() != profile.getCvid()) {
 			trace.removeAllPoints();
 		}
 
-		if (p != null) {
-			profile = p;
-			lblCpuModel.setText(profile.getCpuModel());
-
-			updateTimer = new Timer();
-			updateTimer.schedule(new TimerTask() {
-				double i = 59;
-
-				@Override
-				public void run() {
-					if (profile.getCpuUsage() != null && isDetailOpen()) {
-						double usage = Double.parseDouble(profile.getCpuUsage());
-						val_usage.setText(String.format("CPU Utilization: %5.2f%%", usage));
-						trace.addPoint(i++, usage);
-					}
-
-				}
-
-			}, 0, updatePeriod);
-
-		}
+		profile = p;
+		lblCpuModel.setText(profile.getCpuModel());
 
 	}
 
@@ -267,7 +267,6 @@ public class Processor extends JPanel implements DModule {
 			StreamStore.addStream(im);
 		} else {
 			if (im != null) {
-				System.out.println("Closing stream");
 				StreamStore.removeStream(im.getStreamID());
 			}
 		}
