@@ -15,10 +15,38 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.controlpanel.client;
+package com.subterranean_security.crimson.viewer.ui.screen.controls.client;
 
-import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.util.HashMap;
 
-public class SettingsTab extends JPanel {
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 
+public class ClientCPFrame extends JFrame {
+
+	private static final long	serialVersionUID	= 1L;
+	private SettingsTab			settingsTab;
+	private ControlsTab			controlsTab;
+
+	public ClientCPFrame(HashMap<String, Boolean> tabs) {
+		setResizable(true);
+		setLayout(new BorderLayout(0, 0));
+
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+		add(tabbedPane, BorderLayout.CENTER);
+
+		int tindex = 0;
+
+		if (tabs.get("Settings")) {
+			tabbedPane.add(settingsTab);
+			tabbedPane.setTitleAt(tindex++, "Settings");
+		}
+
+		if (tabs.get("Controls")) {
+			tabbedPane.add(controlsTab);
+			tabbedPane.setTitleAt(tindex++, "Controls");
+		}
+
+	}
 }

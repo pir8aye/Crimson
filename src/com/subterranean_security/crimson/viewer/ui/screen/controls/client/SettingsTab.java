@@ -15,10 +15,10 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.controlpanel.client;
+package com.subterranean_security.crimson.viewer.ui.screen.controls.client;
 
 import javax.swing.JPanel;
 
-public class ControlsTab extends JPanel {
+public class SettingsTab extends JPanel {
 
 }
