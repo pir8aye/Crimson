@@ -220,7 +220,7 @@ public class HostList extends JPanel {
 	}
 
 	public void refreshHeaders() {
-		tm.fireTableStructureChanged();
+		tm.refreshHeaders();
 	}
 
 }
