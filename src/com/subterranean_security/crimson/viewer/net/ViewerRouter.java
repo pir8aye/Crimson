@@ -44,7 +44,8 @@ public enum ViewerRouter {
 	}
 
 	public static Message getReponse(int cvid, int mid, int timeout) throws InterruptedException {
-		return ViewerStore.Connections.getVC(cvid).cq.take(mid, timeout, TimeUnit.SECONDS);
+		// TODO receive from direct connections
+		return ViewerStore.Connections.getVC(0).cq.take(mid, timeout, TimeUnit.SECONDS);
 	}
 
 	public static Message routeAndWait(Message.Builder m, int timeout) throws InterruptedException {
