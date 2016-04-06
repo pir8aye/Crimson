@@ -246,7 +246,6 @@ public class SettingsPanel extends JPanel {
 			for (int i = 0; i < path.length; i++) {
 				p += (String) path[i];
 			}
-			System.out.println("Showing card: " + p);
 
 			((CardLayout) cards.getLayout()).show(cards, p);
 
