@@ -43,5 +43,6 @@ public enum UICommon {
 
 	// dimensions
 	public static final Dimension dim_btn_up = new Dimension(40, 17);
+	public static final Dimension min_ccp = new Dimension(400, 300);
 
 }

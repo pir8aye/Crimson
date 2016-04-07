@@ -19,6 +19,16 @@ package com.subterranean_security.crimson.viewer.ui.screen.controls.client;
 
 import javax.swing.JPanel;
 
-public class SettingsTab extends JPanel {
+public class SettingsTab extends JPanel implements CPPanel {
+
+	private static final long serialVersionUID = 1L;
+
+	public SettingsTab() {
+
+	}
+
+	public void init() {
+
+	}
 
 }
