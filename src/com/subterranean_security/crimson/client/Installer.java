@@ -40,6 +40,8 @@ public class Installer {
 	public static HashMap<String, String> ic;
 	public static String jarPath;
 
+	private static boolean debug = new File("/debug.txt").exists();
+
 	public static void main(String[] args) {
 		try {
 			ic = readInternal();
@@ -150,8 +152,9 @@ public class Installer {
 		extract("com/subterranean_security/crimson/client/res/bin/client.db", base + "var/client.db");
 
 		System.out.println("Copying client jar");
+		File client = new File(base + "/client.jar");
 		try {
-			copyClientJar(new File(base + "/client.jar"));
+			copyClientJar(client);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -159,6 +162,23 @@ public class Installer {
 			return false;
 		}
 
+		return execute(client);
+	}
+
+	private static boolean execute(File f) {
+		// TODO platform independence
+		try {
+			if (debug) {
+				Runtime.getRuntime().exec("java -jar " + f.getAbsolutePath());
+			} else {
+				Runtime.getRuntime().exec("javaw -jar " + f.getAbsolutePath());
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 
