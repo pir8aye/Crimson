@@ -89,5 +89,6 @@ public enum Defaults {
 		db.storeObject("cvid", 0);
 		db.storeObject("report_buffer", new ArrayList<Report>());
 		db.storeObject("crimson.version", Common.version);
+		db.storeObject("crimson.build_number", Common.build);
 	}
 }
