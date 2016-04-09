@@ -17,13 +17,109 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.controls.client;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+
+import com.subterranean_security.crimson.core.proto.State.StateType;
+import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.ui.panel.Console;
+import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class ControlsTab extends JPanel implements CPPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public ControlsTab() {
+	public ControlsTab(ClientProfile profile, Console console) {
+		setLayout(new BorderLayout(0, 0));
+
+		JPanel panel_2 = new JPanel();
+		add(panel_2, BorderLayout.NORTH);
+		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.Y_AXIS));
+
+		JPanel panel_3 = new JPanel();
+		panel_2.add(panel_3);
+
+		JPanel panel_1 = new JPanel();
+		panel_3.add(panel_1);
+		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
+
+		JPanel panel = new JPanel();
+		panel_1.add(panel);
+		panel.setBorder(new TitledBorder(null, "Client Power", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+
+		JButton btnShutdown = new JButton("Shutdown");
+		btnShutdown.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				new Thread(new Runnable() {
+					public void run() {
+						console.addLine("Sending shutdown signal to client: " + profile.getHostname());
+						StringBuffer error = new StringBuffer();
+						if (!ViewerCommands.changeClientState(error, profile.getCvid(), StateType.SHUTDOWN)) {
+							console.addLine("Shutdown error: " + error.toString());
+						}
+					}
+				}).start();
+
+			}
+		});
+		btnShutdown.setIcon(UUtil.getIcon("icons16/general/lcd_tv_off.png"));
+		btnShutdown.setMargin(new Insets(2, 4, 2, 4));
+		btnShutdown.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel.add(btnShutdown);
+
+		JButton btnRestart = new JButton("Restart");
+		btnRestart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				new Thread(new Runnable() {
+					public void run() {
+						console.addLine("Sending restart signal to client: " + profile.getHostname());
+						StringBuffer error = new StringBuffer();
+						if (!ViewerCommands.changeClientState(error, profile.getCvid(), StateType.RESTART)) {
+							console.addLine("Restart error: " + error.toString());
+						}
+					}
+				}).start();
+
+			}
+		});
+		btnRestart.setIcon(UUtil.getIcon("icons16/general/arrow_redo.png"));
+		btnRestart.setMargin(new Insets(2, 4, 2, 4));
+		btnRestart.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel.add(btnRestart);
+
+		JButton btnStandby = new JButton("Standby");
+		btnStandby.setMargin(new Insets(2, 4, 2, 4));
+		btnStandby.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel.add(btnStandby);
+
+		JButton btnHibernate = new JButton("Hibernate");
+		btnHibernate.setMargin(new Insets(2, 4, 2, 4));
+		btnHibernate.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel.add(btnHibernate);
+
+		JPanel panel_4 = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel_4.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		panel_4.setBorder(new TitledBorder(null, "Crimson Client", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_1.add(panel_4);
+
+		JButton btnUninstall = new JButton("Uninstall");
+		btnUninstall.setIcon(UUtil.getIcon("icons16/general/radioactivity.png"));
+		btnUninstall.setMargin(new Insets(2, 4, 2, 4));
+		btnUninstall.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel_4.add(btnUninstall);
 
 	}
 

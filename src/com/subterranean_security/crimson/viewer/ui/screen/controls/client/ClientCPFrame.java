@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.controls.client;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.Box;
@@ -36,6 +37,7 @@ import javax.swing.tree.DefaultTreeModel;
 
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
+import com.subterranean_security.crimson.viewer.ui.panel.Console;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class ClientCPFrame extends JFrame {
@@ -47,6 +49,9 @@ public class ClientCPFrame extends JFrame {
 	private JTree tree = new JTree();
 	private JPanel cards = new JPanel();
 
+	public Console console = new Console();
+
+	// not needed yet
 	private HashMap<Panels, CPPanel> panels = new HashMap<Panels, CPPanel>();
 
 	public ClientCPFrame(ClientProfile cp) {
@@ -57,6 +62,7 @@ public class ClientCPFrame extends JFrame {
 		setResizable(true);
 		setMinimumSize(UICommon.min_ccp);
 		getContentPane().setLayout(new BorderLayout(0, 0));
+		getContentPane().add(console, BorderLayout.SOUTH);
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout(0, 0));
@@ -70,8 +76,7 @@ public class ClientCPFrame extends JFrame {
 
 			{
 				// TODO add based on platform
-				this.add(new DefaultMutableTreeNode("Clipboard"));
-				this.add(new DefaultMutableTreeNode("Website Filter"));
+				this.add(new DefaultMutableTreeNode(Panels.CONTROLS));
 			}
 		}));
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
@@ -81,27 +86,40 @@ public class ClientCPFrame extends JFrame {
 			// TODO platform specific
 			private ImageIcon host = UUtil.getIcon("icons16/general/viewer.png");
 
+			private ImageIcon controls = UUtil.getIcon("icons16/general/cog.png");
 			private ImageIcon clipboard = UUtil.getIcon("icons16/general/paste_plain.png");
 			private ImageIcon webfilter = UUtil.getIcon("icons16/general/www_page.png");
 
 			@Override
 			public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
 					boolean isLeaf, int row, boolean focused) {
-				switch ((Panels) value) {
-				case CLIPBOARD:
-					setIcon(clipboard);
-					break;
-				case WEBFILTER:
-					setIcon(webfilter);
-					break;
-				default:
+				Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+				if (userObject instanceof Panels) {
+
+					Panels type = (Panels) userObject;
+
+					super.getTreeCellRendererComponent(tree, type.toString(), selected, expanded, isLeaf, row, focused);
+					switch (type) {
+					case CONTROLS:
+						setIcon(controls);
+						break;
+					case CLIPBOARD:
+						setIcon(clipboard);
+						break;
+					case WEBFILTER:
+						setIcon(webfilter);
+						break;
+					default:
+						break;
+
+					}
+
+				} else {
+					super.getTreeCellRendererComponent(tree, userObject, selected, expanded, isLeaf, row, focused);
 					setIcon(host);
-					break;
-
 				}
+				return this;
 
-				return super.getTreeCellRendererComponent(tree, value.toString(), selected, expanded, isLeaf, row,
-						focused);
 			}
 		});
 		tree.addTreeSelectionListener(new TreeListener());
@@ -112,6 +130,17 @@ public class ClientCPFrame extends JFrame {
 		getContentPane().add(cards, BorderLayout.CENTER);
 		cards.setLayout(new CardLayout(0, 0));
 
+		for (Panels p : getValidPanels()) {
+			switch (p) {
+			case CONTROLS:
+				cards.add(p.toString(), new ControlsTab(profile, console));
+				break;
+			default:
+				break;
+
+			}
+		}
+
 	}
 
 	class TreeListener implements TreeSelectionListener {
@@ -119,7 +148,7 @@ public class ClientCPFrame extends JFrame {
 		@Override
 		public void valueChanged(TreeSelectionEvent e) {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-			if (node == null) {
+			if (node == null || node.getUserObject() instanceof String) {
 				return;
 			}
 
@@ -130,11 +159,13 @@ public class ClientCPFrame extends JFrame {
 	}
 
 	public enum Panels {
-		CLIPBOARD, WEBFILTER;
+		CONTROLS, CLIPBOARD, WEBFILTER, DESKTOP, SHELL, LOGS, LOCATION, KEYLOGGER, LOG_CRIMSON;
 
 		@Override
 		public String toString() {
 			switch (this) {
+			case CONTROLS:
+				return "Controls";
 			case CLIPBOARD:
 				return "Clipboard";
 			case WEBFILTER:
@@ -144,6 +175,14 @@ public class ClientCPFrame extends JFrame {
 
 			}
 		}
+	}
+
+	public ArrayList<Panels> getValidPanels() {
+		ArrayList<Panels> p = new ArrayList<Panels>();
+		// TODO dynamically add
+		p.add(Panels.CONTROLS);
+
+		return p;
 	}
 
 }
