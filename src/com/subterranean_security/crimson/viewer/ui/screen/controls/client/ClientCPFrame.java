@@ -39,6 +39,7 @@ import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.panel.Console;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import javax.swing.JSplitPane;
 
 public class ClientCPFrame extends JFrame {
 
@@ -53,6 +54,8 @@ public class ClientCPFrame extends JFrame {
 
 	// not needed yet
 	private HashMap<Panels, CPPanel> panels = new HashMap<Panels, CPPanel>();
+	private final JPanel panel_1 = new JPanel();
+	private final JSplitPane splitPane = new JSplitPane();
 
 	public ClientCPFrame(ClientProfile cp) {
 		profile = cp;
@@ -62,12 +65,22 @@ public class ClientCPFrame extends JFrame {
 		setResizable(true);
 		setMinimumSize(UICommon.min_ccp);
 		getContentPane().setLayout(new BorderLayout(0, 0));
-		getContentPane().add(console, BorderLayout.SOUTH);
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		splitPane.setDividerLocation(0.85d);
+		splitPane.setResizeWeight(0.85d);
+
+		getContentPane().add(splitPane, BorderLayout.CENTER);
+
+		splitPane.setTopComponent(panel_1);
+		panel_1.setLayout(new BorderLayout(0, 0));
+		panel_1.add(cards, BorderLayout.CENTER);
+		cards.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		cards.setLayout(new CardLayout(0, 0));
 
 		JPanel panel = new JPanel();
+		panel_1.add(panel, BorderLayout.WEST);
 		panel.setLayout(new BorderLayout(0, 0));
 		panel.add(Box.createHorizontalStrut(50), BorderLayout.SOUTH);
-		getContentPane().add(panel, BorderLayout.WEST);
 		tree.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 
 		tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode(profile.getHostname()) {
@@ -75,8 +88,9 @@ public class ClientCPFrame extends JFrame {
 			private static final long serialVersionUID = 1L;
 
 			{
-				// TODO add based on platform
-				this.add(new DefaultMutableTreeNode(Panels.CONTROLS));
+				for (Panels p : getValidPanels()) {
+					this.add(new DefaultMutableTreeNode(p));
+				}
 			}
 		}));
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
@@ -87,6 +101,7 @@ public class ClientCPFrame extends JFrame {
 			private ImageIcon host = UUtil.getIcon("icons16/general/viewer.png");
 
 			private ImageIcon controls = UUtil.getIcon("icons16/general/cog.png");
+			private ImageIcon keylogger = UUtil.getIcon("icons16/general/keyboard.png");
 			private ImageIcon clipboard = UUtil.getIcon("icons16/general/paste_plain.png");
 			private ImageIcon webfilter = UUtil.getIcon("icons16/general/www_page.png");
 
@@ -102,6 +117,9 @@ public class ClientCPFrame extends JFrame {
 					switch (type) {
 					case CONTROLS:
 						setIcon(controls);
+						break;
+					case KEYLOGGER:
+						setIcon(keylogger);
 						break;
 					case CLIPBOARD:
 						setIcon(clipboard);
@@ -125,22 +143,22 @@ public class ClientCPFrame extends JFrame {
 		tree.addTreeSelectionListener(new TreeListener());
 
 		panel.add(tree);
-		cards.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-
-		getContentPane().add(cards, BorderLayout.CENTER);
-		cards.setLayout(new CardLayout(0, 0));
+		splitPane.setBottomComponent(console);
 
 		for (Panels p : getValidPanels()) {
 			switch (p) {
 			case CONTROLS:
 				cards.add(p.toString(), new ControlsTab(profile, console));
 				break;
+			case KEYLOGGER:
+				cards.add(p.toString(), new Keylogger(profile, console));
+				break;
 			default:
 				break;
 
 			}
 		}
-
+		console.addLine("Initialized control panel");
 	}
 
 	class TreeListener implements TreeSelectionListener {
@@ -166,6 +184,8 @@ public class ClientCPFrame extends JFrame {
 			switch (this) {
 			case CONTROLS:
 				return "Controls";
+			case KEYLOGGER:
+				return "Keylogger";
 			case CLIPBOARD:
 				return "Clipboard";
 			case WEBFILTER:
@@ -181,6 +201,7 @@ public class ClientCPFrame extends JFrame {
 		ArrayList<Panels> p = new ArrayList<Panels>();
 		// TODO dynamically add
 		p.add(Panels.CONTROLS);
+		p.add(Panels.KEYLOGGER);
 
 		return p;
 	}

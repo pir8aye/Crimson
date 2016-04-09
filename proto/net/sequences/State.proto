@@ -5,7 +5,9 @@ enum StateType {
 	FUNCTIONING_OFF = 1;
 	SHUTDOWN = 2;
 	RESTART = 3;
-	UNINSTALL = 4;
+	STANDBY = 4;
+	HIBERNATE = 5;
+	UNINSTALL = 6;
 	
 }
 
