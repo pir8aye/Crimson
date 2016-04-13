@@ -17,6 +17,10 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net;
 
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.SSLException;
+
 import com.subterranean_security.crimson.core.proto.MSG;
 
 import io.netty.channel.ChannelInitializer;
@@ -27,23 +31,33 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 
-	private final SslContext sslCtx;
+	private SslContext sslCtx;
 
-	public ServerInitializer(SslContext sslCtx) {
-		this.sslCtx = sslCtx;
+	public ServerInitializer() {
+		try {
+			SelfSignedCertificate ssc = new SelfSignedCertificate();
+			sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+		} catch (CertificateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SSLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public void initChannel(SocketChannel ch) throws Exception {
 		ChannelPipeline p = ch.pipeline();
 		if (sslCtx != null) {
-			// p.addLast(sslCtx.newHandler(ch.alloc()));
+			p.addLast(sslCtx.newHandler(ch.alloc()));
 		}
-
-		// p.addLast(new LoggingHandler(LogLevel.INFO));
 
 		p.addLast(new ProtobufVarint32FrameDecoder());
 		p.addLast(new ProtobufDecoder(MSG.Message.getDefaultInstance()));

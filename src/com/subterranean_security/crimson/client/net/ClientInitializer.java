@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
+import javax.net.ssl.SSLException;
+
 import com.subterranean_security.crimson.core.proto.MSG;
 
 import io.netty.channel.ChannelInitializer;
@@ -27,16 +29,23 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 public class ClientInitializer extends ChannelInitializer<SocketChannel> {
 
-	private final SslContext sslCtx;
+	private SslContext sslCtx;
 	private final String host;
 	private final int port;
 	private final ClientHandler ch;
 
-	public ClientInitializer(SslContext sslCtx, String host, int port, ClientHandler ch) {
-		this.sslCtx = sslCtx;
+	public ClientInitializer(String host, int port, ClientHandler ch) {
+		try {
+			this.sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+		} catch (SSLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.host = host;
 		this.port = port;
 		this.ch = ch;
@@ -46,7 +55,7 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel> {
 	public void initChannel(SocketChannel sc) {
 		ChannelPipeline p = sc.pipeline();
 		if (sslCtx != null) {
-			// p.addLast(sslCtx.newHandler(sc.alloc(), host, port));
+			p.addLast(sslCtx.newHandler(sc.alloc(), host, port));
 		}
 
 		p.addLast(new ProtobufVarint32FrameDecoder());

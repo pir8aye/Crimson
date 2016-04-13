@@ -32,9 +32,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 public class ViewerConnector extends BasicConnector implements AutoCloseable {
 
@@ -48,15 +45,13 @@ public class ViewerConnector extends BasicConnector implements AutoCloseable {
 
 	private EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private ChannelFuture f;
-	private final SslContext sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE)
-			.build();
 
 	public ViewerConnector(String host, int port) throws InterruptedException, SSLException {
 
 		Bootstrap b = new Bootstrap();
 		b.group(workerGroup)//
 				.channel(NioSocketChannel.class)//
-				.handler(new ViewerInitializer(sslCtx, host, port, handle));
+				.handler(new ViewerInitializer(host, port, handle));
 
 		f = b.connect(host, port).sync();
 

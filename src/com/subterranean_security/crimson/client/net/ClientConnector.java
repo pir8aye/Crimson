@@ -41,9 +41,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 public class ClientConnector implements AutoCloseable {
 
@@ -51,8 +48,6 @@ public class ClientConnector implements AutoCloseable {
 
 	private EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private ChannelFuture f;
-	private final SslContext sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE)
-			.build();
 
 	// Buffers
 	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
@@ -79,7 +74,7 @@ public class ClientConnector implements AutoCloseable {
 		Bootstrap b = new Bootstrap();
 		b.group(workerGroup)//
 				.channel(NioSocketChannel.class)//
-				.handler(new ClientInitializer(sslCtx, host, port, handle));
+				.handler(new ClientInitializer(host, port, handle));
 
 		f = b.connect(host, port).sync();
 		setState(ConnectionState.CONNECTED);
