@@ -27,7 +27,6 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 
-import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.util.CUtil;
 
@@ -52,7 +51,7 @@ public class LocalFilesystem {
 
 	public LocalFilesystem(String start) {
 		ref = Paths.get(start);
-		fmid = CUtil.Misc.rand(Integer.MIN_VALUE, Integer.MAX_VALUE);
+		fmid = CUtil.Misc.rand();
 		log.debug("Initialized local filesystem handle (FMID: {}, PATH: {})", fmid, pwd());
 	}
 

@@ -476,6 +476,10 @@ public enum CUtil {
 			return nextLong(upper - lower + 1) + lower;
 		}
 
+		public static int rand() {
+			return rand.nextInt();
+		}
+
 		private static long nextLong(long n) {
 			// error checking and 2^x checking removed for simplicity.
 			long bits, val;
