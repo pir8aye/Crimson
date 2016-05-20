@@ -40,8 +40,11 @@ public class Reporter {
 
 			@Override
 			public void run() {
-				log.debug("Reporting event");
-				System.out.println(r.getStackTrace());
+				log.info("Reporting event");
+				if (Common.isDebugMode()) {
+					System.out.println(r.getStackTrace());
+				}
+
 				Services.sendReport(r);
 
 			}
@@ -57,8 +60,8 @@ public class Reporter {
 		rb.setJreVersion(System.getProperty("java.version"));
 		rb.setInstance(Common.instance.toString());
 		rb.setOsFamily(Platform.osFamily.toString());
-		// rb.setSysArch(PlatformInfo.sysArch.toString());
-		// rb.setJreArch(PlatformInfo.jreArch.toString());
+		// rb.setSysArch(Platform.sysArch.toString());
+		rb.setJreArch(Platform.javaArch.toString());
 
 		log.debug(
 				"Generated base report with values: Initialization: {}, Crimson Version: {}, JRE Version: {}, Instance: {}, OS Family: {}",
