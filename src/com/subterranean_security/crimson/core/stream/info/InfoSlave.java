@@ -19,7 +19,6 @@ package com.subterranean_security.crimson.core.stream.info;
 
 import java.util.Random;
 
-import com.subterranean_security.crimson.client.Native;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
@@ -27,6 +26,7 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.Stream;
+import com.subterranean_security.crimson.core.util.Native;
 
 public abstract class InfoSlave extends Stream {
 
@@ -59,6 +59,7 @@ public abstract class InfoSlave extends Stream {
 			pd.setCoreUsage(Platform.Advanced.getCPUUsage());
 		}
 		if (param.getInfoParam().hasCpuTemp()) {
+			pd.setCpuTemp("" + Platform.Advanced.getCPUTemp());
 		}
 		if (param.getInfoParam().hasCrimsonRamUsage()) {
 			pd.setCrimsonRamUsage(Platform.Advanced.getCrimsonMemoryUsage());

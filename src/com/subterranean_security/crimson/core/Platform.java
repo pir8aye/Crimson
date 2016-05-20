@@ -18,9 +18,13 @@
 
 package com.subterranean_security.crimson.core;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import org.hyperic.sigar.Cpu;
 import org.hyperic.sigar.CpuInfo;
@@ -34,6 +38,7 @@ import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Native;
 
 public enum Platform {
 	;
@@ -167,18 +172,25 @@ public enum Platform {
 			setLibraryPath();
 			log.debug("Loading LAPIS native library");
 
-			switch (Platform.javaArch) {
-			case X64:
-				System.loadLibrary("crimson64");
-				break;
-			case X86:
-				System.loadLibrary("crimson32");
-				break;
-			case SPARC:
-				System.loadLibrary("crimsonSPARC");
-				break;
-			default:
-				break;
+			try {
+				switch (Platform.javaArch) {
+				case X64:
+					System.loadLibrary("crimson64");
+					log.debug("loaded crimson64");
+					break;
+				case X86:
+					System.loadLibrary("crimson32");
+					log.debug("loaded crimson32");
+					break;
+				case SPARC:
+					System.loadLibrary("crimsonSPARC");
+					break;
+				default:
+					break;
+				}
+			} catch (Throwable e) {
+				log.error("Failed to load lapis!");
+				e.printStackTrace();
 			}
 
 		}
@@ -258,6 +270,11 @@ public enum Platform {
 			return cpuPerc.getCombined();
 		}
 
+		public static long getCPUTemp() {
+			return Native.getCpuTemp();
+
+		}
+
 		public static long getCrimsonMemoryUsage() {
 
 			try {
@@ -305,5 +322,46 @@ public enum Platform {
 
 			return info.build();
 		}
+	}
+
+	public static class TEMP {
+
+		// TODO move this!
+		private static ArrayList<RandomAccessFile> cores = new ArrayList<RandomAccessFile>();
+		private static int maxCores = 64;
+
+		public static double[] getLinuxCPUTemps() {
+
+			if (cores.size() == 0) {
+				for (int i = 2; i < maxCores + 2; i++) {
+					File f = new File("/sys/class/hwmon/hwmon1/temp" + i + "_input");
+					if (f.exists()) {
+						try {
+							cores.add(new RandomAccessFile(f, "r"));
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} else {
+						break;
+					}
+				}
+			}
+			double[] temps = new double[cores.size()];
+			for (int i = 0; i < cores.size(); i++) {
+				try {
+					cores.get(i).seek(0);
+					temps[i] = cores.get(i).readDouble();
+					System.out.println("Core " + i + " temp: " + temps[i]);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+			return null;
+		}
+
 	}
 }

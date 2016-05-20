@@ -62,6 +62,7 @@ public class Viewer {
 
 		// Load native libraries
 		Platform.Advanced.loadSigar();
+		Platform.Advanced.loadLapis();
 
 		try {
 			switch (Platform.osFamily) {
