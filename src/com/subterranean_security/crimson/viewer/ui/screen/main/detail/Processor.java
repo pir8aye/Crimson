@@ -88,7 +88,7 @@ public class Processor extends JPanel implements DModule {
 		gbl_panel_3.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 		panel_3.setLayout(gbl_panel_3);
 
-		Chart2D chart = new Chart2D();
+		chart = new Chart2D();
 		GridBagConstraints gbc_chart = new GridBagConstraints();
 		gbc_chart.insets = new Insets(0, 0, 5, 0);
 		gbc_chart.fill = GridBagConstraints.BOTH;
@@ -99,6 +99,7 @@ public class Processor extends JPanel implements DModule {
 		chart.setBackground(Color.WHITE);
 		chart.getAxisX().setVisible(false);
 		chart.getAxisY().setRangePolicy(new RangePolicyFixedViewport(new Range(0, 100)));
+		chart.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(0, 60)));
 		chart.getAxisX().setPaintGrid(false);
 		chart.getAxisX().setPaintScale(false);
 		chart.getAxisY().setVisible(false);
@@ -126,9 +127,9 @@ public class Processor extends JPanel implements DModule {
 		panel.add(panel_2, gbc_panel_2);
 		GridBagLayout gbl_panel_2 = new GridBagLayout();
 		gbl_panel_2.columnWidths = new int[] { 65, 65, 0 };
-		gbl_panel_2.rowHeights = new int[] { 15, 15, 15, 15, 0 };
+		gbl_panel_2.rowHeights = new int[] { 15, 15, 15 };
 		gbl_panel_2.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
-		gbl_panel_2.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel_2.rowWeights = new double[] { 0.0, 0.0, 0.0 };
 		panel_2.setLayout(gbl_panel_2);
 
 		JLabel lblTotalCpuUsage = new JLabel("Model:");
@@ -178,33 +179,15 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblNewLabel_2.gridy = 2;
 		panel_2.add(lblNewLabel_2, gbc_lblNewLabel_2);
 
-		JLabel lblNewLabel_3 = new JLabel("Loading...");
-		lblNewLabel_3.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblNewLabel_3.setFont(new Font("Dialog", Font.BOLD, 9));
+		val_temp = new JLabel("Loading...");
+		val_temp.setHorizontalAlignment(SwingConstants.TRAILING);
+		val_temp.setFont(new Font("Dialog", Font.BOLD, 9));
 		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
 		gbc_lblNewLabel_3.fill = GridBagConstraints.BOTH;
 		gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel_3.gridx = 1;
 		gbc_lblNewLabel_3.gridy = 2;
-		panel_2.add(lblNewLabel_3, gbc_lblNewLabel_3);
-
-		JLabel lblNewLabel_4 = new JLabel("Physical Cores:");
-		lblNewLabel_4.setFont(new Font("Dialog", Font.BOLD, 10));
-		GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
-		gbc_lblNewLabel_4.fill = GridBagConstraints.BOTH;
-		gbc_lblNewLabel_4.insets = new Insets(0, 0, 0, 5);
-		gbc_lblNewLabel_4.gridx = 0;
-		gbc_lblNewLabel_4.gridy = 3;
-		panel_2.add(lblNewLabel_4, gbc_lblNewLabel_4);
-
-		lblCpuUsage = new JLabel("Loading...");
-		lblCpuUsage.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblCpuUsage.setFont(new Font("Dialog", Font.BOLD, 9));
-		GridBagConstraints gbc_lblNewLabel_50 = new GridBagConstraints();
-		gbc_lblNewLabel_50.fill = GridBagConstraints.BOTH;
-		gbc_lblNewLabel_50.gridx = 1;
-		gbc_lblNewLabel_50.gridy = 3;
-		panel_2.add(lblCpuUsage, gbc_lblNewLabel_50);
+		panel_2.add(val_temp, gbc_lblNewLabel_3);
 
 		JPanel panel_1 = new JPanel();
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
@@ -219,17 +202,39 @@ public class Processor extends JPanel implements DModule {
 	private void startUpdater() {
 		updateTimer.schedule(new TimerTask() {
 			Date start = new Date();
+			Date last = new Date();
 
 			@Override
 			public void run() {
 				if (isDetailOpen()) {
+
+					// check timeout
+					double time = System.currentTimeMillis() - start.getTime();
+					if (time > 5 * 1000) {
+						timeout();
+					}
+
+					if (System.currentTimeMillis() - last.getTime() > updatePeriod * 2) {
+						trace.addPoint(time - 1, Double.NaN);
+					}
+
+					// usage
 					double usage = 0;
 					if (profile.getCpuUsage() != null) {
 						usage = Double.parseDouble(profile.getCpuUsage());
 					}
 
-					val_usage.setText(String.format("CPU Utilization: %5.2f%%", usage));
-					trace.addPoint(System.currentTimeMillis() - start.getTime(), usage);
+					val_usage.setText(String.format("Average Utilization: %5.2f%%", usage));
+
+					last = new Date();
+					trace.addPoint(time, usage);
+					chart.getAxisX().getRangePolicy().setRange(new Range(time, time - (60 * updatePeriod)));
+
+					// temp
+					if (profile.getCpuTemp() != null) {
+						val_temp.setText(profile.getCpuTemp());
+					}
+
 				}
 
 			}
@@ -237,13 +242,17 @@ public class Processor extends JPanel implements DModule {
 		}, 0, updatePeriod);
 	}
 
+	private void timeout() {
+		if (val_temp.getText().equals("Loading...")) {
+			val_temp.setText("unknown");
+		}
+	}
+
 	private ClientProfile profile;
 	private InfoMaster im;
 	private Timer updateTimer = new Timer();
 
 	private JLabel lblCpuModel;
-
-	private JLabel lblCpuUsage;
 
 	@Override
 	public void setTarget(ClientProfile p) {
@@ -298,6 +307,10 @@ public class Processor extends JPanel implements DModule {
 	private boolean showing = false;
 
 	private JLabel val_usage;
+
+	private JLabel val_temp;
+
+	private Chart2D chart;
 
 	@Override
 	public boolean isDetailOpen() {
