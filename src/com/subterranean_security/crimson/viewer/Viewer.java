@@ -33,6 +33,7 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.ServerProfile;
+import com.subterranean_security.crimson.viewer.ViewerStore.Databases;
 import com.subterranean_security.crimson.viewer.ui.panel.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.eula.EULADialog;
 import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
@@ -128,6 +129,8 @@ public class Viewer {
 		}
 		login = null;
 
+		loadState();
+
 		// Start the main interface
 		MainFrame.main = new MainFrame();
 		MainFrame.main.setVisible(true);
@@ -181,6 +184,13 @@ public class Viewer {
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
+		}
+	}
+
+	public static void loadState() {
+		try {
+			ViewerState.trialMode = Databases.local.getString("serial").equals("TRIAL");
+		} catch (Exception e) {
 		}
 	}
 

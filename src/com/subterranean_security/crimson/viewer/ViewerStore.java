@@ -141,8 +141,7 @@ public enum ViewerStore {
 
 		public static void update(EV_ProfileDelta change) {
 			boolean flag = true;
-			for (int i = 0; i < clients.size(); i++) {
-				// for (ClientProfile p : clients) {
+			for (int i = 0; i < (ViewerState.trialMode ? 1 : clients.size()); i++) {
 				if (clients.get(i).getCvid() == change.getCvid()) {
 					flag = false;
 					clients.get(i).amalgamate(change);
