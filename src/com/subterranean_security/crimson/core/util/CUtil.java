@@ -449,15 +449,15 @@ public enum CUtil {
 		public static void runBackgroundCommand(String c) throws IOException {
 			String command = "";
 			switch (Platform.osFamily) {
-			case SOLARIS:
+			case SOL:
 			case BSD:
-			case LINUX:
+			case LIN:
 				command = "nohup " + c;
 				break;
 			case OSX:
 				break;
 
-			case WINDOWS:
+			case WIN:
 				command = "cmd /c start cmd /k \"" + c + "\"";
 				break;
 			default:

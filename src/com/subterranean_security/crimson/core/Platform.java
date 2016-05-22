@@ -51,10 +51,15 @@ public enum Platform {
 	public static final String osName = getOsName();
 
 	public enum OSFAMILY {
-		BSD, OSX, SOLARIS, LINUX, WINDOWS, UNSUPPORTED;
+		BSD, OSX, SOL, LIN, WIN, UNSUPPORTED;
 		@Override
 		public String toString() {
 			return super.toString().toLowerCase();
+		}
+
+		// TODO
+		public String toName() {
+			return null;
 		}
 	}
 
@@ -73,11 +78,11 @@ public enum Platform {
 		} else if (name.equals("mac os x")) {
 			return OSFAMILY.OSX;
 		} else if (name.equals("solaris") || name.equals("sunos")) {
-			return OSFAMILY.SOLARIS;
+			return OSFAMILY.SOL;
 		} else if (name.equals("linux")) {
-			return OSFAMILY.LINUX;
+			return OSFAMILY.LIN;
 		} else if (name.startsWith("windows")) {
-			return OSFAMILY.WINDOWS;
+			return OSFAMILY.WIN;
 		} else {
 			return OSFAMILY.UNSUPPORTED;
 		}
@@ -85,7 +90,7 @@ public enum Platform {
 
 	public static String getOsName() {
 		switch (osFamily) {
-		case LINUX:
+		case LIN:
 			String distro = "";// TODO get output (cat /etc/issue)
 			break;
 		default:
@@ -124,31 +129,9 @@ public enum Platform {
 
 		private static long pid = 0;
 
-		public static void setLibraryPath() {
-			switch (Platform.osFamily) {
-			case BSD:
-				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/bsd");
-				break;
-			case LINUX:
-				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/osx");
-				break;
-			case OSX:
-				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/osx");
-				break;
-			case SOLARIS:
-				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/sol");
-				break;
-			case WINDOWS:
-				System.setProperty("java.library.path", Common.base.getAbsolutePath() + "/lib/jni/win");
-				break;
-			default:
-				break;
-			}
-			log.debug("Set native library path: {}", System.getProperty("java.library.path"));
-		}
-
 		public static void loadSigar() {
-			setLibraryPath();
+			System.setProperty("java.library.path",
+					new File(Common.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString()).getAbsolutePath());
 			log.debug("Loading SIGAR native library");
 
 			sigar = new Sigar();
@@ -169,21 +152,24 @@ public enum Platform {
 		}
 
 		public static void loadLapis() {
-			setLibraryPath();
 			log.debug("Loading LAPIS native library");
 
 			try {
 				switch (Platform.javaArch) {
 				case X64:
-					System.loadLibrary("crimson64");
-					log.debug("loaded crimson64");
+					System.load(new File(
+							Common.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/crimson64.dll")
+									.getAbsolutePath());
 					break;
 				case X86:
-					System.loadLibrary("crimson32");
-					log.debug("loaded crimson32");
+					System.load(new File(
+							Common.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/crimson32.dll")
+									.getAbsolutePath());
 					break;
 				case SPARC:
-					System.loadLibrary("crimsonSPARC");
+					System.load(new File(
+							Common.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/crimsonSPARC.dll")
+									.getAbsolutePath());
 					break;
 				default:
 					break;

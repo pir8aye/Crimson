@@ -67,7 +67,7 @@ public class Viewer {
 		try {
 			switch (Platform.osFamily) {
 
-			case LINUX:
+			case LIN:
 				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
 				break;
 			default:

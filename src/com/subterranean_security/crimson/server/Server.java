@@ -63,6 +63,7 @@ public final class Server {
 
 		// Load native libraries
 		Platform.Advanced.loadSigar();
+		Platform.Advanced.loadLapis();
 
 		// Clear /tmp/
 		log.debug("Clearing local temporary directory");

@@ -151,7 +151,7 @@ public enum Common {
 			return null;
 		}
 		switch (Platform.osFamily) {
-		case WINDOWS:
+		case WIN:
 			return new File(System.getProperty("user.home") + "/AppData/Local/Subterranean Security/Crimson/var");
 		default:
 			return new File(base.getAbsolutePath() + "/var");
