@@ -33,6 +33,8 @@ import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
+import com.subterranean_security.crimson.sv.PermissionTester;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.stream.VInfoSlave;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.screen.about.AboutDialog;
@@ -136,8 +138,12 @@ public class MainMenu extends JPanel {
 		wmGen.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				GenDialog gd = new GenDialog();
-				gd.setVisible(true);
+				if (PermissionTester.verifyServerPermission(ViewerStore.Profiles.vp.getPermissions(), "generate")) {
+					GenDialog gd = new GenDialog();
+					gd.setVisible(true);
+				} else {
+					MainFrame.main.np.addNote("error:Permission denied");
+				}
 
 				wmGen.resetBG();
 				MenuSelectionManager.defaultManager().clearSelectedPath();

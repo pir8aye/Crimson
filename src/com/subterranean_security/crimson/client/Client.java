@@ -29,13 +29,13 @@ import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
-import com.subterranean_security.crimson.core.storage.ClientDB;
+import com.subterranean_security.crimson.core.storage.ViewerDB;
 
 public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
 
 	public static ClientConnector connector;
-	public static ClientDB clientDB;
+	public static ViewerDB clientDB;
 	public static int connectionIterations = 0;
 
 	public static void main(String[] args) {
@@ -54,7 +54,7 @@ public class Client {
 
 		List<NetworkTarget> nts = null;
 		try {
-			clientDB = new ClientDB(new File(Common.base + "/var/client.db"));
+			clientDB = new ViewerDB(new File(Common.base + "/var/client.db"));
 			nts = getExternalNts();
 		} catch (Exception e) {
 			// TODO: handle exception

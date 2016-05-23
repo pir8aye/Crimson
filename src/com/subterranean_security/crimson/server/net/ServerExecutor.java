@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -54,6 +53,7 @@ import com.subterranean_security.crimson.server.ServerState;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
 import com.subterranean_security.crimson.sv.Listener;
+import com.subterranean_security.crimson.sv.PermissionTester;
 import com.subterranean_security.crimson.sv.ViewerProfile;
 
 import io.netty.util.ReferenceCountUtil;
@@ -321,12 +321,17 @@ public class ServerExecutor extends BasicExecutor {
 				ViewerProfile vp = null;
 				try {
 					vp = ServerStore.Profiles.getViewer(receptor.getCvid());
-					log.debug("Loaded ViewerProfile for CVID: " + receptor.getCvid());
 				} catch (Exception e1) {
-					vp = new ViewerProfile(receptor.getCvid());
-					vp.setUser(user);
-					ServerStore.Profiles.addViewer(vp);
-					log.debug("Created new ViewerProfile for CVID: " + receptor.getCvid());
+					ServerStore.Profiles.updateCvid(user, receptor.getCvid());
+					
+					try {
+						vp = ServerStore.Profiles.getViewer(receptor.getCvid());
+					} catch (Exception e2) {
+						
+						vp = new ViewerProfile(receptor.getCvid());
+						vp.setUser(user);
+						ServerStore.Profiles.addViewer(vp);
+					}
 				}
 				ServerStore.Connections.add(receptor);
 
@@ -390,7 +395,7 @@ public class ServerExecutor extends BasicExecutor {
 			return;
 		}
 		if (m.hasCid()) {
-			if (vp.getPermissions().verify(m.getCid(), "fs.read")) {
+			if (PermissionTester.verifyClientPermission(vp.getPermissions(), m.getCid(), "server_fs_read")) {
 				System.out.println("Permissions error");
 				return;
 			}
@@ -398,7 +403,7 @@ public class ServerExecutor extends BasicExecutor {
 			r.handle.write(m);
 
 		} else {
-			if (vp.getPermissions().verify("srv.fs.read")) {
+			if (PermissionTester.verifyServerPermission(vp.getPermissions(), "server_fs_read")) {
 				System.out.println("Permissions error");
 				return;
 			}

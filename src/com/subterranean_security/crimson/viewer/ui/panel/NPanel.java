@@ -29,6 +29,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
 import aurelienribon.slidinglayout.SLKeyframe;
@@ -141,12 +143,12 @@ public class NPanel extends SLPanel {
 		public void run() {
 			thisNP.createTransition().push(new SLKeyframe(pos2, 0.9f).setStartSide(SLSide.BOTTOM, movingBar)
 					.setCallback(new SLKeyframe.Callback() {
-				@Override
-				public void done() {
-					movingMain.setAction(actionDN);
-					movingMain.enableAction();
-				}
-			})).play();
+						@Override
+						public void done() {
+							movingMain.setAction(actionDN);
+							movingMain.enableAction();
+						}
+					})).play();
 		}
 	};
 
@@ -155,12 +157,12 @@ public class NPanel extends SLPanel {
 		public void run() {
 			thisNP.createTransition().push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.BOTTOM, movingBar)
 					.setCallback(new SLKeyframe.Callback() {
-				@Override
-				public void done() {
-					movingMain.setAction(actionUP);
+						@Override
+						public void done() {
+							movingMain.setAction(actionUP);
 
-				}
-			})).play();
+						}
+					})).play();
 		}
 	};
 
@@ -208,13 +210,11 @@ class Note extends JPanel {
 
 		switch (type) {
 		case ("error"): {
-			// icon.setIcon(new ImageIcon());
+			icon.setIcon(UUtil.getIcon("icons32/general/exclamation.png"));
 			break;
 		}
 		default: {
-			icon.setIcon(new ImageIcon(
-					NPanel.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-32.png"),
-					"Crimson"));
+			icon.setIcon(UUtil.getIcon("c-32.png"));
 			break;
 		}
 		}

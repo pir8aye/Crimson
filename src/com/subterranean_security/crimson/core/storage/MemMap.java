@@ -19,12 +19,13 @@ package com.subterranean_security.crimson.core.storage;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Set;
 
 public class MemMap<K, V> implements Serializable {
 
-	private static final long	serialVersionUID	= 1L;
-	private HashMap<K, Integer>	map					= new HashMap<K, Integer>();
-	private transient Database	database;
+	private static final long serialVersionUID = 1L;
+	private HashMap<K, Integer> map = new HashMap<K, Integer>();
+	private transient Database database;
 
 	public MemMap(Database d) {
 		setDatabase(d);
@@ -42,9 +43,17 @@ public class MemMap<K, V> implements Serializable {
 		map.put(key, database.store(value));
 	}
 
+	public void remove(K key) {
+		map.remove(key);
+	}
+
 	@SuppressWarnings("unchecked")
 	public V get(K key) throws Exception {
 		return (V) database.get(map.get(key));
+	}
+
+	public Set<K> keyset() {
+		return map.keySet();
 	}
 
 }

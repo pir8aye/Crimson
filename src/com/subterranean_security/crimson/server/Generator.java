@@ -28,7 +28,7 @@ import org.zeroturnaround.zip.ZipUtil;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
-import com.subterranean_security.crimson.core.storage.ClientDB;
+import com.subterranean_security.crimson.core.storage.ViewerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Generator {
@@ -77,7 +77,7 @@ public class Generator {
 
 		// create a database for the client
 		try {
-			ClientDB database = new ClientDB(clientDB);
+			ViewerDB database = new ViewerDB(clientDB);
 			database.storeObject("generation_date", start);
 			database.storeObject("cvid", 0);
 			database.storeObject("reconnect_period", ic.getReconnectPeriod());

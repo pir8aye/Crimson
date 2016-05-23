@@ -15,46 +15,28 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.sv.permissions;
+package com.subterranean_security.crimson.core.storage;
 
-import java.io.Serializable;
-import java.util.HashMap;
+import java.io.File;
 
-public class Permissions implements Serializable {
+import com.subterranean_security.crimson.core.util.CUtil;
 
-	private static final long serialVersionUID = 1L;
-	public HashMap<String, Boolean> flags = new HashMap<String, Boolean>();
-	public HashMap<Integer, ClientPermissions> clients = new HashMap<Integer, ClientPermissions>();
+public class ViewerDB extends Database {
 
-	public Permissions() {
-		flags.put("super", false);
-		flags.put("gen.payload", false);
-		flags.put("net.listener.creation", false);
-		flags.put("srv.power", false);
-		flags.put("srv.settings", false);
-		flags.put("srv.fs.read", false);
-		flags.put("srv.fs.write", false);
+	public String master;
 
-	}
+	public ViewerDB(File dfile) throws Exception {
 
-	public boolean verify(String permission) {
-		return flags.get("super") || flags.get(permission);
-	}
+		if (!dfile.exists()) {
+			// copy the template
+			CUtil.Files.extract("com/subterranean_security/crimson/core/storage/viewer-template.db",
+					dfile.getAbsolutePath());
+		}
+		init(dfile);
+		if (isFirstRun()) {
+			Defaults.hardReset(this);
+		}
 
-	public boolean verify(int clientID, String permission) {
-		return flags.get("super") || (clients.containsKey(clientID)
-				&& (clients.get(clientID).flags.get("super") || clients.get(clientID).flags.get(permission)));
-	}
-
-}
-
-class ClientPermissions implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-	public HashMap<String, Boolean> flags = new HashMap<String, Boolean>();
-
-	public ClientPermissions() {
-		flags.put("super", false);
 	}
 
 }

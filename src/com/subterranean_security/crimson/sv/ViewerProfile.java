@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
-import com.subterranean_security.crimson.sv.permissions.Permissions;
+import com.subterranean_security.crimson.core.proto.Delta.ViewerPermissions;
 
 public class ViewerProfile implements Serializable {
 
@@ -32,7 +32,7 @@ public class ViewerProfile implements Serializable {
 
 	private Attribute user;
 	private Attribute ip;
-	private Permissions permissions = new Permissions();
+	private ViewerPermissions permissions;
 
 	public ViewerProfile(int cvid) {
 		this();
@@ -42,14 +42,23 @@ public class ViewerProfile implements Serializable {
 	public ViewerProfile() {
 		ip = new TrackedAttribute();
 		user = new UntrackedAttribute();
+		permissions = ViewerPermissions.newBuilder().build();
 	}
 
-	public Permissions getPermissions() {
+	public ViewerPermissions getPermissions() {
 		return permissions;
+	}
+
+	public void setPermissions(ViewerPermissions p) {
+		permissions = p;
 	}
 
 	public Integer getCvid() {
 		return cvid;
+	}
+
+	public void setCvid(int cvid) {
+		this.cvid = cvid;
 	}
 
 	public String getUser() {
@@ -87,6 +96,10 @@ public class ViewerProfile implements Serializable {
 	public void amalgamate(EV_ViewerProfileDelta c) {
 		updateTimestamp = new Date();
 
+		if (c.hasUser()) {
+			setUser(c.getUser());
+		}
+
 		if (c.hasLastIp() && c.hasLastLogin()) {
 			((TrackedAttribute) ip).set(c.getLastIp(), new Date(c.getLastLogin()));
 		}
@@ -94,8 +107,8 @@ public class ViewerProfile implements Serializable {
 		if (c.hasIp()) {
 			setIp(c.getIp());
 		}
-		if (c.hasPermissions()) {
-			// TODO
+		if (c.hasViewerPermissions()) {
+			permissions = c.getViewerPermissions();
 		}
 
 	}

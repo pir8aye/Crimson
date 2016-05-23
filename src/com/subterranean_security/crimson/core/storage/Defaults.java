@@ -45,14 +45,14 @@ public enum Defaults {
 
 	}
 
-	public static void softReset(ClientDB db) {
+	public static void softReset(ViewerDB db) {
 		softResetUniversal(db);
 
 		db.storeObject("login-times", new ArrayList<Long>());
 		db.storeObject("login-ips", new ArrayList<String>());
 	}
 
-	public static void hardReset(ClientDB db) {
+	public static void hardReset(ViewerDB db) {
 		softReset(db);
 		hardResetUniversal(db);
 

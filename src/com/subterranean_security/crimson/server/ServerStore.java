@@ -27,7 +27,7 @@ import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.storage.ClientDB;
+import com.subterranean_security.crimson.core.storage.ViewerDB;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -98,7 +98,7 @@ public enum ServerStore {
 
 	public static class Databases {
 		public static ServerDB system;
-		public static HashMap<String, ClientDB> loaded_viewers = new HashMap<String, ClientDB>();// UID
+		public static HashMap<String, ViewerDB> loaded_viewers = new HashMap<String, ViewerDB>();// UID
 
 	}
 
@@ -180,6 +180,23 @@ public enum ServerStore {
 
 		public static void addViewer(ViewerProfile p) {
 			viewerProfiles.put(p.getCvid(), p);
+		}
+
+		public static void updateCvid(String username, int cvid) {
+			try {
+				for (Integer i : viewerProfiles.keyset()) {
+					ViewerProfile vp = viewerProfiles.get(i);
+					if (vp.getUser().equals(username)) {
+						vp.setCvid(cvid);
+						viewerProfiles.remove(i);
+						viewerProfiles.put(cvid, vp);
+						return;
+					}
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}

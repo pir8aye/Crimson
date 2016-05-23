@@ -26,9 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.proto.Delta.ViewerPermissions;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.ServerStore;
+import com.subterranean_security.crimson.sv.ViewerProfile;
 
 public class ServerDB extends Database {
 	private static final Logger log = LoggerFactory.getLogger(ServerDB.class);
@@ -97,7 +100,7 @@ public class ServerDB extends Database {
 
 			if (!ServerStore.Databases.loaded_viewers.containsKey(UID)) {
 				ServerStore.Databases.loaded_viewers.put(UID,
-						new ClientDB(new File(Common.var + File.separator + UID + ".db")));
+						new ViewerDB(new File(Common.var + File.separator + UID + ".db")));
 			}
 
 			System.out.println("Testing hashes: " + hash + " , " + password);
@@ -131,7 +134,7 @@ public class ServerDB extends Database {
 		return null;
 	}
 
-	public boolean addUser(String user, String password) {
+	public boolean addUser(String user, String password, ViewerPermissions permissions) {
 		if (userExists(user)) {
 			log.info("This user already exists: " + user);
 			return false;
@@ -156,12 +159,24 @@ public class ServerDB extends Database {
 		}
 
 		try {
-			ClientDB udb = new ClientDB(new File(dfile.getParent() + File.separator + UID + ".db"));
+			ViewerDB udb = new ViewerDB(new File(dfile.getParent() + File.separator + UID + ".db"));
 			udb.master = Crypto.hashPass(password.toCharArray(), salt);
 			udb.close();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			return false;
+		}
+
+		// create ViewerProfile
+		ViewerProfile vp = new ViewerProfile();
+		vp.setPermissions(permissions);
+
+		try {
+			((MemMap<Integer, ViewerProfile>) getObject("profiles.viewers")).put(IDGen.getCvid(), vp);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return false;
 		}
 
