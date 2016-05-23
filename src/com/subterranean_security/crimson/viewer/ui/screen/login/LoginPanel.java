@@ -44,6 +44,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 
+import org.slf4j.Logger;
+
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
@@ -54,8 +56,9 @@ import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 
 public class LoginPanel extends JPanel {
-
 	private static final long serialVersionUID = 1L;
+	private static final Logger log = CUtil.Logging.getLogger(LoginPanel.class);
+
 	private JTextField fld_user;
 	public JButton btn_cancel;
 	public JButton btn_login;
@@ -127,25 +130,51 @@ public class LoginPanel extends JPanel {
 				if (fld_address.getSelectedIndex() == -1) {
 					return;
 				}
+
 				String[] parts = ((String) fld_address.getSelectedItem()).split(":");
-				if (parts.length == 2) {
-					fld_address.setSelectedItem(parts[0].equals("Local Server") ? "127.0.0.1" : parts[0]);
-					// insert port
-					try {
-						fld_port.getDocument().remove(0, fld_port.getDocument().getLength());
-					} catch (BadLocationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 
-					// TODO find better way to add text to field
-					for (String s : parts[1].split("")) {
-						fld_port.dispatchEvent(new KeyEvent(fld_port, KeyEvent.KEY_TYPED, System.currentTimeMillis(),
-								KeyEvent.KEY_FIRST, KeyEvent.VK_UNDEFINED, s.charAt(0)));
-
+				String server = null;
+				String port = null;
+				switch (parts[0]) {
+				case "Local Server": {
+					server = "127.0.0.1";
+					port = "10101";
+					break;
+				}
+				case "Live Example Server": {
+					server = "example.subterranean-security.com";
+					port = "10101";
+					fld_user.setText("testuser");
+					fld_pass.setText("this-password-does-not-matter");
+					break;
+				}
+				default: {
+					if (parts.length == 2) {
+						server = parts[0];
+						port = parts[1];
+					} else {
+						return;
 					}
+				}
+				}
+
+				// insert info
+				fld_address.setSelectedItem(server);
+				// insert port
+				try {
+					fld_port.getDocument().remove(0, fld_port.getDocument().getLength());
+				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// TODO find better way to add text to field
+				for (char c : port.toCharArray()) {
+					fld_port.dispatchEvent(new KeyEvent(fld_port, KeyEvent.KEY_TYPED, System.currentTimeMillis(),
+							KeyEvent.KEY_FIRST, KeyEvent.VK_UNDEFINED, c));
 
 				}
+
 			}
 		});
 		fld_address.setFont(new Font("Dialog", Font.PLAIN, 10));
@@ -429,26 +458,27 @@ public class LoginPanel extends JPanel {
 	}
 
 	public void addRecents(boolean localServer) {
+		ArrayList<String> r = new ArrayList<String>();
 		try {
-			ArrayList<String> r = (ArrayList<String>) ViewerStore.Databases.local.getObject("login.recents");
-			String[] recent = new String[localServer ? r.size() + 1 : r.size()];
-			if (localServer) {
-				recent[0] = "Local Server:10101";
-				for (int i = 0; i < r.size(); i++) {
-					recent[i + 1] = r.get(i);
-				}
-			} else {
-				for (int i = 0; i < r.size(); i++) {
-					recent[i] = r.get(i);
-				}
-			}
-
-			fld_address.setModel(new DefaultComboBoxModel<String>(recent));
-			fld_address.setSelectedIndex(-1);
+			r.addAll((ArrayList<String>) ViewerStore.Databases.local.getObject("login.recents"));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			log.error("Failed to load recent connections");
 			e.printStackTrace();
 			return;
 		}
+
+		r.add(0, "Live Example Server");
+		if (localServer) {
+			r.add(0, "Local Server");
+		}
+
+		String[] recent = new String[r.size()];
+
+		for (int i = 0; i < r.size(); i++) {
+			recent[i] = r.get(i);
+		}
+
+		fld_address.setModel(new DefaultComboBoxModel<String>(recent));
+		fld_address.setSelectedIndex(-1);
 	}
 }
