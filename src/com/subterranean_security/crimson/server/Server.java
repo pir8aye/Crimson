@@ -23,10 +23,10 @@ import java.io.IOException;
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
@@ -148,7 +148,7 @@ public final class Server {
 		}
 		// notify viewers
 		ServerStore.Connections.sendToAll(Instance.VIEWER, Message.newBuilder()
-				.setEvServerInfoDelta(EV_ServerInfoDelta.newBuilder().setServerStatus(running)).build());
+				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().setServerStatus(running)).build());
 
 	}
 

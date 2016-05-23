@@ -355,7 +355,7 @@ public class MenuControls extends JPanel {
 		valServerCpuUsage.setText(ViewerStore.Profiles.server.getCrimsonCpuUsage());
 		valClients.setText("" + ViewerStore.Profiles.server.getConnectedClients());
 		valUsers.setText("" + ViewerStore.Profiles.server.getConnectedUsers());
-		valIp.setText(ViewerStore.Profiles.server.getIp());
+		valIp.setText(ViewerStore.Profiles.vp.getIp());
 		if (ViewerStore.Profiles.server.getStatus()) {
 			valStatus.setText("Running");
 			valStatus.setForeground(new Color(0, 149, 39));

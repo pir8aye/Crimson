@@ -151,10 +151,10 @@ public class Viewer {
 					e.printStackTrace();
 				}
 
-				if (ViewerStore.Profiles.server.getLastLoginIp() != null) {
+				if (ViewerStore.Profiles.vp.getLastLoginIp() != null) {
 					MainFrame.main.np
-							.addNote("info:Last Login: " + ViewerStore.Profiles.server.getLastLoginTime().toString()
-									+ " from " + ViewerStore.Profiles.server.getLastLoginIp());
+							.addNote("info:Last Login at " + ViewerStore.Profiles.vp.getLastLoginTime().toString()
+									+ " from " + ViewerStore.Profiles.vp.getLastLoginIp());
 				}
 
 			}

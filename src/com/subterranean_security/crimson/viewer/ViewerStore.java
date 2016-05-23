@@ -30,7 +30,8 @@ import org.slf4j.Logger;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.BasicConnector;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.ClientProfile;
@@ -121,7 +122,7 @@ public enum ViewerStore {
 	public static class Profiles {
 		public static ServerProfile server = new ServerProfile();
 		public static ClientProfile viewer = new ClientProfile();
-		public static ViewerProfile vp;
+		public static ViewerProfile vp = new ViewerProfile();
 
 		public static ArrayList<ClientProfile> clients = new ArrayList<ClientProfile>();
 
@@ -135,8 +136,12 @@ public enum ViewerStore {
 			}
 		}
 
-		public static void update(EV_ServerInfoDelta change) {
+		public static void update(EV_ServerProfileDelta change) {
 			server.amalgamate(change);
+		}
+
+		public static void update(EV_ViewerProfileDelta change) {
+			vp.amalgamate(change);
 		}
 
 		public static void update(EV_ProfileDelta change) {

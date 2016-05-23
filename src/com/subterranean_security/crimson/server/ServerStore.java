@@ -146,7 +146,6 @@ public enum ServerStore {
 	public static class Profiles {
 		private static MemMap<Integer, ClientProfile> clientProfiles;
 		private static MemMap<Integer, ViewerProfile> viewerProfiles;
-		private static int svidCounter;
 
 		static {
 			try {
@@ -165,12 +164,6 @@ public enum ServerStore {
 				e.printStackTrace();
 			}
 
-			try {
-				svidCounter = Databases.system.getInteger("profiles.idcount");
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 
 		public static ClientProfile getClient(int svid) throws Exception {
@@ -189,9 +182,6 @@ public enum ServerStore {
 			viewerProfiles.put(p.getCvid(), p);
 		}
 
-		public static int nextID() {
-			return svidCounter++;
-		}
 	}
 
 }

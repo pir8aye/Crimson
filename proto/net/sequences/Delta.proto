@@ -53,7 +53,7 @@ message NetworkInterface {
 	optional string netmask = 4;
 }
 
-message EV_ServerInfoDelta {
+message EV_ServerProfileDelta {
 	optional bool server_status = 1;
 	optional int32 user_count = 2;
 	optional int32 client_count = 3;
@@ -72,9 +72,9 @@ message EV_ServerInfoDelta {
 	optional string os_family = 12;
 	optional string os_version = 13;
 	optional string crimson_version = 14;
-	
-	
-	//current user info
+}
+
+message EV_ViewerProfileDelta {
 	optional int64 last_login = 15;
 	optional string last_ip = 16;
 	optional string ip = 17;

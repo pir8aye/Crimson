@@ -76,7 +76,8 @@ public enum ViewerCommands {
 			Message lrs = ViewerRouter.getReponse(0, id, 5);
 			if (lrs.hasRsLogin()) {
 				if (lrs.getRsLogin().getResponse()) {
-					ViewerStore.Profiles.server.amalgamate(lrs.getRsLogin().getInitialInfo());
+					ViewerStore.Profiles.server.amalgamate(lrs.getRsLogin().getSpd());
+					ViewerStore.Profiles.vp.amalgamate(lrs.getRsLogin().getVpd());
 					return true;
 				}
 

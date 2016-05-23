@@ -47,8 +47,10 @@ public class ViewerExecutor extends BasicExecutor {
 					}
 					if (m.hasEvProfileDelta()) {
 						ViewerStore.Profiles.update(m.getEvProfileDelta());
-					} else if (m.hasEvServerInfoDelta()) {
-						ViewerStore.Profiles.update(m.getEvServerInfoDelta());
+					} else if (m.hasEvServerProfileDelta()) {
+						ViewerStore.Profiles.update(m.getEvServerProfileDelta());
+					} else if (m.hasEvViewerProfileDelta()) {
+						ViewerStore.Profiles.update(m.getEvViewerProfileDelta());
 					}
 					ReferenceCountUtil.release(m);
 				}

@@ -18,23 +18,30 @@
 package com.subterranean_security.crimson.sv;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 
+import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.sv.permissions.Permissions;
 
 public class ViewerProfile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private String user;
+
 	private int cvid;
 	private Date updateTimestamp = new Date();
-	private ArrayList<Date> login_times = new ArrayList<Date>();
-	private ArrayList<String> login_ip = new ArrayList<String>();
+
+	private Attribute user;
+	private Attribute ip;
 	private Permissions permissions = new Permissions();
 
 	public ViewerProfile(int cvid) {
+		this();
 		this.cvid = cvid;
+	}
+
+	public ViewerProfile() {
+		ip = new TrackedAttribute();
+		user = new UntrackedAttribute();
 	}
 
 	public Permissions getPermissions() {
@@ -46,19 +53,50 @@ public class ViewerProfile implements Serializable {
 	}
 
 	public String getUser() {
-		return user;
+		return user.get();
 	}
 
 	public void setUser(String user) {
-		this.user = user;
+		this.user.set(user);
 	}
 
-	public ArrayList<Date> getLogin_times() {
-		return login_times;
+	public String getIp() {
+		return ip.get();
 	}
 
-	public ArrayList<String> getLogin_ip() {
-		return login_ip;
+	public void setIp(String ip) {
+		((TrackedAttribute) this.ip).set(ip);
+	}
+
+	public String getLastLoginIp() {
+		TrackedAttribute tr = (TrackedAttribute) ip;
+		if (tr.size() < 2) {
+			return null;
+		}
+		return tr.getValue(tr.size() - 1);
+	}
+
+	public Date getLastLoginTime() {
+		TrackedAttribute tr = (TrackedAttribute) ip;
+		if (tr.size() < 2) {
+			return null;
+		}
+		return tr.getTime(tr.size() - 1);
+	}
+
+	public void amalgamate(EV_ViewerProfileDelta c) {
+
+		if (c.hasLastIp() && c.hasLastLogin()) {
+			((TrackedAttribute) ip).set(c.getLastIp(), new Date(c.getLastLogin()));
+		}
+
+		if (c.hasIp()) {
+			setIp(c.getIp());
+		}
+		if (c.hasPermissions()) {
+			// TODO
+		}
+
 	}
 
 }

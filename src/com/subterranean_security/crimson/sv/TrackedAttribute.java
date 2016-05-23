@@ -12,9 +12,25 @@ public class TrackedAttribute extends Attribute {
 
 	@Override
 	public void set(String s) {
-		timestamps.add(new Date());
+		set(s, new Date());
+	}
+
+	public void set(String s, Date d) {
+		timestamps.add(d);
 		values.add(s);
 		current = s;
+	}
+
+	public int size() {
+		return values.size();
+	}
+
+	public String getValue(int i) {
+		return values.get(i);
+	}
+
+	public Date getTime(int i) {
+		return timestamps.get(i);
 	}
 
 }

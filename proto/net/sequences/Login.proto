@@ -17,6 +17,7 @@ message RS_LoginChallenge {
 
 message RS_Login {
 	required bool response = 1;
-	optional EV_ServerInfoDelta initial_info = 2;
+	optional EV_ServerProfileDelta spd = 2;
+	optional EV_ViewerProfileDelta vpd = 3;
 }
 

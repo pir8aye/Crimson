@@ -18,7 +18,7 @@
 package com.subterranean_security.crimson.server.stream;
 
 import com.subterranean_security.crimson.core.Platform;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
@@ -34,12 +34,12 @@ public class SInfoSlave extends InfoSlave {
 	@Override
 	public void send() {
 		ServerStore.Connections.getConnection(param.getVID()).handle.write(Message.newBuilder().setUrgent(true)
-				.setCid(param.getCID()).setVid(param.getVID()).setEvServerInfoDelta(gatherServerInfo()).build());
+				.setCid(param.getCID()).setVid(param.getVID()).setEvServerProfileDelta(gatherServerInfo()).build());
 
 	}
 
-	private EV_ServerInfoDelta gatherServerInfo() {
-		EV_ServerInfoDelta.Builder sid = EV_ServerInfoDelta.newBuilder();
+	private EV_ServerProfileDelta gatherServerInfo() {
+		EV_ServerProfileDelta.Builder sid = EV_ServerProfileDelta.newBuilder();
 		sid.setServerStatus(Server.isRunning());
 		sid.setClientCount(ServerStore.Connections.countClients());
 		sid.setUserCount(ServerStore.Connections.countUsers());

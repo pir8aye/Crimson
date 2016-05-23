@@ -33,7 +33,8 @@ import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallenge
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
@@ -49,6 +50,7 @@ import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.Server;
+import com.subterranean_security.crimson.server.ServerState;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
 import com.subterranean_security.crimson.sv.Listener;
@@ -274,59 +276,71 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void login_rq(Message m) {
 		receptor.setInstance(Instance.VIEWER);
-		String user = m.getRqLogin().getUsername();
-		EV_ServerInfoDelta.Builder sid = EV_ServerInfoDelta.newBuilder();
 
-		if (m.getRqLogin().getSvid() != 0) {
-			receptor.setCvid(m.getRqLogin().getSvid());
-		} else {
-			ServerCommands.setCvid(receptor, IDGen.getCvid());
-		}
+		String user = m.getRqLogin().getUsername();
+		EV_ServerProfileDelta.Builder sid = EV_ServerProfileDelta.newBuilder();
+		EV_ViewerProfileDelta.Builder vid = EV_ViewerProfileDelta.newBuilder();
 
 		boolean pass = false;
 		try {
-			if (!ServerStore.Databases.system.userExists(user)) {
+			if (!ServerState.exampleMode) {
 				pass = false;
-				return;
+				if (m.getRqLogin().getSvid() != 0) {
+					receptor.setCvid(m.getRqLogin().getSvid());
+				} else {
+					ServerCommands.setCvid(receptor, IDGen.getCvid());
+				}
+
+				if (!ServerStore.Databases.system.userExists(user)) {
+					pass = false;
+					return;
+				}
+				RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder()
+						.setSalt(ServerStore.Databases.system.getSalt(user));
+				receptor.handle.write(Message.newBuilder().setId(m.getId()).setRqLoginChallenge(lcrq).build());
+				Message lcrs = null;
+				try {
+					lcrs = receptor.cq.take(m.getId(), 5, TimeUnit.SECONDS);
+					log.debug("Received login challenge response: {}", lcrs.getRsLoginChallenge().getResult());
+				} catch (InterruptedException e) {
+					log.error("No response to login challenge");
+					pass = false;
+					return;
+				}
+				pass = ServerStore.Databases.system.validLogin(m.getRqLogin().getUsername(),
+						lcrs.getRsLoginChallenge().getResult());
+			} else {
+				pass = true;
+				receptor.setCvid(IDGen.getCvid());
+				user = "user_" + Math.abs(CUtil.Misc.rand());
 			}
-			RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder()
-					.setSalt(ServerStore.Databases.system.getSalt(user));
-			receptor.handle.write(Message.newBuilder().setId(m.getId()).setRqLoginChallenge(lcrq).build());
-			Message lcrs = null;
-			try {
-				lcrs = receptor.cq.take(m.getId(), 5, TimeUnit.SECONDS);
-				log.debug("Received login challenge response: {}", lcrs.getRsLoginChallenge().getResult());
-			} catch (InterruptedException e) {
-				log.error("No response to login challenge");
-				pass = false;
-				return;
-			}
-			pass = ServerStore.Databases.system.validLogin(m.getRqLogin().getUsername(),
-					lcrs.getRsLoginChallenge().getResult());
+
 			if (pass) {
 				log.debug("Accepting Login");
 				receptor.setState(ConnectionState.AUTHENTICATED);
 				ViewerProfile vp = null;
 				try {
 					vp = ServerStore.Profiles.getViewer(receptor.getCvid());
+					log.debug("Loaded ViewerProfile for CVID: " + receptor.getCvid());
 				} catch (Exception e1) {
-					vp = new ViewerProfile(ServerStore.Profiles.nextID());
+					vp = new ViewerProfile(receptor.getCvid());
 					vp.setUser(user);
 					ServerStore.Profiles.addViewer(vp);
+					log.debug("Created new ViewerProfile for CVID: " + receptor.getCvid());
 				}
 				ServerStore.Connections.add(receptor);
 
-				ArrayList<Date> times = vp.getLogin_times();
-				if (times.size() != 0) {
-					sid.setLastLogin(times.get(times.size() - 1).getTime());
-				}
-				times.add(new Date());
+				vp.setIp(receptor.getRemoteAddress());
+				vid.setIp(vp.getIp());
 
-				ArrayList<String> ips = vp.getLogin_ip();
-				if (ips.size() != 0) {
-					sid.setLastIp(ips.get(ips.size() - 1));
+				String lastIP = vp.getLastLoginIp();
+				if (lastIP != null) {
+					vid.setLastIp(lastIP);
 				}
-				ips.add(receptor.getRemoteAddress());
+				Date lastTime = vp.getLastLoginTime();
+				if (lastTime != null) {
+					vid.setLastLogin(lastTime.getTime());
+				}
 
 				for (Listener l : ServerStore.Listeners.listeners) {
 					sid.addListeners(l.getConfig());
@@ -336,9 +350,11 @@ public class ServerExecutor extends BasicExecutor {
 
 		} finally {
 			receptor.handle.write(Message.newBuilder().setId(m.getId())
-					.setRsLogin(RS_Login.newBuilder().setResponse(pass).setInitialInfo(sid)).build());
+					.setRsLogin(RS_Login.newBuilder().setResponse(pass).setSpd(sid).setVpd(vid)).build());
 			log.info("Login outcome: " + pass);
-			receptor.close();
+			if (!pass) {
+				receptor.close();
+			}
 		}
 	}
 
@@ -418,9 +434,8 @@ public class ServerExecutor extends BasicExecutor {
 		receptor.handle
 				.write(Message.newBuilder().setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
 		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));
-		Message update = Message.newBuilder().setUrgent(true)
-				.setEvServerInfoDelta(EV_ServerInfoDelta.newBuilder().addListeners(m.getRqAddListener().getConfig()))
-				.build();
+		Message update = Message.newBuilder().setUrgent(true).setEvServerProfileDelta(
+				EV_ServerProfileDelta.newBuilder().addListeners(m.getRqAddListener().getConfig())).build();
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
 
 	}

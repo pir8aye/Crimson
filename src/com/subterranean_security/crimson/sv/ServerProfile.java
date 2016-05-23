@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.subterranean_security.crimson.core.proto.Delta.EV_ServerInfoDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
@@ -39,11 +39,6 @@ public class ServerProfile implements Serializable {
 
 	public ArrayList<ListenerConfig> listeners = new ArrayList<ListenerConfig>();
 
-	// User specific attributes
-	private Attribute ip;
-	private Attribute lastIp;
-	private Date lastTime;
-
 	// General attributes
 	private Attribute messageLatency;
 
@@ -55,8 +50,7 @@ public class ServerProfile implements Serializable {
 	private Attribute crimsonCpuUsage;
 
 	public ServerProfile() {
-		ip = new UntrackedAttribute();
-		lastIp = new UntrackedAttribute();
+
 		messageLatency = new UntrackedAttribute();
 		crimsonRamUsage = new UntrackedAttribute();
 		cpuTemp = new UntrackedAttribute();
@@ -127,31 +121,7 @@ public class ServerProfile implements Serializable {
 		this.status = status;
 	}
 
-	public String getIp() {
-		return ip.get();
-	}
-
-	public void setIp(String ip) {
-		this.ip.set(ip);
-	}
-
-	public String getLastLoginIp() {
-		return lastIp.get();
-	}
-
-	public Date getLastLoginTime() {
-		return lastTime;
-	}
-
-	public void setLastLoginIp(String s) {
-		lastIp.set(s);
-	}
-
-	public void setLastLoginTime(Date d) {
-		lastTime = d;
-	}
-
-	public void amalgamate(EV_ServerInfoDelta c) {
+	public void amalgamate(EV_ServerProfileDelta c) {
 		if (c.hasServerStatus()) {
 			setStatus(c.getServerStatus());
 		}
@@ -184,18 +154,6 @@ public class ServerProfile implements Serializable {
 
 				listeners.add(lc);
 			}
-		}
-		if (c.hasLastIp()) {
-			setLastLoginIp(c.getLastIp());
-		}
-		if (c.hasLastLogin()) {
-			setLastLoginTime(new Date(c.getLastLogin()));
-		}
-		if (c.hasIp()) {
-			setIp(c.getIp());
-		}
-		if (c.hasPermissions()) {
-			// TODO
 		}
 
 	}
