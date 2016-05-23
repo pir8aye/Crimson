@@ -278,6 +278,17 @@ public class MenuControls extends JPanel {
 		valViewerRamUsage.setFont(new Font("Dialog", Font.BOLD, 10));
 		valViewerRamUsage.setBounds(121, 109, 70, 17);
 		panel_2.add(valViewerRamUsage);
+		
+		JLabel lblIpAddress = new JLabel("IP Address:");
+		lblIpAddress.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblIpAddress.setBounds(6, 34, 88, 17);
+		panel_2.add(lblIpAddress);
+		
+		JLabel label = new JLabel("127.0.0.1");
+		label.setHorizontalAlignment(SwingConstants.TRAILING);
+		label.setFont(new Font("Dialog", Font.BOLD, 10));
+		label.setBounds(87, 34, 104, 17);
+		panel_2.add(label);
 
 		JPanel panel_4 = new JPanel();
 		panel_4.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "Views",
