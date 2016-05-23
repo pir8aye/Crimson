@@ -63,6 +63,7 @@ public class MenuControls extends JPanel {
 	private JButton btnStartServer;
 	private JButton btnStopServer;
 	private JLabel valIp;
+	private JLabel valUsername;
 
 	public MenuControls() {
 		mc = this;
@@ -212,11 +213,11 @@ public class MenuControls extends JPanel {
 		lblUsername.setBounds(6, 17, 69, 17);
 		panel_2.add(lblUsername);
 
-		JLabel lblAdmin = new JLabel("admin");
-		lblAdmin.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblAdmin.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblAdmin.setBounds(87, 17, 99, 17);
-		panel_2.add(lblAdmin);
+		valUsername = new JLabel(ViewerStore.Profiles.vp.getUser());
+		valUsername.setHorizontalAlignment(SwingConstants.TRAILING);
+		valUsername.setFont(new Font("Dialog", Font.BOLD, 10));
+		valUsername.setBounds(87, 17, 99, 17);
+		panel_2.add(valUsername);
 
 		JButton btnCloseToTray = new JButton("Run in Tray");
 		btnCloseToTray.setBounds(12, 130, 88, 20);
