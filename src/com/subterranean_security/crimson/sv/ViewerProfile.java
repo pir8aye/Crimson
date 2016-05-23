@@ -85,6 +85,7 @@ public class ViewerProfile implements Serializable {
 	}
 
 	public void amalgamate(EV_ViewerProfileDelta c) {
+		updateTimestamp = new Date();
 
 		if (c.hasLastIp() && c.hasLastLogin()) {
 			((TrackedAttribute) ip).set(c.getLastIp(), new Date(c.getLastLogin()));
