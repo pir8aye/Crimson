@@ -62,6 +62,7 @@ public class MenuControls extends JPanel {
 	private JLabel valStatus;
 	private JButton btnStartServer;
 	private JButton btnStopServer;
+	private JLabel valIp;
 
 	public MenuControls() {
 		mc = this;
@@ -278,17 +279,17 @@ public class MenuControls extends JPanel {
 		valViewerRamUsage.setFont(new Font("Dialog", Font.BOLD, 10));
 		valViewerRamUsage.setBounds(121, 109, 70, 17);
 		panel_2.add(valViewerRamUsage);
-		
+
 		JLabel lblIpAddress = new JLabel("IP Address:");
 		lblIpAddress.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblIpAddress.setBounds(6, 34, 88, 17);
 		panel_2.add(lblIpAddress);
-		
-		JLabel label = new JLabel("127.0.0.1");
-		label.setHorizontalAlignment(SwingConstants.TRAILING);
-		label.setFont(new Font("Dialog", Font.BOLD, 10));
-		label.setBounds(87, 34, 104, 17);
-		panel_2.add(label);
+
+		valIp = new JLabel("loading...");
+		valIp.setHorizontalAlignment(SwingConstants.TRAILING);
+		valIp.setFont(new Font("Dialog", Font.BOLD, 10));
+		valIp.setBounds(87, 34, 104, 17);
+		panel_2.add(valIp);
 
 		JPanel panel_4 = new JPanel();
 		panel_4.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "Views",
@@ -354,6 +355,7 @@ public class MenuControls extends JPanel {
 		valServerCpuUsage.setText(ViewerStore.Profiles.server.getCrimsonCpuUsage());
 		valClients.setText("" + ViewerStore.Profiles.server.getConnectedClients());
 		valUsers.setText("" + ViewerStore.Profiles.server.getConnectedUsers());
+		valIp.setText(ViewerStore.Profiles.server.getIp());
 		if (ViewerStore.Profiles.server.getStatus()) {
 			valStatus.setText("Running");
 			valStatus.setForeground(new Color(0, 149, 39));

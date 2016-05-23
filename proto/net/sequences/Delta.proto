@@ -77,4 +77,6 @@ message EV_ServerInfoDelta {
 	//current user info
 	optional int64 last_login = 15;
 	optional string last_ip = 16;
+	optional string ip = 17;
+	optional string permissions = 18;
 }

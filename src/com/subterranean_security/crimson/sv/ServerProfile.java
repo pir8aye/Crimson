@@ -40,6 +40,7 @@ public class ServerProfile implements Serializable {
 	public ArrayList<ListenerConfig> listeners = new ArrayList<ListenerConfig>();
 
 	// User specific attributes
+	private Attribute ip;
 	private Attribute lastIp;
 	private Date lastTime;
 
@@ -54,6 +55,7 @@ public class ServerProfile implements Serializable {
 	private Attribute crimsonCpuUsage;
 
 	public ServerProfile() {
+		ip = new UntrackedAttribute();
 		lastIp = new UntrackedAttribute();
 		messageLatency = new UntrackedAttribute();
 		crimsonRamUsage = new UntrackedAttribute();
@@ -125,6 +127,14 @@ public class ServerProfile implements Serializable {
 		this.status = status;
 	}
 
+	public String getIp() {
+		return ip.get();
+	}
+
+	public void setIp(String ip) {
+		this.ip.set(ip);
+	}
+
 	public String getLastLoginIp() {
 		return lastIp.get();
 	}
@@ -180,6 +190,12 @@ public class ServerProfile implements Serializable {
 		}
 		if (c.hasLastLogin()) {
 			setLastLoginTime(new Date(c.getLastLogin()));
+		}
+		if (c.hasIp()) {
+			setIp(c.getIp());
+		}
+		if (c.hasPermissions()) {
+			// TODO
 		}
 
 	}
