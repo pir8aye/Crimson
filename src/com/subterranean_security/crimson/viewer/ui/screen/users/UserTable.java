@@ -15,41 +15,37 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.ui.debug;
+package com.subterranean_security.crimson.viewer.ui.screen.users;
 
-import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
 
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.sv.ViewerProfile;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 
-public class StreamList extends JPanel {
+public class UserTable extends JScrollPane {
 
 	private static final long serialVersionUID = 1L;
+	private JTable table = new JTable();
+	private TM tm = new TM();
 
-	private static JTable table = new JTable();
-	private StreamTM tm = new StreamTM();
-
-	public StreamList() {
-		setLayout(new BorderLayout());
+	public UserTable(UsersPanel parent) {
 		table.setModel(tm);
 		table.setFillsViewportHeight(true);
 		table.setShowVerticalLines(false);
+		setViewportView(table);
+
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// get source of click
 				JTable source = (JTable) e.getSource();
 				final int sourceRow = source.rowAtPoint(e.getPoint());
+				parent.btnRemove.setEnabled(sourceRow >= 0);
 				if (sourceRow == -1) {
 					source.clearSelection();
 					return;
@@ -59,47 +55,25 @@ public class StreamList extends JPanel {
 					source.changeSelection(sourceRow, 0, false, false);
 				}
 
-				if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
-
-					// right click on table
-					JPopupMenu popup = new JPopupMenu();
-					JMenuItem control = new JMenuItem();
-					control.setText("Control Panel");
-					control.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mousePressed(MouseEvent e) {
-
-							new Thread() {
-								public void run() {
-
-								}
-							}.start();
-
-						}
-
-					});
-					popup.add(control);
-
-					popup.show(table, e.getX(), e.getY());
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					ViewerProfile selected = tm.getAt(sourceRow);
+					// right click
 
 				}
 			}
 		});
-
-		JScrollPane jsp = new JScrollPane(table);
-
-		add(jsp, BorderLayout.CENTER);
 	}
 
-	public void refreshTM() {
+	public void fireTableDataChanged() {
 		tm.fireTableDataChanged();
 	}
+
 }
 
-class StreamTM extends AbstractTableModel {
+class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private static final String[] headers = new String[] { "ID", "Type" };
+	private final String[] headers = new String[] { "Username", "Last Login", "Login IP" };
 
 	@Override
 	public int getColumnCount() {
@@ -108,7 +82,7 @@ class StreamTM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return StreamStore.size();
+		return ViewerStore.Profiles.server.listeners.size();
 	}
 
 	@Override
@@ -118,17 +92,28 @@ class StreamTM extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		HashMap<Integer, Stream> streams = StreamStore.getStreams();
-		Object[] set = streams.keySet().toArray();
+
 		switch (headers[columnIndex]) {
-		case "ID": {
-			return streams.get((Integer) set[rowIndex]).getStreamID();
+		case "Username": {
+			return ViewerStore.Profiles.server.users.get(rowIndex).getUser();
 		}
-		case "Type": {
-			return streams.get((Integer) set[rowIndex]).getClass().getName();
+		case "Last Login": {
+			return ViewerStore.Profiles.server.users.get(rowIndex).getLastLoginTime();
 		}
+		case "Login IP": {
+			return ViewerStore.Profiles.server.users.get(rowIndex).getLastLoginIp();
+		}
+
 		}
 		return null;
+	}
+
+	public ViewerProfile getAt(int row) {
+		return ViewerStore.Profiles.server.users.get(row);
+	}
+
+	public void removeAt(int row) {
+		ViewerStore.Profiles.server.users.remove(row);
 	}
 
 }

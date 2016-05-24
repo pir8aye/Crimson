@@ -1,0 +1,36 @@
+package com.subterranean_security.crimson.core.proto;
+
+message ClientPermissions {
+	required int32 cvid = 1;
+	optional bool super = 2;
+	optional bool client_power = 3;
+	optional bool client_settings = 4;
+	optional bool client_fs_read = 5;
+	optional bool client_fs_write = 6;
+}
+
+message ViewerPermissions {
+	optional bool super = 1;
+	optional bool generate = 2;
+	optional bool create_listener = 3;
+	optional bool server_power = 4;
+	optional bool server_settings = 5;
+	optional bool server_fs_read = 6;
+	optional bool server_fs_write = 7;
+	
+	repeated ClientPermissions client_permissions = 8;
+
+}
+
+message RQ_AddUser {
+	required string user = 1;
+	required string password = 2;
+	optional ViewerPermissions permissions = 3;
+
+}
+
+message RS_AddUser {
+	required bool result = 1;
+	optional string comment = 2;
+
+}

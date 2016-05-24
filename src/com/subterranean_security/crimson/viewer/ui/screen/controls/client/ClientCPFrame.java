@@ -27,6 +27,7 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
@@ -39,7 +40,6 @@ import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.panel.Console;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
-import javax.swing.JSplitPane;
 
 public class ClientCPFrame extends JFrame {
 

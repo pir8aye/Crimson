@@ -43,6 +43,7 @@ import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.proto.Users.RS_AddUser;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
@@ -128,6 +129,8 @@ public class ServerExecutor extends BasicExecutor {
 						stream_stop_ev(m);
 					} else if (m.hasRqAddListener()) {
 						rq_add_listener(m);
+					} else if (m.hasRqAddUser()) {
+						rq_add_user(m);
 					} else if (m.hasRqChangeServerState()) {
 						rq_change_server_state(m);
 					} else if (m.hasRqChangeClientState()) {
@@ -323,11 +326,11 @@ public class ServerExecutor extends BasicExecutor {
 					vp = ServerStore.Profiles.getViewer(receptor.getCvid());
 				} catch (Exception e1) {
 					ServerStore.Profiles.updateCvid(user, receptor.getCvid());
-					
+
 					try {
 						vp = ServerStore.Profiles.getViewer(receptor.getCvid());
 					} catch (Exception e2) {
-						
+
 						vp = new ViewerProfile(receptor.getCvid());
 						vp.setUser(user);
 						ServerStore.Profiles.addViewer(vp);
@@ -349,6 +352,18 @@ public class ServerExecutor extends BasicExecutor {
 
 				for (Listener l : ServerStore.Listeners.listeners) {
 					sid.addListeners(l.getConfig());
+				}
+				try {
+					for (Integer i : ServerStore.Profiles.getViewerKeyset()) {
+						ViewerProfile vpi = ServerStore.Profiles.getViewer(i);
+						sid.addUsers(EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
+								.setIp(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
+										? vpi.getIp() : "redacted")
+								.build());
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				sid.setServerStatus(Server.isRunning());
 			}
@@ -441,6 +456,22 @@ public class ServerExecutor extends BasicExecutor {
 		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));
 		Message update = Message.newBuilder().setUrgent(true).setEvServerProfileDelta(
 				EV_ServerProfileDelta.newBuilder().addListeners(m.getRqAddListener().getConfig())).build();
+		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
+
+	}
+
+	private void rq_add_user(Message m) {
+		log.debug("Executing: rq_add_user");
+		// TODO check permissions
+		receptor.handle.write(Message.newBuilder().setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
+
+		ServerStore.Databases.system.addUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
+				m.getRqAddUser().getPermissions());
+
+		Message update = Message.newBuilder().setUrgent(true)
+				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addUsers(EV_ViewerProfileDelta.newBuilder()
+						.setUser(m.getRqAddUser().getUser()).setViewerPermissions(m.getRqAddUser().getPermissions())))
+				.build();
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
 
 	}

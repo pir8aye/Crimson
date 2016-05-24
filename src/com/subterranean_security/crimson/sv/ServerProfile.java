@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
@@ -38,6 +39,7 @@ public class ServerProfile implements Serializable {
 	private int connectedClients;
 
 	public ArrayList<ListenerConfig> listeners = new ArrayList<ListenerConfig>();
+	public ArrayList<ViewerProfile> users = new ArrayList<ViewerProfile>();
 
 	// General attributes
 	private Attribute messageLatency;
@@ -153,6 +155,26 @@ public class ServerProfile implements Serializable {
 				}
 
 				listeners.add(lc);
+			}
+		}
+
+		if (c.getUsersCount() != 0) {
+			for (EV_ViewerProfileDelta lc : c.getUsersList()) {
+				for (ViewerProfile l : users) {
+					if (lc.getUser().equals(l.getUser())) {
+						users.remove(l);
+						break;
+					}
+				}
+				if (UIStore.userMan != null) {
+					UIStore.userMan.up.ut.fireTableDataChanged();
+				}
+
+				ViewerProfile vp = new ViewerProfile();
+				vp.setUser(lc.getUser());
+				vp.setPermissions(lc.getViewerPermissions());
+				vp.setIp(lc.getIp());
+				users.add(vp);
 			}
 		}
 

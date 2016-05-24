@@ -43,6 +43,7 @@ import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.GenDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SettingsDialog;
+import com.subterranean_security.crimson.viewer.ui.screen.users.UserMan;
 import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
@@ -177,6 +178,16 @@ public class MainMenu extends JPanel {
 		wmUsers.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
+				if (UIStore.userMan == null) {
+					UIStore.userMan = new UserMan();
+					UIStore.userMan.setLocationRelativeTo(null);
+					UIStore.userMan.setVisible(true);
+				} else {
+					UIStore.userMan.setLocationRelativeTo(null);
+				}
+
+				wmUsers.resetBG();
+				MenuSelectionManager.defaultManager().clearSelectedPath();
 			}
 		});
 

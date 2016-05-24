@@ -1,6 +1,7 @@
 package com.subterranean_security.crimson.core.proto;
 
 import "net/sequences/Listener.proto";
+import "net/sequences/Users.proto";
 
 message EV_ProfileDelta {
 
@@ -72,29 +73,8 @@ message EV_ServerProfileDelta {
 	optional string os_family = 12;
 	optional string os_version = 13;
 	optional string crimson_version = 14;
-}
-
-//TODO relocate
-message ClientPermissions {
-	required int32 cvid = 1;
-	optional bool super = 2;
-	optional bool client_power = 3;
-	optional bool client_settings = 4;
-	optional bool client_fs_read = 5;
-	optional bool client_fs_write = 6;
-}
-
-message ViewerPermissions {
-	optional bool super = 1;
-	optional bool generate = 2;
-	optional bool create_listener = 3;
-	optional bool server_power = 4;
-	optional bool server_settings = 5;
-	optional bool server_fs_read = 6;
-	optional bool server_fs_write = 7;
 	
-	repeated ClientPermissions client_permissions = 8;
-
+	repeated EV_ViewerProfileDelta users = 15;
 }
 
 message EV_ViewerProfileDelta {

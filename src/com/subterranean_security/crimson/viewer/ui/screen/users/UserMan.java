@@ -18,23 +18,44 @@
 package com.subterranean_security.crimson.viewer.ui.screen.users;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.awt.Component;
 
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.Box;
+import javax.swing.JFrame;
 
-public class UsersDialog extends JDialog {
+import com.subterranean_security.crimson.viewer.ui.UICommon;
+import com.subterranean_security.crimson.viewer.ui.panel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
+import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+
+public class UserMan extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private final JPanel contentPanel = new JPanel();
+	public UsersPanel up = new UsersPanel();
+	private HPanel hp = new HPanel(up);
 
-	public UsersDialog() {
-		setBounds(100, 100, 450, 300);
+	public UserMan() {
+		setTitle("Users and Groups");
+		setIconImages(UUtil.getIconList());
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setResizable(false);
+		setSize(UICommon.dim_min_users);
+		setMinimumSize(UICommon.dim_min_users);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setLayout(new FlowLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		getContentPane().add(hp, BorderLayout.CENTER);
+
+		Component[] buttons = { Box.createHorizontalGlue(), hp.initBtnUP(), Box.createHorizontalGlue() };
+		hp.nmenu.setButtons(buttons);
+
+		hp.hmenu.setDesc("Manages users on the server. At least one user must have super permissions");
+
+		hp.refreshHeight();
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		UIStore.userMan = null;
 	}
 
 }

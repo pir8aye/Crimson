@@ -3,6 +3,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.netman;
 import java.awt.Component;
 import java.awt.Dimension;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -45,7 +46,7 @@ public class NetMan extends JFrame {
 		tabbedPane.add(ap);
 		tabbedPane.setTitleAt(1, "Authentication");
 
-		Component[] buttons = { hp.initBtnUP() };
+		Component[] buttons = { Box.createHorizontalGlue(), hp.initBtnUP(), Box.createHorizontalGlue() };
 		hp.nmenu.setButtons(buttons);
 
 		hp.hmenu.setDesc("Manages listeners and authentication on the server.  At least one listener must be defined.");

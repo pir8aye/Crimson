@@ -77,11 +77,9 @@ import com.subterranean_security.crimson.viewer.Viewer;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
-import ch.qos.logback.core.joran.spi.JoranException;
 
 public enum CUtil {
 	;

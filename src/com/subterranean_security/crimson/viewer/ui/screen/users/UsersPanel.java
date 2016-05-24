@@ -18,27 +18,80 @@
 package com.subterranean_security.crimson.viewer.ui.screen.users;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 
 public class UsersPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	public JButton btnRemove;
+	public JButton btnAddUser;
+	public JButton btnEditPermissions;
+	public JButton btnChangePassword;
+
+	public static AddUser addDialog;
+	public UserTable ut;
 
 	public UsersPanel() {
 		setLayout(new BorderLayout(0, 0));
-		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		add(tabbedPane, BorderLayout.CENTER);
-		
+
 		JPanel panel = new JPanel();
-		tabbedPane.addTab("Users", null, panel, null);
 		panel.setLayout(new BorderLayout(0, 0));
-		
-		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab("Groups", null, panel_1, null);
-		panel_1.setLayout(new BorderLayout(0, 0));
+
+		add(panel, BorderLayout.CENTER);
+
+		JPanel panel_2 = new JPanel();
+		panel.add(panel_2, BorderLayout.CENTER);
+		panel_2.setLayout(new BorderLayout(0, 0));
+
+		ut = new UserTable(this);
+		panel_2.add(ut);
+
+		JPanel panel_3 = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel_3.getLayout();
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		panel.add(panel_3, BorderLayout.SOUTH);
+
+		btnChangePassword = new JButton("Change Password");
+		btnChangePassword.setEnabled(false);
+		btnChangePassword.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnChangePassword.setMargin(new Insets(2, 4, 2, 4));
+		panel_3.add(btnChangePassword);
+
+		btnEditPermissions = new JButton("Edit Permissions");
+		btnEditPermissions.setEnabled(false);
+		btnEditPermissions.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnEditPermissions.setMargin(new Insets(2, 4, 2, 4));
+		panel_3.add(btnEditPermissions);
+
+		btnAddUser = new JButton("Add User");
+		btnAddUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// TODO check permissions
+				if (addDialog == null) {
+					addDialog = new AddUser();
+					addDialog.setVisible(true);
+				} else {
+					addDialog.setLocationRelativeTo(null);
+				}
+
+			}
+		});
+		btnAddUser.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnAddUser.setMargin(new Insets(2, 4, 2, 4));
+		panel_3.add(btnAddUser);
+
+		btnRemove = new JButton("Delete User");
+		btnRemove.setEnabled(false);
+		btnRemove.setMargin(new Insets(2, 4, 2, 4));
+		btnRemove.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel_3.add(btnRemove);
 
 	}
 

@@ -27,9 +27,9 @@ import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.storage.ViewerDB;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
+import com.subterranean_security.crimson.core.storage.ViewerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.ClientProfile;
@@ -176,6 +176,10 @@ public enum ServerStore {
 
 		public static ViewerProfile getViewer(int svid) throws Exception {
 			return viewerProfiles.get(svid);
+		}
+
+		public static Set<Integer> getViewerKeyset() {
+			return viewerProfiles.keyset();
 		}
 
 		public static void addViewer(ViewerProfile p) {

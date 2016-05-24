@@ -36,6 +36,8 @@ import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.State.StateType;
+import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
+import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -142,6 +144,26 @@ public enum ViewerCommands {
 			} else if (!m.getRsAddListener().getResult()) {
 				if (m.getRsAddListener().hasComment()) {
 					error.append(m.getRsAddListener().getComment());
+				}
+				return false;
+			}
+		} catch (InterruptedException e) {
+			error.append("Interrupted");
+			return false;
+		}
+
+		return true;
+	}
+
+	public static boolean addUser(StringBuffer error, String user, char[] pass, ViewerPermissions vp) {
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRqAddUser(
+					RQ_AddUser.newBuilder().setUser(user).setPassword(new String(pass)).setPermissions(vp)), 3);
+			if (m == null) {
+				error.append("No response");
+			} else if (!m.getRsAddUser().getResult()) {
+				if (m.getRsAddUser().hasComment()) {
+					error.append(m.getRsAddUser().getComment());
 				}
 				return false;
 			}

@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
-import com.subterranean_security.crimson.core.proto.Delta.ViewerPermissions;
+import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 
 public class ViewerProfile implements Serializable {
 

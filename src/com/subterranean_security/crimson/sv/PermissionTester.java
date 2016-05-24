@@ -17,8 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sv;
 
-import com.subterranean_security.crimson.core.proto.Delta.ClientPermissions;
-import com.subterranean_security.crimson.core.proto.Delta.ViewerPermissions;
+import com.subterranean_security.crimson.core.proto.Users.ClientPermissions;
+import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 
 public enum PermissionTester {
 	;
