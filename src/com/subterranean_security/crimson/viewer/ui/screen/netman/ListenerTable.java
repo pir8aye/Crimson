@@ -106,6 +106,9 @@ class TM extends AbstractTableModel {
 		case "UPnP": {
 			return ViewerStore.Profiles.server.listeners.get(rowIndex).getUpnp() ? "yes" : "no";
 		}
+		case "Owner": {
+			return ViewerStore.Profiles.server.listeners.get(rowIndex).getOwner();
+		}
 
 		}
 		return null;

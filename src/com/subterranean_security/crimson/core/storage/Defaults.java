@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.ServerProfile;
 import com.subterranean_security.crimson.sv.ViewerProfile;
@@ -34,6 +35,7 @@ public enum Defaults {
 
 		db.storeObject("groups", new ArrayList<Group>());
 		db.storeObject("passwords", new ArrayList<String>());
+		db.storeObject("listeners", new ArrayList<ListenerConfig>());
 		db.storeObject("profiles.clients", new MemMap<Integer, ClientProfile>());
 		db.storeObject("profiles.viewers", new MemMap<Integer, ViewerProfile>());
 		db.storeObject("profiles.idcount", 0);

