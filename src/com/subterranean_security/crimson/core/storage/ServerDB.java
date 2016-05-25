@@ -170,10 +170,14 @@ public class ServerDB extends Database {
 
 		// create ViewerProfile
 		ViewerProfile vp = new ViewerProfile();
+		vp.setUser(user);
+		vp.setCvid(IDGen.getCvid());
 		vp.setPermissions(permissions);
 
 		try {
-			((MemMap<Integer, ViewerProfile>) getObject("profiles.viewers")).put(IDGen.getCvid(), vp);
+			MemMap<Integer, ViewerProfile> map = (MemMap<Integer, ViewerProfile>) getObject("profiles.viewers");
+			map.setDatabase(this);
+			map.put(vp.getCvid(), vp);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
