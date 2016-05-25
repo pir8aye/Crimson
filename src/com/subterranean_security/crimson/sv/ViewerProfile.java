@@ -73,6 +73,10 @@ public class ViewerProfile implements Serializable {
 		return ip.get();
 	}
 
+	public Date getLoginTime() {
+		return ((TrackedAttribute) ip).getTime(0);
+	}
+
 	public void setIp(String ip) {
 		((TrackedAttribute) this.ip).set(ip);
 	}
@@ -100,12 +104,12 @@ public class ViewerProfile implements Serializable {
 			setUser(c.getUser());
 		}
 
-		if (c.hasLastIp() && c.hasLastLogin()) {
-			((TrackedAttribute) ip).set(c.getLastIp(), new Date(c.getLastLogin()));
+		if (c.hasLastLoginIp() && c.hasLastLoginTime()) {
+			((TrackedAttribute) ip).set(c.getLastLoginIp(), new Date(c.getLastLoginTime()));
 		}
 
-		if (c.hasIp()) {
-			setIp(c.getIp());
+		if (c.hasLoginIp()) {
+			((TrackedAttribute) ip).set(c.getLoginIp(), new Date(c.getLoginTime()));
 		}
 		if (c.hasViewerPermissions()) {
 			permissions = c.getViewerPermissions();

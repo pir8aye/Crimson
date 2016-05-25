@@ -36,6 +36,7 @@ public class UsersPanel extends JPanel {
 	public JButton btnChangePassword;
 
 	public static AddUser addDialog;
+	public static EditUser editDialog;
 	public UserTable ut;
 
 	public UsersPanel() {
@@ -64,7 +65,18 @@ public class UsersPanel extends JPanel {
 		btnChangePassword.setMargin(new Insets(2, 4, 2, 4));
 		panel_3.add(btnChangePassword);
 
-		btnEditPermissions = new JButton("Edit Permissions");
+		btnEditPermissions = new JButton("Edit User");
+		btnEditPermissions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO check permissions
+				if (editDialog == null) {
+					editDialog = new EditUser(ut.getSelected());
+					editDialog.setVisible(true);
+				} else {
+					editDialog.setLocationRelativeTo(null);
+				}
+			}
+		});
 		btnEditPermissions.setEnabled(false);
 		btnEditPermissions.setFont(new Font("Dialog", Font.BOLD, 10));
 		btnEditPermissions.setMargin(new Insets(2, 4, 2, 4));

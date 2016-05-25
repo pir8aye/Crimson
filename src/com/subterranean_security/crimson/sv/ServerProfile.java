@@ -173,7 +173,7 @@ public class ServerProfile implements Serializable {
 				ViewerProfile vp = new ViewerProfile();
 				vp.setUser(lc.getUser());
 				vp.setPermissions(lc.getViewerPermissions());
-				vp.setIp(lc.getIp());
+				vp.setIp(lc.getLoginIp());
 				users.add(vp);
 			}
 		}

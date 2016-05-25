@@ -89,7 +89,6 @@ public enum ServerStore {
 		public static void sendToAll(Instance i, Message m) {
 			for (int cvid : getKeySet()) {
 				if (receptors.get(cvid).getInstance() == i) {
-					log.debug("Sending mass update (CVID: {})", cvid);
 					receptors.get(cvid).handle.write(m);
 				}
 			}
@@ -176,6 +175,21 @@ public enum ServerStore {
 
 		public static ViewerProfile getViewer(int svid) throws Exception {
 			return viewerProfiles.get(svid);
+		}
+
+		public static ViewerProfile getViewer(String user) throws Exception {
+			try {
+				for (Integer i : viewerProfiles.keyset()) {
+					ViewerProfile vp = viewerProfiles.get(i);
+					if (vp.getUser().equals(user)) {
+						return vp;
+					}
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
 		}
 
 		public static Set<Integer> getViewerKeyset() {

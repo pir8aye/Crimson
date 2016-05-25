@@ -68,6 +68,10 @@ public class UserTable extends JScrollPane {
 		tm.fireTableDataChanged();
 	}
 
+	public ViewerProfile getSelected() {
+		return tm.getAt(table.getSelectedRow());
+	}
+
 }
 
 class TM extends AbstractTableModel {
@@ -82,7 +86,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerStore.Profiles.server.listeners.size();
+		return ViewerStore.Profiles.server.users.size();
 	}
 
 	@Override
@@ -98,10 +102,13 @@ class TM extends AbstractTableModel {
 			return ViewerStore.Profiles.server.users.get(rowIndex).getUser();
 		}
 		case "Last Login": {
-			return ViewerStore.Profiles.server.users.get(rowIndex).getLastLoginTime();
+			if (ViewerStore.Profiles.server.users.get(rowIndex).getLoginTime().getTime() == 0) {
+				return "<hidden>";
+			}
+			return ViewerStore.Profiles.server.users.get(rowIndex).getLoginTime();
 		}
 		case "Login IP": {
-			return ViewerStore.Profiles.server.users.get(rowIndex).getLastLoginIp();
+			return ViewerStore.Profiles.server.users.get(rowIndex).getIp();
 		}
 
 		}

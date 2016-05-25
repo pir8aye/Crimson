@@ -21,12 +21,16 @@ import java.util.ArrayList;
 
 public class MemList<T> {
 
-	private ArrayList<Integer>	index	= new ArrayList<Integer>();
-	private Database			database;
+	private ArrayList<Integer> index = new ArrayList<Integer>();
+	private Database database;
 
 	public MemList(Database d) {
-		this.database = d;
+		setDatabase(d);
 
+	}
+
+	public void setDatabase(Database d) {
+		this.database = d;
 	}
 
 	public void add(T ob) {
@@ -34,8 +38,8 @@ public class MemList<T> {
 
 	}
 
-	public T get(Integer id) {
-		return null;
+	public T get(Integer id) throws Exception {
+		return (T) database.get(index.get(id));
 
 	}
 

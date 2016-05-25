@@ -24,12 +24,23 @@ message ViewerPermissions {
 
 message RQ_AddUser {
 	required string user = 1;
-	required string password = 2;
+	optional string password = 2;
 	optional ViewerPermissions permissions = 3;
 
 }
 
 message RS_AddUser {
+	required bool result = 1;
+	optional string comment = 2;
+
+}
+
+message RQ_EditUser {
+	required RQ_AddUser user = 1;
+
+}
+
+message RS_EditUser {
 	required bool result = 1;
 	optional string comment = 2;
 

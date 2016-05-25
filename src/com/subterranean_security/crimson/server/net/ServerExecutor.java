@@ -43,7 +43,9 @@ import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_AddUser;
+import com.subterranean_security.crimson.core.proto.Users.RS_EditUser;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
@@ -131,6 +133,8 @@ public class ServerExecutor extends BasicExecutor {
 						rq_add_listener(m);
 					} else if (m.hasRqAddUser()) {
 						rq_add_user(m);
+					} else if (m.hasRqEditUser()) {
+						rq_edit_user(m);
 					} else if (m.hasRqChangeServerState()) {
 						rq_change_server_state(m);
 					} else if (m.hasRqChangeClientState()) {
@@ -339,15 +343,16 @@ public class ServerExecutor extends BasicExecutor {
 				ServerStore.Connections.add(receptor);
 
 				vp.setIp(receptor.getRemoteAddress());
-				vid.setIp(vp.getIp());
+				vid.setLoginIp(vp.getIp());
+				vid.setLoginTime(new Date().getTime());
 
 				String lastIP = vp.getLastLoginIp();
 				if (lastIP != null) {
-					vid.setLastIp(lastIP);
+					vid.setLastLoginIp(lastIP);
 				}
 				Date lastTime = vp.getLastLoginTime();
 				if (lastTime != null) {
-					vid.setLastLogin(lastTime.getTime());
+					vid.setLastLoginTime(lastTime.getTime());
 				}
 
 				for (Listener l : ServerStore.Listeners.listeners) {
@@ -357,8 +362,10 @@ public class ServerExecutor extends BasicExecutor {
 					for (Integer i : ServerStore.Profiles.getViewerKeyset()) {
 						ViewerProfile vpi = ServerStore.Profiles.getViewer(i);
 						sid.addUsers(EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
-								.setIp(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
-										? vpi.getIp() : "redacted")
+								.setLoginIp(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
+										? vpi.getIp() : "<hidden>")
+								.setLoginTime(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
+										? vpi.getLoginTime().getTime() : 0)
 								.build());
 					}
 				} catch (Exception e) {
@@ -451,8 +458,8 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_add_listener(Message m) {
 		log.debug("Executing: rq_add_listener");
 		// TODO check permissions
-		receptor.handle
-				.write(Message.newBuilder().setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
+		receptor.handle.write(Message.newBuilder().setId(m.getId())
+				.setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
 		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));
 		Message update = Message.newBuilder().setUrgent(true).setEvServerProfileDelta(
 				EV_ServerProfileDelta.newBuilder().addListeners(m.getRqAddListener().getConfig())).build();
@@ -463,7 +470,8 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_add_user(Message m) {
 		log.debug("Executing: rq_add_user");
 		// TODO check permissions
-		receptor.handle.write(Message.newBuilder().setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
+		receptor.handle.write(
+				Message.newBuilder().setId(m.getId()).setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
 
 		ServerStore.Databases.system.addUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
 				m.getRqAddUser().getPermissions());
@@ -472,6 +480,42 @@ public class ServerExecutor extends BasicExecutor {
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addUsers(EV_ViewerProfileDelta.newBuilder()
 						.setUser(m.getRqAddUser().getUser()).setViewerPermissions(m.getRqAddUser().getPermissions())))
 				.build();
+		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
+
+	}
+
+	private void rq_edit_user(Message m) {
+		log.debug("Executing: rq_edit_user");
+		// TODO check permissions
+		receptor.handle.write(
+				Message.newBuilder().setId(m.getId()).setRsEditUser(RS_EditUser.newBuilder().setResult(true)).build());
+
+		RQ_AddUser rqad = m.getRqEditUser().getUser();
+
+		ViewerProfile vp = null;
+
+		try {
+			vp = ServerStore.Profiles.getViewer(rqad.getUser());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder().setUser(m.getRqAddUser().getUser())
+				.setViewerPermissions(m.getRqAddUser().getPermissions());
+
+		if (rqad.hasPermissions()) {
+			vp.setPermissions(rqad.getPermissions());
+			b.setViewerPermissions(rqad.getPermissions());
+		}
+
+		if (rqad.hasPassword()) {
+			// TODO password change
+		}
+
+		Message update = Message.newBuilder().setUrgent(true)
+				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addUsers(b)).build();
+
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
 
 	}

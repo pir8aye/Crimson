@@ -39,7 +39,7 @@ public enum IDGen {
 	}
 
 	public static int getListenerID() {
-		return random.nextInt();
+		return Math.abs(random.nextInt());
 	}
 
 }

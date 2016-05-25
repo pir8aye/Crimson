@@ -79,8 +79,9 @@ message EV_ServerProfileDelta {
 
 message EV_ViewerProfileDelta {
 	optional string user = 1;
-	optional int64 last_login = 2;
-	optional string last_ip = 3;
-	optional string ip = 4;
-	optional ViewerPermissions viewer_permissions = 5;
+	optional int64 last_login_time = 2;
+	optional string last_login_ip = 3;
+	optional int64 login_time = 4;
+	optional string login_ip = 5;
+	optional ViewerPermissions viewer_permissions = 6;
 }
