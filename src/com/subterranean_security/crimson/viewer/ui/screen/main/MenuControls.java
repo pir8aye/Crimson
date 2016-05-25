@@ -213,7 +213,7 @@ public class MenuControls extends JPanel {
 		lblUsername.setBounds(6, 17, 69, 17);
 		panel_2.add(lblUsername);
 
-		valUsername = new JLabel(ViewerStore.Profiles.vp.getUser());
+		valUsername = new JLabel("loading...");
 		valUsername.setHorizontalAlignment(SwingConstants.TRAILING);
 		valUsername.setFont(new Font("Dialog", Font.BOLD, 10));
 		valUsername.setBounds(87, 17, 99, 17);
@@ -357,6 +357,7 @@ public class MenuControls extends JPanel {
 		valClients.setText("" + ViewerStore.Profiles.server.getConnectedClients());
 		valUsers.setText("" + ViewerStore.Profiles.server.getConnectedUsers());
 		valIp.setText(ViewerStore.Profiles.vp.getIp());
+		valUsername.setText(ViewerStore.Profiles.vp.getUser());
 		if (ViewerStore.Profiles.server.getStatus()) {
 			valStatus.setText("Running");
 			valStatus.setForeground(new Color(0, 149, 39));

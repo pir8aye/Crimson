@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -278,7 +277,6 @@ public class ServerExecutor extends BasicExecutor {
 				}
 			}
 		}
-
 	}
 
 	private void login_rq(Message m) {
@@ -295,7 +293,12 @@ public class ServerExecutor extends BasicExecutor {
 				if (m.getRqLogin().getSvid() != 0) {
 					receptor.setCvid(m.getRqLogin().getSvid());
 				} else {
-					ServerCommands.setCvid(receptor, IDGen.getCvid());
+					try {
+						ServerCommands.setCvid(receptor, ServerStore.Profiles.getViewer(user).getCvid());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
 				}
 
 				if (!ServerStore.Databases.system.userExists(user)) {
@@ -314,8 +317,7 @@ public class ServerExecutor extends BasicExecutor {
 					pass = false;
 					return;
 				}
-				pass = ServerStore.Databases.system.validLogin(m.getRqLogin().getUsername(),
-						lcrs.getRsLoginChallenge().getResult());
+				pass = ServerStore.Databases.system.validLogin(user, lcrs.getRsLoginChallenge().getResult());
 			} else {
 				pass = true;
 				receptor.setCvid(IDGen.getCvid());
@@ -325,48 +327,45 @@ public class ServerExecutor extends BasicExecutor {
 			if (pass) {
 				log.debug("Accepting Login");
 				receptor.setState(ConnectionState.AUTHENTICATED);
+
 				ViewerProfile vp = null;
 				try {
 					vp = ServerStore.Profiles.getViewer(receptor.getCvid());
 				} catch (Exception e1) {
-					ServerStore.Profiles.updateCvid(user, receptor.getCvid());
 
-					try {
-						vp = ServerStore.Profiles.getViewer(receptor.getCvid());
-					} catch (Exception e2) {
-
-						vp = new ViewerProfile(receptor.getCvid());
-						vp.setUser(user);
-						ServerStore.Profiles.addViewer(vp);
-					}
+					log.error("No profile found for user: {} CVID: {}", user, receptor.getCvid());
+					pass = false;
+					return;
 				}
+
 				ServerStore.Connections.add(receptor);
 
 				vp.setIp(receptor.getRemoteAddress());
+				vid.setUser(vp.getUser());
 				vid.setLoginIp(vp.getIp());
-				vid.setLoginTime(new Date().getTime());
+				vid.setLoginTime(vp.getLoginTime().getTime());
 
-				String lastIP = vp.getLastLoginIp();
-				if (lastIP != null) {
-					vid.setLastLoginIp(lastIP);
+				if (vp.getLastLoginIp() != null) {
+					vid.setLastLoginIp(vp.getLastLoginIp());
 				}
-				Date lastTime = vp.getLastLoginTime();
-				if (lastTime != null) {
-					vid.setLastLoginTime(lastTime.getTime());
+				if (vp.getLastLoginTime() != null) {
+					vid.setLastLoginTime(vp.getLastLoginTime().getTime());
 				}
 
 				for (Listener l : ServerStore.Listeners.listeners) {
 					sid.addListeners(l.getConfig());
 				}
+
 				try {
 					for (Integer i : ServerStore.Profiles.getViewerKeyset()) {
 						ViewerProfile vpi = ServerStore.Profiles.getViewer(i);
+
 						sid.addUsers(EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
 								.setLoginIp(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
 										? vpi.getIp() : "<hidden>")
 								.setLoginTime(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
 										? vpi.getLoginTime().getTime() : 0)
-								.build());
+								.setViewerPermissions(vpi.getPermissions()).build());
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
