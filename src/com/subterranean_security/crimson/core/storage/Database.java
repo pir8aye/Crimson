@@ -101,13 +101,10 @@ public abstract class Database extends Thread implements AutoCloseable {
 	 * @throws Exception
 	 */
 	public Object get(int id) throws Exception {
-		if (heap.containsKey(id)) {
-			return heap.get(id);
-		} else {
-
-			return ObjectTransfer.Default.deserialize(query(id));
-
+		if (!heap.containsKey(id)) {
+			heap.put(id, ObjectTransfer.Default.deserialize(query(id)));
 		}
+		return heap.get(id);
 
 	}
 
