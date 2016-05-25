@@ -88,6 +88,7 @@ public final class Server {
 		if (running) {
 			log.info("Stopping server");
 			running = false;
+			ServerStore.Listeners.unload();
 		}
 
 	}

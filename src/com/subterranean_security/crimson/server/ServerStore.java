@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
@@ -43,6 +44,35 @@ public enum ServerStore {
 
 	public static class Listeners {
 		public static ArrayList<Listener> listeners = new ArrayList<Listener>();
+
+		public static void load() {
+			unloadAll();
+			try {
+				for (ListenerConfig lc : ((ArrayList<ListenerConfig>) Databases.system.getObject("listeners"))) {
+					listeners.add(new Listener(lc));
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		public static void unloadAll() {
+			for (Listener l : listeners) {
+				try {
+					l.close();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			listeners.clear();
+		}
+
+		// TODO unload all except current
+		public static void unload() {
+
+		}
 
 	}
 
@@ -189,6 +219,7 @@ public enum ServerStore {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			log.error("Profile not found for user: {}", user);
 			return null;
 		}
 
@@ -200,6 +231,7 @@ public enum ServerStore {
 			viewerProfiles.put(p.getCvid(), p);
 		}
 
+		// TODO remove
 		public static void updateCvid(String username, int cvid) {
 			try {
 				for (Integer i : viewerProfiles.keyset()) {
