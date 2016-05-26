@@ -500,8 +500,8 @@ public class ServerExecutor extends BasicExecutor {
 			e.printStackTrace();
 		}
 
-		EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder().setUser(m.getRqAddUser().getUser())
-				.setViewerPermissions(m.getRqAddUser().getPermissions());
+		EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder().setUser(rqad.getUser())
+				.setViewerPermissions(rqad.getPermissions());
 
 		if (rqad.hasPermissions()) {
 			vp.setPermissions(rqad.getPermissions());

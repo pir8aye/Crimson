@@ -150,31 +150,42 @@ public class ServerProfile implements Serializable {
 						break;
 					}
 				}
-				if (UIStore.netMan != null) {
-					UIStore.netMan.lp.lt.fireTableDataChanged();
-				}
 
 				listeners.add(lc);
+			}
+			if (UIStore.netMan != null) {
+				UIStore.netMan.lp.lt.fireTableDataChanged();
 			}
 		}
 
 		if (c.getUsersCount() != 0) {
 			for (EV_ViewerProfileDelta lc : c.getUsersList()) {
+				boolean modified = false;
 				for (ViewerProfile l : users) {
 					if (lc.getUser().equals(l.getUser())) {
-						users.remove(l);
+						modified = true;
+						if (lc.hasViewerPermissions()) {
+							l.setPermissions(lc.getViewerPermissions());
+						}
+
+						if (lc.hasLoginIp()) {
+							l.setIp(lc.getLastLoginIp());
+						}
 						break;
 					}
 				}
-				if (UIStore.userMan != null) {
-					UIStore.userMan.up.ut.fireTableDataChanged();
+				if (!modified) {
+
+					ViewerProfile vp = new ViewerProfile();
+					vp.setUser(lc.getUser());
+					vp.setPermissions(lc.getViewerPermissions());
+					vp.setIp(lc.getLoginIp());
+					users.add(vp);
 				}
 
-				ViewerProfile vp = new ViewerProfile();
-				vp.setUser(lc.getUser());
-				vp.setPermissions(lc.getViewerPermissions());
-				vp.setIp(lc.getLoginIp());
-				users.add(vp);
+			}
+			if (UIStore.userMan != null) {
+				UIStore.userMan.up.ut.fireTableDataChanged();
 			}
 		}
 
