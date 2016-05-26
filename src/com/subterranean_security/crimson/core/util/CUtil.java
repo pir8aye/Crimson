@@ -546,7 +546,7 @@ public enum CUtil {
 						new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
 			} catch (Throwable e1) {
 			}
-			log.error("Failed to get manifest attribute '%s' from default jar", attr);
+			log.error("Failed to get manifest attribute '{}' from default jar", attr);
 			return null;
 
 		}
