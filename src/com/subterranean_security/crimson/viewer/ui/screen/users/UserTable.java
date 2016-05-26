@@ -46,17 +46,24 @@ public class UserTable extends JScrollPane {
 				JTable source = (JTable) e.getSource();
 				final int sourceRow = source.rowAtPoint(e.getPoint());
 				parent.btnRemove.setEnabled(sourceRow >= 0);
+				parent.btnEditPermissions.setEnabled(sourceRow >= 0);
+				parent.btnChangePassword.setEnabled(sourceRow >= 0);
 				if (sourceRow == -1) {
 					source.clearSelection();
 					return;
 				}
+
+				ViewerProfile selected = tm.getAt(sourceRow);
+				if (ViewerStore.Profiles.vp.getUser().equals(selected.getUser())) {
+					parent.btnRemove.setEnabled(false);
+				}
+
 				// select row
 				if (!source.isRowSelected(sourceRow)) {
 					source.changeSelection(sourceRow, 0, false, false);
 				}
 
 				if (e.getButton() == MouseEvent.BUTTON3) {
-					ViewerProfile selected = tm.getAt(sourceRow);
 					// right click
 
 				}
@@ -77,7 +84,7 @@ public class UserTable extends JScrollPane {
 class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private final String[] headers = new String[] { "Username", "Last Login", "Login IP" };
+	private final String[] headers = new String[] { "Username", "Last Login", "Login IP", "Superuser" };
 
 	@Override
 	public int getColumnCount() {
@@ -109,6 +116,9 @@ class TM extends AbstractTableModel {
 		}
 		case "Login IP": {
 			return ViewerStore.Profiles.server.users.get(rowIndex).getIp();
+		}
+		case "Superuser": {
+			return ViewerStore.Profiles.server.users.get(rowIndex).getPermissions().getSuper() ? "yes" : "no";
 		}
 
 		}
