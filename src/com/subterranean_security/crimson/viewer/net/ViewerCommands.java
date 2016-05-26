@@ -176,10 +176,16 @@ public enum ViewerCommands {
 		return true;
 	}
 
-	public static boolean editUser(StringBuffer error, ViewerPermissions vp) {
+	public static boolean editUser(StringBuffer error, String user, char[] pass, ViewerPermissions vp) {
+
+		RQ_AddUser.Builder rqau = RQ_AddUser.newBuilder().setUser(user).setPermissions(vp);
+		if (pass != null) {
+			rqau.setPassword(new String(pass));
+		}
+
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder()
-					.setRqEditUser(RQ_EditUser.newBuilder().setUser(RQ_AddUser.newBuilder().setPermissions(vp))), 2);
+			Message m = ViewerRouter
+					.routeAndWait(Message.newBuilder().setRqEditUser(RQ_EditUser.newBuilder().setUser(rqau)), 2);
 			if (m == null) {
 				error.append("No response");
 			} else if (!m.getRsEditUser().getResult()) {

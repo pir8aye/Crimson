@@ -37,7 +37,7 @@ public class EditUser extends JDialog {
 
 	public EditUser(ViewerProfile original) {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		setTitle("Add User");
+		setTitle("Edit User: " + original.getUser());
 		setResizable(false);
 		setIconImages(UUtil.getIconList());
 		setBounds(100, 100, 290, 365);
@@ -147,7 +147,7 @@ public class EditUser extends JDialog {
 											.setServerSettings(chckbxServerSettings.isSelected())
 											.setServerFsRead(chckbxServerFilesystemRead.isSelected())
 											.setServerFsWrite(chckbxServerFilesystemWrite.isSelected()).build();
-									if (ViewerCommands.editUser(error, vp)) {
+									if (ViewerCommands.editUser(error, original.getUser(), null, vp)) {
 										sl.setGood("Success!");
 										try {
 											Thread.sleep(700);
