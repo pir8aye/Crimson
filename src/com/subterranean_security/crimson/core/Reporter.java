@@ -41,7 +41,7 @@ public class Reporter {
 			@Override
 			public void run() {
 				log.info("Reporting event");
-				if (Common.isDebugMode()) {
+				if (Common.isDebugMode() && r.getStackTrace() != null) {
 					System.out.println(r.getStackTrace());
 				}
 
