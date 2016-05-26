@@ -401,6 +401,22 @@ public enum CUtil {
 				}
 			}
 		}
+
+		public static boolean isValidInstallPath(String s) {
+			File f = new File(s);
+			if (f.exists()) {
+				f = new File(f.getAbsolutePath() + "/testDirectory");
+				if (f.mkdir()) {
+					f.delete();
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return isValidInstallPath(f.getParent());
+			}
+		}
+
 	}
 
 	public static class Misc {
@@ -921,7 +937,8 @@ public enum CUtil {
 			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 			PatternLayoutEncoder ple = new PatternLayoutEncoder();
 
-			// ple.setPattern("[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%thread]
+			// ple.setPattern("[%date{yyyy-MM-dd
+			// HH:mm:ss}][%level{1}][%thread]
 			// %logger{10} %msg%n");
 			ple.setPattern("[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n");
 			ple.setContext(lc);
