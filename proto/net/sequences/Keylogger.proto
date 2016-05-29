@@ -22,19 +22,8 @@ message Keylog_RQ {
 message Keylog_RS {
 }
 
-message KLog {
-	required int32 clientID = 1;
-	required int32 pagemap_address = 2;
-}
-
-message KPage {
+message EV_KEvent {
 	required int64 date = 1;
-	repeated string title = 2;
-	repeated KEvent event = 3;
-}
-
-message KEvent {
-	optional int64 date_offset = 1;
 	required string event = 2;
-	required int32 title = 3;
+	optional string title = 3;
 }

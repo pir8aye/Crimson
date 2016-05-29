@@ -113,6 +113,12 @@ public class ClientExecutor extends BasicExecutor {
 			break;
 		case UNINSTALL:
 			break;
+		case HIBERNATE:
+			break;
+		case STANDBY:
+			break;
+		default:
+			break;
 
 		}
 

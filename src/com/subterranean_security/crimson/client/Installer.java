@@ -168,9 +168,7 @@ public class Installer {
 	private static boolean execute(File f) {
 		// TODO platform independence
 		try {
-			if (debug) {
-				Runtime.getRuntime().exec("java -jar " + f.getAbsolutePath());
-			} else {
+			if (!debug) {
 				Runtime.getRuntime().exec("javaw -jar " + f.getAbsolutePath());
 			}
 

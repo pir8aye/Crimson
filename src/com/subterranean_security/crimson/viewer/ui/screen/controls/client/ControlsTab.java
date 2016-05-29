@@ -169,6 +169,17 @@ public class ControlsTab extends JPanel implements CPPanel {
 		btnUninstall.setMargin(new Insets(2, 4, 2, 4));
 		btnUninstall.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_4.add(btnUninstall);
+		
+		JButton btnRelocate = new JButton("Relocate");
+		btnRelocate.setEnabled(false);
+		btnRelocate.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel_4.add(btnRelocate);
+		
+		JButton btnUpdate = new JButton("Update");
+		btnUpdate.setEnabled(false);
+		btnUpdate.setIcon(UUtil.getIcon("icons16/general/upload_for_cloud.png"));
+		btnUpdate.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel_4.add(btnUpdate);
 
 	}
 

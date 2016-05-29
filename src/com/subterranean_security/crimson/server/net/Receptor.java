@@ -28,15 +28,12 @@ import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.server.ServerStore;
-import com.subterranean_security.crimson.sv.ClientProfile;
 
 public class Receptor implements AutoCloseable {
 
 	private static final Logger log = CUtil.Logging.getLogger(Receptor.class);
 
 	private Instance instance;
-	private int profile;
 	private int cvid;
 
 	public ServerHandler handle;
@@ -65,16 +62,6 @@ public class Receptor implements AutoCloseable {
 
 	public void close() {
 
-	}
-
-	public ClientProfile getProfile() {
-		try {
-			return (ClientProfile) ServerStore.Databases.system.get(profile);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	public Instance getInstance() {

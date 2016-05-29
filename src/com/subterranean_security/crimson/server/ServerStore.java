@@ -195,19 +195,27 @@ public enum ServerStore {
 
 		}
 
-		public static ClientProfile getClient(int svid) throws Exception {
-			return clientProfiles.get(svid);
+		public static ClientProfile getClient(int svid) {
+			try {
+				return clientProfiles.get(svid);
+			} catch (Exception e) {
+				return null;
+			}
 		}
 
 		public static void addClient(ClientProfile p) {
 			clientProfiles.put(p.getCvid(), p);
 		}
 
-		public static ViewerProfile getViewer(int svid) throws Exception {
-			return viewerProfiles.get(svid);
+		public static ViewerProfile getViewer(int svid) {
+			try {
+				return viewerProfiles.get(svid);
+			} catch (Exception e) {
+				return null;
+			}
 		}
 
-		public static ViewerProfile getViewer(String user) throws Exception {
+		public static ViewerProfile getViewer(String user) {
 			try {
 				for (Integer i : viewerProfiles.keyset()) {
 					ViewerProfile vp = viewerProfiles.get(i);
