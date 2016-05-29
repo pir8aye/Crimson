@@ -32,11 +32,13 @@ public class FMFrame extends JFrame {
 	private Type type;
 
 	public FMFrame(Type type) {
-		setTitle("File Manager");
+
 		this.type = type;
+
+		setTitle("File Manager");
 		setIconImages(UUtil.getIconList());
 
-		FMPanel fmp = new FMPanel(Type.SV);
+		FMPanel fmp = new FMPanel(Type.VV);
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -46,7 +48,7 @@ public class FMFrame extends JFrame {
 	}
 
 	public static enum Type {
-		SV, SC, CV, CC;
+		VV, SV, SC, CV, CC;
 	}
 
 }

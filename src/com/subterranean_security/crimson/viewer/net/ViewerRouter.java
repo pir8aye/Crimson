@@ -28,7 +28,7 @@ public enum ViewerRouter {
 	public static void route(Message m) {
 
 		try {
-			ViewerStore.Connections.get(m.getCid()).write(m);
+			ViewerStore.Connections.get(m.getRid()).write(m);
 			return;
 		} catch (NullPointerException e) {
 			// try server
@@ -53,7 +53,7 @@ public enum ViewerRouter {
 			m.setId(IDGen.get());
 		}
 		route(m);
-		return getReponse(m.getCid(), m.getId(), timeout);
+		return getReponse(m.getRid(), m.getId(), timeout);
 	}
 
 }

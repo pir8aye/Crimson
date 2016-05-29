@@ -55,7 +55,7 @@ public class InfoMaster extends Stream {
 
 	@Override
 	public void start() {
-		ViewerRouter.route(Message.newBuilder().setVid(param.getVID()).setCid(param.getCID())
+		ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
 				.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
 
 	}

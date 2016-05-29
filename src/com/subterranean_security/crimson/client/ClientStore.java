@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.client.net.ClientConnector;
+import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public enum ClientStore {
@@ -35,6 +36,24 @@ public enum ClientStore {
 		public static void add(ClientConnector c) {
 			log.debug("Adding new connection");
 			connections.add(c);
+		}
+	}
+
+	public static class LocalFilesystems {
+		private static ArrayList<LocalFilesystem> lfs = new ArrayList<LocalFilesystem>();
+
+		public static int add(LocalFilesystem l) {
+			lfs.add(l);
+			return l.getFmid();
+		}
+
+		public static LocalFilesystem get(int fmid) {
+			for (LocalFilesystem l : lfs) {
+				if (l.getFmid() == fmid) {
+					return l;
+				}
+			}
+			return null;
 		}
 	}
 

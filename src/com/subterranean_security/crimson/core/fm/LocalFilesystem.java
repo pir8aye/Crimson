@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.IDGen;
 
 /**
  * @author subterranean For file system browsing
@@ -51,7 +52,7 @@ public class LocalFilesystem {
 
 	public LocalFilesystem(String start) {
 		ref = Paths.get(start);
-		fmid = CUtil.Misc.rand();
+		fmid = IDGen.getFmid();
 		log.debug("Initialized local filesystem handle (FMID: {}, PATH: {})", fmid, pwd());
 	}
 

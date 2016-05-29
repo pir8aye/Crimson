@@ -131,9 +131,22 @@ public enum ServerStore {
 
 	}
 
-	public static class Files {
-		// TODO somehow get the correct filesystem
-		ArrayList<LocalFilesystem> fs = new ArrayList<LocalFilesystem>();
+	public static class LocalFilesystems {
+		private static ArrayList<LocalFilesystem> lfs = new ArrayList<LocalFilesystem>();
+
+		public static int add(LocalFilesystem l) {
+			lfs.add(l);
+			return l.getFmid();
+		}
+
+		public static LocalFilesystem get(int fmid) {
+			for (LocalFilesystem l : lfs) {
+				if (l.getFmid() == fmid) {
+					return l;
+				}
+			}
+			return null;
+		}
 	}
 
 	public static class Authentication {

@@ -16,8 +16,8 @@ message Message {
 	optional bool urgent = 1;
 	optional int32 id = 2;
 	
-	optional int32 cid = 3;
-	optional int32 vid = 4;
+	optional int32 rid = 3;
+	optional int32 sid = 4;
 
 	optional EV_StreamData ev_stream_data = 5;
 	optional EV_ProfileDelta ev_profile_delta = 6;
@@ -36,6 +36,9 @@ message Message {
 	optional RS_Generate rs_generate = 108;
 	optional RQ_FileListing rq_file_listing = 109;
 	optional RS_FileListing rs_file_listing = 110;
+	optional RQ_FileHandle rq_file_handle = 121;
+	optional RS_FileHandle rs_file_handle = 122;
+	optional MI_CloseFileHandle mi_close_file_handle = 123;
 	optional RQ_ChangeServerState rq_change_server_state = 111;
 	optional RS_ChangeServerState rs_change_server_state = 112;
 	optional RQ_ChangeClientState rq_change_client_state = 113;

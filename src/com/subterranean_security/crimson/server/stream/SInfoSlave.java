@@ -34,7 +34,7 @@ public class SInfoSlave extends InfoSlave {
 	@Override
 	public void send() {
 		ServerStore.Connections.getConnection(param.getVID()).handle.write(Message.newBuilder().setUrgent(true)
-				.setCid(param.getCID()).setVid(param.getVID()).setEvServerProfileDelta(gatherServerInfo()).build());
+				.setRid(param.getCID()).setSid(param.getVID()).setEvServerProfileDelta(gatherServerInfo()).build());
 
 	}
 

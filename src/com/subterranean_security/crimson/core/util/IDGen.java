@@ -38,6 +38,10 @@ public enum IDGen {
 		return random.nextInt();
 	}
 
+	public static int getFmid() {
+		return random.nextInt();
+	}
+
 	public static int getListenerID() {
 		return Math.abs(random.nextInt());
 	}
