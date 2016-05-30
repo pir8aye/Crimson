@@ -38,7 +38,7 @@ import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.panel.DPanel;
-import com.subterranean_security.crimson.viewer.ui.screen.controls.client.ClientCPFrame;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class HostList extends JPanel {

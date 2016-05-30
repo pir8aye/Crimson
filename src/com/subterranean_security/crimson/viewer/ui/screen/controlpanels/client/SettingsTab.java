@@ -15,8 +15,20 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.controls.client;
+package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client;
 
-public interface CPPanel {
+import javax.swing.JPanel;
+
+public class SettingsTab extends JPanel implements CPPanel {
+
+	private static final long serialVersionUID = 1L;
+
+	public SettingsTab() {
+
+	}
+
+	public void init() {
+
+	}
 
 }

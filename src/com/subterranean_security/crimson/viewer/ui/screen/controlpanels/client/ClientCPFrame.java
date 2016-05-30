@@ -15,13 +15,15 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.controls.client;
+package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -36,9 +38,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
+import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.panel.Console;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.Keylogger;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class ClientCPFrame extends JFrame {
@@ -56,6 +61,24 @@ public class ClientCPFrame extends JFrame {
 	private HashMap<Panels, CPPanel> panels = new HashMap<Panels, CPPanel>();
 	private final JPanel panel_1 = new JPanel();
 	private final JSplitPane splitPane = new JSplitPane();
+
+	private void addDebugKeylog() {
+		new Thread(new Runnable() {
+			public void run() {
+				for (int i = 0; i < 2000; i++) {
+					try {
+						Thread.sleep(new Random().nextInt(60000) + 10000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					profile.getKeylog().addEvent(EV_KEvent.newBuilder().setDate(new Date().getTime())
+							.setEvent(CUtil.Misc.randString(1)).setTitle(CUtil.Misc.randString(5)).build());
+				}
+			}
+		}).start();
+
+	}
 
 	public ClientCPFrame(ClientProfile cp) {
 		profile = cp;

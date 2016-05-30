@@ -2,6 +2,7 @@ package com.subterranean_security.crimson.sv.keylogger;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
@@ -35,5 +36,18 @@ public class Log implements Serializable {
 			pages.put(p.ref, p);
 		}
 
+		refreshCallbacks();
+	}
+
+	private ArrayList<Runnable> callbacks = new ArrayList<Runnable>();
+
+	public void addCallback(Runnable r) {
+		callbacks.add(r);
+	}
+
+	private void refreshCallbacks() {
+		for (Runnable r : callbacks) {
+			new Thread(r).start();
+		}
 	}
 }

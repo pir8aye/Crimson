@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.controls.client;
+package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
