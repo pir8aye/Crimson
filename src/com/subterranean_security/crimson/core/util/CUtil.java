@@ -40,6 +40,7 @@ import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -452,6 +453,11 @@ public enum CUtil {
 				return d + units[i];
 			}
 			return String.valueOf(size);
+		}
+
+		public static boolean isSameDay(Date d1, Date d2) {
+			SimpleDateFormat formatter = new SimpleDateFormat("MMddyyyy");
+			return formatter.format(d1).equals(formatter.format(d2));
 		}
 
 		public static String getStack(Throwable e) {
@@ -933,8 +939,9 @@ public enum CUtil {
 			LogManager.getLogManager().reset();
 			ch.qos.logback.classic.Logger netty = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("io.netty");
 			netty.setLevel(Level.ERROR);
-			
-			ch.qos.logback.classic.Logger jnative = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.jnativehook");
+
+			ch.qos.logback.classic.Logger jnative = (ch.qos.logback.classic.Logger) LoggerFactory
+					.getLogger("org.jnativehook");
 			jnative.setLevel(Level.OFF);
 		}
 
