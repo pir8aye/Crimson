@@ -1,3 +1,20 @@
+/******************************************************************************
+ *                                                                            *
+ *                    Copyright 2016 Subterranean Security                    *
+ *                                                                            *
+ *  Licensed under the Apache License, Version 2.0 (the "License");           *
+ *  you may not use this file except in compliance with the License.          *
+ *  You may obtain a copy of the License at                                   *
+ *                                                                            *
+ *      http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                            *
+ *  Unless required by applicable law or agreed to in writing, software       *
+ *  distributed under the License is distributed on an "AS IS" BASIS,         *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *  See the License for the specific language governing permissions and       *
+ *  limitations under the License.                                            *
+ *                                                                            *
+ *****************************************************************************/
 package com.subterranean_security.crimson.sv.keylogger;
 
 import java.io.Serializable;
@@ -10,6 +27,8 @@ public class Page implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final int sameWindowSeparationInterval = 1000 * 60 * 60;
+
 	public Date ref;
 	public ArrayList<String> titles = new ArrayList<String>();
 	public ArrayList<Event> events = new ArrayList<Event>();
@@ -21,9 +40,75 @@ public class Page implements Serializable {
 	}
 
 	public void addEvent(EV_KEvent evKevent) {
-		titles.add(evKevent.getTitle());
-		events.add(new Event((int) (evKevent.getDate() - ref.getTime()), titles.size() - 1, evKevent.getEvent()));
+		events.add(new Event((int) (evKevent.getDate() - ref.getTime()), addTitle(evKevent.getTitle()),
+				evKevent.getEvent()));
 
+	}
+
+	private boolean optimal = false;
+
+	public void optimize() {
+		if (optimal) {
+			return;
+		}
+
+		ArrayList<Paragraph> paragraphs = getParagraphs();
+		events.clear();
+		titles.clear();
+		for (Paragraph p : paragraphs) {
+			events.add(
+					new Event((int) (p.getDate().getTime() - ref.getTime()), addTitle(p.getTitle()), p.getContents()));
+
+		}
+
+		optimal = true;
+
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param t
+	 *            title to add
+	 * @return index of title
+	 */
+	private int addTitle(String t) {
+		int index = titles.indexOf(t);
+		if (index == -1) {
+			titles.add(t);
+			return titles.size() - 1;
+		} else {
+			return index;
+		}
+
+	}
+
+	public ArrayList<Paragraph> getParagraphs() {
+		ArrayList<Paragraph> p = new ArrayList<Paragraph>();
+		String lastTitle = null;
+		Date lastDate = null;
+
+		for (Event k : events) {
+			String title = titles.get(k.titleOffset);
+			Date date = new Date(ref.getTime() + k.timeOffset);
+			if (lastTitle != null && lastTitle.equals(title)) {
+				if (lastDate != null && date.getTime() - lastDate.getTime() < sameWindowSeparationInterval) {
+					// old paragraph
+					Paragraph pp = p.get(p.size() - 1);
+					pp.setContents(pp.getContents() + k.event);
+					continue;
+				}
+
+			}
+
+			// new paragraph
+			p.add(new Paragraph(title, date, k.event));
+
+			lastTitle = title;
+			lastDate = date;
+
+		}
+		return p;
 	}
 
 }

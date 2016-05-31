@@ -15,52 +15,44 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger;
+package com.subterranean_security.crimson.sv.keylogger;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
+import java.util.Date;
 
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.border.TitledBorder;
+public class Paragraph {
 
-import com.subterranean_security.crimson.sv.keylogger.Paragraph;
+	private String title;
+	private Date date;
+	private String contents;
 
-public class KeyLogParagraph extends JPanel {
-
-	private static final long serialVersionUID = 1L;
-	private JTextPane txtpnTest;
-
-	private Paragraph paragraph;
-
-	public KeyLogParagraph(Paragraph p) {
-		paragraph = p;
-
-		setBackground(Color.WHITE);
-		setBorder(new TitledBorder(null, getTitle(), TitledBorder.LEADING, TitledBorder.TOP, null, null));// TODO
-		setLayout(new BorderLayout(0, 0));
-
-		txtpnTest = new JTextPane();
-		txtpnTest.setFont(new Font("Dialog", Font.PLAIN, 11));
-		txtpnTest.setEditable(false);
-		txtpnTest.setContentType("");
-		txtpnTest.setText(paragraph.getContents());
-		add(txtpnTest, BorderLayout.NORTH);
-
+	public Paragraph(String t, Date d, String c) {
+		title = t;
+		date = d;
+		contents = c;
 	}
 
 	public String getTitle() {
-		return paragraph.getTitle() + " @ " + paragraph.getDate().toString();
+		return title;
 	}
 
-	public void append(String event) {
-		txtpnTest.setText(txtpnTest.getText() + event);
-
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
-	public Paragraph getParagraph() {
-		return paragraph;
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public String getContents() {
+		return contents;
+	}
+
+	public void setContents(String contents) {
+		this.contents = contents;
 	}
 
 }
