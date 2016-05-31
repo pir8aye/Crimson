@@ -72,7 +72,7 @@ public class Log implements Serializable {
 
 	}
 
-	private ArrayList<LogCallback> callbacks = new ArrayList<LogCallback>();
+	private transient ArrayList<LogCallback> callbacks = new ArrayList<LogCallback>();
 
 	public void addCallback(LogCallback r) {
 		callbacks.add(r);
