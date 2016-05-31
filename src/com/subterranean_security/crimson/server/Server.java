@@ -50,12 +50,9 @@ public final class Server {
 		log.debug("Initializing shutdown hook");
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
-		// Check for file lock
-		if (FileLocking.lockExists(Common.instance)) {
-			log.error("Crimson detected that it's already running");
-			return;
-		} else {
-			FileLocking.lock(Common.instance);
+		// Try to get a lock or exit
+		if (!FileLocking.lock(Instance.SERVER)) {
+			System.exit(0);
 		}
 
 		// Load native libraries
