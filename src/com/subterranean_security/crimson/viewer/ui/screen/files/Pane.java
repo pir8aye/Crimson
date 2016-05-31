@@ -84,7 +84,7 @@ public class Pane extends JPanel {
 						}
 						default: {
 							type = TYPE.CLIENT;
-							cid = ViewerStore.Profiles.findIdByHost(name);
+							cid = ViewerStore.Profiles.getClient(name).getCvid();
 							System.out.println("Found cid: " + cid);
 							fmid = ViewerCommands.getFileHandle(cid);
 							break;

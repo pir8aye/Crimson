@@ -14,12 +14,14 @@ message KeyloggerState_RS {
 	required bool result = 1;
 }
 
-message Keylog_RQ {
-	optional int64 start_date = 1;
-	optional int64 end_date = 2;
+message RQ_KeyUpdate {
+	optional int32 cid = 1;
+	optional int64 start_date = 2;
 }
 
-message Keylog_RS {
+message RS_KeyUpdate {
+	required bool result = 1;
+	optional int32 events_sent = 2;
 }
 
 message EV_KEvent {

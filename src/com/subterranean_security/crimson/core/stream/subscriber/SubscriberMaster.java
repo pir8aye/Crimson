@@ -15,71 +15,43 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.info;
+package com.subterranean_security.crimson.core.stream.subscriber;
+
+import java.util.Random;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Platform;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
+import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.core.util.Native;
+import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
-public abstract class InfoSlave extends Stream {
+public class SubscriberMaster extends Stream {
 
-	public InfoSlave(Param p) {
-		param = p;
+	public SubscriberMaster(SubscriberParam sp, int CID) {
+
+		param = Param.newBuilder().setSubscriberParam(sp).setStreamID(new Random().nextInt()).setCID(CID)
+				.setVID(Common.cvid).build();
 		start();
-	}
-
-	public InfoSlave(InfoParam ip) {
-		this(Param.newBuilder().setInfoParam(ip).setStreamID(IDGen.getStreamid()).setVID(Common.cvid).build());
 	}
 
 	@Override
 	public void received(Message m) {
-		// do nothing
+		// receiving is handled by executor
+
 	}
 
-	protected EV_ProfileDelta gatherDefaultInfo() {
-		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(Common.cvid);
-		if (param.getInfoParam().hasActiveWindow()) {
-			pd.setActiveWindow(Native.getActiveWindow());
-		}
-		if (param.getInfoParam().hasCpuSpeed()) {
-			for (double d : Platform.Advanced.getCPUSpeed()) {
-				pd.addCoreSpeed(d);
-			}
+	@Override
+	public void send() {
+		// do nothing
 
-		}
-		if (param.getInfoParam().hasCpuUsage()) {
-			pd.setCoreUsage(Platform.Advanced.getCPUUsage());
-		}
-		if (param.getInfoParam().hasCpuTemp()) {
-			long temp = Platform.Advanced.getCPUTemp();
-			pd.setCpuTemp(temp == 0 ? "unknown" : "" + temp);
-		}
-		if (param.getInfoParam().hasCrimsonRamUsage()) {
-			pd.setCrimsonRamUsage(Platform.Advanced.getCrimsonMemoryUsage());
-		}
-		if (param.getInfoParam().hasCrimsonCpuUsage()) {
-			pd.setCrimsonCpuUsage(Platform.Advanced.getCrimsonCpuUsage());
-		}
-		return pd.build();
 	}
 
 	@Override
 	public void start() {
-
-		timer.schedule(sendTask, 0, param.hasPeriod() ? param.getPeriod() : 1000);
-
-	}
-
-	@Override
-	public void stop() {
-		timer.cancel();
+		ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(0)
+				.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
 
 	}
 

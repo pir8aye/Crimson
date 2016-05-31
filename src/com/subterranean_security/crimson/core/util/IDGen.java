@@ -41,6 +41,10 @@ public enum IDGen {
 	public static int getFmid() {
 		return random.nextInt();
 	}
+	
+	public static int getStreamid() {
+		return random.nextInt();
+	}
 
 	public static int getListenerID() {
 		return Math.abs(random.nextInt());

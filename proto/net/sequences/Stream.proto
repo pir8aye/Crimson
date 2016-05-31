@@ -18,7 +18,9 @@ message Param {
 	required int32 VID = 2;
 	optional int32 CID = 3;
 	optional int32 period = 4;
+	
 	optional InfoParam info_param = 5;
+	optional SubscriberParam subscriber_param = 6;
 }
 
 message InfoParam {
@@ -29,4 +31,8 @@ message InfoParam {
 	optional bool ram_usage = 5;
 	optional bool crimson_ram_usage = 6;
 	optional bool crimson_cpu_usage = 7;
+}
+
+message SubscriberParam {
+	optional bool keylog = 1;
 }

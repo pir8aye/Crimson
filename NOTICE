@@ -177,3 +177,7 @@ License: http://www.gnu.org/licenses/lgpl-2.1
 - JChart2D -
 Information: http://jchart2d.sourceforge.net/
 License: http://www.gnu.org/licenses/lgpl-2.1
+
+- JNativeHook -
+Information: https://github.com/kwhat/jnativehook
+License: http://www.gnu.org/licenses/lgpl

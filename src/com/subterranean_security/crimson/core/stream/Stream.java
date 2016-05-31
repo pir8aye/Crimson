@@ -21,7 +21,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
+import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
 public abstract class Stream {
 
@@ -50,8 +53,16 @@ public abstract class Stream {
 	 */
 	public abstract void send();
 
-	public abstract void start();
+	public void start() {
+		ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
+				.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
 
-	public abstract void stop();
+	}
+
+	public void stop() {
+		ViewerRouter.route(
+				Message.newBuilder().setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
+
+	}
 
 }

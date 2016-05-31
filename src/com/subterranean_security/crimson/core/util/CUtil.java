@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.LogManager;
 import java.util.regex.Pattern;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
@@ -928,9 +929,13 @@ public enum CUtil {
 	public static class Logging {
 
 		static {
-			// TODO find a better way to exclude netty
+			// TODO find a better way to exclude
+			LogManager.getLogManager().reset();
 			ch.qos.logback.classic.Logger netty = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("io.netty");
 			netty.setLevel(Level.ERROR);
+			
+			ch.qos.logback.classic.Logger jnative = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.jnativehook");
+			jnative.setLevel(Level.OFF);
 		}
 
 		public static Logger getLogger(Class c) {

