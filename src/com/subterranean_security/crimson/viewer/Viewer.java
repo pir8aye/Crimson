@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.ui.debug.DebugFrame;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
@@ -58,6 +59,11 @@ public class Viewer {
 
 		// Establish the custom shutdown hook
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
+
+		// Try to get a lock or exit
+		if (!FileLocking.lock(Instance.VIEWER)) {
+			System.exit(0);
+		}
 
 		loadDatabaseValues();
 

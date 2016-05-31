@@ -31,24 +31,27 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
 
 /**
- * @author subterranean Locks a file in the system temp directory to prevent
- *         multiple instances of Crimson
+ * Locks a file in the system temp directory to prevent multiple instances of
+ * Crimson running
  *
  */
 public enum FileLocking {
 	;
 	private static final Logger log = CUtil.Logging.getLogger(FileLocking.class);
 
+	private static final int lockBaseSize = 15;
+
 	private static FileChannel channel;
 	private static File file;
 	private static FileLock lock;
 
 	@SuppressWarnings("resource")
-	public static void lock(Instance i) {
+	public static boolean lock(Instance i) {
 
 		if (lockExists(i)) {
 			// already locked
-			return;
+			log.error("Crimson is already running in another instance");
+			return false;
 		}
 
 		// create the filename of the file to lock
@@ -65,32 +68,21 @@ public enum FileLocking {
 			break;
 
 		}
-		base += CUtil.Misc.randString(15);
-		// hash the base
-		MessageDigest digest;
-		String second = null;
-		try {
-			digest = MessageDigest.getInstance("MD5");
-			digest.update(base.getBytes());
-			second = B64.encodeString(new String(digest.digest())).replaceAll("[/\\+=]", "");
-
-		} catch (NoSuchAlgorithmException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		base += CUtil.Misc.randString(lockBaseSize);
 
 		try {
 
-			file = CUtil.Files.Temp.getGFile(base + second);
+			file = CUtil.Files.Temp.getGFile(hashBase(base));
 
 			channel = new RandomAccessFile(file, "rw").getChannel();
 			lock = channel.lock();
 		} catch (IOException e) {
 			e.printStackTrace();
-
+			return false;
 		}
 
 		log.debug("Created file lock: " + file.getName());
+		return true;
 
 	}
 
@@ -117,26 +109,13 @@ public enum FileLocking {
 				continue;
 			}
 			// look at the name
-			if (f.getName().length() < 20) {
+			if (f.getName().length() < lockBaseSize) {
 				// not this one
 				continue;
 			}
-			String base = f.getName().substring(0, 16);
+			String base = f.getName().substring(0, lockBaseSize + 1);
 
-			// hash the base
-			MessageDigest digest;
-			String second = null;
-			try {
-				digest = MessageDigest.getInstance("MD5");
-				digest.update(base.getBytes());
-				second = B64.encodeString(new String(digest.digest())).replaceAll("[/\\+=]", "");
-
-			} catch (NoSuchAlgorithmException e1) {
-				log.error("MD5 hashing algorithm missing!");
-				System.exit(0);
-			}
-
-			if (f.getName().equals(base + second)) {
+			if (f.getName().equals(hashBase(base))) {
 				// we found a lockfile created by Crimson
 				if (f.delete()) {
 					// the jvm that created this lockfile has exited
@@ -161,7 +140,7 @@ public enum FileLocking {
 			lock.release();
 
 		} catch (Throwable e) {
-			log.error("Failed to release file lock");
+
 		}
 
 		try {
@@ -174,13 +153,26 @@ public enum FileLocking {
 		try {
 			// delete the file
 			file.delete();
+			file = null;
 		} catch (Throwable e) {
-			log.error("Failed to delete file lock");
-			return;
+
 		}
 
-		log.debug("Released file lock");
+	}
 
+	private static String hashBase(String base) {
+		MessageDigest digest;
+		String second = null;
+		try {
+			digest = MessageDigest.getInstance("MD5");
+			digest.update(base.getBytes());
+			second = B64.encodeString(new String(digest.digest())).replaceAll("[/\\+=]", "");
+
+		} catch (NoSuchAlgorithmException e1) {
+			log.warn("MD5 hashing algorithm missing!");
+			return base;
+		}
+		return base + second;
 	}
 
 }
