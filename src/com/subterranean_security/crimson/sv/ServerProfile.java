@@ -142,51 +142,40 @@ public class ServerProfile implements Serializable {
 		if (c.hasCpuCrimsonUsage()) {
 			setCrimsonCpuUsage(String.format("%.2f%%", c.getCpuCrimsonUsage()));
 		}
-		if (c.getListenersCount() != 0) {
-			for (ListenerConfig lc : c.getListenersList()) {
-				for (ListenerConfig l : listeners) {
-					if (lc.getID() == l.getID()) {
-						listeners.remove(l);
-						break;
-					}
-				}
 
-				listeners.add(lc);
+		for (ListenerConfig lc : c.getListenersList()) {
+			for (ListenerConfig l : listeners) {
+				if (lc.getID() == l.getID()) {
+					listeners.remove(l);
+					break;
+				}
 			}
-			if (UIStore.netMan != null) {
-				UIStore.netMan.lp.lt.fireTableDataChanged();
-			}
+
+			listeners.add(lc);
+		}
+		if (UIStore.netMan != null) {
+			UIStore.netMan.lp.lt.fireTableDataChanged();
 		}
 
-		if (c.getUsersCount() != 0) {
-			for (EV_ViewerProfileDelta lc : c.getUsersList()) {
-				boolean modified = false;
-				for (ViewerProfile l : users) {
-					if (lc.getUser().equals(l.getUser())) {
-						modified = true;
-						if (lc.hasViewerPermissions()) {
-							l.setPermissions(lc.getViewerPermissions());
-						}
-
-						if (lc.hasLoginIp()) {
-							l.setIp(lc.getLastLoginIp());
-						}
-						break;
-					}
+		for (EV_ViewerProfileDelta lc : c.getUsersList()) {
+			boolean modified = false;
+			for (ViewerProfile l : users) {
+				if (lc.getUser().equals(l.getUser())) {
+					modified = true;
+					l.amalgamate(lc);
+					break;
 				}
-				if (!modified) {
-
-					ViewerProfile vp = new ViewerProfile();
-					vp.setUser(lc.getUser());
-					vp.setPermissions(lc.getViewerPermissions());
-					vp.setIp(lc.getLoginIp());
-					users.add(vp);
-				}
-
 			}
-			if (UIStore.userMan != null) {
-				UIStore.userMan.up.ut.fireTableDataChanged();
+			if (!modified) {
+
+				ViewerProfile vp = new ViewerProfile();
+				vp.amalgamate(lc);
+				users.add(vp);
 			}
+
+		}
+		if (UIStore.userMan != null) {
+			UIStore.userMan.up.ut.fireTableDataChanged();
 		}
 
 	}

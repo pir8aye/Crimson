@@ -26,11 +26,19 @@ public class TrackedAttribute extends Attribute {
 	}
 
 	public String getValue(int i) {
-		return values.get(i);
+		try {
+			return values.get(i);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 
 	public Date getTime(int i) {
-		return timestamps.get(i);
+		try {
+			return timestamps.get(i);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 
 }

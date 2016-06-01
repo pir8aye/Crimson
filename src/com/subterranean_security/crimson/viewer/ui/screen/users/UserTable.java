@@ -84,7 +84,7 @@ public class UserTable extends JScrollPane {
 class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private final String[] headers = new String[] { "Username", "Last Login", "Login IP", "Superuser" };
+	private final String[] headers = new String[] { "Username", "Login Time", "Login IP", "Superuser" };
 
 	@Override
 	public int getColumnCount() {
@@ -108,11 +108,14 @@ class TM extends AbstractTableModel {
 		case "Username": {
 			return ViewerStore.Profiles.server.users.get(rowIndex).getUser();
 		}
-		case "Last Login": {
+		case "Login Time": {
+			if (ViewerStore.Profiles.server.users.get(rowIndex).getLoginTime() == null) {
+				return "";
+			}
 			if (ViewerStore.Profiles.server.users.get(rowIndex).getLoginTime().getTime() == 0) {
 				return "<hidden>";
 			}
-			return ViewerStore.Profiles.server.users.get(rowIndex).getLoginTime();
+			return ViewerStore.Profiles.server.users.get(rowIndex).getLoginTime().toString();
 		}
 		case "Login IP": {
 			return ViewerStore.Profiles.server.users.get(rowIndex).getIp();
