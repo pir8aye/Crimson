@@ -186,6 +186,6 @@ public class EditUser extends JDialog {
 	@Override
 	public void dispose() {
 		super.dispose();
-		UsersPanel.addDialog = null;
+		UsersPanel.editDialog = null;
 	}
 }
