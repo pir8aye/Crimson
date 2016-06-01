@@ -28,12 +28,9 @@ import com.subterranean_security.crimson.core.net.BasicConnector;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-public class ViewerConnector extends BasicConnector implements AutoCloseable {
+public class ViewerConnector extends BasicConnector {
 
 	// Buffers
 	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
@@ -43,9 +40,6 @@ public class ViewerConnector extends BasicConnector implements AutoCloseable {
 	public ViewerHandler handle = new ViewerHandler(this);
 	public ViewerExecutor executor = new ViewerExecutor(this);
 
-	private EventLoopGroup workerGroup = new NioEventLoopGroup();
-	private ChannelFuture f;
-
 	public ViewerConnector(String host, int port) throws InterruptedException, SSLException {
 
 		Bootstrap b = new Bootstrap();
@@ -53,14 +47,7 @@ public class ViewerConnector extends BasicConnector implements AutoCloseable {
 				.channel(NioSocketChannel.class)//
 				.handler(new ViewerInitializer(host, port, handle));
 
-		f = b.connect(host, port).sync();
-
-	}
-
-	@Override
-	public void close() throws InterruptedException {
-		f.channel().closeFuture().sync();
-		workerGroup.shutdownGracefully();
+		b.connect(host, port).sync();
 
 	}
 

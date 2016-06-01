@@ -19,8 +19,19 @@ package com.subterranean_security.crimson.core.net;
 
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
-public abstract class BasicConnector {
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+
+public abstract class BasicConnector implements AutoCloseable {
 
 	public abstract void write(Message m);
+
+	protected EventLoopGroup workerGroup = new NioEventLoopGroup();
+
+	@Override
+	public void close() throws InterruptedException {
+		workerGroup.shutdownGracefully();
+
+	}
 
 }

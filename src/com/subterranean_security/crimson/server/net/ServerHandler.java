@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.server.net;
 
 import com.subterranean_security.crimson.core.net.BasicHandler;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.server.ServerStore;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -33,9 +34,14 @@ public class ServerHandler extends BasicHandler {
 	};
 
 	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		ServerStore.Connections.remove(receptor.getCvid());
+		ctx.close();
+	}
+
+	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		// TODO sort out different causes
-		// cause.printStackTrace();
+		ServerStore.Connections.remove(receptor.getCvid());
 		ctx.close();
 	}
 

@@ -61,6 +61,17 @@ public enum ViewerStore {
 		public static ViewerConnector getVC(int cvid) {
 			return (ViewerConnector) connections.get(cvid);
 		}
+
+		public static void closeAll() {
+			for (Integer i : connections.keySet()) {
+				try {
+					connections.remove(i).close();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	public static class LocalServer {

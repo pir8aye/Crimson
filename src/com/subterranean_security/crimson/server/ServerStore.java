@@ -91,13 +91,18 @@ public enum ServerStore {
 			receptors.put(connection.getCvid(), connection);
 		}
 
-		public static void remove(Receptor connection) {
-			if (connection.getInstance() == Instance.VIEWER) {
-				users--;
-			} else {
-				clients--;
+		public static void remove(int cvid) {
+			log.debug("Removing receptor (CVID: {})", cvid);
+			if (receptors.containsKey(cvid)) {
+				Receptor r = receptors.remove(cvid);
+				if (r.getInstance() == Instance.VIEWER) {
+					users--;
+				} else {
+					clients--;
+				}
+				r.close();
 			}
-			receptors.remove(connection.getCvid());
+
 		}
 
 		public static Receptor getConnection(int cvid) {

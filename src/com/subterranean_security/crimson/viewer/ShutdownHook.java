@@ -28,7 +28,8 @@ public class ShutdownHook extends Thread {
 
 	@Override
 	public void run() {
-		log.debug("Executing ShutdownHook");
+		log.info("Shutting down");
+		ViewerStore.Connections.closeAll();
 		ViewerStore.Databases.local.close();
 
 		ViewerStore.LocalServer.killLocalServer();

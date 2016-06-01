@@ -22,4 +22,16 @@ public abstract class BasicExecutor {
 	protected Thread nbt;
 	protected Thread ubt;
 
+	public void stop() {
+		if (nbt != null) {
+			nbt.interrupt();
+			nbt = null;
+		}
+		if (ubt != null) {
+			ubt.interrupt();
+			ubt = null;
+		}
+
+	}
+
 }

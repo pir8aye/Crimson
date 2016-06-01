@@ -28,6 +28,7 @@ import org.thavam.util.concurrent.BlockingHashMap;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.net.BasicConnector;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
@@ -37,17 +38,11 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-public class ClientConnector implements AutoCloseable {
+public class ClientConnector extends BasicConnector {
 
 	private static final Logger log = CUtil.Logging.getLogger(ClientConnector.class);
-
-	private EventLoopGroup workerGroup = new NioEventLoopGroup();
-	private ChannelFuture f;
 
 	// Buffers
 	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
@@ -76,7 +71,7 @@ public class ClientConnector implements AutoCloseable {
 				.channel(NioSocketChannel.class)//
 				.handler(new ClientInitializer(host, port, handle));
 
-		f = b.connect(host, port).sync();
+		b.connect(host, port).sync();
 		setState(ConnectionState.CONNECTED);
 
 		// SSL Connection established
@@ -139,10 +134,8 @@ public class ClientConnector implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws InterruptedException {
-		f.channel().closeFuture().sync();
-		workerGroup.shutdownGracefully();
-
+	public void write(Message m) {
+		handle.write(m);
 	}
 
 }

@@ -61,7 +61,9 @@ public class Receptor implements AutoCloseable {
 	}
 
 	public void close() {
-
+		handle = null;
+		executor.stop();
+		executor = null;
 	}
 
 	public Instance getInstance() {
