@@ -182,11 +182,9 @@ public class Viewer {
 
 	public static void loadDatabaseValues() {
 		try {
-			Common.cvid = ViewerStore.Databases.local.getInteger("cvid");
-			System.out.println("CVID: " + Common.cvid);
 			ViewerStore.Profiles.server = (ServerProfile) ViewerStore.Databases.local.getObject("server.profile");
 			ViewerStore.Profiles.viewer = (ClientProfile) ViewerStore.Databases.local.getObject("viewer.profile");
-			ViewerStore.Profiles.viewer.setCvid(Common.cvid);
+
 		} catch (Exception e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();

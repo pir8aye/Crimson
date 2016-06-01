@@ -84,7 +84,7 @@ public class ViewerExecutor extends BasicExecutor {
 
 	private void assign_1w(Message m) {
 		Common.cvid = m.getMiAssignCvid().getId();
-		ViewerStore.Databases.local.storeObject("cvid", Common.cvid);
+		ViewerStore.Profiles.viewer.setCvid(Common.cvid);
 		log.debug("Assigned new CVID: {}", Common.cvid);
 	}
 

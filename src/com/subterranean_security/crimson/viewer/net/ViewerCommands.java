@@ -57,8 +57,7 @@ public enum ViewerCommands {
 	public static boolean login(String user, char[] pass) {
 		int id = IDGen.get();
 
-		ViewerRouter.route(Message.newBuilder().setId(id)
-				.setRqLogin(RQ_Login.newBuilder().setSvid(Common.cvid).setUsername(user)).build());
+		ViewerRouter.route(Message.newBuilder().setId(id).setRqLogin(RQ_Login.newBuilder().setUsername(user)).build());
 
 		try {
 			Message lcrq = ViewerRouter.getReponse(0, id, 5);

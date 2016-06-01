@@ -4,7 +4,6 @@ import "net/sequences/Delta.proto";
 
 message RQ_Login {
 	required string username = 1;
-	required int32 svid = 3;
 }
 
 message RQ_LoginChallenge {

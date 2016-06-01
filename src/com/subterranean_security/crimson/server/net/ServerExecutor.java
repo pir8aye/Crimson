@@ -346,6 +346,7 @@ public class ServerExecutor extends BasicExecutor {
 		receptor.setInstance(Instance.VIEWER);
 
 		String user = m.getRqLogin().getUsername();
+		ViewerProfile vp = ServerStore.Profiles.getViewer(user);
 		EV_ServerProfileDelta.Builder sid = EV_ServerProfileDelta.newBuilder();
 		EV_ViewerProfileDelta.Builder vid = EV_ViewerProfileDelta.newBuilder();
 
@@ -353,21 +354,15 @@ public class ServerExecutor extends BasicExecutor {
 		try {
 			if (!ServerState.exampleMode) {
 				pass = false;
-				if (m.getRqLogin().getSvid() != 0) {
-					receptor.setCvid(m.getRqLogin().getSvid());
+
+				if (vp != null) {
+					ServerCommands.setCvid(receptor, vp.getCvid());
 				} else {
-					try {
-						ServerCommands.setCvid(receptor, ServerStore.Profiles.getViewer(user).getCvid());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-
-				}
-
-				if (!ServerStore.Databases.system.userExists(user)) {
+					log.error("No profile found for user: {}", user);
 					pass = false;
 					return;
 				}
+
 				RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder()
 						.setSalt(ServerStore.Databases.system.getSalt(user));
 				receptor.handle.write(Message.newBuilder().setId(m.getId()).setRqLoginChallenge(lcrq).build());
@@ -391,16 +386,6 @@ public class ServerExecutor extends BasicExecutor {
 				log.debug("Accepting Login");
 				receptor.setState(ConnectionState.AUTHENTICATED);
 
-				ViewerProfile vp = null;
-				try {
-					vp = ServerStore.Profiles.getViewer(receptor.getCvid());
-				} catch (Exception e1) {
-
-					log.error("No profile found for user: {} CVID: {}", user, receptor.getCvid());
-					pass = false;
-					return;
-				}
-
 				ServerStore.Connections.add(receptor);
 
 				vp.setIp(receptor.getRemoteAddress());
@@ -419,10 +404,11 @@ public class ServerExecutor extends BasicExecutor {
 					sid.addListeners(l.getConfig());
 				}
 
+				log.debug("Constructing user list. Main VP CVID: {}, USER: {}", vp.getCvid(), vp.getUser());
 				try {
 					for (Integer i : ServerStore.Profiles.getViewerKeyset()) {
 						ViewerProfile vpi = ServerStore.Profiles.getViewer(i);
-
+						log.debug("VPI CVID: {}, USER: {}", vpi.getCvid(), vpi.getUser());
 						sid.addUsers(EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
 								.setLoginIp(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
 										? vpi.getIp() : "<hidden>")
