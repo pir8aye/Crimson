@@ -23,6 +23,8 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.sv.ViewerProfile;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
@@ -69,10 +71,32 @@ public class AddUser extends JDialog {
 		panel.add(lblUsername);
 
 		JCheckBox chckbxSuperuser = new JCheckBox("Superuser");
+		chckbxSuperuser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				boolean s = chckbxSuperuser.isSelected();
+				chckbxGenerator.setSelected(s);
+				chckbxGenerator.setEnabled(!s);
+
+				chckbxListenerCreation.setSelected(s);
+				chckbxListenerCreation.setEnabled(!s);
+
+				chckbxServerPower.setSelected(s);
+				chckbxServerPower.setEnabled(!s);
+
+				chckbxServerSettings.setSelected(s);
+				chckbxServerSettings.setEnabled(!s);
+
+				chckbxServerFilesystemRead.setSelected(s);
+				chckbxServerFilesystemRead.setEnabled(!s);
+
+				chckbxServerFilesystemWrite.setSelected(s);
+				chckbxServerFilesystemWrite.setEnabled(!s);
+			}
+		});
 		chckbxSuperuser.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
-				sl.setInfo("All privileges on server and clients");
+				sl.setInfo("Grants all rights on server and clients");
 			}
 
 			@Override
@@ -101,37 +125,103 @@ public class AddUser extends JDialog {
 			panel_1.setLayout(null);
 
 			chckbxGenerator = new JCheckBox("Generator");
+			chckbxGenerator.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(MouseEvent arg0) {
+					sl.setInfo("Grants rights to generate installers");
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					sl.setDefault();
+				}
+			});
 			chckbxGenerator.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxGenerator.setBounds(8, 20, 240, 23);
 			panel_1.add(chckbxGenerator);
 
 			chckbxListenerCreation = new JCheckBox("Listener Creation");
+			chckbxListenerCreation.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					sl.setInfo("Grants rights create listeners on the server");
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					sl.setDefault();
+				}
+			});
 			chckbxListenerCreation.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxListenerCreation.setBounds(8, 47, 240, 23);
 			panel_1.add(chckbxListenerCreation);
 
 			chckbxServerPower = new JCheckBox("Server Power");
+			chckbxServerPower.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					sl.setInfo("Grants rights to change server power states");
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					sl.setDefault();
+				}
+			});
 			chckbxServerPower.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxServerPower.setBounds(8, 74, 240, 23);
 			panel_1.add(chckbxServerPower);
 
 			chckbxServerSettings = new JCheckBox("Server Settings");
+			chckbxServerSettings.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					sl.setInfo("Grants rights to modify server settings");
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					sl.setDefault();
+				}
+			});
 			chckbxServerSettings.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxServerSettings.setBounds(8, 101, 240, 23);
 			panel_1.add(chckbxServerSettings);
 
 			chckbxServerFilesystemRead = new JCheckBox("Server Filesystem Read");
+			chckbxServerFilesystemRead.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					sl.setInfo("Grants read rights to server filesystem");
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					sl.setDefault();
+				}
+			});
 			chckbxServerFilesystemRead.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxServerFilesystemRead.setBounds(8, 128, 240, 23);
 			panel_1.add(chckbxServerFilesystemRead);
 
 			chckbxServerFilesystemWrite = new JCheckBox("Server Filesystem Write");
+			chckbxServerFilesystemWrite.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					sl.setInfo("Grants modification rights to server filesystem");
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					sl.setDefault();
+				}
+			});
 			chckbxServerFilesystemWrite.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxServerFilesystemWrite.setBounds(8, 155, 240, 23);
 			panel_1.add(chckbxServerFilesystemWrite);
 		}
 
-		sl = new StatusLabel();
+		sl = new StatusLabel("Enter credentials and select permissions");
 		sl.setBounds(12, 321, 256, 15);
 		contentPanel.add(sl);
 		{
@@ -142,6 +232,8 @@ public class AddUser extends JDialog {
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						dispose();
+
 					}
 				});
 				cancelButton.setFont(new Font("Dialog", Font.BOLD, 11));
@@ -201,7 +293,13 @@ public class AddUser extends JDialog {
 			return false;
 		}
 
-		// TODO check for username conflicts
+		// check for username conflicts
+		for (ViewerProfile vp : ViewerStore.Profiles.server.users) {
+			if (vp.getUser().equals(textField.getText())) {
+				sl.setBad("Username taken");
+				return false;
+			}
+		}
 
 		if (!CUtil.Validation.password(passwordField.getPassword())) {
 			sl.setBad("Invalid Password");
