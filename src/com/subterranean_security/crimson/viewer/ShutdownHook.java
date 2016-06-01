@@ -26,8 +26,11 @@ public class ShutdownHook extends Thread {
 
 	private static final Logger log = CUtil.Logging.getLogger(ShutdownHook.class);
 
+	public static boolean shuttingdown = false;
+
 	@Override
 	public void run() {
+		shuttingdown = true;
 		log.info("Shutting down");
 		ViewerStore.Connections.closeAll();
 		ViewerStore.Databases.local.close();

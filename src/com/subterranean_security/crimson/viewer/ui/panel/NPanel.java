@@ -212,6 +212,10 @@ class Note extends JPanel {
 			icon.setIcon(UUtil.getIcon("icons32/general/exclamation.png"));
 			break;
 		}
+		case ("disconnection"): {
+			icon.setIcon(UUtil.getIcon("icons32/general/disconnect.png"));
+			break;
+		}
 		default: {
 			icon.setIcon(UUtil.getIcon("c-32.png"));
 			break;

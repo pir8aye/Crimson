@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.viewer.net;
 
 import com.subterranean_security.crimson.core.net.BasicHandler;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.viewer.ViewerState;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -32,13 +33,19 @@ public class ViewerHandler extends BasicHandler {
 
 	@Override
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+		ViewerState.goOnline();
 		this.channel = ctx.channel();
 	};
 
 	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		ViewerState.goOffline();
+		ctx.close();
+	}
+
+	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		// TODO sort out different causes
-		// cause.printStackTrace();
+		ViewerState.goOffline();
 		ctx.close();
 	}
 

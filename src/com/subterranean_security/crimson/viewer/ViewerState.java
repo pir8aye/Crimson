@@ -17,9 +17,26 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer;
 
+import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
+
 public enum ViewerState {
 	;
 	// we decided not to expend any effort hiding this
 	public static boolean trialMode;
+
+	private static boolean online;
+
+	public static void goOffline() {
+		if (online && !ShutdownHook.shuttingdown) {
+			online = false;
+			MainFrame.main.np.addNote("disconnection: Connection to server terminated. Offline mode enabled.");
+		}
+	}
+
+	public static void goOnline() {
+		if (!online) {
+			online = true;
+		}
+	}
 
 }
