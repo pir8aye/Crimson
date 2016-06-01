@@ -124,7 +124,7 @@ public class MainMenu extends JPanel {
 					UIStore.netMan.setLocationRelativeTo(null);
 					UIStore.netMan.setVisible(true);
 				} else {
-					UIStore.netMan.setLocationRelativeTo(null);
+					UIStore.netMan.toFront();
 				}
 
 				wmNetwork.resetBG();
@@ -183,7 +183,7 @@ public class MainMenu extends JPanel {
 					UIStore.userMan.setLocationRelativeTo(null);
 					UIStore.userMan.setVisible(true);
 				} else {
-					UIStore.userMan.setLocationRelativeTo(null);
+					UIStore.userMan.toFront();
 				}
 
 				wmUsers.resetBG();

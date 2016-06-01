@@ -53,7 +53,7 @@ public class ListenerPanel extends JPanel {
 					UIStore.addDialog.setLocationRelativeTo(null);
 					UIStore.addDialog.setVisible(true);
 				} else {
-					UIStore.addDialog.setLocationRelativeTo(null);
+					UIStore.addDialog.toFront();
 				}
 
 			}

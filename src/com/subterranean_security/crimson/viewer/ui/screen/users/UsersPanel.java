@@ -72,8 +72,9 @@ public class UsersPanel extends JPanel {
 				if (editDialog == null) {
 					editDialog = new EditUser(ut.getSelected());
 					editDialog.setVisible(true);
-				} else {
 					editDialog.setLocationRelativeTo(null);
+				} else {
+					editDialog.toFront();
 				}
 			}
 		});
@@ -89,8 +90,9 @@ public class UsersPanel extends JPanel {
 				if (addDialog == null) {
 					addDialog = new AddUser();
 					addDialog.setVisible(true);
-				} else {
 					addDialog.setLocationRelativeTo(null);
+				} else {
+					addDialog.toFront();
 				}
 
 			}
