@@ -821,6 +821,9 @@ public enum CUtil {
 				.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 						+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
+		private static final Pattern pEMAIL = Pattern
+				.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+
 		public static boolean username(String user) {
 			if (user.length() < 4 || user.length() > 20) {
 				return false;
@@ -876,7 +879,7 @@ public enum CUtil {
 		}
 
 		public static boolean email(String email) {
-			return false;
+			return pEMAIL.matcher(email).matches();
 		}
 
 	}
