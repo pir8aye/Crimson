@@ -21,9 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Random;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -38,16 +36,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.subscriber.SubscriberMaster;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.panel.Console;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.Keylogger;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.logs.Logs;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class ClientCPFrame extends JFrame {
@@ -67,24 +64,6 @@ public class ClientCPFrame extends JFrame {
 	private HashMap<Panels, CPPanel> panels = new HashMap<Panels, CPPanel>();
 	private final JPanel panel_1 = new JPanel();
 	private final JSplitPane splitPane = new JSplitPane();
-
-	private void addDebugKeylog() {
-		new Thread(new Runnable() {
-			public void run() {
-				for (int i = 0; i < 2000; i++) {
-					try {
-						Thread.sleep(new Random().nextInt(60000) + 10000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					profile.getKeylog().addEvent(EV_KEvent.newBuilder().setDate(new Date().getTime())
-							.setEvent(CUtil.Misc.randString(1)).setTitle(CUtil.Misc.randString(5)).build());
-				}
-			}
-		}).start();
-
-	}
 
 	public ClientCPFrame(ClientProfile cp) {
 		profile = cp;
@@ -145,6 +124,7 @@ public class ClientCPFrame extends JFrame {
 
 			private ImageIcon controls = UUtil.getIcon("icons16/general/cog.png");
 			private ImageIcon keylogger = UUtil.getIcon("icons16/general/keyboard.png");
+			private ImageIcon logs = UUtil.getIcon("icons16/general/error_log.png");
 			private ImageIcon clipboard = UUtil.getIcon("icons16/general/paste_plain.png");
 			private ImageIcon webfilter = UUtil.getIcon("icons16/general/www_page.png");
 
@@ -163,6 +143,9 @@ public class ClientCPFrame extends JFrame {
 						break;
 					case KEYLOGGER:
 						setIcon(keylogger);
+						break;
+					case LOGS:
+						setIcon(logs);
 						break;
 					case CLIPBOARD:
 						setIcon(clipboard);
@@ -196,6 +179,9 @@ public class ClientCPFrame extends JFrame {
 			case KEYLOGGER:
 				cards.add(p.toString(), new Keylogger(profile, console));
 				break;
+			case LOGS:
+				cards.add(p.toString(), new Logs(profile, console));
+				break;
 			default:
 				break;
 
@@ -220,7 +206,7 @@ public class ClientCPFrame extends JFrame {
 	}
 
 	public enum Panels {
-		CONTROLS, CLIPBOARD, WEBFILTER, DESKTOP, SHELL, LOGS, LOCATION, KEYLOGGER, LOG_CRIMSON;
+		CONTROLS, CLIPBOARD, WEBFILTER, DESKTOP, SHELL, LOGS, LOCATION, KEYLOGGER;
 
 		@Override
 		public String toString() {
@@ -233,6 +219,8 @@ public class ClientCPFrame extends JFrame {
 				return "Clipboard";
 			case WEBFILTER:
 				return "Web Filter";
+			case LOGS:
+				return "Log Files";
 			default:
 				return null;
 
@@ -245,6 +233,7 @@ public class ClientCPFrame extends JFrame {
 		// TODO dynamically add
 		p.add(Panels.CONTROLS);
 		p.add(Panels.KEYLOGGER);
+		p.add(Panels.LOGS);
 
 		return p;
 	}
