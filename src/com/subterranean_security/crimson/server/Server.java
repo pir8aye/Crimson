@@ -18,7 +18,9 @@
 package com.subterranean_security.crimson.server;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Scanner;
 
 import org.slf4j.Logger;
 
@@ -54,6 +56,9 @@ public final class Server {
 		if (!FileLocking.lock(Instance.SERVER)) {
 			System.exit(0);
 		}
+
+		// Read configuration
+		readConfig();
 
 		// Load native libraries
 		Platform.Advanced.loadSigar();
@@ -140,6 +145,38 @@ public final class Server {
 		ServerStore.Connections.sendToAll(Instance.VIEWER, Message.newBuilder()
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().setServerStatus(running)).build());
 
+	}
+
+	private static void readConfig() {
+		File config = new File(Common.base.getAbsolutePath() + "/server.conf");
+		try {
+			if (!config.exists()) {
+				config.createNewFile();
+			}
+			Scanner sc = new Scanner(config);
+			while (sc.hasNextLine()) {
+				set(sc.nextLine());
+			}
+			sc.close();
+		} catch (IOException e) {
+			log.warn("Configuration error!");
+
+		}
+
+	}
+
+	private static void set(String s) {
+		String[] p = s.split("=");
+		switch (p[0]) {
+		case "example-mode": {
+			ServerState.exampleMode = Boolean.parseBoolean(p[1]);
+			return;
+		}
+		case "cloud-mode": {
+			ServerState.cloudMode = Boolean.parseBoolean(p[1]);
+			return;
+		}
+		}
 	}
 
 }

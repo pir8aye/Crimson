@@ -19,6 +19,8 @@ package com.subterranean_security.crimson.server;
 
 public enum ServerState {
 	;
-	public static final boolean exampleMode = false;
+
+	public static boolean exampleMode = false;
+	public static boolean cloudMode = false;
 
 }
