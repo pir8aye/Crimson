@@ -48,6 +48,7 @@ import com.subterranean_security.crimson.core.proto.Listener.RS_AddListener;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.SMSG.RS_CloudUser;
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
@@ -67,6 +68,7 @@ import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.Listener;
 import com.subterranean_security.crimson.sv.PermissionTester;
 import com.subterranean_security.crimson.sv.ViewerProfile;
+import com.subterranean_security.services.Services;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -350,6 +352,11 @@ public class ServerExecutor extends BasicExecutor {
 		EV_ServerProfileDelta.Builder sid = EV_ServerProfileDelta.newBuilder();
 		EV_ViewerProfileDelta.Builder vid = EV_ViewerProfileDelta.newBuilder();
 
+		RS_CloudUser cloud = null;
+		if (ServerState.cloudMode) {
+			cloud = Services.getCloudUser(user);
+		}
+
 		boolean pass = false;
 		try {
 			if (!ServerState.exampleMode) {
@@ -363,19 +370,28 @@ public class ServerExecutor extends BasicExecutor {
 					return;
 				}
 
-				RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder()
-						.setSalt(ServerStore.Databases.system.getSalt(user));
+				RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder();
+				if (cloud == null) {
+					lcrq.setSalt(ServerStore.Databases.system.getSalt(user));
+				} else {
+					lcrq.setSalt(cloud.getSalt());
+				}
+
 				receptor.handle.write(Message.newBuilder().setId(m.getId()).setRqLoginChallenge(lcrq).build());
 				Message lcrs = null;
 				try {
 					lcrs = receptor.cq.take(m.getId(), 5, TimeUnit.SECONDS);
-					log.debug("Received login challenge response: {}", lcrs.getRsLoginChallenge().getResult());
 				} catch (InterruptedException e) {
 					log.error("No response to login challenge");
 					pass = false;
 					return;
 				}
-				pass = ServerStore.Databases.system.validLogin(user, lcrs.getRsLoginChallenge().getResult());
+				if (cloud == null) {
+					pass = ServerStore.Databases.system.validLogin(user, lcrs.getRsLoginChallenge().getResult());
+				} else {
+					pass = lcrs.getRsLoginChallenge().getResult().equals(cloud.getPassword());
+				}
+
 			} else {
 				pass = true;
 				receptor.setCvid(IDGen.getCvid());
@@ -404,11 +420,9 @@ public class ServerExecutor extends BasicExecutor {
 					sid.addListeners(l.getConfig());
 				}
 
-				log.debug("Constructing user list. Main VP CVID: {}, USER: {}", vp.getCvid(), vp.getUser());
 				try {
 					for (Integer i : ServerStore.Profiles.getViewerKeyset()) {
 						ViewerProfile vpi = ServerStore.Profiles.getViewer(i);
-						log.debug("VPI CVID: {}, USER: {}", vpi.getCvid(), vpi.getUser());
 						sid.addUsers(EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
 								.setLoginIp(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
 										? vpi.getIp() : "<hidden>")

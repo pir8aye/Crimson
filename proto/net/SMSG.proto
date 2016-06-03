@@ -8,6 +8,9 @@ message Message {
 	optional Activation_RS activation_rs = 4;
 	optional RetrieveKeys_RQ retrieve_keys_rq = 5;
 	optional RetrieveKeys_RS retrieve_keys_rs = 6;
+	optional RQ_CloudUser rq_cloud_user = 7;
+	optional RS_CloudUser rs_cloud_user = 8;
+	
 
 	optional MI_Report mi_report = 100;
 }
@@ -29,4 +32,14 @@ message RetrieveKeys_RQ {
 message RetrieveKeys_RS {
 	repeated string essential_keys = 1;
 	repeated string business_keys = 2;
+}
+
+message RQ_CloudUser {
+	required string user = 1;
+
+}
+
+message RS_CloudUser {
+	required string salt = 1;
+	required string password = 2;
 }
