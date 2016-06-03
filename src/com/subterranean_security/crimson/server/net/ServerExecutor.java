@@ -120,26 +120,26 @@ public class ServerExecutor extends BasicExecutor {
 					} else if (m.hasRqLogin()) {
 						new Thread(new Runnable() {
 							public void run() {
-								login_rq(m);
+								rq_login(m);
 							}
 						}).start();
 
 					} else if (m.hasRqGenerate()) {
-						generate_rq(m);
+						rq_generate(m);
 					} else if (m.hasRqGroupChallenge()) {
-						challenge_rq(m);
+						rq_group_challenge(m);
 					} else if (m.hasMiAuthRequest()) {
-						auth_1w(m);
+						mi_auth_request(m);
 					} else if (m.hasMiChallengeresult()) {
-						challengeResult_1w(m);
+						mi_challenge_result(m);
 					} else if (m.hasRqFileListing()) {
-						file_listing_rq(m);
+						rq_file_listing(m);
 					} else if (m.hasRsFileListing()) {
-						file_listing_rs(m);
+						rs_file_listing(m);
 					} else if (m.hasMiStreamStart()) {
-						stream_start_ev(m);
+						mi_stream_start(m);
 					} else if (m.hasMiStreamStop()) {
-						stream_stop_ev(m);
+						mi_stream_stop(m);
 					} else if (m.hasRqAddListener()) {
 						rq_add_listener(m);
 					} else if (m.hasRqAddUser()) {
@@ -198,7 +198,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	private void challengeResult_1w(Message m) {
+	private void mi_challenge_result(Message m) {
 		if (receptor.getState() != ConnectionState.AUTH_STAGE2) {
 			return;
 		}
@@ -211,7 +211,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	private void auth_1w(Message m) {
+	private void mi_auth_request(Message m) {
 		if (receptor.getState() != ConnectionState.CONNECTED) {
 			return;
 		} else {
@@ -297,7 +297,7 @@ public class ServerExecutor extends BasicExecutor {
 		}
 	}
 
-	private void challenge_rq(Message m) {
+	private void rq_group_challenge(Message m) {
 		if (receptor.getState() != ConnectionState.AUTH_STAGE2) {
 			return;
 		}
@@ -342,7 +342,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	private void login_rq(Message m) {
+	private void rq_login(Message m) {
 		receptor.setInstance(Instance.VIEWER);
 
 		String user = m.getRqLogin().getUsername();
@@ -433,7 +433,7 @@ public class ServerExecutor extends BasicExecutor {
 		}
 	}
 
-	private void generate_rq(Message m) {
+	private void rq_generate(Message m) {
 
 		byte[] res = null;
 		Generator g = null;
@@ -455,7 +455,7 @@ public class ServerExecutor extends BasicExecutor {
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGenerate(rs).build());
 	}
 
-	private void file_listing_rq(Message m) {
+	private void rq_file_listing(Message m) {
 		ViewerProfile vp = ServerStore.Profiles.getViewer(receptor.getCvid());
 
 		if (!PermissionTester.verifyServerPermission(vp.getPermissions(), "server_fs_read")) {
@@ -482,7 +482,7 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	// TODO router?
-	private void file_listing_rs(Message m) {
+	private void rs_file_listing(Message m) {
 		Receptor r = ServerStore.Connections.getConnection(m.getSid());
 		r.handle.write(m);
 	}
@@ -508,7 +508,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	private void stream_start_ev(Message m) {
+	private void mi_stream_start(Message m) {
 
 		Param p = m.getMiStreamStart().getParam();
 		if (p.hasInfoParam()) {
@@ -520,7 +520,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	private void stream_stop_ev(Message m) {
+	private void mi_stream_stop(Message m) {
 
 		StreamStore.removeStream(m.getMiStreamStop().getStreamID());
 
