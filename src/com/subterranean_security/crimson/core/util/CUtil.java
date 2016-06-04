@@ -862,6 +862,11 @@ public enum CUtil {
 		}
 
 		public static boolean path(String path) {
+			try {
+				new File(path).getCanonicalPath();
+			} catch (IOException e) {
+				return false;
+			}
 
 			return true;
 		}
