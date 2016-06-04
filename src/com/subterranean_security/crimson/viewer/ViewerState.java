@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer;
 
+import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.util.FileLocking;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerState {
@@ -37,6 +39,16 @@ public enum ViewerState {
 		if (!online) {
 			online = true;
 		}
+	}
+
+	/**
+	 * Searches for local servers
+	 * 
+	 * @return true when a server instance is detected that was not started by
+	 *         the viewer
+	 */
+	public static boolean findLocalServerInstance() {
+		return FileLocking.lockExists(Common.Instance.SERVER);
 	}
 
 }

@@ -46,12 +46,6 @@ import aurelienribon.tweenengine.Tween;
 public class Viewer {
 	private static final Logger log = CUtil.Logging.getLogger(Viewer.class);
 
-	/**
-	 * True when a server instance is detected that was not started by the
-	 * viewer
-	 */
-	public static boolean slsr = FileLocking.lockExists(Common.Instance.SERVER);
-
 	public static void main(String[] argv) {
 
 		// Establish the custom fallback exception handler
@@ -111,7 +105,8 @@ public class Viewer {
 			e1.printStackTrace();
 		}
 
-		if (ViewerStore.LocalServer.bundledServer.exists() && !slsr) {
+		boolean localServerFound = ViewerState.findLocalServerInstance();
+		if (ViewerStore.LocalServer.bundledServer.exists() && !localServerFound) {
 
 			ViewerStore.LocalServer.startLocalServer();
 
@@ -122,7 +117,7 @@ public class Viewer {
 		SLAnimator.start();
 
 		// show login dialog
-		LoginDialog login = new LoginDialog(ViewerStore.LocalServer.bundledServer.exists() && !slsr);
+		LoginDialog login = new LoginDialog(ViewerStore.LocalServer.bundledServer.exists() && !localServerFound);
 
 		login.setVisible(true);
 		try {
