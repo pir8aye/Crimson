@@ -134,7 +134,7 @@ public class ServerDB extends Database {
 		return null;
 	}
 
-	public boolean addUser(String user, String password, ViewerPermissions permissions) {
+	public boolean addLocalUser(String user, String password, ViewerPermissions permissions) {
 		if (userExists(user)) {
 			log.info("This user already exists: " + user);
 			return false;
@@ -169,12 +169,12 @@ public class ServerDB extends Database {
 		}
 
 		// create ViewerProfile
-		ViewerProfile vp = new ViewerProfile();
+		ViewerProfile vp = new ViewerProfile(IDGen.getCvid());
 		vp.setUser(user);
-		vp.setCvid(IDGen.getCvid());
 		vp.setPermissions(permissions);
 
 		try {
+			// TODO use serverstore and fix cinstaller
 			MemMap<Integer, ViewerProfile> map = (MemMap<Integer, ViewerProfile>) getObject("profiles.viewers");
 			map.setDatabase(this);
 			map.put(vp.getCvid(), vp);

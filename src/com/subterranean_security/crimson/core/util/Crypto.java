@@ -33,6 +33,20 @@ public enum Crypto {
 
 	}
 
+	private static String hash(String type, String target) throws NoSuchAlgorithmException {
+		MessageDigest digest;
+
+		digest = MessageDigest.getInstance(type);
+		digest.update(target.getBytes());
+		byte messageDigest[] = digest.digest();
+
+		StringBuffer hexString = new StringBuffer();
+		for (int i = 0; i < messageDigest.length; i++)
+			hexString.append(String.format("%02X", 0xFF & messageDigest[i]));
+		return hexString.toString().toLowerCase();
+
+	}
+
 	public static String hashPass(char[] pass, String salt) {
 		byte[] hash = (new String(pass) + salt).getBytes(StandardCharsets.UTF_16);
 		try {
@@ -44,6 +58,18 @@ public enum Crypto {
 			e.printStackTrace();
 		}
 		return new String(B64.encode(hash));
+	}
+
+	public static String hashOCPass(String pass, String salt) {
+		try {
+			String t = hash("SHA-1", salt + hash("SHA-1", salt + hash("SHA-1", pass)));
+			System.out.println("Hashed OC password: '" + t + "' with salt: '" + salt + "'");
+			return t;
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static String hashPass(String pass, String salt) {

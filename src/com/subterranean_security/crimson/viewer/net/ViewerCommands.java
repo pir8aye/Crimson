@@ -61,7 +61,10 @@ public enum ViewerCommands {
 
 		try {
 			Message lcrq = ViewerRouter.getReponse(0, id, 5);
-			if (lcrq.hasRqLoginChallenge()) {
+			if (lcrq == null) {
+				log.error("No reponse");
+				return false;
+			} else if (lcrq.hasRqLoginChallenge()) {
 
 				String result = Crypto.hashPass(pass, lcrq.getRqLoginChallenge().getSalt());
 				ViewerRouter.route(Message.newBuilder().setId(id)

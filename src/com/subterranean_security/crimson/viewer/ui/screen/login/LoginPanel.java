@@ -367,7 +367,7 @@ public class LoginPanel extends JPanel {
 				}
 				parent.dispose();
 			} else {
-				ViewerStore.Connections.put(0, null);
+				ViewerStore.Connections.closeAll();
 				lbl_status.unfreeze();
 				lbl_status.setBad("Failed to Login");
 				btn_login.setEnabled(true);

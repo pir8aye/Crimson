@@ -355,9 +355,17 @@ public class ServerExecutor extends BasicExecutor {
 		RS_CloudUser cloud = null;
 		if (ServerState.cloudMode) {
 			cloud = Services.getCloudUser(user);
+			if (vp == null) {
+				// create ViewerProfile
+				vp = new ViewerProfile(IDGen.getCvid());
+				vp.setUser(user);
+				ServerStore.Profiles.addViewer(vp);
+			}
+
 		}
 
 		boolean pass = false;
+
 		try {
 			if (!ServerState.exampleMode) {
 				pass = false;
@@ -389,7 +397,9 @@ public class ServerExecutor extends BasicExecutor {
 				if (cloud == null) {
 					pass = ServerStore.Databases.system.validLogin(user, lcrs.getRsLoginChallenge().getResult());
 				} else {
-					pass = lcrs.getRsLoginChallenge().getResult().equals(cloud.getPassword());
+					log.debug("Got cloud hash: " + cloud.getPassword());
+					pass = Crypto.hashOCPass(lcrs.getRsLoginChallenge().getResult(), cloud.getSalt())
+							.equals(cloud.getPassword());
 				}
 
 			} else {
@@ -558,7 +568,7 @@ public class ServerExecutor extends BasicExecutor {
 		receptor.handle.write(
 				Message.newBuilder().setId(m.getId()).setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
 
-		ServerStore.Databases.system.addUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
+		ServerStore.Databases.system.addLocalUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
 				m.getRqAddUser().getPermissions());
 
 		Message update = Message.newBuilder().setUrgent(true)
