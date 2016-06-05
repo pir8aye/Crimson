@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.server;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -147,11 +148,15 @@ public final class Server {
 
 	}
 
+	// TODO move into a config class
 	private static void readConfig() {
 		File config = new File(Common.base.getAbsolutePath() + "/server.conf");
 		try {
 			if (!config.exists()) {
 				config.createNewFile();
+
+				// set default
+				setDefaults(config);
 			}
 			Scanner sc = new Scanner(config);
 			while (sc.hasNextLine()) {
@@ -165,17 +170,50 @@ public final class Server {
 
 	}
 
+	private static void setDefaults(File config) {
+		PrintWriter pw = new PrintWriter(config);
+		pw.println(Directives.EXAMPLE_MODE + "=false");
+		pw.println(Directives.CLOUD_MODE + "=true");
+		pw.close();
+	}
+
 	private static void set(String s) {
 		String[] p = s.split("=");
-		switch (p[0]) {
-		case "example-mode": {
-			ServerState.exampleMode = Boolean.parseBoolean(p[1]);
+
+		switch (Directives.fromString(p[0])) {
+		case EXAMPLE_MODE: {
+			ServerState.setExampleMode(Boolean.parseBoolean(p[1]));
 			return;
 		}
-		case "cloud-mode": {
-			ServerState.cloudMode = Boolean.parseBoolean(p[1]);
+		case CLOUD_MODE: {
+			ServerState.setCloudMode(Boolean.parseBoolean(p[1]));
 			return;
 		}
+		}
+	}
+
+	public enum Directives {
+		EXAMPLE_MODE("example-mode"), CLOUD_MODE("cloud-mode");
+
+		private String text;
+
+		Directives(String text) {
+			this.text = text;
+		}
+
+		public String getText() {
+			return this.text;
+		}
+
+		public static Directives fromString(String text) {
+			if (text != null) {
+				for (Directives b : Directives.values()) {
+					if (text.equalsIgnoreCase(b.text)) {
+						return b;
+					}
+				}
+			}
+			return null;
 		}
 	}
 

@@ -17,10 +17,36 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server;
 
+import org.slf4j.Logger;
+
+import com.subterranean_security.crimson.core.util.CUtil;
+
 public enum ServerState {
 	;
 
-	public static boolean exampleMode = false;
-	public static boolean cloudMode = false;
+	private static final Logger log = CUtil.Logging.getLogger(ServerState.class);
+
+	private static boolean exampleMode = false;
+	private static boolean cloudMode = false;
+
+	public static boolean isExampleMode() {
+		return exampleMode;
+	}
+
+	public static void setExampleMode(boolean exampleMode) {
+		ServerState.exampleMode = exampleMode;
+		log.debug("Example Mode set: {}", exampleMode);
+
+	}
+
+	public static boolean isCloudMode() {
+		return cloudMode;
+	}
+
+	public static void setCloudMode(boolean cloudMode) {
+		ServerState.cloudMode = cloudMode;
+		log.debug("Cloud Mode set: {}", cloudMode);
+
+	}
 
 }
