@@ -35,6 +35,7 @@ import com.subterranean_security.crimson.core.proto.Generator.RQ_Generate;
 import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_AddListener;
+import com.subterranean_security.crimson.core.proto.Listener.RQ_RemoveListener;
 import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
@@ -153,6 +154,26 @@ public enum ViewerCommands {
 			} else if (!m.getRsAddListener().getResult()) {
 				if (m.getRsAddListener().hasComment()) {
 					error.append(m.getRsAddListener().getComment());
+				}
+				return false;
+			}
+		} catch (InterruptedException e) {
+			error.append("Interrupted");
+			return false;
+		}
+
+		return true;
+	}
+
+	public static boolean removeListener(StringBuffer error, int id) {
+		try {
+			Message m = ViewerRouter.routeAndWait(
+					Message.newBuilder().setRqRemoveListener(RQ_RemoveListener.newBuilder().setId(id)), 3);
+			if (m == null) {
+				error.append("No response");
+			} else if (!m.getRsRemoveListener().getResult()) {
+				if (m.getRsRemoveListener().hasComment()) {
+					error.append(m.getRsRemoveListener().getComment());
 				}
 				return false;
 			}

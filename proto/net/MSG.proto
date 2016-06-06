@@ -45,6 +45,8 @@ message Message {
 	optional RS_ChangeClientState rs_change_client_state = 114;
 	optional RQ_AddListener rq_add_listener = 115;
 	optional RS_AddListener rs_add_listener = 116;
+	optional RQ_RemoveListener rq_remove_listener = 126;
+	optional RS_RemoveListener rs_remove_listener = 127;
 	optional RQ_AddUser rq_add_user = 117;
 	optional RS_AddUser rs_add_user = 118;
 	optional RQ_EditUser rq_edit_user = 119;

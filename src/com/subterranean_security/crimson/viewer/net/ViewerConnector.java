@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -54,6 +55,10 @@ public class ViewerConnector extends BasicConnector {
 	@Override
 	public void write(Message m) {
 		handle.write(m);
+	}
+
+	public String getRemoteAddress() {
+		return ((InetSocketAddress) handle.channel.remoteAddress()).getAddress().getHostAddress();
 	}
 
 }

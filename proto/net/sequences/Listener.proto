@@ -9,8 +9,17 @@ message RS_AddListener {
 	optional string comment = 2;
 }
 
+message RQ_RemoveListener {
+	required int32 id = 1;
+}
+
+message RS_RemoveListener {
+	required bool result = 1;
+	optional string comment = 2;
+}
+
 message ListenerConfig {
-	required int32 ID = 1;
+	required int32 id = 1;
 	required int32 port = 2;
 	optional string name = 3;
 	required string owner = 4;

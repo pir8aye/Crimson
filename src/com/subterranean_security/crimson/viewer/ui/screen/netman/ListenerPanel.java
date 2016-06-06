@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
 
 public class ListenerPanel extends JPanel {
@@ -67,6 +68,15 @@ public class ListenerPanel extends JPanel {
 		panel_3.add(btnNew, gbc_btnNewButton_1);
 
 		btnRemove = new JButton("Remove");
+		btnRemove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					public void run() {
+						ViewerCommands.removeListener(new StringBuffer(), lt.getSelected().getId());
+					}
+				}).start();
+			}
+		});
 		btnRemove.setEnabled(false);
 		btnRemove.setFont(new Font("Dialog", Font.BOLD, 11));
 		btnRemove.setMargin(new Insets(0, 4, 0, 4));

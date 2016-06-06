@@ -68,6 +68,10 @@ public class ListenerTable extends JScrollPane {
 		tm.fireTableDataChanged();
 	}
 
+	public ListenerConfig getSelected() {
+		return tm.getAt(table.getSelectedRow());
+	}
+
 }
 
 class TM extends AbstractTableModel {
@@ -95,7 +99,7 @@ class TM extends AbstractTableModel {
 
 		switch (headers[columnIndex]) {
 		case "ID": {
-			return ViewerStore.Profiles.server.listeners.get(rowIndex).getID();
+			return ViewerStore.Profiles.server.listeners.get(rowIndex).getId();
 		}
 		case "Name": {
 			return ViewerStore.Profiles.server.listeners.get(rowIndex).getName();

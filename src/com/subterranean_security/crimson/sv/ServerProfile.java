@@ -145,7 +145,7 @@ public class ServerProfile implements Serializable {
 
 		for (ListenerConfig lc : c.getListenersList()) {
 			for (ListenerConfig l : listeners) {
-				if (lc.getID() == l.getID()) {
+				if (lc.getId() == l.getId()) {
 					listeners.remove(l);
 					break;
 				}

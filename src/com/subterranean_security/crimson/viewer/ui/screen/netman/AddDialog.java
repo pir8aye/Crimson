@@ -9,8 +9,14 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -24,7 +30,10 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.sv.PermissionTester;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
 import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
@@ -39,23 +48,29 @@ public class AddDialog extends JDialog {
 	private JCheckBox chckbxRestrictToLocalhost;
 	private JCheckBox chckbxAcceptClients;
 	private JCheckBox chckbxAcceptViewers;
-	private JComboBox owner;
+	private JComboBox<String> owner;
 	private StatusLabel sl;
 	private JPanel panel_1;
+	private JButton okButton;
 
 	public AddDialog() {
+		init();
+		updateOwners();
+	}
+
+	public void init() {
 		setResizable(false);
 		setTitle("Add Listener");
 		setIconImages(UUtil.getIconList());
-		setBounds(100, 100, 250, 320);
+		setBounds(100, 100, 250, 329);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 		{
 			JPanel panel = new JPanel();
-			panel.setBorder(
-					new TitledBorder(null, "Listener Details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			panel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Details", TitledBorder.LEADING,
+					TitledBorder.TOP, null, null));
 			contentPanel.add(panel);
 			GridBagLayout gbl_panel = new GridBagLayout();
 			gbl_panel.columnWidths = new int[] { 0, 0, 0 };
@@ -65,7 +80,7 @@ public class AddDialog extends JDialog {
 			panel.setLayout(gbl_panel);
 			{
 				JLabel lblOptionalName = new JLabel("Optional Name:");
-				lblOptionalName.setFont(new Font("Dialog", Font.BOLD, 11));
+				lblOptionalName.setFont(new Font("Dialog", Font.BOLD, 10));
 				GridBagConstraints gbc_lblOptionalName = new GridBagConstraints();
 				gbc_lblOptionalName.insets = new Insets(0, 0, 5, 5);
 				gbc_lblOptionalName.anchor = GridBagConstraints.EAST;
@@ -85,7 +100,7 @@ public class AddDialog extends JDialog {
 			}
 			{
 				JLabel lblPort = new JLabel("Port:");
-				lblPort.setFont(new Font("Dialog", Font.BOLD, 11));
+				lblPort.setFont(new Font("Dialog", Font.BOLD, 10));
 				GridBagConstraints gbc_lblPort = new GridBagConstraints();
 				gbc_lblPort.anchor = GridBagConstraints.EAST;
 				gbc_lblPort.insets = new Insets(0, 0, 5, 5);
@@ -95,6 +110,12 @@ public class AddDialog extends JDialog {
 			}
 			{
 				fld_port = new JTextField();
+				fld_port.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyReleased(KeyEvent arg0) {
+						refreshFields();
+					}
+				});
 				GridBagConstraints gbc_textField_1 = new GridBagConstraints();
 				gbc_textField_1.insets = new Insets(0, 0, 5, 0);
 				gbc_textField_1.anchor = GridBagConstraints.WEST;
@@ -105,7 +126,7 @@ public class AddDialog extends JDialog {
 			}
 			{
 				JLabel lblOwner = new JLabel("Owner:");
-				lblOwner.setFont(new Font("Dialog", Font.BOLD, 11));
+				lblOwner.setFont(new Font("Dialog", Font.BOLD, 10));
 				GridBagConstraints gbc_lblOwner = new GridBagConstraints();
 				gbc_lblOwner.anchor = GridBagConstraints.EAST;
 				gbc_lblOwner.insets = new Insets(0, 0, 0, 5);
@@ -114,7 +135,7 @@ public class AddDialog extends JDialog {
 				panel.add(lblOwner, gbc_lblOwner);
 			}
 			{
-				owner = new JComboBox();
+				owner = new JComboBox<String>();
 				GridBagConstraints gbc_comboBox = new GridBagConstraints();
 				gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
 				gbc_comboBox.gridx = 1;
@@ -135,6 +156,17 @@ public class AddDialog extends JDialog {
 			panel.setLayout(gbl_panel);
 			{
 				chckbxUseUpnp = new JCheckBox("Use UPnP");
+				chckbxUseUpnp.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseEntered(MouseEvent arg0) {
+						sl.setInfo("");
+					}
+
+					@Override
+					public void mouseExited(MouseEvent e) {
+						sl.setDefault();
+					}
+				});
 				chckbxUseUpnp.setFont(new Font("Dialog", Font.BOLD, 11));
 				GridBagConstraints gbc_chckbxUseUpnp = new GridBagConstraints();
 				gbc_chckbxUseUpnp.insets = new Insets(0, 0, 5, 0);
@@ -145,6 +177,17 @@ public class AddDialog extends JDialog {
 			}
 			{
 				chckbxRestrictToLocalhost = new JCheckBox("Restrict to localhost");
+				chckbxRestrictToLocalhost.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						sl.setInfo("");
+					}
+
+					@Override
+					public void mouseExited(MouseEvent e) {
+						sl.setDefault();
+					}
+				});
 				chckbxRestrictToLocalhost.setFont(new Font("Dialog", Font.BOLD, 11));
 				GridBagConstraints gbc_chckbxRestrictToLocalhost = new GridBagConstraints();
 				gbc_chckbxRestrictToLocalhost.insets = new Insets(0, 0, 5, 0);
@@ -155,6 +198,22 @@ public class AddDialog extends JDialog {
 			}
 			{
 				chckbxAcceptClients = new JCheckBox("Accept clients");
+				chckbxAcceptClients.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						refreshBoxes();
+					}
+				});
+				chckbxAcceptClients.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						sl.setInfo("Allow clients to connect?");
+					}
+
+					@Override
+					public void mouseExited(MouseEvent e) {
+						sl.setDefault();
+					}
+				});
 				chckbxAcceptClients.setSelected(true);
 				chckbxAcceptClients.setFont(new Font("Dialog", Font.BOLD, 11));
 				GridBagConstraints gbc_chckbxAcceptClients = new GridBagConstraints();
@@ -166,6 +225,22 @@ public class AddDialog extends JDialog {
 			}
 			{
 				chckbxAcceptViewers = new JCheckBox("Accept viewers");
+				chckbxAcceptViewers.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						refreshBoxes();
+					}
+				});
+				chckbxAcceptViewers.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						sl.setInfo("Allow viewers to connect?");
+					}
+
+					@Override
+					public void mouseExited(MouseEvent e) {
+						sl.setDefault();
+					}
+				});
 				chckbxAcceptViewers.setSelected(true);
 				chckbxAcceptViewers.setFont(new Font("Dialog", Font.BOLD, 11));
 				GridBagConstraints gbc_chckbxAcceptViewers = new GridBagConstraints();
@@ -177,6 +252,7 @@ public class AddDialog extends JDialog {
 		}
 		{
 			panel_1 = new JPanel();
+			panel_1.add(Box.createVerticalStrut(20), BorderLayout.WEST);
 			contentPanel.add(panel_1);
 			panel_1.setLayout(new BorderLayout(0, 0));
 			{
@@ -189,20 +265,26 @@ public class AddDialog extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("Add");
+				okButton = new JButton("Add");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						new Thread(new Runnable() {
 							public void run() {
-								// TODO input verification
+								if (!verify()) {
+									return;
+								}
 								StringBuffer error = new StringBuffer();
 								ViewerCommands.addListener(error,
-										ListenerConfig.newBuilder().setName(fld_name.getText())
+										ListenerConfig.newBuilder()
+												.setName(fld_name.getText().isEmpty() ? "Unnamed Listener"
+														: fld_name.getText())
 												.setClientAcceptor(chckbxAcceptClients.isSelected())
 												.setViewerAcceptor(chckbxAcceptViewers.isSelected())
 												.setLocalhostExclusive(chckbxRestrictToLocalhost.isSelected())
 												.setPort(Integer.parseInt(fld_port.getText()))
-												.setID(IDGen.getListenerID()).build());
+												.setOwner((String) owner.getSelectedItem()).setId(IDGen.getListenerID())
+												.build());
+								dispose();
 							}
 						}).start();
 
@@ -227,6 +309,55 @@ public class AddDialog extends JDialog {
 	public void dispose() {
 		super.dispose();
 		UIStore.addDialog = null;
+	}
+
+	public boolean verify() {
+		if (!CUtil.Validation.port(fld_port.getText())) {
+			sl.setBad("Invalid port");
+			return false;
+		}
+
+		for (ListenerConfig lc : ViewerStore.Profiles.server.listeners) {
+			if (lc.getPort() == Integer.parseInt(fld_port.getText())) {
+				sl.setBad("Port in use");
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public void refreshFields() {
+		if (verify()) {
+			okButton.setEnabled(true);
+			sl.setDefault();
+		} else {
+			okButton.setEnabled(false);
+		}
+
+	}
+
+	public void refreshBoxes() {
+		if (!chckbxAcceptClients.isSelected() && !chckbxAcceptViewers.isSelected()) {
+			sl.setBad("Must accept some connections");
+			okButton.setEnabled(false);
+		} else {
+			sl.setDefault();
+			okButton.setEnabled(true);
+		}
+	}
+
+	public void updateOwners() {
+		String[] o = null;
+		if (PermissionTester.verifyServerPermission(ViewerStore.Profiles.vp.getPermissions(), "super")) {
+			o = new String[ViewerStore.Profiles.server.users.size()];
+			for (int i = 0; i < o.length; i++) {
+				o[i] = ViewerStore.Profiles.server.users.get(i).getUser();
+			}
+		} else {
+			o = new String[] { ViewerStore.Profiles.vp.getUser() };
+		}
+		owner.setModel(new DefaultComboBoxModel<String>(o));
 	}
 
 }

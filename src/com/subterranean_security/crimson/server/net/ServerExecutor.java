@@ -144,6 +144,8 @@ public class ServerExecutor extends BasicExecutor {
 						mi_stream_stop(m);
 					} else if (m.hasRqAddListener()) {
 						rq_add_listener(m);
+					} else if (m.hasRqRemoveListener()) {
+						rq_remove_listener(m);
 					} else if (m.hasRqAddUser()) {
 						rq_add_user(m);
 					} else if (m.hasRqEditUser()) {
@@ -558,6 +560,11 @@ public class ServerExecutor extends BasicExecutor {
 		Message update = Message.newBuilder().setUrgent(true).setEvServerProfileDelta(
 				EV_ServerProfileDelta.newBuilder().addListeners(m.getRqAddListener().getConfig())).build();
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
+
+	}
+
+	private void rq_remove_listener(Message m) {
+		log.debug("Executing: rq_remove_listener");
 
 	}
 
