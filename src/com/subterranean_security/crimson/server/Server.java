@@ -171,10 +171,15 @@ public final class Server {
 	}
 
 	private static void setDefaults(File config) {
-		PrintWriter pw = new PrintWriter(config);
-		pw.println(Directives.EXAMPLE_MODE + "=false");
-		pw.println(Directives.CLOUD_MODE + "=true");
-		pw.close();
+		try {
+			PrintWriter pw = new PrintWriter(config);
+			pw.println(Directives.EXAMPLE_MODE + "=false");
+			pw.println(Directives.CLOUD_MODE + "=true");
+			pw.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private static void set(String s) {
