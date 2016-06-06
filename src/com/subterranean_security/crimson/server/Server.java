@@ -206,7 +206,7 @@ public final class Server {
 			this.text = text;
 		}
 
-		public String getText() {
+		public String toString() {
 			return this.text;
 		}
 
