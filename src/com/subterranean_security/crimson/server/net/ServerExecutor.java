@@ -378,11 +378,11 @@ public class ServerExecutor extends BasicExecutor {
 					return;
 				}
 
-				RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder();
-				if (cloud == null) {
-					lcrq.setSalt(ServerStore.Databases.system.getSalt(user));
-				} else {
+				RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder().setCloud(cloud != null);
+				if (lcrq.getCloud()) {
 					lcrq.setSalt(cloud.getSalt());
+				} else {
+					lcrq.setSalt(ServerStore.Databases.system.getSalt(user));
 				}
 
 				receptor.handle.write(Message.newBuilder().setId(m.getId()).setRqLoginChallenge(lcrq).build());
@@ -398,8 +398,7 @@ public class ServerExecutor extends BasicExecutor {
 					pass = ServerStore.Databases.system.validLogin(user, lcrs.getRsLoginChallenge().getResult());
 				} else {
 					log.debug("Got cloud hash: " + cloud.getPassword());
-					pass = Crypto.hashOCPass(lcrs.getRsLoginChallenge().getResult(), cloud.getSalt())
-							.equals(cloud.getPassword());
+					pass = lcrs.getRsLoginChallenge().getResult().equals(cloud.getPassword());
 				}
 
 			} else {

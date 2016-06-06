@@ -7,7 +7,8 @@ message RQ_Login {
 }
 
 message RQ_LoginChallenge {
-	required string salt = 1;
+	required bool cloud = 1;
+	required string salt = 2;
 }
 
 message RS_LoginChallenge {

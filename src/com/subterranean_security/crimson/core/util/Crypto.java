@@ -43,6 +43,7 @@ public enum Crypto {
 		StringBuffer hexString = new StringBuffer();
 		for (int i = 0; i < messageDigest.length; i++)
 			hexString.append(String.format("%02X", 0xFF & messageDigest[i]));
+
 		return hexString.toString().toLowerCase();
 
 	}
@@ -62,9 +63,7 @@ public enum Crypto {
 
 	public static String hashOCPass(String pass, String salt) {
 		try {
-			String t = hash("SHA-1", salt + hash("SHA-1", salt + hash("SHA-1", pass)));
-			System.out.println("Hashed OC password: '" + t + "' with salt: '" + salt + "'");
-			return t;
+			return hash("SHA-1", salt + hash("SHA-1", salt + hash("SHA-1", pass)));
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

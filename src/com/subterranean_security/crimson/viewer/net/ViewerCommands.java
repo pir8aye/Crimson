@@ -36,6 +36,7 @@ import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_AddListener;
 import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
+import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeServerState;
@@ -65,8 +66,9 @@ public enum ViewerCommands {
 				log.error("No reponse");
 				return false;
 			} else if (lcrq.hasRqLoginChallenge()) {
-
-				String result = Crypto.hashPass(pass, lcrq.getRqLoginChallenge().getSalt());
+				RQ_LoginChallenge challenge = lcrq.getRqLoginChallenge();
+				String result = challenge.getCloud() ? Crypto.hashOCPass(new String(pass), challenge.getSalt())
+						: Crypto.hashPass(pass, challenge.getSalt());
 				ViewerRouter.route(Message.newBuilder().setId(id)
 						.setRsLoginChallenge(RS_LoginChallenge.newBuilder().setResult(result)).build());
 			} else if (lcrq.hasRsLogin()) {
