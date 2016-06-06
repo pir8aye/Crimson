@@ -174,7 +174,7 @@ public final class Server {
 		try {
 			PrintWriter pw = new PrintWriter(config);
 			pw.println(Directives.EXAMPLE_MODE + "=false");
-			pw.println(Directives.CLOUD_MODE + "=true");
+			pw.println(Directives.CLOUD_MODE + "=false");
 			pw.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
