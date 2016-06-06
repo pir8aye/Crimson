@@ -34,6 +34,7 @@ import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.sv.PermissionTester;
+import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.stream.VInfoSlave;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
@@ -103,8 +104,12 @@ public class MainMenu extends JPanel {
 		wmFiles.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				FMFrame fmf = new FMFrame(Type.SV);
-				fmf.setVisible(true);
+				if (!ViewerState.isOnline()) {
+					MainFrame.main.np.addNote("error:Offline mode is enabled!");
+				} else {
+					FMFrame fmf = new FMFrame(Type.SV);
+					fmf.setVisible(true);
+				}
 
 				wmFiles.resetBG();
 				MenuSelectionManager.defaultManager().clearSelectedPath();
@@ -119,7 +124,9 @@ public class MainMenu extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				if (UIStore.netMan == null) {
+				if (!ViewerState.isOnline()) {
+					MainFrame.main.np.addNote("error:Offline mode is enabled!");
+				} else if (UIStore.netMan == null) {
 					UIStore.netMan = new NetMan();
 					UIStore.netMan.setLocationRelativeTo(null);
 					UIStore.netMan.setVisible(true);
@@ -139,7 +146,10 @@ public class MainMenu extends JPanel {
 		wmGen.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if (PermissionTester.verifyServerPermission(ViewerStore.Profiles.vp.getPermissions(), "generate")) {
+				if (!ViewerState.isOnline()) {
+					MainFrame.main.np.addNote("error:Offline mode is enabled!");
+				} else if (PermissionTester.verifyServerPermission(ViewerStore.Profiles.vp.getPermissions(),
+						"generate")) {
 					GenDialog gd = new GenDialog();
 					gd.setVisible(true);
 				} else {
@@ -178,7 +188,9 @@ public class MainMenu extends JPanel {
 		wmUsers.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if (UIStore.userMan == null) {
+				if (!ViewerState.isOnline()) {
+					MainFrame.main.np.addNote("error:Offline mode is enabled!");
+				} else if (UIStore.userMan == null) {
 					UIStore.userMan = new UserMan();
 					UIStore.userMan.setLocationRelativeTo(null);
 					UIStore.userMan.setVisible(true);

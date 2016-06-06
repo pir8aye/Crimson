@@ -28,6 +28,10 @@ public enum ViewerState {
 
 	private static boolean online;
 
+	public static boolean isOnline() {
+		return online;
+	}
+
 	public static void goOffline() {
 		if (online && !ShutdownHook.shuttingdown) {
 			online = false;
