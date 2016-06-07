@@ -170,44 +170,36 @@ public class HostList extends JPanel {
 
 	private void initContextMenu() {
 		popup = new JPopupMenu();
-		control = new JMenuItem();
-		control.setText("Control Panel");
+		control = new JMenuItem("Control Panel");
 		control.setIcon(UIUtil.getIcon("icons16/general/cog.png"));
 
 		popup.add(control);
 
-		graph = new JMenuItem();
-		graph.setText("Find in Graph");
+		graph = new JMenuItem("Find in Graph");
 		graph.setIcon(UIUtil.getIcon("icons16/general/diagramm.png"));
 		popup.add(graph);
 
-		JMenu quick = new JMenu();
-		quick.setText("Quick Commands");
+		JMenu quick = new JMenu("Quick Commands");
 		quick.setIcon(UIUtil.getIcon("icons16/general/bow.png"));
 		popup.add(quick);
 
-		JMenu state = new JMenu();
-		state.setText("Change State");
+		JMenu state = new JMenu("Change State");
 		state.setIcon(UIUtil.getIcon("icons16/general/power_surge.png"));
 		quick.add(state);
 
-		poweroff = new JMenuItem();
-		poweroff.setText("Shutdown");
+		poweroff = new JMenuItem("Shutdown");
 		poweroff.setIcon(UIUtil.getIcon("icons16/general/lcd_tv_off.png"));
 		state.add(poweroff);
 
-		restart = new JMenuItem();
-		restart.setText("Restart");
+		restart = new JMenuItem("Restart");
 		restart.setIcon(UIUtil.getIcon("icons16/general/arrow_redo.png"));
 		state.add(restart);
 
-		uninstall = new JMenuItem();
-		uninstall.setText("Uninstall Crimson");
+		uninstall = new JMenuItem("Uninstall Crimson");
 		uninstall.setIcon(UIUtil.getIcon("icons16/general/radioactivity.png"));
 		state.add(uninstall);
 
-		refresh = new JMenuItem();
-		refresh.setText("Refresh");
+		refresh = new JMenuItem("Refresh");
 		refresh.setIcon(UIUtil.getIcon("icons16/general/inbox_download.png"));
 
 		quick.add(refresh);
