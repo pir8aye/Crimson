@@ -32,19 +32,18 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 
 public class FileTable extends JPanel {
 	private static final long serialVersionUID = 1L;
-	private TM tm = new TM();
-	private TR tr = new TR();
+	public TM tm = new TM();
+	public TR tr = new TR(tm);
 
 	private JTable table = new JTable();
 	private Pane pane;
@@ -79,6 +78,14 @@ public class FileTable extends JPanel {
 
 				if (e.getButton() == MouseEvent.BUTTON3) {
 					initContextActions();
+					popup.removeAll();
+					popup.add(menu_copy);
+					popup.add(menu_cut);
+					popup.add(menu_delete);
+					popup.add(menu_rename);
+					popup.add(menu_properties);
+
+					popup.show(table, e.getPoint().x, e.getPoint().y);
 				} else if (e.getClickCount() == 2) {
 					pane.down(tm.files.get(sourceRow).getIcon().getDescription());
 					return;
@@ -97,20 +104,43 @@ public class FileTable extends JPanel {
 	}
 
 	JPopupMenu popup;
-	JMenuItem properties;
+
+	JMenuItem menu_copy;
+	JMenuItem menu_cut;
+	JMenuItem menu_delete;
+	JMenuItem menu_rename;
+	JMenuItem menu_compress;
+	JMenuItem menu_decompress;
+	JMenuItem menu_properties;
 
 	private void initContextMenu() {
 		popup = new JPopupMenu();
-		properties = new JMenuItem();
-		properties.setText("Properties");
-		properties.setIcon(UIUtil.getIcon("icons16/general/attributes_display.png"));
 
-		popup.add(properties);
+		menu_copy = new JMenuItem("Copy");
+		menu_copy.setIcon(UIUtil.getIcon("icons16/general/page_copy.png"));
+
+		menu_cut = new JMenuItem("Cut");
+		menu_cut.setIcon(UIUtil.getIcon("icons16/general/cut.png"));
+
+		menu_delete = new JMenuItem("Delete");
+		menu_delete.setIcon(UIUtil.getIcon("icons16/general/folder_delete.png"));
+
+		menu_rename = new JMenuItem("Rename");
+		menu_rename.setIcon(UIUtil.getIcon("icons16/general/textfield_rename.png"));
+
+		menu_compress = new JMenuItem("Compress");
+		menu_compress.setIcon(UIUtil.getIcon("icons16/general/compress.png"));
+
+		menu_decompress = new JMenuItem("Decompress");
+		menu_decompress.setIcon(UIUtil.getIcon("icons16/general/server_uncompress.png"));
+
+		menu_properties = new JMenuItem("Properties");
+		menu_properties.setIcon(UIUtil.getIcon("icons16/general/attributes_display.png"));
 
 	}
 
 	private void initContextActions() {
-		properties.addMouseListener(new MouseAdapter() {
+		menu_properties.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
@@ -138,6 +168,7 @@ public class FileTable extends JPanel {
 							"/com/subterranean_security/crimson/viewer/ui/res/image/icons16/files/file_extension_folder.png");
 
 				} else {
+					// TODO rewrite
 					String[] ext = fl.getName().split("\\.");
 					url = getClass().getResource(
 							"/com/subterranean_security/crimson/viewer/ui/res/image/icons16/files/file_extension_"
@@ -151,9 +182,9 @@ public class FileTable extends JPanel {
 				ImageIcon ico = new ImageIcon(ImageIO.read(url));
 				ico.setDescription(fl.getName());
 				fi.setIcon(ico);
+				fi.setSize(CUtil.Misc.familiarize(fl.getSize(), CUtil.Misc.BYTES));
 				items.add(fi);
 
-				CUtil.Misc.familiarize(fl.getSize(), CUtil.Misc.BYTES);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -167,7 +198,7 @@ public class FileTable extends JPanel {
 
 class TM extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
-	private String[] headers = new String[] { "Name", "Size" };
+	public String[] headers = new String[] { "Name", "Size" };
 	public ArrayList<FileItem> files = new ArrayList<FileItem>();
 
 	public void setFiles(ArrayList<FileItem> list) {
@@ -211,11 +242,19 @@ class TR extends DefaultTableCellRenderer {
 
 	private static final long serialVersionUID = 1L;
 
+	private TM tm;
+
+	public TR(TM tm) {
+		this.tm = tm;
+	}
+
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
 		super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		setBorder(noFocusBorder);
+		setHorizontalAlignment(tm.headers[column].equals("Size") ? SwingConstants.RIGHT : SwingConstants.LEFT);
+
 		return this;
 	}
 

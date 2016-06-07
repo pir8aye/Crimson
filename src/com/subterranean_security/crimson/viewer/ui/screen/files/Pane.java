@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.viewer.ViewerStore;
@@ -60,6 +61,7 @@ public class Pane extends JPanel {
 		add(ft, BorderLayout.CENTER);
 
 		final JComboBox comboBox = new JComboBox();
+		comboBox.setBackground(UIManager.getColor("Menu.background"));
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ImageIcon selected = (ImageIcon) comboBox.getSelectedItem();
@@ -108,6 +110,7 @@ public class Pane extends JPanel {
 		JButton btnNewButton = new JButton("UP");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				up();
 			}
 		});
 		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 10));
