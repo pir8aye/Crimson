@@ -71,6 +71,16 @@ public class EPanel extends SLPanel {
 		}
 	}
 
+	public synchronized void raise(JPanel panel, float height) {
+		if (!showing) {
+			showing = true;
+			note.setPanel(panel);
+			pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0,
+					movingBar);
+			movingMain.runAction();
+		}
+	}
+
 	public synchronized void drop() {
 		if (showing) {
 			movingMain.runAction();

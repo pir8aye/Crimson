@@ -22,6 +22,7 @@ import java.awt.CardLayout;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 
 public class MainPanel extends JPanel {
 
@@ -32,6 +33,7 @@ public class MainPanel extends JPanel {
 
 	public HostList list;
 	public HostGraph graph;
+	public Console console = new Console();
 
 	public MainPanel() {
 
@@ -77,6 +79,14 @@ public class MainPanel extends JPanel {
 		graphLoaded = true;
 		graph = new HostGraph();
 		add(graph, "GRAPH");
+	}
+
+	public void openConsole() {
+		MainFrame.main.ep.raise(console, 2f);
+	}
+
+	public void closeConsole() {
+		MainFrame.main.ep.drop();
 	}
 
 }

@@ -217,7 +217,7 @@ public class MenuControls extends JPanel {
 		valUsername = new JLabel("loading...");
 		valUsername.setHorizontalAlignment(SwingConstants.TRAILING);
 		valUsername.setFont(new Font("Dialog", Font.BOLD, 10));
-		valUsername.setBounds(87, 17, 99, 17);
+		valUsername.setBounds(87, 17, 104, 17);
 		panel_2.add(valUsername);
 
 		JButton btnCloseToTray = new JButton("Run in Tray");
@@ -342,6 +342,22 @@ public class MenuControls extends JPanel {
 		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		btnNewButton.setBounds(12, 45, 88, 20);
 		panel_4.add(btnNewButton);
+
+		JButton btnConsole = new JButton("Console");
+		btnConsole.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnConsole.setSelected(!btnConsole.isSelected());
+				if (btnConsole.isSelected()) {
+					MainFrame.main.panel.openConsole();
+				} else {
+					MainFrame.main.panel.closeConsole();
+				}
+
+			}
+		});
+		btnConsole.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnConsole.setBounds(100, 45, 88, 20);
+		panel_4.add(btnConsole);
 
 		add(Box.createHorizontalStrut(width), BorderLayout.SOUTH);
 		add(Box.createVerticalStrut(length), BorderLayout.EAST);

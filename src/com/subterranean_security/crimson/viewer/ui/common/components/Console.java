@@ -28,6 +28,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
+import javax.swing.ScrollPaneConstants;
 
 public class Console extends JPanel {
 
@@ -41,9 +42,12 @@ public class Console extends JPanel {
 		setLayout(new BorderLayout(0, 0));
 
 		doc = txtpndateLoadedConsole.getStyledDocument();
+		txtpndateLoadedConsole.setEditable(false);
 		txtpndateLoadedConsole.setFont(new Font("Monospaced", Font.PLAIN, 11));
 		txtpndateLoadedConsole.setForeground(Color.WHITE);
 		txtpndateLoadedConsole.setBackground(Color.DARK_GRAY);
+		jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		add(jsp, BorderLayout.CENTER);
 	}
 
