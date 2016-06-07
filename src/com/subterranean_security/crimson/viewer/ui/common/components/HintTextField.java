@@ -1,4 +1,4 @@
-package com.subterranean_security.crimson.viewer.ui.component;
+package com.subterranean_security.crimson.viewer.ui.common.components;
 
 import java.awt.Color;
 import java.awt.FontMetrics;

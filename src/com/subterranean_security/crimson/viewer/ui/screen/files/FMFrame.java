@@ -17,17 +17,14 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.files;
 
-import java.awt.Dimension;
-
 import javax.swing.JFrame;
 
-import com.subterranean_security.crimson.viewer.ui.panel.HPanel;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UICommon;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class FMFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private HPanel contentPane;
 
 	private Type type;
 
@@ -36,15 +33,14 @@ public class FMFrame extends JFrame {
 		this.type = type;
 
 		setTitle("File Manager");
-		setIconImages(UUtil.getIconList());
+		setIconImages(UIUtil.getIconList());
 
 		FMPanel fmp = new FMPanel(Type.VV);
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		setMinimumSize(new Dimension(450, 300));
-		contentPane = new HPanel(fmp);
-		setContentPane(contentPane);
+		setLocationRelativeTo(null);
+		setMinimumSize(UICommon.min_files);
+		setContentPane(fmp);
 	}
 
 	public static enum Type {

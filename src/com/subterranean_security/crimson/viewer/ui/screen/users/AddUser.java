@@ -26,7 +26,7 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.ViewerProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class AddUser extends JDialog {
 
@@ -46,7 +46,7 @@ public class AddUser extends JDialog {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("Add User");
 		setResizable(false);
-		setIconImages(UUtil.getIconList());
+		setIconImages(UIUtil.getIconList());
 		setBounds(100, 100, 290, 409);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

@@ -35,7 +35,7 @@ import com.subterranean_security.crimson.core.util.FileLocking;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.ServerProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore.Databases;
-import com.subterranean_security.crimson.viewer.ui.panel.MovingPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.eula.EULADialog;
 import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;

@@ -15,19 +15,15 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.panel;
+package com.subterranean_security.crimson.viewer.ui.screen.files;
 
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-public class StatsPanel extends JPanel {
+public class DetailedFileInfo extends JPanel {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private int					totalMUsage			= 0;
-
-	public StatsPanel() {
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+	public DetailedFileInfo() {
 
 	}
 

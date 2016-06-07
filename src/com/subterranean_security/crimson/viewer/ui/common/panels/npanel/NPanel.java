@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.panel;
+package com.subterranean_security.crimson.viewer.ui.common.panels.npanel;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -28,7 +28,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -209,15 +210,15 @@ class Note extends JPanel {
 
 		switch (type) {
 		case ("error"): {
-			icon.setIcon(UUtil.getIcon("icons32/general/exclamation.png"));
+			icon.setIcon(UIUtil.getIcon("icons32/general/exclamation.png"));
 			break;
 		}
 		case ("disconnection"): {
-			icon.setIcon(UUtil.getIcon("icons32/general/disconnect.png"));
+			icon.setIcon(UIUtil.getIcon("icons32/general/disconnect.png"));
 			break;
 		}
 		default: {
-			icon.setIcon(UUtil.getIcon("c-32.png"));
+			icon.setIcon(UIUtil.getIcon("c-32.png"));
 			break;
 		}
 		}

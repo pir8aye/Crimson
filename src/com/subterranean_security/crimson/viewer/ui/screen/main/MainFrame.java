@@ -27,10 +27,10 @@ import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.ui.component.Tray;
-import com.subterranean_security.crimson.viewer.ui.panel.DPanel;
-import com.subterranean_security.crimson.viewer.ui.panel.NPanel;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.Tray;
+import com.subterranean_security.crimson.viewer.ui.common.panels.dpanel.DPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.npanel.NPanel;
 
 public class MainFrame extends JFrame {
 
@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
 		setSize(dim_frame_main);
 		setPreferredSize(dim_frame_main);
 		setMinimumSize(dim_frame_main);
-		setIconImages(UUtil.getIconList());
+		setIconImages(UIUtil.getIconList());
 
 		String buildNo = null;
 		try {

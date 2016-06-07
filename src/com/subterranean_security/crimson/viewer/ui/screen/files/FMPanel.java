@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 
-import com.subterranean_security.crimson.viewer.ui.panel.Console;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 
 public class FMPanel extends JPanel {
@@ -49,7 +49,8 @@ public class FMPanel extends JPanel {
 		add(console_splitpane, BorderLayout.CENTER);
 		console_splitpane.setTopComponent(splitPane);
 		console_splitpane.setBottomComponent(console);
-		console_splitpane.setDividerLocation(200);
+		console_splitpane.setDividerLocation(0.85d);
+		console_splitpane.setResizeWeight(0.85d);
 
 	}
 }

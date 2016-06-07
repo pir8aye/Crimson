@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.panel;
+package com.subterranean_security.crimson.viewer.ui.common.panels.hpanel;
 
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -25,6 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
+import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;

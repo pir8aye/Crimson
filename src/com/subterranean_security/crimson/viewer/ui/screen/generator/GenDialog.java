@@ -31,9 +31,9 @@ import javax.swing.JDialog;
 
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.ui.panel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class GenDialog extends JDialog {
 
@@ -43,7 +43,7 @@ public class GenDialog extends JDialog {
 
 	public GenDialog() {
 		setTitle("Generator");
-		setIconImages(UUtil.getIconList());
+		setIconImages(UIUtil.getIconList());
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
 		setBounds(100, 100, 455, 380);

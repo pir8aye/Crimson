@@ -233,7 +233,7 @@ public class ClientExecutor extends BasicExecutor {
 	private void rq_file_handle(Message m) {
 		log.debug("rq_file_handle");
 		ClientRouter.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid()).setRsFileHandle(
-				RS_FileHandle.newBuilder().setFmid(ClientStore.LocalFilesystems.add(new LocalFilesystem()))));
+				RS_FileHandle.newBuilder().setFmid(ClientStore.LocalFilesystems.add(new LocalFilesystem(true, true)))));
 	}
 
 	private void assign_1w(Message m) {

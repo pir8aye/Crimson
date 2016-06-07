@@ -23,15 +23,15 @@ import javax.swing.ImageIcon;
 import javax.swing.event.ListDataListener;
 
 import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class FileComboBoxModel extends AbstractListModel implements ComboBoxModel {
 
-	ImageIcon viewer = UUtil.getIcon("icons16/general/viewer.png");
+	ImageIcon viewer = UIUtil.getIcon("icons16/general/viewer.png");
 
-	ImageIcon server = UUtil.getIcon("icons16/general/server.png");
+	ImageIcon server = UIUtil.getIcon("icons16/general/server.png");
 
-	ImageIcon client = UUtil.getIcon("icons16/general/clients.png");
+	ImageIcon client = UIUtil.getIcon("icons16/general/clients.png");
 
 	private Object selected = null;
 

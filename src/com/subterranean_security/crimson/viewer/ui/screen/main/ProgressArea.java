@@ -26,8 +26,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import com.subterranean_security.crimson.viewer.ui.component.StatusLights;
-import com.subterranean_security.crimson.viewer.ui.panel.MovingPanel;
+import com.subterranean_security.crimson.viewer.ui.common.components.StatusLights;
+import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;

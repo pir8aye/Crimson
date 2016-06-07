@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.panel;
+package com.subterranean_security.crimson.viewer.ui.common.panels.dpanel;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Processor;
 

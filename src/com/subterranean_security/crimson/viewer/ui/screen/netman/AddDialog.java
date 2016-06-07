@@ -35,8 +35,8 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.PermissionTester;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIStore;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class AddDialog extends JDialog {
 
@@ -61,7 +61,7 @@ public class AddDialog extends JDialog {
 	public void init() {
 		setResizable(false);
 		setTitle("Add Listener");
-		setIconImages(UUtil.getIconList());
+		setIconImages(UIUtil.getIconList());
 		setBounds(100, 100, 250, 329);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

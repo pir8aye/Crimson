@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.component;
+package com.subterranean_security.crimson.viewer.ui.common.components;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

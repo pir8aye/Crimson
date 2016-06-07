@@ -11,9 +11,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
-import com.subterranean_security.crimson.viewer.ui.panel.HPanel;
-import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIStore;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
 
 public class NetMan extends JFrame {
 
@@ -23,7 +23,7 @@ public class NetMan extends JFrame {
 	public ListenerPanel lp;
 
 	public NetMan() {
-		setIconImages(UUtil.getIconList());
+		setIconImages(UIUtil.getIconList());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setMinimumSize(new Dimension(573, 364));
 		setTitle("Network Manager");

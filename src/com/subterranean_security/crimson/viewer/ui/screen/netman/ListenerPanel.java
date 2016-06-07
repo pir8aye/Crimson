@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.ui.utility.UIStore;
+import com.subterranean_security.crimson.viewer.ui.UIStore;
 
 public class ListenerPanel extends JPanel {
 

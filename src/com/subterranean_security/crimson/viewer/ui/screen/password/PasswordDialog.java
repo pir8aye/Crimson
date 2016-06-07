@@ -23,7 +23,7 @@ import java.awt.Component;
 import javax.swing.Box;
 import javax.swing.JDialog;
 
-import com.subterranean_security.crimson.viewer.ui.panel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
 
 public class PasswordDialog extends JDialog {
 

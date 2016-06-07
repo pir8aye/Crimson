@@ -3,7 +3,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.sv.ClientProfile;
-import com.subterranean_security.crimson.viewer.ui.panel.Console;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.CPPanel;
 import java.awt.BorderLayout;
 import javax.swing.JMenuBar;

@@ -526,9 +526,8 @@ public class ServerExecutor extends BasicExecutor {
 			log.debug("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
 			return;
 		}
-		receptor.handle.write(Message.newBuilder().setId(m.getId())
-				.setRsFileHandle(
-						RS_FileHandle.newBuilder().setFmid(ServerStore.LocalFilesystems.add(new LocalFilesystem())))
+		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsFileHandle(
+				RS_FileHandle.newBuilder().setFmid(ServerStore.LocalFilesystems.add(new LocalFilesystem(true, true))))
 				.build());
 
 	}

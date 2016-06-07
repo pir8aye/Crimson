@@ -1,4 +1,4 @@
-package com.subterranean_security.crimson.viewer.ui.utility;
+package com.subterranean_security.crimson.viewer.ui;
 
 import com.subterranean_security.crimson.viewer.ui.screen.netman.AddDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;

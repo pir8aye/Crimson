@@ -41,7 +41,7 @@ import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.ui.component.Tray;
+import com.subterranean_security.crimson.viewer.ui.common.Tray;
 
 public class MenuControls extends JPanel {
 

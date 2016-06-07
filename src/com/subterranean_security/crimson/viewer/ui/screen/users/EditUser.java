@@ -21,7 +21,7 @@ import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.sv.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class EditUser extends JDialog {
 
@@ -39,7 +39,7 @@ public class EditUser extends JDialog {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setTitle("Edit User: " + original.getUser());
 		setResizable(false);
-		setIconImages(UUtil.getIconList());
+		setIconImages(UIUtil.getIconList());
 		setBounds(100, 100, 290, 365);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

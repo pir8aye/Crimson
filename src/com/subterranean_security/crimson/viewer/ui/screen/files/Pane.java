@@ -47,7 +47,7 @@ public class Pane extends JPanel {
 	private TYPE type = TYPE.VIEWER;
 
 	// for viewers
-	private LocalFilesystem lf = new LocalFilesystem();
+	private LocalFilesystem lf = new LocalFilesystem(true, true);
 
 	private int cid;
 	private int fmid;
@@ -106,6 +106,10 @@ public class Pane extends JPanel {
 		panel.setLayout(new BorderLayout(0, 0));
 
 		JButton btnNewButton = new JButton("UP");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel.add(btnNewButton, BorderLayout.WEST);
 

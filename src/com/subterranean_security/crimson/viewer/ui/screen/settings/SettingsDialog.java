@@ -28,8 +28,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.ui.panel.HPanel;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
 
 public class SettingsDialog extends JDialog {
 
@@ -47,7 +47,7 @@ public class SettingsDialog extends JDialog {
 		setPreferredSize(size);
 		setResizable(true);
 		setLocationRelativeTo(null);
-		setIconImages(UUtil.getIconList());
+		setIconImages(UIUtil.getIconList());
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(hp);
 

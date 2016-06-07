@@ -15,42 +15,35 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.utility;
+package com.subterranean_security.crimson.viewer.ui;
 
-import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-public enum UUtil {
+public enum UIUtil {
 	;
-
-	public static int getPixelLength(String s, Font font) {
-		return (int) (font.getStringBounds(s, new FontRenderContext(new AffineTransform(), true, true)).getWidth());
-	}
 
 	public static ArrayList<Image> getIconList() {
 		ArrayList<Image> icons = new ArrayList<Image>();
+		icons.add(Toolkit.getDefaultToolkit().getImage(
+				UIUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-128.png")));
 		icons.add(Toolkit.getDefaultToolkit()
-				.getImage(UUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-128.png")));
+				.getImage(UIUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-64.png")));
 		icons.add(Toolkit.getDefaultToolkit()
-				.getImage(UUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-64.png")));
+				.getImage(UIUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-32.png")));
 		icons.add(Toolkit.getDefaultToolkit()
-				.getImage(UUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-32.png")));
-		icons.add(Toolkit.getDefaultToolkit()
-				.getImage(UUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-16.png")));
+				.getImage(UIUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-16.png")));
 		return icons;
 	}
 
 	public static ImageIcon getIcon(String rpath) {
 		try {
 			return new ImageIcon(ImageIO
-					.read(UUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/" + rpath)));
+					.read(UIUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/" + rpath)));
 		} catch (Exception e) {
 			System.out.println("Icon not found: " + rpath);
 			return null;

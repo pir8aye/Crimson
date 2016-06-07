@@ -37,9 +37,9 @@ import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.ui.panel.DPanel;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.panels.dpanel.DPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class HostList extends JPanel {
 
@@ -172,43 +172,43 @@ public class HostList extends JPanel {
 		popup = new JPopupMenu();
 		control = new JMenuItem();
 		control.setText("Control Panel");
-		control.setIcon(UUtil.getIcon("icons16/general/cog.png"));
+		control.setIcon(UIUtil.getIcon("icons16/general/cog.png"));
 
 		popup.add(control);
 
 		graph = new JMenuItem();
 		graph.setText("Find in Graph");
-		graph.setIcon(UUtil.getIcon("icons16/general/diagramm.png"));
+		graph.setIcon(UIUtil.getIcon("icons16/general/diagramm.png"));
 		popup.add(graph);
 
 		JMenu quick = new JMenu();
 		quick.setText("Quick Commands");
-		quick.setIcon(UUtil.getIcon("icons16/general/bow.png"));
+		quick.setIcon(UIUtil.getIcon("icons16/general/bow.png"));
 		popup.add(quick);
 
 		JMenu state = new JMenu();
 		state.setText("Change State");
-		state.setIcon(UUtil.getIcon("icons16/general/power_surge.png"));
+		state.setIcon(UIUtil.getIcon("icons16/general/power_surge.png"));
 		quick.add(state);
 
 		poweroff = new JMenuItem();
 		poweroff.setText("Shutdown");
-		poweroff.setIcon(UUtil.getIcon("icons16/general/lcd_tv_off.png"));
+		poweroff.setIcon(UIUtil.getIcon("icons16/general/lcd_tv_off.png"));
 		state.add(poweroff);
 
 		restart = new JMenuItem();
 		restart.setText("Restart");
-		restart.setIcon(UUtil.getIcon("icons16/general/arrow_redo.png"));
+		restart.setIcon(UIUtil.getIcon("icons16/general/arrow_redo.png"));
 		state.add(restart);
 
 		uninstall = new JMenuItem();
 		uninstall.setText("Uninstall Crimson");
-		uninstall.setIcon(UUtil.getIcon("icons16/general/radioactivity.png"));
+		uninstall.setIcon(UIUtil.getIcon("icons16/general/radioactivity.png"));
 		state.add(uninstall);
 
 		refresh = new JMenuItem();
 		refresh.setText("Refresh");
-		refresh.setIcon(UUtil.getIcon("icons16/general/inbox_download.png"));
+		refresh.setIcon(UIUtil.getIcon("icons16/general/inbox_download.png"));
 
 		quick.add(refresh);
 	}

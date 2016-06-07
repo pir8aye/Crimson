@@ -15,45 +15,35 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.login;
+package com.subterranean_security.crimson.viewer.ui.common.panels.hpanel;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 
 import javax.swing.Box;
-import javax.swing.JDialog;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
-
-public class LoginDialog extends JDialog {
+public class NormalMenu extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	public final LoginPanel loginPanel = new LoginPanel(this);
-	public final HPanel hp = new HPanel(loginPanel);
 
-	private Dimension size = new Dimension(405, 320);
+	public NormalMenu() {
+		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		setLayout(new BorderLayout(0, 0));
 
-	public LoginDialog(boolean localServer) {
+	}
 
-		loginPanel.addRecents(localServer);
+	public void setButtons(Component[] buttons) {
+		Box bar = new Box(BoxLayout.X_AXIS);
 
-		setTitle("Crimson - Login");
-		setSize(size);
-		setPreferredSize(size);
-		setResizable(false);
-		setLocationRelativeTo(null);
-		getContentPane().setLayout(new BorderLayout());
-		getContentPane().add(hp);
-
-		Component[] buttons = { loginPanel.btn_cancel, Box.createHorizontalGlue(), hp.initBtnUP(),
-				Box.createHorizontalGlue(), loginPanel.btn_login };
-		hp.nmenu.setButtons(buttons);
-
-		hp.hmenu.setDesc(
-				"Server addresses can be either DNS names or IP addresses.  Valid port numbers are between 1-25565. If the server is installed locally, select \"Local Server\" from the server selection dropdown.  For Crimson Cloud servers, use the information provided by Subterranean Security.");
-
-		hp.refreshHeight();
+		bar.add(Box.createHorizontalStrut(5));
+		for (Component c : buttons) {
+			bar.add(c);
+		}
+		bar.add(Box.createHorizontalStrut(5));
+		add(bar, BorderLayout.CENTER);
 	}
 
 }

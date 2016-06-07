@@ -32,8 +32,8 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.ui.panel.Console;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 
 public class ControlsTab extends JPanel implements CPPanel {
 
@@ -74,7 +74,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 			}
 		});
-		btnShutdown.setIcon(UUtil.getIcon("icons16/general/lcd_tv_off.png"));
+		btnShutdown.setIcon(UIUtil.getIcon("icons16/general/lcd_tv_off.png"));
 		btnShutdown.setMargin(new Insets(2, 4, 2, 4));
 		btnShutdown.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel.add(btnShutdown);
@@ -96,7 +96,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 			}
 		});
-		btnRestart.setIcon(UUtil.getIcon("icons16/general/arrow_redo.png"));
+		btnRestart.setIcon(UIUtil.getIcon("icons16/general/arrow_redo.png"));
 		btnRestart.setMargin(new Insets(2, 4, 2, 4));
 		btnRestart.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel.add(btnRestart);
@@ -117,7 +117,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 				}).start();
 			}
 		});
-		btnStandby.setIcon(UUtil.getIcon("icons16/general/lcd_tv_test.png"));
+		btnStandby.setIcon(UIUtil.getIcon("icons16/general/lcd_tv_test.png"));
 		btnStandby.setMargin(new Insets(2, 4, 2, 4));
 		btnStandby.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel.add(btnStandby);
@@ -138,7 +138,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 				}).start();
 			}
 		});
-		btnHibernate.setIcon(UUtil.getIcon("icons16/general/wizard.png"));
+		btnHibernate.setIcon(UIUtil.getIcon("icons16/general/wizard.png"));
 		btnHibernate.setMargin(new Insets(2, 4, 2, 4));
 		btnHibernate.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel.add(btnHibernate);
@@ -165,7 +165,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 				}).start();
 			}
 		});
-		btnUninstall.setIcon(UUtil.getIcon("icons16/general/radioactivity.png"));
+		btnUninstall.setIcon(UIUtil.getIcon("icons16/general/radioactivity.png"));
 		btnUninstall.setMargin(new Insets(2, 4, 2, 4));
 		btnUninstall.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_4.add(btnUninstall);
@@ -177,7 +177,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 		
 		JButton btnUpdate = new JButton("Update");
 		btnUpdate.setEnabled(false);
-		btnUpdate.setIcon(UUtil.getIcon("icons16/general/upload_for_cloud.png"));
+		btnUpdate.setIcon(UIUtil.getIcon("icons16/general/upload_for_cloud.png"));
 		btnUpdate.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_4.add(btnUpdate);
 

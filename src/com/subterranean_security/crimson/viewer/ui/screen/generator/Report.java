@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
-import com.subterranean_security.crimson.viewer.ui.panel.DataViewer;
+import com.subterranean_security.crimson.viewer.ui.common.components.DataViewer;
 
 public class Report extends JDialog {
 

@@ -15,35 +15,20 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.panel;
+package com.subterranean_security.crimson.viewer.ui.common.panels.hpanel;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
 
-public class NormalMenu extends JPanel {
+public class StatsPanel extends JPanel {
 
-	private static final long serialVersionUID = 1L;
+	private static final long	serialVersionUID	= 1L;
 
-	public NormalMenu() {
-		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
-		setLayout(new BorderLayout(0, 0));
+	private int					totalMUsage			= 0;
 
-	}
+	public StatsPanel() {
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-	public void setButtons(Component[] buttons) {
-		Box bar = new Box(BoxLayout.X_AXIS);
-
-		bar.add(Box.createHorizontalStrut(5));
-		for (Component c : buttons) {
-			bar.add(c);
-		}
-		bar.add(Box.createHorizontalStrut(5));
-		add(bar, BorderLayout.CENTER);
 	}
 
 }

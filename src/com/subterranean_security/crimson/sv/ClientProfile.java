@@ -29,7 +29,7 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.NetworkInterface;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.keylogger.Log;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class ClientProfile implements Serializable {
 
@@ -135,11 +135,11 @@ public class ClientProfile implements Serializable {
 
 	public void loadTransientAttributes() {
 		if (countryCode.get() != null && country.get() != null) {
-			locationIcon = UUtil.getIcon("flags/" + countryCode.get() + ".png");
+			locationIcon = UIUtil.getIcon("flags/" + countryCode.get() + ".png");
 			locationIcon.setDescription(country.get());
 		}
 		if (osName.get() != null) {
-			osIcon = UUtil.getIcon("platform/" + osName.get().replaceAll(" ", "_").toLowerCase() + ".png");
+			osIcon = UIUtil.getIcon("platform/" + osName.get().replaceAll(" ", "_").toLowerCase() + ".png");
 			osIcon.setDescription(osName.get());
 		}
 

@@ -42,7 +42,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-import com.subterranean_security.crimson.viewer.ui.component.StatusLights;
+import com.subterranean_security.crimson.viewer.ui.common.components.StatusLights;
 
 public class EULADialog extends JDialog {
 

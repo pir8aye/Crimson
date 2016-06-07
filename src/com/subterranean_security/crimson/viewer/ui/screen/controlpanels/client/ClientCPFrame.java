@@ -42,10 +42,10 @@ import com.subterranean_security.crimson.core.stream.subscriber.SubscriberMaster
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-import com.subterranean_security.crimson.viewer.ui.panel.Console;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.Keylogger;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.logs.Logs;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
 
 public class ClientCPFrame extends JFrame {
 
@@ -83,7 +83,7 @@ public class ClientCPFrame extends JFrame {
 	public void init() {
 
 		setTitle("Control Panel: " + profile.getHostname());
-		setIconImages(UUtil.getIconList());
+		setIconImages(UIUtil.getIconList());
 		setResizable(true);
 		setMinimumSize(UICommon.min_ccp);
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -120,13 +120,13 @@ public class ClientCPFrame extends JFrame {
 			private static final long serialVersionUID = 1L;
 
 			// TODO platform specific
-			private ImageIcon host = UUtil.getIcon("icons16/general/viewer.png");
+			private ImageIcon host = UIUtil.getIcon("icons16/general/viewer.png");
 
-			private ImageIcon controls = UUtil.getIcon("icons16/general/cog.png");
-			private ImageIcon keylogger = UUtil.getIcon("icons16/general/keyboard.png");
-			private ImageIcon logs = UUtil.getIcon("icons16/general/error_log.png");
-			private ImageIcon clipboard = UUtil.getIcon("icons16/general/paste_plain.png");
-			private ImageIcon webfilter = UUtil.getIcon("icons16/general/www_page.png");
+			private ImageIcon controls = UIUtil.getIcon("icons16/general/cog.png");
+			private ImageIcon keylogger = UIUtil.getIcon("icons16/general/keyboard.png");
+			private ImageIcon logs = UIUtil.getIcon("icons16/general/error_log.png");
+			private ImageIcon clipboard = UIUtil.getIcon("icons16/general/paste_plain.png");
+			private ImageIcon webfilter = UIUtil.getIcon("icons16/general/www_page.png");
 
 			@Override
 			public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,

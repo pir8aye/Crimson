@@ -36,7 +36,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
-import com.subterranean_security.crimson.viewer.ui.component.StatusLights;
+import com.subterranean_security.crimson.viewer.ui.common.components.StatusLights;
 
 public class PasswordPanel extends JPanel {
 

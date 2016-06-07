@@ -46,8 +46,10 @@ public class LocalFilesystem {
 	private boolean mtime;
 	private boolean size;
 
-	public LocalFilesystem() {
+	public LocalFilesystem(boolean size, boolean mtime) {
 		this("..");
+		this.size = size;
+		this.mtime = mtime;
 	}
 
 	public LocalFilesystem(String start) {

@@ -47,7 +47,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-import com.subterranean_security.crimson.viewer.ui.utility.UUtil;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class AboutDialog extends JDialog {
 
@@ -75,7 +75,7 @@ public class AboutDialog extends JDialog {
 		setBackground(UICommon.bg);
 		getContentPane().setBackground(new Color(60, 59, 57));
 
-		setIconImages(UUtil.getIconList());
+		setIconImages(UIUtil.getIconList());
 		setResizable(false);
 		setTitle("About Crimson");
 		setBounds(100, 100, 630, 400);
