@@ -44,7 +44,7 @@ public class Pane extends JPanel {
 
 	public FileTable ft = new FileTable(this);
 
-	private TYPE type = TYPE.VIEWER;
+	protected TYPE type = TYPE.VIEWER;
 
 	// for viewers
 	private LocalFilesystem lf = new LocalFilesystem(true, true);
@@ -117,6 +117,10 @@ public class Pane extends JPanel {
 		panel.add(path, BorderLayout.CENTER);
 
 		refresh();
+	}
+
+	public void properties() {
+
 	}
 
 	public void up() {

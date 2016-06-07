@@ -27,7 +27,9 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -35,6 +37,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 
 public class FileTable extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -46,6 +51,13 @@ public class FileTable extends JPanel {
 
 	public FileTable(Pane parent) {
 		pane = parent;
+		initContextMenu();
+		init();
+
+	}
+
+	public void init() {
+
 		setLayout(new BorderLayout());
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -64,8 +76,12 @@ public class FileTable extends JPanel {
 				if (!source.isRowSelected(sourceRow)) {
 					source.changeSelection(sourceRow, 0, false, false);
 				}
-				if (e.getClickCount() == 2) {
+
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					initContextActions();
+				} else if (e.getClickCount() == 2) {
 					pane.down(tm.files.get(sourceRow).getIcon().getDescription());
+					return;
 				}
 			}
 		});
@@ -78,6 +94,36 @@ public class FileTable extends JPanel {
 		JScrollPane jsp = new JScrollPane(table);
 		add(jsp, BorderLayout.CENTER);
 
+	}
+
+	JPopupMenu popup;
+	JMenuItem properties;
+
+	private void initContextMenu() {
+		popup = new JPopupMenu();
+		properties = new JMenuItem();
+		properties.setText("Properties");
+		properties.setIcon(UIUtil.getIcon("icons16/general/attributes_display.png"));
+
+		popup.add(properties);
+
+	}
+
+	private void initContextActions() {
+		properties.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				new Thread() {
+					public void run() {
+						pane.properties();
+
+					}
+				}.start();
+
+			}
+
+		});
 	}
 
 	public void setFiles(ArrayList<FileListlet> list) {

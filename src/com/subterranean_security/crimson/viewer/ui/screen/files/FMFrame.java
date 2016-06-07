@@ -21,12 +21,15 @@ import javax.swing.JFrame;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 
 public class FMFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
 	private Type type;
+
+	private EPanel epanel;
 
 	public FMFrame(Type type) {
 
@@ -36,11 +39,12 @@ public class FMFrame extends JFrame {
 		setIconImages(UIUtil.getIconList());
 
 		FMPanel fmp = new FMPanel(Type.VV);
+		epanel = new EPanel(fmp);
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setMinimumSize(UICommon.min_files);
-		setContentPane(fmp);
+		setContentPane(epanel);
 	}
 
 	public static enum Type {

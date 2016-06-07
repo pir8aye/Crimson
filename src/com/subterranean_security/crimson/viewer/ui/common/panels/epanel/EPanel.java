@@ -45,7 +45,9 @@ public class EPanel extends SLPanel {
 	private MovingPanel movingBar;
 	private MovingPanel movingMain;
 
-	private Note2 note = new Note2(null);
+	private ENote note = new ENote();
+
+	private boolean showing = false;
 
 	public EPanel(JPanel main) {
 		thisNP = this;
@@ -62,12 +64,12 @@ public class EPanel extends SLPanel {
 
 	}
 
-	public void rise(JPanel panel) {
-
-	}
-
-	public void fall() {
-
+	public synchronized void raise(JPanel panel) {
+		if (!showing) {
+			showing = true;
+			note.setPanel(panel);
+			movingMain.runAction();
+		}
 	}
 
 	private final Runnable actionUP = new Runnable() {
@@ -98,24 +100,34 @@ public class EPanel extends SLPanel {
 		}
 	};
 
-	class Note2 extends JPanel {
+	class ENote extends JPanel {
 
 		private static final long serialVersionUID = 1L;
 
-		public Note2(JPanel panel) {
+		private JPanel panel = new JPanel();
+
+		public ENote() {
 
 			setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 			setLayout(new BorderLayout(0, 0));
+
+			panel.setLayout(new BorderLayout());
 			add(panel, BorderLayout.CENTER);
 
 			JButton close = new JButton("Close");
 			close.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					fall();
+					movingMain.runAction();
+					showing = false;
 				}
 			});
 			add(close, BorderLayout.EAST);
 
+		}
+
+		public void setPanel(JPanel j) {
+			panel.removeAll();
+			panel.add(j, BorderLayout.CENTER);
 		}
 
 	}

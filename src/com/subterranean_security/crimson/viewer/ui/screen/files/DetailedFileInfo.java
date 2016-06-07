@@ -18,12 +18,22 @@
 package com.subterranean_security.crimson.viewer.ui.screen.files;
 
 import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import javax.swing.JLabel;
 
 public class DetailedFileInfo extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public DetailedFileInfo() {
+	public DetailedFileInfo(String path, long size) {
+		setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblIcon = new JLabel("icon");
+		add(lblIcon, BorderLayout.WEST);
+		
+		JPanel panel = new JPanel();
+		add(panel, BorderLayout.CENTER);
+		
 
 	}
 
