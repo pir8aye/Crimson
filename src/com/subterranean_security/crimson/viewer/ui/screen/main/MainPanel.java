@@ -21,6 +21,7 @@ import java.awt.CardLayout;
 
 import javax.swing.JPanel;
 
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 
@@ -50,6 +51,8 @@ public class MainPanel extends JPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		console.addLine("Welcome to Crimson build: " + Common.build);
 
 	}
 
