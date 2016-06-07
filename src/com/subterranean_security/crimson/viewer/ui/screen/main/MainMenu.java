@@ -105,7 +105,7 @@ public class MainMenu extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if (!ViewerState.isOnline()) {
-					MainFrame.main.np.addNote("error:Offline mode is enabled!");
+					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
 				} else {
 					FMFrame fmf = new FMFrame(Type.SV);
 					fmf.setVisible(true);
@@ -125,7 +125,7 @@ public class MainMenu extends JPanel {
 			public void mousePressed(MouseEvent e) {
 
 				if (!ViewerState.isOnline()) {
-					MainFrame.main.np.addNote("error:Offline mode is enabled!");
+					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
 				} else if (UIStore.netMan == null) {
 					UIStore.netMan = new NetMan();
 					UIStore.netMan.setLocationRelativeTo(null);
@@ -147,13 +147,13 @@ public class MainMenu extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if (!ViewerState.isOnline()) {
-					MainFrame.main.np.addNote("error:Offline mode is enabled!");
+					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
 				} else if (PermissionTester.verifyServerPermission(ViewerStore.Profiles.vp.getPermissions(),
 						"generate")) {
 					GenDialog gd = new GenDialog();
 					gd.setVisible(true);
 				} else {
-					MainFrame.main.np.addNote("error:Permission denied");
+					MainFrame.main.np.addNote("error", "Permission denied");
 				}
 
 				wmGen.resetBG();
@@ -189,7 +189,7 @@ public class MainMenu extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if (!ViewerState.isOnline()) {
-					MainFrame.main.np.addNote("error:Offline mode is enabled!");
+					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
 				} else if (UIStore.userMan == null) {
 					UIStore.userMan = new UserMan();
 					UIStore.userMan.setLocationRelativeTo(null);
@@ -205,8 +205,8 @@ public class MainMenu extends JPanel {
 
 		mnManagement.add(wmUsers);
 
-		final WideMenuItem wmSettings = new WideMenuItem(UIUtil.getIcon("icons16/general/setting_tools.png"), "Settings",
-				"Edit Preferences/Settings");
+		final WideMenuItem wmSettings = new WideMenuItem(UIUtil.getIcon("icons16/general/setting_tools.png"),
+				"Settings", "Edit Preferences/Settings");
 		wmSettings.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -239,8 +239,8 @@ public class MainMenu extends JPanel {
 
 		mnAbout.add(wmAbout);
 
-		final WideMenuItem wmUpgrade = new WideMenuItem(UIUtil.getIcon("icons16/general/barcode_2d.png"), "Serial Codes",
-				"Add/Remove Keys");
+		final WideMenuItem wmUpgrade = new WideMenuItem(UIUtil.getIcon("icons16/general/barcode_2d.png"),
+				"Serial Codes", "Add/Remove Keys");
 		wmUpgrade.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -257,7 +257,7 @@ public class MainMenu extends JPanel {
 		wmHelp.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				MainFrame.main.np.addNote("info:Testing the notification area");
+				MainFrame.main.np.addNote("info", "Testing the notification area");
 				wmHelp.resetBG();
 				MenuSelectionManager.defaultManager().clearSelectedPath();
 			}
@@ -270,7 +270,7 @@ public class MainMenu extends JPanel {
 		wmTour.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				MainFrame.main.np.addNote("info:Testing the notification area");
+				MainFrame.main.np.addNote("info", "Testing the notification area");
 				wmTour.resetBG();
 				MenuSelectionManager.defaultManager().clearSelectedPath();
 			}

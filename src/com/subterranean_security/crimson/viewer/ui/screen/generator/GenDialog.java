@@ -69,7 +69,7 @@ public class GenDialog extends JDialog {
 							return;
 						}
 						if (gp.testValues(config)) {
-							MainFrame.main.np.addNote("Info: Please wait while the server generates your installer");
+							MainFrame.main.np.addNote("info", "Please wait while the server generates your installer");
 							dispose();
 							ViewerCommands.generate(config, out, creation);
 

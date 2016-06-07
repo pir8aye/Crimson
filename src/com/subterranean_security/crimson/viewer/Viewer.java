@@ -153,9 +153,9 @@ public class Viewer {
 				}
 
 				if (ViewerStore.Profiles.vp.getLastLoginIp() != null) {
-					MainFrame.main.np
-							.addNote("info:Last Login at " + ViewerStore.Profiles.vp.getLastLoginTime().toString()
-									+ " from " + ViewerStore.Profiles.vp.getLastLoginIp());
+					MainFrame.main.np.addNote("info",
+							"Last Login at " + ViewerStore.Profiles.vp.getLastLoginTime().toString() + " from "
+									+ ViewerStore.Profiles.vp.getLastLoginIp());
 				}
 
 			}

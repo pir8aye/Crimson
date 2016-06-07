@@ -251,15 +251,15 @@ public enum ViewerCommands {
 				};
 
 				if (gr.getResult()) {
-					MainFrame.main.np.addNote("Info: Generation complete! Click for report.", r);
+					MainFrame.main.np.addNote("info", "Generation complete!", "Click for report", r);
 					CUtil.Files.writeFile(rs.getRsGenerate().getInstaller().toByteArray(), new File(output));
 				} else {
-					MainFrame.main.np.addNote("Error: Generation failed! Click for report.", r);
+					MainFrame.main.np.addNote("error", "Generation failed!", "Click for report", r);
 					log.error("Could not generate an installer");
 				}
 
 			} else {
-				MainFrame.main.np.addNote("Error: Generation Timed Out!");
+				MainFrame.main.np.addNote("error", "Generation Timed Out!");
 				log.error("Could not generate an installer. Check the network.");
 			}
 		} catch (InterruptedException e) {

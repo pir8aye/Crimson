@@ -33,7 +33,6 @@ public class ViewerHandler extends BasicHandler {
 
 	@Override
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-		ViewerState.goOnline();
 		this.channel = ctx.channel();
 	};
 

@@ -56,6 +56,7 @@ public class StatusLabel extends JLabel {
 
 	public void setDefault(String s) {
 		def = s;
+		setDefault();
 	}
 
 	public void setGood(final String s) {

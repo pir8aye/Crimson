@@ -50,6 +50,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
@@ -85,6 +86,28 @@ public class LoginPanel extends JPanel {
 		if (Common.isDebugMode()) {
 			fld_user.setText("admin");
 			fld_pass.setText("casio");
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					for (char c : "10101".toCharArray()) {
+						fld_port.dispatchEvent(new KeyEvent(fld_port, KeyEvent.KEY_TYPED, System.currentTimeMillis(),
+								KeyEvent.KEY_FIRST, KeyEvent.VK_UNDEFINED, c));
+
+					}
+
+					for (char c : "127.0.0.1".toCharArray()) {
+						fld_address.dispatchEvent(new KeyEvent(fld_address, KeyEvent.KEY_TYPED,
+								System.currentTimeMillis(), KeyEvent.KEY_FIRST, KeyEvent.VK_UNDEFINED, c));
+
+					}
+				}
+			}).start();
+
 		}
 
 	}
@@ -307,7 +330,7 @@ public class LoginPanel extends JPanel {
 
 				new Thread(new Runnable() {
 					public void run() {
-						login(parent, (String) fld_address.getSelectedItem(), fld_port.getText(), fld_user.getText(),
+						login((String) fld_address.getSelectedItem(), fld_port.getText(), fld_user.getText(),
 								fld_pass.getPassword());
 					}
 				}).start();
@@ -318,7 +341,7 @@ public class LoginPanel extends JPanel {
 		btn_login.setMaximumSize(new Dimension(60, 25));
 	}
 
-	private void login(LoginDialog dialog, String server, String port, String user, char[] password) {
+	private void login(String server, String port, String user, char[] password) {
 
 		if (!testValues(server, port, user, password)) {
 			return;
@@ -341,6 +364,7 @@ public class LoginPanel extends JPanel {
 			if (ViewerCommands.login(user, password)) {
 				lbl_status.unfreeze();
 				lbl_status.setGood("Login Successful");
+				ViewerState.goOnline();
 				try {
 					Thread.sleep(400);
 				} catch (InterruptedException e) {

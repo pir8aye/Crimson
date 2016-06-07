@@ -30,6 +30,7 @@ import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.Tray;
 import com.subterranean_security.crimson.viewer.ui.common.panels.dpanel.DPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.npanel.NPanel;
 
 public class MainFrame extends JFrame {
@@ -41,6 +42,7 @@ public class MainFrame extends JFrame {
 	 */
 	public static MainFrame main;
 
+	public EPanel ep;
 	public NPanel np;
 	public DPanel dp;
 	public MainMenu mm;
@@ -88,11 +90,16 @@ public class MainFrame extends JFrame {
 		panel = new MainPanel();
 		panel.setVisible(true);
 		dp = new DPanel(panel);
-		JPanel temp = new JPanel(new BorderLayout(0, 0));
-		temp.setVisible(true);
-		temp.add(dp, BorderLayout.CENTER);
-		np = new NPanel(temp);
-		getContentPane().add(np, BorderLayout.CENTER);
+		JPanel connector1 = new JPanel(new BorderLayout(0, 0));
+		connector1.setVisible(true);
+		connector1.add(dp, BorderLayout.CENTER);
+		np = new NPanel(connector1);
+
+		JPanel connector2 = new JPanel(new BorderLayout(0, 0));
+		connector2.setVisible(true);
+		connector2.add(np, BorderLayout.CENTER);
+		ep = new EPanel(connector2);
+		getContentPane().add(ep, BorderLayout.CENTER);
 	}
 
 	@Override

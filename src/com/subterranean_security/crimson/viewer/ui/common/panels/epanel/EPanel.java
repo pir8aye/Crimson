@@ -18,10 +18,7 @@
 package com.subterranean_security.crimson.viewer.ui.common.panels.epanel;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
@@ -64,11 +61,20 @@ public class EPanel extends SLPanel {
 
 	}
 
-	public synchronized void raise(JPanel panel) {
+	public synchronized void raise(JPanel panel, int height) {
 		if (!showing) {
 			showing = true;
 			note.setPanel(panel);
+			pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0,
+					movingBar);
 			movingMain.runAction();
+		}
+	}
+
+	public synchronized void drop() {
+		if (showing) {
+			movingMain.runAction();
+			showing = false;
 		}
 	}
 
@@ -104,7 +110,9 @@ public class EPanel extends SLPanel {
 
 		private static final long serialVersionUID = 1L;
 
-		private JPanel panel = new JPanel();
+		public int maxHeight = 150;
+
+		public JPanel panel = new JPanel();
 
 		public ENote() {
 
@@ -113,15 +121,6 @@ public class EPanel extends SLPanel {
 
 			panel.setLayout(new BorderLayout());
 			add(panel, BorderLayout.CENTER);
-
-			JButton close = new JButton("Close");
-			close.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					movingMain.runAction();
-					showing = false;
-				}
-			});
-			add(close, BorderLayout.EAST);
 
 		}
 

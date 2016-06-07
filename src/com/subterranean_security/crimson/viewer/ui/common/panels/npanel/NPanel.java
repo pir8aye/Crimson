@@ -17,18 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.common.panels.npanel;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
@@ -49,7 +42,7 @@ public class NPanel extends SLPanel {
 	private MovingPanel movingBar;
 	private MovingPanel movingMain;
 
-	private Note note = new Note();
+	private Notification note = new Notification();
 
 	public NPanel(JPanel main) {
 		thisNP = this;
@@ -69,9 +62,9 @@ public class NPanel extends SLPanel {
 
 	private Queue<Object[]> noteQ = new ConcurrentLinkedQueue<Object[]>();
 
-	public void addNote(String s) {
+	public void addNote(String type, String s) {
 
-		addNote(s, new Runnable() {
+		addNote(type, s, " ", new Runnable() {
 			public void run() {
 				// default action
 			}
@@ -80,9 +73,9 @@ public class NPanel extends SLPanel {
 
 	}
 
-	public void addNote(String string, Runnable r) {
+	public void addNote(String type, String text, String subtext, Runnable r) {
 
-		noteQ.offer(new Object[] { string, r });
+		noteQ.offer(new Object[] { type, text, subtext, r });
 		synchronized (noteQ) {
 			noteQ.notifyAll();
 		}
@@ -98,7 +91,7 @@ public class NPanel extends SLPanel {
 				if (o == null) {
 					return;
 				}
-				note.set((String) o[0], (Runnable) o[1]);
+				note.set((String) o[0], (String) o[1], (String) o[2], (Runnable) o[3]);
 				// move the note panel up
 				movingMain.runAction();
 
@@ -165,64 +158,5 @@ public class NPanel extends SLPanel {
 					})).play();
 		}
 	};
-
-}
-
-class Note extends JPanel {
-
-	private static final long serialVersionUID = 1L;
-	private JLabel text = new JLabel();
-	private JLabel icon = new JLabel();
-	private Runnable r;
-
-	public Note() {
-		this.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				new Thread(r).start();
-
-			}
-		});
-
-		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		setLayout(new BorderLayout(0, 0));
-
-		text.setFont(new Font("Dialog", Font.BOLD, 13));
-		add(text, BorderLayout.CENTER);
-		add(icon, BorderLayout.WEST);
-	}
-
-	public void set(String string) {
-		set(string, null);
-	}
-
-	public void set(String string, Runnable r) {
-		String type = null;
-		if (string.contains(":")) {
-			type = string.substring(0, string.indexOf(':'));
-		} else {
-			type = "default";
-		}
-
-		text.setText(string.substring(string.indexOf(':') + 1));
-		this.r = r;
-
-		switch (type) {
-		case ("error"): {
-			icon.setIcon(UIUtil.getIcon("icons32/general/exclamation.png"));
-			break;
-		}
-		case ("disconnection"): {
-			icon.setIcon(UIUtil.getIcon("icons32/general/disconnect.png"));
-			break;
-		}
-		default: {
-			icon.setIcon(UIUtil.getIcon("c-32.png"));
-			break;
-		}
-		}
-
-	}
 
 }

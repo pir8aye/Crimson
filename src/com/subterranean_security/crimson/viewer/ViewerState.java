@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.util.FileLocking;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
+import com.subterranean_security.crimson.viewer.ui.screen.relogin.Relogin;
 
 public enum ViewerState {
 	;
@@ -35,7 +36,11 @@ public enum ViewerState {
 	public static void goOffline() {
 		if (online && !ShutdownHook.shuttingdown) {
 			online = false;
-			MainFrame.main.np.addNote("disconnection: Connection to server terminated. Offline mode enabled.");
+			MainFrame.main.np.addNote("disconnection", "Connection to server lost", "Click to retry", new Runnable() {
+				public void run() {
+					MainFrame.main.ep.raise(new Relogin(MainFrame.main.ep), 120);
+				}
+			});
 		}
 	}
 

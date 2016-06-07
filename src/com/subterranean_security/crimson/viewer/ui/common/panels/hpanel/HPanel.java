@@ -107,12 +107,12 @@ public class HPanel extends SLPanel {
 		public void run() {
 			thisHP.createTransition().push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.BOTTOM, movingHMenu)
 					.setCallback(new SLKeyframe.Callback() {
-				@Override
-				public void done() {
-					movingMain.setAction(actionUP);
+						@Override
+						public void done() {
+							movingMain.setAction(actionUP);
 
-				}
-			})).play();
+						}
+					})).play();
 		}
 	};
 
