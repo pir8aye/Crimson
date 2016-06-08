@@ -1,11 +1,13 @@
 package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -13,17 +15,31 @@ import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class LogTree extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+	private TreeOrganization organization = TreeOrganization.HIERARCHY;
+
+	private SimpleDateFormat formatLeaf = null;
+	private SimpleDateFormat formatParents = null;
+
+	private void setFormatters() {
+		if (organization == TreeOrganization.HIERARCHY) {
+			formatLeaf = new SimpleDateFormat("EE dd");
+			formatParents = new SimpleDateFormat("MMM yyyy");
+		} else {
+			formatLeaf = new SimpleDateFormat("MM/dd/yyyy");
+		}
+	}
 
 	private JTree keylog_tree;
 	private DefaultMutableTreeNode root = new DefaultMutableTreeNode("Logs");
@@ -36,42 +52,9 @@ public class LogTree extends JPanel {
 	public LogTree(Keylogger p, ClientProfile cp) {
 		parent = p;
 		profile = cp;
+		setFormatters();
 		init();
 		refreshTree();
-	}
-
-	private boolean refreshing = false;
-
-	public void refreshTree() {
-		refreshing = true;
-		for (Date d : profile.getKeylog().pages.keyset()) {
-
-			String name = df.format(d);
-
-			// check if its already in the tree
-			DefaultMutableTreeNode node = null;
-			Enumeration e = root.breadthFirstEnumeration();
-			boolean add = true;
-			while (e.hasMoreElements()) {
-				node = (DefaultMutableTreeNode) e.nextElement();
-				if (name.equals((String) node.getUserObject())) {
-					// node is already in the tree
-					add = false;
-					break;
-				}
-			}
-
-			if (add) {
-				// add node to the tree
-				DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(name);
-				model.insertNodeInto(childNode, root, root.getChildCount());
-			}
-
-		}
-		TreePath old = keylog_tree.getSelectionPath();
-		model.reload();
-		keylog_tree.setSelectionPath(old);
-		refreshing = false;
 	}
 
 	public void init() {
@@ -92,23 +75,13 @@ public class LogTree extends JPanel {
 
 						DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) keylog_tree
 								.getLastSelectedPathComponent();
-						// open the date in the content pane
-						String s = null;
-						try {
-							s = selectedNode.toString();
-						} catch (NullPointerException e1) {
-							parent.hideKeylog();
-							return;
-						}
 
-						if (s.equals("Logs")) {
-							// this is the root
-							parent.hideKeylog();
-							return;
-						} else {
+						if (selectedNode.isLeaf() && selectedNode.toString() != null) {
+							// open the date in the content pane
+
 							parent.loadKeylog();
 							for (Date d : profile.getKeylog().pages.keyset()) {
-								if (s.equals(df.format(d))) {
+								if (selectedNode.toString().equals(formatLeaf.format(d))) {
 									try {
 										parent.content.loadData(profile.getKeylog().pages.get(d));
 									} catch (Exception e1) {
@@ -120,9 +93,39 @@ public class LogTree extends JPanel {
 							}
 							parent.showKeylog();
 
+						} else {
+							parent.hideKeylog();
+							return;
 						}
+
 					}
 				}).start();
+
+			}
+		});
+		keylog_tree.setCellRenderer(new DefaultTreeCellRenderer() {
+
+			private static final long serialVersionUID = 1L;
+
+			private ImageIcon root = UIUtil.getIcon("icons16/general/server.png");
+			private ImageIcon folder = UIUtil.getIcon("icons16/general/folder.png");
+			private ImageIcon entry = UIUtil.getIcon("icons16/general/newspaper.png");
+
+			@Override
+			public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
+					boolean isLeaf, int row, boolean focused) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+				super.getTreeCellRendererComponent(tree, node.getUserObject(), selected, expanded, isLeaf, row,
+						focused);
+
+				if (node.isRoot()) {
+					setIcon(root);
+				} else if (node.isLeaf()) {
+					setIcon(entry);
+				} else {
+					setIcon(folder);
+				}
+				return this;
 
 			}
 		});
@@ -136,6 +139,52 @@ public class LogTree extends JPanel {
 		add(textField, BorderLayout.SOUTH);
 		textField.setColumns(10);
 
+	}
+
+	private boolean refreshing = false;
+
+	public void refreshTree() {
+		refreshing = true;
+		for (Date d : profile.getKeylog().pages.keyset()) {
+
+			String name = formatLeaf.format(d);
+
+			// check if its already in the tree
+			DefaultMutableTreeNode node = null;
+			Enumeration e = root.breadthFirstEnumeration();
+			boolean add = true;
+			while (e.hasMoreElements()) {
+				node = (DefaultMutableTreeNode) e.nextElement();
+				if (name.equals((String) node.getUserObject())) {
+					// node is already in the tree
+					add = false;
+					break;
+				}
+			}
+
+			if (add) {
+				// add node to the tree
+				if (organization == TreeOrganization.FLAT) {
+					DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(name);
+					model.insertNodeInto(childNode, root, root.getChildCount());
+				} else {
+					DefaultMutableTreeNode parentNode = new DefaultMutableTreeNode(formatParents.format(d));
+					model.insertNodeInto(parentNode, root, root.getChildCount());
+					DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(name);
+					model.insertNodeInto(childNode, parentNode, parentNode.getChildCount());
+				}
+
+			}
+
+		}
+		TreePath old = keylog_tree.getSelectionPath();
+		model.reload();
+		keylog_tree.setSelectionPath(old);
+		refreshing = false;
+	}
+
+	enum TreeOrganization {
+		HIERARCHY, FLAT;
 	}
 
 }
