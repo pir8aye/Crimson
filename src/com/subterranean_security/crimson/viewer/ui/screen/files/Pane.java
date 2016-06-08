@@ -184,6 +184,7 @@ public class Pane extends JPanel {
 				case VIEWER:
 					try {
 						ft.setFiles(lf.list());
+						pwd.setPwd(lf.pwd());
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
