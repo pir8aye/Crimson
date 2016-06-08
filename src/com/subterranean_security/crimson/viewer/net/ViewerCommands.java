@@ -49,6 +49,7 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.screen.files.FileTable;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
@@ -293,43 +294,41 @@ public enum ViewerCommands {
 
 	}
 
-	public static ArrayList<FileListlet> fm_down(int cid, int fmid, String name, boolean mtime, boolean size) {
-		ArrayList<FileListlet> list = new ArrayList<FileListlet>();
+	public static void fm_down(FileTable ft, int cid, int fmid, String name, boolean mtime, boolean size) {
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
 					.setSid(Common.cvid).setRqFileListing(RQ_FileListing.newBuilder().setDown(name).setFmid(fmid)), 2);
-			list.addAll(m.getRsFileListing().getListingList());
+
+			ft.pane.pwd.setPwd(m.getRsFileListing().getPath());
+			ft.setFiles(m.getRsFileListing().getListingList());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return list;
 	}
 
-	public static ArrayList<FileListlet> fm_up(int cid, int fmid, boolean mtime, boolean size) {
-		ArrayList<FileListlet> list = new ArrayList<FileListlet>();
+	public static void fm_up(FileTable ft, int cid, int fmid, boolean mtime, boolean size) {
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
 					.setSid(Common.cvid).setRqFileListing(RQ_FileListing.newBuilder().setUp(true).setFmid(fmid)), 2);
-			list.addAll(m.getRsFileListing().getListingList());
+			ft.pane.pwd.setPwd(m.getRsFileListing().getPath());
+			ft.setFiles(m.getRsFileListing().getListingList());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return list;
 	}
 
-	public static ArrayList<FileListlet> fm_list(int cid, int fmid, boolean mtime, boolean size) {
-		ArrayList<FileListlet> list = new ArrayList<FileListlet>();
+	public static void fm_list(FileTable ft, int cid, int fmid, boolean mtime, boolean size) {
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
 					.setSid(Common.cvid).setRqFileListing(RQ_FileListing.newBuilder().setFmid(fmid)), 2);
-			list.addAll(m.getRsFileListing().getListingList());
+			ft.pane.pwd.setPwd(m.getRsFileListing().getPath());
+			ft.setFiles(m.getRsFileListing().getListingList());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return list;
 	}
 
 	public static void trigger_key_update(int cid, Date target) {

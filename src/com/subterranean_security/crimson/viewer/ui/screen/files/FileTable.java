@@ -24,6 +24,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -46,7 +47,7 @@ public class FileTable extends JPanel {
 	public TR tr = new TR(tm);
 
 	private JTable table = new JTable();
-	private Pane pane;
+	public Pane pane;
 
 	public FileTable(Pane parent) {
 		pane = parent;
@@ -64,6 +65,9 @@ public class FileTable extends JPanel {
 				if (pane.loading) {
 					return;
 				}
+				// switch path to view if needed
+				pane.pwd.openView();
+
 				// get source of click
 				JTable source = (JTable) e.getSource();
 				final int sourceRow = source.rowAtPoint(e.getPoint());
@@ -156,7 +160,7 @@ public class FileTable extends JPanel {
 		});
 	}
 
-	public void setFiles(ArrayList<FileListlet> list) {
+	public void setFiles(List<FileListlet> list) {
 		ArrayList<FileItem> items = new ArrayList<FileItem>();
 
 		try {

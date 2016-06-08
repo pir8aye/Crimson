@@ -59,6 +59,7 @@ public class LocalFilesystem {
 	}
 
 	public String pwd() {
+		log.debug("Returning pwd: " + ref.toString());
 		return ref.toString();
 	}
 

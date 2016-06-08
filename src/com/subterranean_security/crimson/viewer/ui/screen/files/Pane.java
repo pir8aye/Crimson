@@ -54,6 +54,7 @@ public class Pane extends JPanel {
 	private int fmid;
 
 	public boolean loading = false;
+	public PathPanel pwd;
 
 	public Pane(FMPanel parent) {
 		this.parent = parent;
@@ -110,14 +111,15 @@ public class Pane extends JPanel {
 		JButton btnNewButton = new JButton("UP");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				pwd.openView();
 				up();
 			}
 		});
 		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel.add(btnNewButton, BorderLayout.WEST);
 
-		PathPanel path = new PathPanel();
-		panel.add(path, BorderLayout.CENTER);
+		pwd = new PathPanel();
+		panel.add(pwd, BorderLayout.CENTER);
 
 		refresh();
 	}
@@ -133,7 +135,7 @@ public class Pane extends JPanel {
 				switch (type) {
 				case CLIENT:
 				case SERVER:
-					ft.setFiles(ViewerCommands.fm_up(cid, fmid, true, true));
+					ViewerCommands.fm_up(ft, cid, fmid, true, true);
 					break;
 				case VIEWER:
 					lf.up();
@@ -155,7 +157,7 @@ public class Pane extends JPanel {
 				switch (type) {
 				case CLIENT:
 				case SERVER:
-					ft.setFiles(ViewerCommands.fm_down(cid, fmid, s, true, true));
+					ViewerCommands.fm_down(ft, cid, fmid, s, true, true);
 					break;
 				case VIEWER:
 					lf.down(s);
@@ -177,7 +179,7 @@ public class Pane extends JPanel {
 				switch (type) {
 				case CLIENT:
 				case SERVER:
-					ft.setFiles(ViewerCommands.fm_list(cid, fmid, true, true));
+					ViewerCommands.fm_list(ft, cid, fmid, true, true);
 					break;
 				case VIEWER:
 					try {
