@@ -57,9 +57,22 @@ public enum Platform {
 			return super.toString().toLowerCase();
 		}
 
-		// TODO
 		public String toName() {
-			return null;
+			switch (this) {
+			case BSD:
+				return "BSD";
+			case LIN:
+				return "Linux";
+			case OSX:
+				return "OS X";
+			case SOL:
+				return "Solaris";
+			case WIN:
+				return "Windows";
+			default:
+				return null;
+			}
+
 		}
 	}
 
