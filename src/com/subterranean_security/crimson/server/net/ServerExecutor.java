@@ -19,7 +19,10 @@ package com.subterranean_security.crimson.server.net;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.stream.XMLStreamException;
 
 import org.slf4j.Logger;
 
@@ -322,16 +325,23 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void ev_profileDelta(Message m) {
 
-		// TODO use new id
-		// if (m.hasSid()) {
-		// ServerStore.Connections.getConnection(m.getSid()).handle.write(m);
-		// } else {
-
-		// TODO send original message when pd needs no modification
 		EV_ProfileDelta pd = m.getEvProfileDelta();
 		if (pd.hasExtIp()) {
-			if (pd.getExtIp().equals("0.0.0.0") && !receptor.getRemoteAddress().equals("127.0.0.1")) {
-				pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
+			if (!receptor.getRemoteAddress().equals("127.0.0.1")) {
+				if (pd.getExtIp().equals("0.0.0.0")) {
+					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
+				}
+				try {
+					HashMap<String, String> location = CUtil.Location.resolve(pd.getExtIp());
+					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountry(location.get("countryname")).build();
+					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountryCode(location.get("countrycode")).build();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (XMLStreamException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		for (int svid : ServerStore.Connections.getKeySet()) {

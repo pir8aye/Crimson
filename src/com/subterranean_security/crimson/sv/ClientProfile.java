@@ -135,10 +135,6 @@ public class ClientProfile implements Serializable {
 
 	// TODO use
 	public void loadTransientAttributes() {
-		if (countryCode.get() != null && country.get() != null) {
-			locationIcon = UIUtil.getIcon("icons16/flags/" + countryCode.get() + ".png");
-			locationIcon.setDescription(country.get());
-		}
 
 	}
 
@@ -419,6 +415,8 @@ public class ClientProfile implements Serializable {
 
 	public void setCountryCode(String countryCode) {
 		this.countryCode.set(countryCode);
+		locationIcon = UIUtil.getIcon("icons16/flags/" + countryCode + ".png");
+		locationIcon.setDescription(country.get());
 	}
 
 	public String getRegion() {

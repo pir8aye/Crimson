@@ -45,6 +45,10 @@ message EV_ProfileDelta {
 	optional string fqdn = 38;
 	repeated NetworkInterface interface = 39;
 	
+	// Location
+	optional string country = 40;
+	optional string countryCode = 41;
+	
 }
 
 message NetworkInterface {
