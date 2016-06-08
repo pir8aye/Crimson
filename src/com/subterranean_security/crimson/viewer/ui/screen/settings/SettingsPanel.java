@@ -88,6 +88,8 @@ public class SettingsPanel extends JPanel {
 		ArrayList<Headers> h = new ArrayList<Headers>();
 		if (hlh.chckbxActiveWindow.isSelected())
 			h.add(Headers.ACTIVE_WINDOW);
+		if (hlh.chckbxCvid.isSelected())
+			h.add(Headers.CVID);
 		if (hlh.chckbxCountry.isSelected())
 			h.add(Headers.COUNTRY);
 		if (hlh.chckbxCpuModel.isSelected())
@@ -112,6 +114,8 @@ public class SettingsPanel extends JPanel {
 			h.add(Headers.MESSAGE_PING);
 		if (hlh.chckbxMonitorCount.isSelected())
 			h.add(Headers.MONITOR_COUNT);
+		if (hlh.chckbxOsName.isSelected())
+			h.add(Headers.OS_NAME);
 		if (hlh.chckbxOSArch.isSelected())
 			h.add(Headers.OS_ARCH);
 		if (hlh.chckbxOSFamily.isSelected())
@@ -159,10 +163,14 @@ public class SettingsPanel extends JPanel {
 				case ACTIVE_WINDOW:
 					hlh.chckbxActiveWindow.setSelected(true);
 					break;
+				case CVID:
+					hlh.chckbxCvid.setSelected(true);
+					break;
 				case COUNTRY:
 					hlh.chckbxCountry.setSelected(true);
 					break;
 				case CPU_MODEL:
+					hlh.chckbxCpuModel.setSelected(true);
 					break;
 				case CPU_TEMP:
 					hlh.chckbxCpuTemp.setSelected(true);
@@ -193,6 +201,9 @@ public class SettingsPanel extends JPanel {
 					break;
 				case MONITOR_COUNT:
 					hlh.chckbxMonitorCount.setSelected(true);
+					break;
+				case OS_NAME:
+					hlh.chckbxOsName.setSelected(true);
 					break;
 				case OS_ARCH:
 					hlh.chckbxOSArch.setSelected(true);

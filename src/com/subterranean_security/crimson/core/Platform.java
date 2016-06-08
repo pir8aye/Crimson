@@ -72,7 +72,6 @@ public enum Platform {
 			default:
 				return null;
 			}
-
 		}
 	}
 
@@ -309,6 +308,8 @@ public enum Platform {
 
 			info.setCrimsonVersion(Common.version);
 
+			info.setOsName(osName);
+			info.setOsFamily(osFamily.toName());
 			info.setUserName(getUsername());
 			info.setHostname(getHostname());
 			info.setUserHome(getUserHome());

@@ -68,8 +68,8 @@ public enum Defaults {
 		db.storeObject("show_eula", true);
 		db.storeObject("show_helps", true);
 		db.storeObject("show_detail", true);
-		db.storeObject("hostlist.headers",
-				new Headers[] { Headers.COUNTRY, Headers.CVID, Headers.USERNAME, Headers.HOSTNAME, Headers.LANGUAGE });
+		db.storeObject("hostlist.headers", new Headers[] { Headers.COUNTRY, Headers.OS_NAME, Headers.USERNAME,
+				Headers.HOSTNAME, Headers.LANGUAGE });
 		db.storeObject("login.recents", new ArrayList<String>());
 		db.storeObject("view.last", "list");
 	}

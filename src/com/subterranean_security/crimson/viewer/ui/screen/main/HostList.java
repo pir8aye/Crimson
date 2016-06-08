@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -223,7 +224,9 @@ public class HostList extends JPanel {
 class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	Headers[] headers = new Headers[] {};
+	public Headers[] headers = new Headers[] {};
+
+	private HashMap<String, ImageIcon> osCache = new HashMap<String, ImageIcon>();
 
 	public TM() {
 		refreshHeaders();
@@ -276,7 +279,7 @@ class TM extends AbstractTableModel {
 		case CPU_MODEL:
 			return ViewerStore.Profiles.clients.get(rowIndex).getCpuModel();
 		case CPU_USAGE:
-			return null;
+			return ViewerStore.Profiles.clients.get(rowIndex).getCpuUsage();
 		case CPU_TEMP:
 			return ViewerStore.Profiles.clients.get(rowIndex).getCpuTemp();
 		case CVID:
@@ -305,9 +308,13 @@ class TM extends AbstractTableModel {
 			return ViewerStore.Profiles.clients.get(rowIndex).getMessageLatency();
 		case SCREEN_PREVIEW:
 			return null;
+		case OS_NAME:
+			return ViewerStore.Profiles.clients.get(rowIndex).getOsNameIcon();
+		default:
+			return null;
 
 		}
-		return null;
+
 	}
 
 }
@@ -330,7 +337,8 @@ class TR extends DefaultTableCellRenderer {
 			setIcon(ico);
 			setText(ico.getDescription());
 		} else {
-			super.setValue(value);
+			setIcon(null);
+			setText((String) value);
 		}
 	}
 

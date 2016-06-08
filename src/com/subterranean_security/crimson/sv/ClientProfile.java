@@ -39,7 +39,7 @@ public class ClientProfile implements Serializable {
 
 	// Transient attributes
 	private transient ImageIcon locationIcon;
-	private transient ImageIcon osIcon;
+	private transient ImageIcon osNameIcon;
 
 	// General attributes
 	private Log keylog;
@@ -133,14 +133,11 @@ public class ClientProfile implements Serializable {
 		city = new UntrackedAttribute();
 	}
 
+	// TODO use
 	public void loadTransientAttributes() {
 		if (countryCode.get() != null && country.get() != null) {
-			locationIcon = UIUtil.getIcon("flags/" + countryCode.get() + ".png");
+			locationIcon = UIUtil.getIcon("icons16/flags/" + countryCode.get() + ".png");
 			locationIcon.setDescription(country.get());
-		}
-		if (osName.get() != null) {
-			osIcon = UIUtil.getIcon("platform/" + osName.get().replaceAll(" ", "_").toLowerCase() + ".png");
-			osIcon.setDescription(osName.get());
 		}
 
 	}
@@ -163,6 +160,9 @@ public class ClientProfile implements Serializable {
 
 	public void setOsName(String osName) {
 		this.osName.set(osName);
+		osNameIcon = UIUtil.getIcon("icons16/platform/" + osName.replaceAll(" ", "_").toLowerCase() + ".png");
+		osNameIcon.setDescription(osName);
+
 	}
 
 	public String getOsArch() {
@@ -458,8 +458,8 @@ public class ClientProfile implements Serializable {
 		return locationIcon;
 	}
 
-	public ImageIcon getOsIcon() {
-		return osIcon;
+	public ImageIcon getOsNameIcon() {
+		return osNameIcon;
 	}
 
 	public void amalgamate(EV_ProfileDelta c) {
