@@ -18,6 +18,7 @@
 
 package com.subterranean_security.crimson.core.fm;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -47,7 +48,7 @@ public class LocalFilesystem {
 	private boolean size;
 
 	public LocalFilesystem(boolean size, boolean mtime) {
-		this("..");
+		this(System.getProperty("user.home"));
 		this.size = size;
 		this.mtime = mtime;
 	}
@@ -89,7 +90,17 @@ public class LocalFilesystem {
 					builder.setMtime(Files.getLastModifiedTime(entry).toMillis());
 				}
 				if (size) {
-					builder.setSize(Files.size(entry));
+					if (builder.getDir()) {
+
+						try {
+							builder.setSize(entry.toFile().list().length);
+						} catch (NullPointerException e) {
+
+						}
+					} else {
+						builder.setSize(Files.size(entry));
+					}
+
 				}
 				list.add(builder.build());
 			}

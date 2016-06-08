@@ -298,7 +298,6 @@ public enum ViewerCommands {
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
 					.setSid(Common.cvid).setRqFileListing(RQ_FileListing.newBuilder().setDown(name).setFmid(fmid)), 2);
-
 			ft.pane.pwd.setPwd(m.getRsFileListing().getPath());
 			ft.setFiles(m.getRsFileListing().getListingList());
 		} catch (InterruptedException e) {

@@ -186,7 +186,12 @@ public class FileTable extends JPanel {
 				ImageIcon ico = new ImageIcon(ImageIO.read(url));
 				ico.setDescription(fl.getName());
 				fi.setIcon(ico);
-				fi.setSize(CUtil.Misc.familiarize(fl.getSize(), CUtil.Misc.BYTES));
+				if (fl.getDir()) {
+					fi.setSize(fl.getSize() + ((fl.getSize() == 1) ? " item " : " items"));
+				} else {
+					fi.setSize(CUtil.Misc.familiarize(fl.getSize(), CUtil.Misc.BYTES));
+				}
+
 				items.add(fi);
 
 			}
