@@ -30,6 +30,8 @@ import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.UIManager;
+import javax.swing.JProgressBar;
+import java.awt.Dimension;
 
 public class PathPanel extends JPanel {
 
@@ -39,6 +41,8 @@ public class PathPanel extends JPanel {
 	private JPanel panel_1;
 	private JLabel label;
 	private JLabel lblPath;
+	private JPanel panel_2;
+	private JProgressBar progressBar;
 
 	public PathPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -47,14 +51,22 @@ public class PathPanel extends JPanel {
 		add(panel, BorderLayout.CENTER);
 		panel.setLayout(new CardLayout(0, 0));
 
+		panel_2 = new JPanel();
+		panel.add(panel_2, "VIEW");
+		panel_2.setLayout(new BorderLayout(0, 0));
+
 		lblPath = new JLabel("");
+		panel_2.add(lblPath);
+
+		progressBar = new JProgressBar();
+		progressBar.setPreferredSize(new Dimension(148, 4));
+		panel_2.add(progressBar, BorderLayout.SOUTH);
 		lblPath.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				openEdit();
 			}
 		});
-		panel.add(lblPath, "VIEW");
 
 		panel_1 = new JPanel();
 		panel_1.setBackground(UIManager.getColor("TextField.background"));
@@ -87,13 +99,29 @@ public class PathPanel extends JPanel {
 	}
 
 	public void setPwd(String path) {
+		System.out.println("Setting pwd: " + path);
 		textField.setText(path);
 		lblPath.setText(path);
 	}
 
+	private boolean loading = false;
+
+	public void beginLoading() {
+		loading = true;
+		progressBar.setIndeterminate(true);
+	}
+
+	public void stopLoading() {
+		loading = false;
+		progressBar.setIndeterminate(false);
+	}
+
 	public void openEdit() {
-		((CardLayout) panel.getLayout()).show(panel, "EDIT");
-		textField.selectAll();
+		if (!loading) {
+			((CardLayout) panel.getLayout()).show(panel, "EDIT");
+			textField.selectAll();
+		}
+
 	}
 
 	public void openView() {

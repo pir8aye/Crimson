@@ -18,7 +18,8 @@
 package com.subterranean_security.crimson.viewer.ui.screen.files;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.Color;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -27,12 +28,16 @@ import java.util.Date;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.MatteBorder;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class Pane extends JPanel {
 
@@ -54,18 +59,19 @@ public class Pane extends JPanel {
 	private int fmid;
 
 	public boolean loading = false;
-	public PathPanel pwd;
+	public PathPanel pwd = new PathPanel();
+	private JComboBox typeBox;
 
 	public Pane(FMPanel parent) {
 		this.parent = parent;
 		setLayout(new BorderLayout(0, 0));
 		add(ft, BorderLayout.CENTER);
 
-		final JComboBox comboBox = new JComboBox();
-		comboBox.setBackground(UIManager.getColor("Menu.background"));
-		comboBox.addActionListener(new ActionListener() {
+		typeBox = new JComboBox();
+		typeBox.setBackground(UIManager.getColor("Menu.background"));
+		typeBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				ImageIcon selected = (ImageIcon) comboBox.getSelectedItem();
+				ImageIcon selected = (ImageIcon) typeBox.getSelectedItem();
 				String name = selected.getDescription().toLowerCase();
 				new Thread(new Runnable() {
 					public void run() {
@@ -99,29 +105,37 @@ public class Pane extends JPanel {
 
 			}
 		});
-		comboBox.setRenderer(new ComboBoxRenderer());
-		comboBox.setModel(new FileComboBoxModel());
-		comboBox.setSelectedIndex(0);
-		add(comboBox, BorderLayout.SOUTH);
+		typeBox.setRenderer(new ComboBoxRenderer());
+		typeBox.setModel(new FileComboBoxModel());
+		typeBox.setSelectedIndex(0);
+		add(typeBox, BorderLayout.SOUTH);
 
 		JPanel panel = new JPanel();
 		add(panel, BorderLayout.NORTH);
 		panel.setLayout(new BorderLayout(0, 0));
 
-		JButton btnNewButton = new JButton("UP");
-		btnNewButton.addActionListener(new ActionListener() {
+		pwd.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
+		panel.add(pwd, BorderLayout.CENTER);
+
+		JMenuBar menuBar = new JMenuBar();
+		panel.add(menuBar, BorderLayout.NORTH);
+
+		JButton btnNewButton_1 = new JButton("");
+		btnNewButton_1.setFocusable(false);
+		btnNewButton_1.setRequestFocusEnabled(false);
+		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pwd.openView();
 				up();
 			}
 		});
-		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 10));
-		panel.add(btnNewButton, BorderLayout.WEST);
+		btnNewButton_1.setMargin(new Insets(0, 0, 0, 0));
+		btnNewButton_1.setIcon(UIUtil.getIcon("icons16/general/folder_up.png"));
+		menuBar.add(btnNewButton_1);
 
-		pwd = new PathPanel();
-		panel.add(pwd, BorderLayout.CENTER);
+		JMenu mnView = new JMenu("View");
+		menuBar.add(mnView);
 
-		refresh();
 	}
 
 	public void properties() {
@@ -131,6 +145,7 @@ public class Pane extends JPanel {
 	public void up() {
 		new Thread(new Runnable() {
 			public void run() {
+				beginLoading();
 				Date start = new Date();
 				switch (type) {
 				case CLIENT:
@@ -144,6 +159,7 @@ public class Pane extends JPanel {
 
 				}
 				parent.console.addLine("Moved up in: " + (new Date().getTime() - start.getTime()) + " milliseconds");
+				stopLoading();
 			}
 		}).start();
 
@@ -153,6 +169,7 @@ public class Pane extends JPanel {
 
 		new Thread(new Runnable() {
 			public void run() {
+				beginLoading();
 				Date start = new Date();
 				switch (type) {
 				case CLIENT:
@@ -166,6 +183,7 @@ public class Pane extends JPanel {
 
 				}
 				parent.console.addLine("Moved down in: " + (new Date().getTime() - start.getTime()) + " milliseconds");
+				stopLoading();
 			}
 		}).start();
 
@@ -176,6 +194,7 @@ public class Pane extends JPanel {
 		// probably by declaring the Runnable as a field
 		new Thread(new Runnable() {
 			public void run() {
+				beginLoading();
 				switch (type) {
 				case CLIENT:
 				case SERVER:
@@ -192,9 +211,24 @@ public class Pane extends JPanel {
 					break;
 
 				}
+				stopLoading();
 			}
 		}).start();
 
+	}
+
+	public void beginLoading() {
+		loading = true;
+		pwd.beginLoading();
+		ft.setEnabled(false);
+		typeBox.setEnabled(false);
+	}
+
+	public void stopLoading() {
+		loading = false;
+		pwd.stopLoading();
+		ft.setEnabled(true);
+		typeBox.setEnabled(true);
 	}
 
 }
