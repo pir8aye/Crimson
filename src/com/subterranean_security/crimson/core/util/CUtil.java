@@ -90,63 +90,34 @@ public enum CUtil {
 	public static class Files {
 
 		public static class Temp {
-			public static File getLFile(String name) {
+			public static final String prefix = "crimson_temp_";
+
+			public static File getFile(String name) {
 				File f = new File(Common.tmp.getAbsolutePath() + File.separator + name);
 				f.deleteOnExit();
 				return f;
 			}
 
-			public static File getGFile(String name) {
-				File f = new File(Common.gtmp.getAbsolutePath() + File.separator + name);
+			public static File getFile() {
+				File f = new File(Common.tmp.getAbsolutePath() + File.separator + prefix + Misc.randString(9));
 				f.deleteOnExit();
 				return f;
 			}
 
-			public static File getLFile() {
-				File f = new File(Common.tmp.getAbsolutePath() + File.separator + Misc.randString(9));
-				f.deleteOnExit();
-				return f;
-			}
-
-			public static File getGFile() {
-				File f = new File(Common.gtmp.getAbsolutePath() + File.separator + "cr_" + Misc.randString(9));
-				f.deleteOnExit();
-				return f;
-			}
-
-			public static File getLDir() {
-				File f = new File(Common.tmp.getAbsolutePath() + File.separator + Misc.randString(9));
-				f.mkdirs();
-				if (!Common.isDebugMode()) {
-					f.deleteOnExit();
-				}
-
-				return f;
-			}
-
-			public static File getGDir() {
-				File f = new File(Common.gtmp.getAbsolutePath() + File.separator + "cr_" + Misc.randString(9));
+			public static File getDir() {
+				File f = new File(Common.tmp.getAbsolutePath() + File.separator + prefix + Misc.randString(9));
 				f.mkdirs();
 				f.deleteOnExit();
+
 				return f;
 			}
 
-			public static void clearL() {
+			public static void clear() {
 				for (File f : Common.tmp.listFiles()) {
-					// delete it
-					if (!delete(f)) {
-						log.error("Could not delete temporary file: " + f.getAbsolutePath());
-					}
-				}
-
-			}
-
-			public static void clearG() {
-				for (File f : Common.tmp.listFiles()) {
-					if (f.getName().startsWith("temp_")) {
+					if (f.getName().startsWith(prefix)) {
 						// delete it
 						if (!delete(f)) {
-							log.error("Could not delete temporary file: " + f.getAbsolutePath());
+							log.warn("Could not delete temporary file: " + f.getAbsolutePath());
 						}
 					}
 				}

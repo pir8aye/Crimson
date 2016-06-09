@@ -66,8 +66,8 @@ public final class Server {
 		Platform.Advanced.loadLapis();
 
 		// Clear /tmp/
-		log.debug("Clearing local temporary directory");
-		CUtil.Files.Temp.clearL();
+		log.debug("Clearing temporary directory");
+		CUtil.Files.Temp.clear();
 
 		// initialize system database
 		try {

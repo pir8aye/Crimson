@@ -35,7 +35,7 @@ public class Generator {
 
 	private static final Logger log = CUtil.Logging.getLogger(Generator.class);
 
-	private File temp = CUtil.Files.Temp.getLDir();
+	private File temp = CUtil.Files.Temp.getDir();
 	private GenReport.Builder report = GenReport.newBuilder();
 
 	public GenReport getReport() {

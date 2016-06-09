@@ -70,7 +70,6 @@ public enum Common {
 	public static final File base = discoverBaseDir();
 	public static final File tmp = discoverTmpDir();
 	public static final File var = discoverVarDir();
-	public static final File gtmp = new File(System.getProperty("java.io.tmpdir"));
 
 	static {
 

@@ -72,7 +72,7 @@ public enum FileLocking {
 
 		try {
 
-			file = CUtil.Files.Temp.getGFile(hashBase(base));
+			file = CUtil.Files.Temp.getFile(hashBase(base));
 
 			channel = new RandomAccessFile(file, "rw").getChannel();
 			lock = channel.lock();
@@ -89,7 +89,7 @@ public enum FileLocking {
 	public static boolean lockExists(Instance i) {
 		// search through the temp dir looking for a lock file
 
-		for (File f : Common.gtmp.listFiles()) {
+		for (File f : Common.tmp.listFiles()) {
 			if (f.getName().startsWith("S")) {
 				// this could be a server lock
 				if (i != Instance.SERVER) {
