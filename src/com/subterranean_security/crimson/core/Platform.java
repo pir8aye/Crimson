@@ -73,6 +73,38 @@ public enum Platform {
 				return null;
 			}
 		}
+
+		public String getLapisName(ARCH arch) {
+			switch (this) {
+
+			case SOL:
+			case BSD:
+			case LIN:
+				switch (arch) {
+				case X64:
+					return "libcrimson64.so";
+				case X86:
+					return "libcrimson32.so";
+				default:
+					return null;
+				}
+
+			case OSX:
+				return null;
+
+			case WIN:
+				switch (arch) {
+				case X64:
+					return "crimson64.dll";
+				case X86:
+					return "crimson32.dll";
+				default:
+					return null;
+				}
+			default:
+				return null;
+			}
+		}
 	}
 
 	public enum ARCH {
@@ -167,25 +199,9 @@ public enum Platform {
 			log.debug("Loading LAPIS native library");
 
 			try {
-				switch (Platform.javaArch) {
-				case X64:
-					System.load(new File(
-							Common.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/crimson64.dll")
-									.getAbsolutePath());
-					break;
-				case X86:
-					System.load(new File(
-							Common.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/crimson32.dll")
-									.getAbsolutePath());
-					break;
-				case SPARC:
-					System.load(new File(
-							Common.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/crimsonSPARC.dll")
-									.getAbsolutePath());
-					break;
-				default:
-					break;
-				}
+				System.load(new File(Common.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/"
+						+ osFamily.getLapisName(javaArch)).getAbsolutePath());
+
 			} catch (Throwable e) {
 				log.error("Failed to load lapis!");
 				e.printStackTrace();
@@ -234,8 +250,7 @@ public enum Platform {
 		}
 
 		public static String getExtIp() {
-			// if resolution is enabled
-			return "0.0.0.0";// TODO
+			return "183.200.100.10";// TODO
 		}
 
 		public static String getCPUModel() {
