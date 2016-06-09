@@ -21,10 +21,12 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
@@ -69,20 +71,21 @@ public class HPanel extends SLPanel {
 				.place(1, 0, movingBar).place(2, 0, movingHMenu);
 	}
 
+	ImageIcon open = UIUtil.getIcon("icons16/general/open_hmenu.png");
+	ImageIcon close = UIUtil.getIcon("icons16/general/close_hmenu.png");
+
 	public JButton initBtnUP() {
-		final JButton btnUp = new JButton("MORE");
+		final JButton btnUp = new JButton(open);
 		btnUp.setFont(UICommon.font_btn_up);
 		btnUp.setPreferredSize(UICommon.dim_btn_up);
-		btnUp.setMinimumSize(UICommon.dim_btn_up);
-		btnUp.setMaximumSize(UICommon.dim_btn_up);
-		btnUp.setMargin(new Insets(2, 2, 2, 2));
+		btnUp.setMargin(new Insets(2, 0, 2, 0));
 		btnUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				movingMain.runAction();
-				if (btnUp.getText().equals("MORE")) {
-					btnUp.setText("LESS");
+				if (btnUp.getIcon().equals(open)) {
+					btnUp.setIcon(close);
 				} else {
-					btnUp.setText("MORE");
+					btnUp.setIcon(open);
 				}
 			}
 		});
