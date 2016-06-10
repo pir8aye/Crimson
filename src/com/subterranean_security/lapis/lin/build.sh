@@ -5,6 +5,6 @@ export I3=/home/dev/lapis/include
 
 cd /home/dev/lapis
 
-gcc -I$I1 -I$I2 -I$I3 -shared -o libcrimson64.so -fPIC lapis.cpp
+g++ -I$I1 -I$I2 -I$I3 -shared -o libcrimson64.so -fPIC lapis.cpp
 
-gcc -I$I1 -I$I2 -I$I3 -m32 -shared -o libcrimson32.so -fPIC lapis.cpp
+g++ -I$I1 -I$I2 -I$I3 -m32 -shared -o libcrimson32.so -fPIC lapis.cpp
