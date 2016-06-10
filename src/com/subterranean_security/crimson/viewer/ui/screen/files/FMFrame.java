@@ -29,7 +29,8 @@ public class FMFrame extends JFrame {
 
 	private Type type;
 
-	private EPanel epanel;
+	// TODO remove static context!
+	public static EPanel epanel;
 
 	public FMFrame(Type type) {
 

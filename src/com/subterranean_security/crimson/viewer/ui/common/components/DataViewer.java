@@ -49,6 +49,10 @@ public class DataViewer extends JPanel {
 
 	}
 
+	public void addRow(String[] s) {
+		dvm.values.add(s);
+	}
+
 	public void setHeaders(String[] h) {
 		dvm.setHeaders(h);
 

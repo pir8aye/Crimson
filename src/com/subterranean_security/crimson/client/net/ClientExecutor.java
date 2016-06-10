@@ -94,6 +94,8 @@ public class ClientExecutor extends BasicExecutor {
 						rq_change_client_state(m);
 					} else if (m.hasRqFileHandle()) {
 						rq_file_handle(m);
+					} else if (m.hasRqAdvancedFileInfo()) {
+						rq_advanced_file_info(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -218,7 +220,12 @@ public class ClientExecutor extends BasicExecutor {
 		if (rq.hasUp() && rq.getUp()) {
 			lf.up();
 		} else if (rq.hasDown()) {
-			lf.down(rq.getDown());
+			if (rq.hasFromRoot() && rq.getFromRoot()) {
+				lf.setPath(rq.getDown());
+			} else {
+				lf.down(rq.getDown());
+			}
+
 		}
 		try {
 			ClientRouter.route(Message.newBuilder().setId(m.getId())
@@ -234,6 +241,12 @@ public class ClientExecutor extends BasicExecutor {
 		log.debug("rq_file_handle");
 		ClientRouter.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid()).setRsFileHandle(
 				RS_FileHandle.newBuilder().setFmid(ClientStore.LocalFilesystems.add(new LocalFilesystem(true, true)))));
+	}
+
+	private void rq_advanced_file_info(Message m) {
+		log.debug("rq_advance_file_info");
+		ClientRouter.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+				.setRsAdvancedFileInfo(LocalFilesystem.getInfo(m.getRqAdvancedFileInfo().getFile())));
 	}
 
 	private void assign_1w(Message m) {

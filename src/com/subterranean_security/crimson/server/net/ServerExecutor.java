@@ -27,6 +27,7 @@ import javax.xml.stream.XMLStreamException;
 import org.slf4j.Logger;
 
 import com.google.protobuf.ByteString;
+import com.subterranean_security.crimson.client.net.ClientRouter;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
@@ -141,6 +142,8 @@ public class ServerExecutor extends BasicExecutor {
 						rq_file_listing(m);
 					} else if (m.hasRsFileListing()) {
 						rs_file_listing(m);
+					} else if (m.hasRqAdvancedFileInfo()) {
+						rq_advanced_file_info(m);
 					} else if (m.hasMiStreamStart()) {
 						mi_stream_start(m);
 					} else if (m.hasMiStreamStop()) {
@@ -540,6 +543,12 @@ public class ServerExecutor extends BasicExecutor {
 				RS_FileHandle.newBuilder().setFmid(ServerStore.LocalFilesystems.add(new LocalFilesystem(true, true))))
 				.build());
 
+	}
+
+	private void rq_advanced_file_info(Message m) {
+		log.debug("rq_advance_file_info");
+		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+				.setRsAdvancedFileInfo(LocalFilesystem.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
 	}
 
 	private void mi_stream_start(Message m) {

@@ -18,6 +18,7 @@
 
 package com.subterranean_security.crimson.core.fm;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -26,11 +27,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+import javax.swing.filechooser.FileSystemView;
+
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
+import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.core.util.ObjectTransfer;
 
 /**
  * @author subterranean For file system browsing
@@ -43,6 +50,10 @@ public class LocalFilesystem {
 	private Path ref;
 
 	private int fmid;
+
+	public int getFmid() {
+		return fmid;
+	}
 
 	private boolean mtime;
 	private boolean size;
@@ -60,7 +71,6 @@ public class LocalFilesystem {
 	}
 
 	public String pwd() {
-		log.debug("Returning pwd: " + ref.toString());
 		return ref.toString();
 	}
 
@@ -77,6 +87,13 @@ public class LocalFilesystem {
 			ref = potential;
 		}
 
+	}
+
+	public void setPath(String path) {
+		Path potential = Paths.get(path);
+		if (Files.isDirectory(potential) && Files.exists(potential)) {
+			ref = potential;
+		}
 	}
 
 	public ArrayList<FileListlet> list() throws IOException {
@@ -108,8 +125,15 @@ public class LocalFilesystem {
 		}
 	}
 
-	public int getFmid() {
-		return fmid;
+	public static RS_AdvancedFileInfo getInfo(String path) {
+		File f = new File(path);
+		RS_AdvancedFileInfo.Builder rs = RS_AdvancedFileInfo.newBuilder();
+		rs.setLocalIcon(new String(
+				B64.encode(ObjectTransfer.Default.serialize(FileSystemView.getFileSystemView().getSystemIcon(f)))));
+		rs.setSize(f.length());
+		rs.setMtime(f.lastModified());
+
+		return rs.build();
 	}
 
 }

@@ -38,6 +38,8 @@ message Message {
 	optional RS_FileListing rs_file_listing = 110;
 	optional RQ_FileHandle rq_file_handle = 121;
 	optional RS_FileHandle rs_file_handle = 122;
+	optional RQ_AdvancedFileInfo rq_advanced_file_info = 128;
+	optional RS_AdvancedFileInfo rs_advanced_file_info = 129;
 	optional MI_CloseFileHandle mi_close_file_handle = 123;
 	optional RQ_ChangeServerState rq_change_server_state = 111;
 	optional RS_ChangeServerState rs_change_server_state = 112;

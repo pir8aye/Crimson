@@ -38,7 +38,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class FileTable extends JPanel {
@@ -81,13 +83,11 @@ public class FileTable extends JPanel {
 				}
 
 				if (e.getButton() == MouseEvent.BUTTON3) {
-					initContextActions();
-					popup.removeAll();
-					popup.add(menu_copy);
-					popup.add(menu_cut);
-					popup.add(menu_delete);
-					popup.add(menu_rename);
-					popup.add(menu_properties);
+					ArrayList<FileItem> selection = new ArrayList<FileItem>();
+					for (int i : source.getSelectedRows()) {
+						selection.add(tm.files.get(i));
+					}
+					initContextActions(selection);
 
 					popup.show(table, e.getPoint().x, e.getPoint().y);
 				} else if (e.getClickCount() == 2) {
@@ -143,21 +143,37 @@ public class FileTable extends JPanel {
 
 	}
 
-	private void initContextActions() {
-		menu_properties.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
+	private void initContextActions(ArrayList<FileItem> selection) {
 
-				new Thread() {
-					public void run() {
-						pane.properties();
+		popup.removeAll();
 
-					}
-				}.start();
+		if (selection.size() == 0) {
+			return;
+		} else if (selection.size() == 1) {
+			popup.add(menu_rename);
+			popup.add(menu_properties);
+			menu_properties.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
 
-			}
+					new Thread(new Runnable() {
+						public void run() {
+							pane.info(selection.get(0).getIcon().getDescription());
 
-		});
+						}
+					}).start();
+
+				}
+
+			});
+
+		} else {
+
+		}
+
+		popup.add(menu_copy);
+		popup.add(menu_cut);
+		popup.add(menu_delete);
 	}
 
 	public void setFiles(List<FileListlet> list) {
@@ -245,6 +261,7 @@ class TM extends AbstractTableModel {
 		}
 		return null;
 	}
+
 }
 
 class TR extends DefaultTableCellRenderer {

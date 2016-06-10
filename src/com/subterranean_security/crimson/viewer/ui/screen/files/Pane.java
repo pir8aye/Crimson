@@ -35,6 +35,7 @@ import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -42,7 +43,7 @@ import com.subterranean_security.crimson.viewer.ui.UIUtil;
 public class Pane extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private FMPanel parent;
+	public FMPanel parent;
 
 	public enum TYPE {
 		SERVER, VIEWER, CLIENT;
@@ -138,10 +139,6 @@ public class Pane extends JPanel {
 
 	}
 
-	public void properties() {
-
-	}
-
 	public void up() {
 		new Thread(new Runnable() {
 			public void run() {
@@ -187,6 +184,23 @@ public class Pane extends JPanel {
 			}
 		}).start();
 
+	}
+
+	public void info(String name) {
+		RS_AdvancedFileInfo rs = null;
+		String path = pwd.getPwd() + "/" + name;
+		switch (type) {
+		case CLIENT:
+		case SERVER:
+			rs = ViewerCommands.fm_file_info(cid, path);
+			break;
+		case VIEWER:
+			rs = LocalFilesystem.getInfo(path);
+			break;
+
+		}
+
+		FMFrame.epanel.raise(new AdvancedFileInfo(rs), 70);
 	}
 
 	public void refresh() {
