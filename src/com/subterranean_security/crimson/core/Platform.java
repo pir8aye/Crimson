@@ -141,7 +141,7 @@ public enum Platform {
 				try {
 					for (String s : CUtil.Files.readFileLines(os_release)) {
 						if (s.startsWith("PRETTY_NAME")) {
-							return s.substring(s.indexOf("\""), s.lastIndexOf("\""));
+							return s.substring(s.indexOf("\"") + 1, s.lastIndexOf("\""));
 						}
 					}
 				} catch (IOException e) {
