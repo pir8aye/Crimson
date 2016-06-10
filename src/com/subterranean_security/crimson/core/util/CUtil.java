@@ -26,6 +26,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -245,6 +246,17 @@ public enum CUtil {
 			java.nio.file.Path path = Paths.get(f.getAbsolutePath());
 			return java.nio.file.Files.readAllBytes(path);
 
+		}
+
+		public static ArrayList<String> readFileLines(File f) throws IOException {
+			ArrayList<String> a = new ArrayList<String>();
+			try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+				String line;
+				while ((line = br.readLine()) != null) {
+					a.add(line);
+				}
+			}
+			return a;
 		}
 
 		/**

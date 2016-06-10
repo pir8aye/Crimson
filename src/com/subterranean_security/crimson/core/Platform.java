@@ -135,13 +135,38 @@ public enum Platform {
 	public static String getOsName() {
 		switch (osFamily) {
 		case LIN:
-			String distro = "";// TODO get output (cat /etc/issue)
-			break;
+			File os_release = new File("/etc/os-release");
+
+			if (os_release.exists() && os_release.canRead()) {
+				try {
+					for (String s : CUtil.Files.readFileLines(os_release)) {
+						if (s.startsWith("PRETTY_NAME")) {
+							return s.substring(s.indexOf("\""), s.lastIndexOf("\""));
+						}
+					}
+				} catch (IOException e) {
+					log.warn("Failed to read os-release");
+				}
+			}
+
+			File issue = new File("/etc/issue");
+
+			if (issue.exists() && issue.canRead()) {
+				try {
+					for (String s : CUtil.Files.readFileLines(issue)) {
+						return s.trim();
+					}
+				} catch (IOException e) {
+					log.warn("Failed to read issue");
+				}
+			}
+
+			return "Unknown Linux";
+
 		default:
 			return System.getProperty("os.name");
 
 		}
-		return null;
 	}
 
 	public static ARCH getJVMArch() {
