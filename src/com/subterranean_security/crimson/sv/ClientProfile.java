@@ -26,6 +26,7 @@ import java.util.Locale;
 
 import javax.swing.ImageIcon;
 
+import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.NetworkInterface;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -157,7 +158,21 @@ public class ClientProfile implements Serializable {
 
 	public void setOsName(String osName) {
 		this.osName.set(osName);
-		osNameIcon = UIUtil.getIcon("icons16/platform/" + osName.replaceAll(" ", "_").toLowerCase() + ".png");
+		String icon = osName.replaceAll(" ", "_").toLowerCase();
+
+		if (icon.contains("ubuntu")) {
+			icon = "ubuntu";
+		}
+
+		try {
+			osNameIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
+
+		} catch (NullPointerException e) {
+			Reporter.report(Reporter.newReport().setComment("No OS icon found: " + icon).build());
+
+			// fall back to os family
+			osNameIcon = UIUtil.getIcon("icons16/platform/" + osFamily.get() + ".png");
+		}
 		osNameIcon.setDescription(osName);
 
 	}
