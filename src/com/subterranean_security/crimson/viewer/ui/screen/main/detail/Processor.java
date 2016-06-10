@@ -231,8 +231,8 @@ public class Processor extends JPanel implements DModule {
 					chart.getAxisX().getRangePolicy().setRange(new Range(time, time - (60 * updatePeriod)));
 
 					// temp
-					if (profile.getCpuTemp() != null) {
-						val_temp.setText(profile.getCpuTemp());
+					if (profile.getCpuTempAverage() != null) {
+						val_temp.setText(profile.getCpuTempAverage());
 					}
 
 				}

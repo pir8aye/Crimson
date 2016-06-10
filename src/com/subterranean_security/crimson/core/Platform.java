@@ -308,11 +308,6 @@ public enum Platform {
 			return cpuPerc.getCombined();
 		}
 
-		public static long getCPUTemp() {
-			return Native.getCpuTemp();
-
-		}
-
 		public static long getCrimsonMemoryUsage() {
 
 			try {
@@ -362,46 +357,63 @@ public enum Platform {
 
 			return info.build();
 		}
-	}
 
-	public static class TEMP {
+		public static double[] getCPUTemps() {
+			switch (osFamily) {
+			case LIN:
+				double[] temps = HWmon.query();
+				if (temps.length > 0) {
+					return temps;
+				}
+				return new double[] {};
 
-		// TODO move this!
-		private static ArrayList<RandomAccessFile> cores = new ArrayList<RandomAccessFile>();
-		private static int maxCores = 64;
+			default:
+				return new double[] { Native.getCpuTemp() };
 
-		public static double[] getLinuxCPUTemps() {
+			}
 
-			if (cores.size() == 0) {
-				for (int i = 2; i < maxCores + 2; i++) {
-					File f = new File("/sys/class/hwmon/hwmon1/temp" + i + "_input");
-					if (f.exists()) {
-						try {
-							cores.add(new RandomAccessFile(f, "r"));
-						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+		}
+
+		public static class HWmon {
+
+			private static ArrayList<RandomAccessFile> cores = new ArrayList<RandomAccessFile>();
+			private static int maxCores = 512;
+
+			public static double[] query() {
+
+				if (cores.size() == 0) {
+					for (int i = 2; i < maxCores + 2; i++) {
+						File f = new File("/sys/class/hwmon/hwmon1/temp" + i + "_input");
+						if (f.exists()) {
+							try {
+								cores.add(new RandomAccessFile(f, "r"));
+							} catch (FileNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						} else {
+							break;
 						}
-					} else {
-						break;
 					}
 				}
-			}
-			double[] temps = new double[cores.size()];
-			for (int i = 0; i < cores.size(); i++) {
-				try {
-					cores.get(i).seek(0);
-					temps[i] = cores.get(i).readDouble();
-					System.out.println("Core " + i + " temp: " + temps[i]);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				double[] temps = new double[cores.size()];
+				for (int i = 0; i < cores.size(); i++) {
+					try {
+						cores.get(i).seek(0);
+
+						temps[i] = Double.parseDouble(cores.get(i).readLine()) / 1000.0;
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
 				}
 
+				return temps;
 			}
 
-			return null;
 		}
 
 	}
+
 }

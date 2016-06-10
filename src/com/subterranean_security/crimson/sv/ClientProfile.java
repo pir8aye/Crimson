@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import javax.swing.ImageIcon;
@@ -67,7 +68,7 @@ public class ClientProfile implements Serializable {
 	// CPU attributes
 	private Attribute cpuModel;
 	private Attribute cpuCache;
-	private Attribute cpuTemp;
+	private ArrayList<Double> cpuTemp;
 	private Attribute crimsonCpuUsage;
 	private ArrayList<Double> coreSpeeds;
 	private Attribute cpuUsage;
@@ -115,7 +116,7 @@ public class ClientProfile implements Serializable {
 		crimsonRamUsage = new UntrackedAttribute();
 		cpuModel = new UntrackedAttribute();
 		cpuCache = new UntrackedAttribute();
-		cpuTemp = new UntrackedAttribute();
+		cpuTemp = new ArrayList<Double>();
 		crimsonCpuUsage = new UntrackedAttribute();
 		// core_speeds
 		cpuUsage = new UntrackedAttribute();
@@ -305,12 +306,17 @@ public class ClientProfile implements Serializable {
 		this.cpuCache.set(cpuCache);
 	}
 
-	public String getCpuTemp() {
-		return cpuTemp.get();
+	public String getCpuTempAverage() {
+		return CUtil.Misc.average(cpuTemp) + " C";
 	}
 
-	public void setCpuTemp(String cpuTemp) {
-		this.cpuTemp.set(cpuTemp);
+	public ArrayList<Double> getCpuTemps() {
+		return cpuTemp;
+	}
+
+	public void setCpuTemp(List<Double> l) {
+		this.cpuTemp.clear();
+		this.cpuTemp.addAll(l);
 	}
 
 	public String getCrimsonCpuUsage() {
@@ -521,8 +527,8 @@ public class ClientProfile implements Serializable {
 		if (c.hasCpuCache()) {
 			setCpuCache(c.getCpuCache());
 		}
-		if (c.hasCpuTemp()) {
-			setCpuTemp(c.getCpuTemp());
+		if (c.getCpuTempCount() != 0) {
+			setCpuTemp(c.getCpuTempList());
 		}
 		if (c.hasCrimsonCpuUsage()) {
 			setCrimsonCpuUsage(String.format("%.2f%%", 100 * c.getCrimsonCpuUsage()));

@@ -366,10 +366,10 @@ public class MenuControls extends JPanel {
 
 	public void refresh() {
 		valViewerRamUsage.setText(ViewerStore.Profiles.viewer.getCrimsonRamUsage());
-		valViewerCpuTemp.setText(ViewerStore.Profiles.viewer.getCpuTemp());
+		valViewerCpuTemp.setText(ViewerStore.Profiles.viewer.getCpuTempAverage());
 		valViewerCpuUsage.setText(ViewerStore.Profiles.viewer.getCrimsonCpuUsage());
 		valServerRamUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.server.getCrimsonRamUsage() : "");
-		valServerCpuTemp.setText(ViewerState.isOnline() ? ViewerStore.Profiles.server.getCpuTemp() : "");
+		valServerCpuTemp.setText(ViewerState.isOnline() ? ViewerStore.Profiles.server.getCpuTempAverage() : "");
 		valServerCpuUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.server.getCrimsonCpuUsage() : "");
 		valClients.setText(ViewerState.isOnline() ? "" + ViewerStore.Profiles.server.getConnectedClients() : "");
 		valUsers.setText(ViewerState.isOnline() ? "" + ViewerStore.Profiles.server.getConnectedUsers() : "");

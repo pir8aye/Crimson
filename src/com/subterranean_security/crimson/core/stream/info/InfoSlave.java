@@ -58,8 +58,9 @@ public abstract class InfoSlave extends Stream {
 			pd.setCoreUsage(Platform.Advanced.getCPUUsage());
 		}
 		if (param.getInfoParam().hasCpuTemp()) {
-			long temp = Platform.Advanced.getCPUTemp();
-			pd.setCpuTemp(temp == 0 ? "unknown" : "" + temp);
+			for (double d : Platform.Advanced.getCPUTemps()) {
+				pd.addCpuTemp(d);
+			}
 		}
 		if (param.getInfoParam().hasCrimsonRamUsage()) {
 			pd.setCrimsonRamUsage(Platform.Advanced.getCrimsonMemoryUsage());

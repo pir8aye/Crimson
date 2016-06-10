@@ -33,6 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import com.subterranean_security.crimson.client.net.ClientCommands;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 
 public class Installer {
@@ -90,7 +91,7 @@ public class Installer {
 		String line;
 		while ((line = input.readLine()) != null) {
 			String[] parts = line.split("<>");
-			map.put(parts[0], parts[1]);
+			map.put(parts[0], parts[1].replaceAll("\\%USERNAME\\%", System.getProperty("user.name")));
 		}
 		input.close();
 		return map;
@@ -110,9 +111,7 @@ public class Installer {
 
 	public static boolean isInstalled() throws URISyntaxException {
 		jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-		String target = ic.get("base_win").replaceAll("\\%USERNAME\\%", System.getProperty("user.name"));// TODO
-																											// multiple
-																											// platforms
+		String target = ic.get("base_lin");// TODO
 		File t1 = (new File(jarPath)).getParentFile();
 		File t2 = new File(target);
 		System.out.println("Testing for equality: " + t1.getAbsolutePath() + " and: " + t2.getAbsolutePath());
@@ -121,9 +120,7 @@ public class Installer {
 
 	public static boolean install() {
 		System.out.println("Starting installation");
-		String base = ic.get("base_win").replaceAll("\\%USERNAME\\%", System.getProperty("user.name"));// TODO
-																										// multiple
-																										// platforms
+		String base = ic.get("base_lin");// TODO
 		if (!(new File(base)).mkdirs()) {
 			System.out.println("Failed to create install base");
 			return false;

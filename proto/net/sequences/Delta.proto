@@ -32,7 +32,7 @@ message EV_ProfileDelta {
 	// CPU attributes
 	optional string cpu_model = 32;
 	optional string cpu_cache = 33;
-	optional string cpu_temp = 5;
+	repeated double cpu_temp = 5;
 	optional double crimson_cpu_usage = 6;
 	repeated double core_speed = 7;
 	optional double core_usage = 8;
@@ -67,7 +67,7 @@ message EV_ServerProfileDelta {
 	optional string net_hostname = 5;
 	
 	optional string cpu_model = 6;
-	optional string cpu_temp = 7;
+	repeated double cpu_temp = 7;
 	optional string cpu_speed = 8;
 	optional double cpu_crimson_usage = 9;
 	

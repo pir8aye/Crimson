@@ -659,6 +659,7 @@ public enum CUtil {
 		 * @param v2
 		 * @return true if v1 is newer than v2
 		 */
+		// TODO move
 		public static boolean isNewerVersion(String v1, String v2) {
 			String[] pv1 = v1.split("-");
 
@@ -680,6 +681,14 @@ public enum CUtil {
 			}
 
 			return false;
+		}
+
+		public static double average(ArrayList<Double> list) {
+			double sum = 0;
+			for (double d : list) {
+				sum += d;
+			}
+			return sum / list.size();
 		}
 
 	}

@@ -281,7 +281,7 @@ class TM extends AbstractTableModel {
 		case CPU_USAGE:
 			return ViewerStore.Profiles.clients.get(rowIndex).getCpuUsage();
 		case CPU_TEMP:
-			return ViewerStore.Profiles.clients.get(rowIndex).getCpuTemp();
+			return ViewerStore.Profiles.clients.get(rowIndex).getCpuTempAverage();
 		case CVID:
 			return ViewerStore.Profiles.clients.get(rowIndex).getCvid();
 		case RAM_CAPACITY:

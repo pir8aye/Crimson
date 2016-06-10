@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.sv;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
@@ -48,14 +49,14 @@ public class ServerProfile implements Serializable {
 	private Attribute crimsonRamUsage;
 
 	// CPU attributes
-	private Attribute cpuTemp;
+	private ArrayList<Double> cpuTemp;
 	private Attribute crimsonCpuUsage;
 
 	public ServerProfile() {
 
 		messageLatency = new UntrackedAttribute();
 		crimsonRamUsage = new UntrackedAttribute();
-		cpuTemp = new UntrackedAttribute();
+		cpuTemp = new ArrayList<Double>();
 		crimsonCpuUsage = new UntrackedAttribute();
 	}
 
@@ -63,12 +64,17 @@ public class ServerProfile implements Serializable {
 		return cvid;
 	}
 
-	public String getCpuTemp() {
-		return cpuTemp.get();
+	public String getCpuTempAverage() {
+		return CUtil.Misc.average(cpuTemp) + " C";
 	}
 
-	public void setCpuTemp(String cpuTemp) {
-		this.cpuTemp.set(cpuTemp);
+	public ArrayList<Double> getCpuTemps() {
+		return cpuTemp;
+	}
+
+	public void setCpuTemp(List<Double> l) {
+		this.cpuTemp.clear();
+		this.cpuTemp.addAll(l);
 	}
 
 	public String getMessageLatency() {
@@ -133,8 +139,8 @@ public class ServerProfile implements Serializable {
 		if (c.hasUserCount()) {
 			setConnectedUsers(c.getUserCount());
 		}
-		if (c.hasCpuTemp()) {
-			setCpuTemp(c.getCpuTemp());
+		if (c.getCpuTempCount() != 0) {
+			setCpuTemp(c.getCpuTempList());
 		}
 		if (c.hasRamCrimsonUsage()) {
 			setCrimsonRamUsage(CUtil.Misc.familiarize(c.getRamCrimsonUsage(), CUtil.Misc.BYTES));

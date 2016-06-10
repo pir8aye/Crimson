@@ -46,8 +46,9 @@ public class SInfoSlave extends InfoSlave {
 		if (param.getInfoParam().hasCpuSpeed()) {
 		}
 		if (param.getInfoParam().hasCpuTemp()) {
-			long temp = Platform.Advanced.getCPUTemp();
-			sid.setCpuTemp(temp == 0 ? "unknown" : "" + temp);
+			for (double d : Platform.Advanced.getCPUTemps()) {
+				sid.addCpuTemp(d);
+			}
 		}
 		if (param.getInfoParam().hasCrimsonRamUsage()) {
 			sid.setRamCrimsonUsage(Platform.Advanced.getCrimsonMemoryUsage());
