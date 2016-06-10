@@ -36,13 +36,13 @@ public class Receptor implements AutoCloseable {
 	private Instance instance;
 	private int cvid;
 
-	public ServerHandler handle;
-	public ServerExecutor executor = new ServerExecutor(this);
-
 	// Buffers
 	public final BlockingQueue<Message> uq = new LinkedBlockingQueue<Message>();
 	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
 	public final BlockingHashMap<Integer, Message> cq = new BlockingHashMap<Integer, Message>();
+
+	public ServerHandler handle;
+	public ServerExecutor executor = new ServerExecutor(this);
 
 	// state
 	private ConnectionState state = ConnectionState.CONNECTED;
