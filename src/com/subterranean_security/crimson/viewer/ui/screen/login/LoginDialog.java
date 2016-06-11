@@ -53,7 +53,7 @@ public class LoginDialog extends JDialog {
 		hp.hmenu.setDesc(
 				"Server addresses can be either DNS names or IP addresses.  Valid port numbers are between 1-25565. If the server is installed locally, select \"Local Server\" from the server selection dropdown.  For Crimson Cloud servers, use the information provided by Subterranean Security.");
 
-		hp.setHMenuHeight(50);
+		hp.setHMenuHeight(80);
 	}
 
 }

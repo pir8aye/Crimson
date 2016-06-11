@@ -38,8 +38,8 @@ public enum UICommon {
 	// fonts
 	public static final Font font_menu_button = new Font("Dialog", Font.BOLD, 10);
 	public static final Font font_menu_title = new Font("Dialog", Font.BOLD, 12);
-	public static final Font font_btn_up = new Font("Dialog", Font.BOLD, 9);
-	public static final Font font_help = new Font("Dialog", Font.PLAIN, 10);
+	public static final Font font_title_hmenu_help = new Font("Dialog", Font.BOLD, 11);
+	public static final Font font_text_help = new Font("Dialog", Font.PLAIN, 10);
 
 	// dimensions
 	public static final Dimension dim_btn_up = new Dimension(40, 17);

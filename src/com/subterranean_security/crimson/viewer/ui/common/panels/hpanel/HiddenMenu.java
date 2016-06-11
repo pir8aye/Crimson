@@ -74,14 +74,15 @@ public class HiddenMenu extends JPanel {
 
 		help = new JPanel();
 		help.setMaximumSize(new Dimension(32767, 200));
-		help.setBorder(new TitledBorder(null, "Help", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		help.setBorder(new TitledBorder(null, "Help", TitledBorder.LEADING, TitledBorder.TOP,
+				UICommon.font_title_hmenu_help, null));
 
 		help.setLayout(new BorderLayout(0, 0));
 
 		textArea = new JTextArea();
 		textArea.setOpaque(false);
 		textArea.setMinimumSize(new Dimension(200, 40));
-		textArea.setFont(UICommon.font_help);
+		textArea.setFont(UICommon.font_text_help);
 		textArea.setEditable(false);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);

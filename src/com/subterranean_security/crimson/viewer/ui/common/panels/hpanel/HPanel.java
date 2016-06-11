@@ -76,7 +76,6 @@ public class HPanel extends SLPanel {
 
 	public JButton initBtnUP() {
 		final JButton btnUp = new JButton(open);
-		btnUp.setFont(UICommon.font_btn_up);
 		btnUp.setPreferredSize(UICommon.dim_btn_up);
 		btnUp.setMargin(new Insets(2, 0, 2, 0));
 		btnUp.addActionListener(new ActionListener() {
