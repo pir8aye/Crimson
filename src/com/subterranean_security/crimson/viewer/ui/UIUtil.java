@@ -17,15 +17,25 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui;
 
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import org.slf4j.Logger;
+
+import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.util.CUtil;
 
 public enum UIUtil {
 	;
+
+	private static final Logger log = CUtil.Logging.getLogger(UIUtil.class);
 
 	public static ArrayList<Image> getIconList() {
 		ArrayList<Image> icons = new ArrayList<Image>();
@@ -47,6 +57,31 @@ public enum UIUtil {
 		} catch (Exception e) {
 			System.out.println("Icon not found: " + rpath);
 			return null;
+		}
+	}
+
+	public static void adaptPlatform() {
+		switch (Platform.osFamily) {
+
+		case LIN:
+			UIManager.put("TitledBorder.font", new Font("Dialog", Font.BOLD, 12));
+			try {
+				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+					| UnsupportedLookAndFeelException e) {
+				log.warn("Failed to set GTK LookAndFeel");
+			}
+			break;
+
+		default:
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+					| UnsupportedLookAndFeelException e) {
+				log.warn("Failed to set system LookAndFeel");
+			}
+			break;
+
 		}
 	}
 

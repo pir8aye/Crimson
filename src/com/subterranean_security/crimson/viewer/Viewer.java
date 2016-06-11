@@ -22,19 +22,18 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import javax.swing.UIManager;
-
 import org.slf4j.Logger;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.ui.debug.DebugFrame;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.ServerProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore.Databases;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.eula.EULADialog;
 import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
@@ -65,21 +64,8 @@ public class Viewer {
 		Platform.Advanced.loadSigar();
 		Platform.Advanced.loadLapis();
 
-		try {
-			switch (Platform.osFamily) {
-
-			case LIN:
-				UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-				break;
-			default:
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				break;
-			}
-
-		} catch (Exception e) {
-			log.error("Failed to set look and feel");
-			e.printStackTrace();
-		}
+		// Make platform specific UI tweaks
+		UIUtil.adaptPlatform();
 
 		// Show the EULA if needed
 		try {
