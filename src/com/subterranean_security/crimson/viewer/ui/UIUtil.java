@@ -55,7 +55,6 @@ public enum UIUtil {
 			return new ImageIcon(ImageIO
 					.read(UIUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/" + rpath)));
 		} catch (Exception e) {
-			System.out.println("Icon not found: " + rpath);
 			return null;
 		}
 	}

@@ -438,6 +438,15 @@ public enum CUtil {
 			return String.valueOf(size);
 		}
 
+		public static long defamiliarize(String s, String[] units) {
+			for (int i = 0; i < units.length; i++) {
+				if (s.toLowerCase().endsWith(units[i].toLowerCase())) {
+					return (long) (Double.parseDouble(s.substring(0, s.indexOf(' '))) * (Math.pow(1024, i)));
+				}
+			}
+			return Long.parseLong(s.substring(0, s.indexOf(' ')));
+		}
+
 		public static boolean isSameDay(Date d1, Date d2) {
 			SimpleDateFormat formatter = new SimpleDateFormat("MMddyyyy");
 			return formatter.format(d1).equals(formatter.format(d2));

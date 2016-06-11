@@ -21,12 +21,10 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -36,17 +34,17 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableRowSorter;
 
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
-import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class FileTable extends JPanel {
 	private static final long serialVersionUID = 1L;
 	public TM tm = new TM();
 	public TR tr = new TR(tm);
+	public TableRowSorter<TM> rs = new TableRowSorter<TM>(tm);
 
 	private JTable table = new JTable();
 	public Pane pane;
@@ -101,6 +99,18 @@ public class FileTable extends JPanel {
 		table.setFillsViewportHeight(true);
 		table.setDefaultRenderer(Object.class, tr);
 		table.setModel(tm);
+		table.setRowSorter(rs);
+
+		rs.setComparator(1, new Comparator<String>() {
+
+			@Override
+			public int compare(String i1, String i2) {
+
+				return Long.compare(CUtil.Misc.defamiliarize(i1, CUtil.Misc.BYTES),
+						CUtil.Misc.defamiliarize(i2, CUtil.Misc.BYTES));
+
+			}
+		});
 
 		JScrollPane jsp = new JScrollPane(table);
 		add(jsp, BorderLayout.CENTER);
@@ -179,41 +189,8 @@ public class FileTable extends JPanel {
 	public void setFiles(List<FileListlet> list) {
 		ArrayList<FileItem> items = new ArrayList<FileItem>();
 
-		try {
-			for (FileListlet fl : list) {
-				FileItem fi = new FileItem();
-				URL url = null;
-				if (fl.getDir()) {
-					url = getClass().getResource(
-							"/com/subterranean_security/crimson/viewer/ui/res/image/icons16/files/file_extension_folder.png");
-
-				} else {
-					// TODO rewrite
-					String[] ext = fl.getName().split("\\.");
-					url = getClass().getResource(
-							"/com/subterranean_security/crimson/viewer/ui/res/image/icons16/files/file_extension_"
-									+ ext[ext.length - 1] + ".png");
-
-					if (url == null) {
-						url = getClass().getResource(
-								"/com/subterranean_security/crimson/viewer/ui/res/image/icons16/files/file_extension_default.png");
-					}
-				}
-				ImageIcon ico = new ImageIcon(ImageIO.read(url));
-				ico.setDescription(fl.getName());
-				fi.setIcon(ico);
-				if (fl.getDir()) {
-					fi.setSize(fl.getSize() + ((fl.getSize() == 1) ? " item " : " items"));
-				} else {
-					fi.setSize(CUtil.Misc.familiarize(fl.getSize(), CUtil.Misc.BYTES));
-				}
-
-				items.add(fi);
-
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (FileListlet fl : list) {
+			items.add(new FileItem(fl.getName(), fl.getDir(), fl.getSize(), fl.getMtime()));
 		}
 
 		tm.setFiles(items);
@@ -299,31 +276,38 @@ class TR extends DefaultTableCellRenderer {
 
 class FileItem {
 	private ImageIcon icon;
+
 	private String size;
+
 	private String mtime;
+
+	public FileItem(String name, boolean dir, long size, long mtime) {
+
+		if (dir) {
+			this.size = size + ((size == 1) ? " item " : " items");
+			icon = UIUtil.getIcon("icons16/files/file_extension_folder.png");
+		} else {
+			this.size = CUtil.Misc.familiarize(size, CUtil.Misc.BYTES);
+
+			icon = UIUtil.getIcon("/com/subterranean_security/crimson/viewer/ui/res/image/icons16/files/file_extension_"
+					+ name.substring(name.lastIndexOf('.') + 1) + ".png");
+			if (icon == null) {
+				icon = UIUtil.getIcon("icons16/files/file_extension_default.png");
+			}
+		}
+		icon.setDescription(name);
+	}
 
 	public ImageIcon getIcon() {
 		return icon;
-	}
-
-	public void setIcon(ImageIcon icon) {
-		this.icon = icon;
 	}
 
 	public String getSize() {
 		return size;
 	}
 
-	public void setSize(String size) {
-		this.size = size;
-	}
-
 	public String getMtime() {
 		return mtime;
-	}
-
-	public void setMtime(String mtime) {
-		this.mtime = mtime;
 	}
 
 }
