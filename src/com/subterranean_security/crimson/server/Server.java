@@ -80,7 +80,10 @@ public final class Server {
 
 		start();
 
-		generateDebugInstaller();
+		if (Common.isDebugMode() && !ServerState.isCloudMode() && !ServerState.isExampleMode()) {
+			generateDebugInstaller();
+		}
+
 	}
 
 	public static boolean isRunning() {
