@@ -153,7 +153,7 @@ public enum Common {
 		case WIN:
 			return new File(System.getProperty("user.home") + "/AppData/Local/Subterranean Security/Crimson/var");
 		default:
-			return new File(base.getAbsolutePath() + "/var");
+			return new File(System.getProperty("user.home") +  "/.crimson/var");
 
 		}
 
