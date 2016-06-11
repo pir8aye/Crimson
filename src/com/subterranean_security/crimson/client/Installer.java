@@ -33,7 +33,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import com.subterranean_security.crimson.client.net.ClientCommands;
-import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 
 public class Installer {
@@ -42,6 +41,23 @@ public class Installer {
 	public static String jarPath;
 
 	private static boolean debug = new File("/debug.txt").exists();
+
+	private static String platform = null;
+
+	static {
+		String name = System.getProperty("os.name").toLowerCase();
+		if (name.endsWith("bsd")) {
+			platform = "bsd";
+		} else if (name.equals("mac os x")) {
+			platform = "osx";
+		} else if (name.equals("solaris") || name.equals("sunos")) {
+			platform = "sol";
+		} else if (name.equals("linux")) {
+			platform = "lin";
+		} else if (name.startsWith("windows")) {
+			platform = "win";
+		}
+	}
 
 	public static void main(String[] args) {
 		try {
@@ -111,7 +127,7 @@ public class Installer {
 
 	public static boolean isInstalled() throws URISyntaxException {
 		jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-		String target = ic.get("base_lin");// TODO
+		String target = ic.get("base_" + platform);
 		File t1 = (new File(jarPath)).getParentFile();
 		File t2 = new File(target);
 		System.out.println("Testing for equality: " + t1.getAbsolutePath() + " and: " + t2.getAbsolutePath());
@@ -120,7 +136,7 @@ public class Installer {
 
 	public static boolean install() {
 		System.out.println("Starting installation");
-		String base = ic.get("base_lin");// TODO
+		String base = ic.get("base_" + platform);
 		if (!(new File(base)).mkdirs()) {
 			System.out.println("Failed to create install base");
 			return false;
