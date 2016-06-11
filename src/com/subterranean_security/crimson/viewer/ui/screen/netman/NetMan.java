@@ -51,7 +51,7 @@ public class NetMan extends JFrame {
 
 		hp.hmenu.setDesc("Manages listeners and authentication on the server.  At least one listener must be defined.");
 
-		hp.refreshHeight();
+		hp.setHMenuHeight(50);
 	}
 
 	@Override

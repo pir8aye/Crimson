@@ -80,7 +80,7 @@ public class SettingsDialog extends JDialog {
 
 		hp.hmenu.setDesc("Change both local and server settings");
 
-		hp.refreshHeight();
+		hp.setHMenuHeight(50);
 	}
 
 }

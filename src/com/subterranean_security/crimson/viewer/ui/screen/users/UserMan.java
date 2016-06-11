@@ -49,7 +49,7 @@ public class UserMan extends JFrame {
 
 		hp.hmenu.setDesc("Manages users on the server. At least one user must have super permissions");
 
-		hp.refreshHeight();
+		hp.setHMenuHeight(50);
 	}
 
 	@Override

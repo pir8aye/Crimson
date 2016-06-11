@@ -125,7 +125,7 @@ public class GenDialog extends JDialog {
 		hp.hmenu.setDesc(
 				"Use this dialog to generate an installer in the format of your choice.  The installer can then be used to install Crimson on clients.  The jar output type is most commonly used.");
 
-		hp.refreshHeight();
+		hp.setHMenuHeight(50);
 		getContentPane().add(hp);
 	}
 

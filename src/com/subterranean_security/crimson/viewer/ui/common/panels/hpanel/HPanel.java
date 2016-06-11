@@ -66,8 +66,8 @@ public class HPanel extends SLPanel {
 
 	}
 
-	public void refreshHeight() {
-		pos2 = new SLConfig(this).gap(0, 0).row(8f).row(1f).row(hmenu.getHHeight()).col(1f).place(0, 0, movingMain)
+	public void setHMenuHeight(int h) {
+		pos2 = new SLConfig(this).gap(0, 0).row(8f).row(1f).row(h).col(1f).place(0, 0, movingMain)
 				.place(1, 0, movingBar).place(2, 0, movingHMenu);
 	}
 
