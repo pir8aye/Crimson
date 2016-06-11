@@ -105,7 +105,12 @@ public class FileTable extends JPanel {
 
 			@Override
 			public int compare(String i1, String i2) {
-
+				if (i1.contains("item")) {
+					i1 = "" + (Long.parseLong(i1.substring(0, i1.indexOf(' '))) - 10000000) + " items";
+				}
+				if (i2.contains("item")) {
+					i2 = "" + (Long.parseLong(i2.substring(0, i2.indexOf(' '))) - 10000000) + " items";
+				}
 				return Long.compare(CUtil.Misc.defamiliarize(i1, CUtil.Misc.BYTES),
 						CUtil.Misc.defamiliarize(i2, CUtil.Misc.BYTES));
 
