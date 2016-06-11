@@ -57,16 +57,14 @@ public class Reporter {
 		MI_Report.Builder rb = MI_Report.newBuilder();
 		rb.setInitDate(new Date().getTime());
 		rb.setCrVersion(Common.version);
-		rb.setJreVersion(System.getProperty("java.version"));
+		rb.setCrBuild(Common.build);
+		rb.setJreVersion(Platform.Advanced.getJavaVersion());
 		rb.setInstance(Common.instance.toString());
 		rb.setOsFamily(Platform.osFamily.toString());
 		// rb.setSysArch(Platform.sysArch.toString());
 		rb.setJreArch(Platform.javaArch.toString());
-
-		log.debug(
-				"Generated base report with values: Initialization: {}, Crimson Version: {}, JRE Version: {}, Instance: {}, OS Family: {}",
-				new Object[] { rb.getInitDate(), rb.getCrVersion(), rb.getJreVersion(), rb.getInstance(),
-						rb.getOsFamily() });
+		rb.setSysLang(Platform.Advanced.getLanguage());
+		rb.setOsName(Platform.osName);
 
 		return rb;
 	}

@@ -5,20 +5,22 @@ message MI_Report {
 	required int64 init_date = 1;
 	optional string hwid = 2;
 	optional string cr_version = 3;
-	optional string jre_version = 4;
-	optional string lib_version = 5;
-	optional string instance = 6;
-	optional string os_version = 7;
-	optional string os_family = 8;
-	optional string sys_arch = 9;
-	optional string jre_arch = 10;
-	optional string jre_uptime = 11;
-	optional string timezone = 12;
-	optional string sys_lang = 13;
-	optional string cr_lang = 14;
-	optional string charset = 15;
-	optional string log = 16;
-	optional string comment = 17;
+	optional string cr_build = 4;
+	optional string jre_version = 5;
+	optional string lib_version = 6;
+	optional string instance = 7;
+	optional string os_name = 8;
+	optional string os_family = 9;
+	optional string sys_arch = 10;
+	optional string jre_arch = 11;
+	optional string sys_uptime = 12;
+	optional string jre_uptime = 13;
+	optional string timezone = 14;
+	optional string sys_lang = 15;
+	optional string cr_lang = 16;
+	optional string charset = 17;
+	optional string log = 18;
+	optional string comment = 19;
 
-	optional string stack_trace = 18;
+	optional string stack_trace = 20;
 }
