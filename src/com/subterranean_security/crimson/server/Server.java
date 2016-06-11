@@ -74,8 +74,8 @@ public final class Server {
 			ServerStore.Databases.system = new ServerDB(new File(Common.var.getAbsolutePath() + "/system.db"));
 			Common.cvid = ServerStore.Databases.system.getInteger("cvid");
 		} catch (Exception e) {
-			log.error("Could not initialize system database");
-
+			log.error("Failed to initialize system database");
+			System.exit(0);
 		}
 
 		start();
@@ -109,8 +109,8 @@ public final class Server {
 
 		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.NO_AUTH)
 				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
-				.setPathWin("C:\\Users\\dev\\Documents\\Crimson").setPathBsd("/").setPathLin("/home/dev/cr").setPathOsx("/")
-				.setPathSol("/").setReconnectPeriod(10).build();
+				.setPathWin("C:\\Users\\dev\\Documents\\Crimson").setPathBsd("/").setPathLin("/home/dev/cr")
+				.setPathOsx("/").setPathSol("/").setReconnectPeriod(10).build();
 		try {
 			Generator g = new Generator(cc);
 			byte[] res = g.getResult();
