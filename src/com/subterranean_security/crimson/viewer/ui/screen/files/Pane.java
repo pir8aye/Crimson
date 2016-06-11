@@ -23,7 +23,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.Date;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -143,7 +142,6 @@ public class Pane extends JPanel {
 		new Thread(new Runnable() {
 			public void run() {
 				beginLoading();
-				Date start = new Date();
 				switch (type) {
 				case CLIENT:
 				case SERVER:
@@ -155,7 +153,6 @@ public class Pane extends JPanel {
 					break;
 
 				}
-				parent.console.addLine("Moved up in: " + (new Date().getTime() - start.getTime()) + " milliseconds");
 				stopLoading();
 			}
 		}).start();
@@ -167,7 +164,6 @@ public class Pane extends JPanel {
 		new Thread(new Runnable() {
 			public void run() {
 				beginLoading();
-				Date start = new Date();
 				switch (type) {
 				case CLIENT:
 				case SERVER:
@@ -179,7 +175,6 @@ public class Pane extends JPanel {
 					break;
 
 				}
-				parent.console.addLine("Moved down in: " + (new Date().getTime() - start.getTime()) + " milliseconds");
 				stopLoading();
 			}
 		}).start();
