@@ -125,6 +125,8 @@ public class PathPanel extends JPanel {
 	public void openEdit() {
 		if (!loading) {
 			((CardLayout) panel.getLayout()).show(panel, "EDIT");
+
+			textField.grabFocus();
 			textField.selectAll();
 		}
 
