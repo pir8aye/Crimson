@@ -83,14 +83,14 @@ public class FileTable extends JPanel {
 				if (e.getButton() == MouseEvent.BUTTON3) {
 					ArrayList<FileItem> selection = new ArrayList<FileItem>();
 					for (int i : source.getSelectedRows()) {
-						selection.add(tm.files.get(i));
+						selection.add(tm.getFile(i));
 					}
 					initContextActions(selection);
 
 					popup.show(table, e.getPoint().x, e.getPoint().y);
 				} else if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-					if (tm.files.get(sourceRow).isFolder()) {
-						pane.down(tm.files.get(sourceRow).getIcon().getDescription());
+					if (tm.getFile(sourceRow).isFolder()) {
+						pane.down(tm.getFile(sourceRow).getIcon().getDescription());
 					}
 
 					return;
@@ -209,7 +209,7 @@ public class FileTable extends JPanel {
 class TM extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	public String[] headers = new String[] { "Name", "Size" };
-	public ArrayList<FileItem> files = new ArrayList<FileItem>();
+	private ArrayList<FileItem> files = new ArrayList<FileItem>();
 
 	public void setFiles(ArrayList<FileItem> list) {
 		files = list;
@@ -245,6 +245,10 @@ class TM extends AbstractTableModel {
 
 		}
 		return null;
+	}
+
+	public FileItem getFile(int row) {
+		return files.get(row);
 	}
 
 }
