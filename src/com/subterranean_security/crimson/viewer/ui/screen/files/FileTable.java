@@ -88,8 +88,11 @@ public class FileTable extends JPanel {
 					initContextActions(selection);
 
 					popup.show(table, e.getPoint().x, e.getPoint().y);
-				} else if (e.getClickCount() == 2) {
-					pane.down(tm.files.get(sourceRow).getIcon().getDescription());
+				} else if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+					if (tm.files.get(sourceRow).isFolder()) {
+						pane.down(tm.files.get(sourceRow).getIcon().getDescription());
+					}
+
 					return;
 				}
 			}
@@ -286,7 +289,10 @@ class FileItem {
 
 	private String mtime;
 
+	private boolean folder;
+
 	public FileItem(String name, boolean dir, long size, long mtime) {
+		folder = dir;
 
 		if (dir) {
 			this.size = size + ((size == 1) ? " item " : " items");
@@ -313,6 +319,10 @@ class FileItem {
 
 	public String getMtime() {
 		return mtime;
+	}
+
+	public boolean isFolder() {
+		return folder;
 	}
 
 }
