@@ -142,9 +142,6 @@ public enum Common {
 
 				}
 
-				log.debug("Base directory: " + base.getAbsolutePath());
-				log.debug("Temporary directory: " + tmp.getAbsolutePath());
-
 			}
 
 		}
