@@ -28,7 +28,8 @@ public class ShutdownHook extends Thread {
 
 	@Override
 	public void run() {
-		log.debug("Executing ShutdownHook");
+		log.debug("Shutting down");
+		Client.clientDB.close();
 		FileLocking.unlock();
 	}
 }

@@ -100,7 +100,7 @@ public class ServerDB extends Database {
 
 			if (!ServerStore.Databases.loaded_viewers.containsKey(UID)) {
 				ServerStore.Databases.loaded_viewers.put(UID,
-						new ViewerDB(new File(Common.Directories.var + File.separator + UID + ".db")));
+						new ClientDB(new File(Common.Directories.var + File.separator + UID + ".db")));
 			}
 
 			System.out.println("Testing hashes: " + hash + " , " + password);
@@ -159,7 +159,7 @@ public class ServerDB extends Database {
 		}
 
 		try {
-			ViewerDB udb = new ViewerDB(new File(dfile.getParent() + File.separator + UID + ".db"));
+			ClientDB udb = new ClientDB(new File(dfile.getParent() + File.separator + UID + ".db"));
 			udb.master = Crypto.hashPass(password.toCharArray(), salt);
 			udb.close();
 		} catch (Exception e1) {

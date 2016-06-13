@@ -84,7 +84,6 @@ public class Log implements Serializable {
 		boolean flag = false;
 
 		for (Date d : pages.keyset()) {
-			// TODO create utility for same day comparison
 			if (CUtil.Misc.isSameDay(d, new Date(evKevent.getDate()))) {
 				flag = true;
 				try {
