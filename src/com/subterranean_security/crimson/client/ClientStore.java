@@ -17,26 +17,96 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
+import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
 
 public enum ClientStore {
 	;
 
 	private static final Logger log = LoggerFactory.getLogger(ClientStore.class);
 
-	public static class Connections {
-		private static ArrayList<ClientConnector> connections = new ArrayList<ClientConnector>();
+	public static int connectionIterations = 0;
 
-		public static void add(ClientConnector c) {
+	public static class Connections {
+		private static HashMap<Integer, ClientConnector> connections = new HashMap<Integer, ClientConnector>();
+		private static List<NetworkTarget> targets = null;
+		private static int period = 20000;
+
+		private static boolean connecting = false;
+
+		public static void add(int cvid, ClientConnector c) {
 			log.debug("Adding new connection");
-			connections.add(c);
+			connections.put(cvid, c);
 		}
+
+		public static ClientConnector get(int cvid) {
+			return connections.get(cvid);
+		}
+
+		public static void setTargets(List<NetworkTarget> t) {
+			targets = t;
+		}
+
+		public static void setPeriod(int p) {
+			period = p;
+		}
+
+		public static void connectionRoutine() {
+			if (connecting) {
+				return;
+			} else {
+				connecting = true;
+			}
+
+			try {
+				while (true) {
+					for (NetworkTarget n : targets) {
+						connectionIterations++;
+						try {
+							log.debug("Attempting connection to: {}:{}", n.getServer(), n.getPort());
+							ClientConnector connector = new ClientConnector(n.getServer(), n.getPort());
+							add(0, connector);
+							return;
+
+						} catch (ConnectException e) {
+
+						}
+						Thread.sleep(period);
+
+					}
+				}
+			} catch (InterruptedException e) {
+
+			} finally {
+				connecting = false;
+			}
+
+		}
+
+		public static void route(Message m) {
+			if (m.hasRid()) {
+				ClientConnector c = get(m.getRid());
+				if (c != null) {
+					c.handle.write(m);
+				}
+			}
+			get(0).handle.write(m);
+		}
+
+		public static void route(Message.Builder m) {
+			route(m.build());
+		}
+
 	}
 
 	public static class LocalFilesystems {

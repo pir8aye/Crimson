@@ -118,7 +118,7 @@ public final class Server {
 		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.NO_AUTH)
 				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
 				.setPathWin("C:\\Users\\dev\\Documents\\Crimson").setPathBsd("/").setPathLin("/home/dev/cr")
-				.setPathOsx("/").setPathSol("/").setReconnectPeriod(10).build();
+				.setPathOsx("/").setPathSol("/").setReconnectPeriod(3000).build();
 		try {
 			Generator g = new Generator(cc);
 			byte[] res = g.getResult();
