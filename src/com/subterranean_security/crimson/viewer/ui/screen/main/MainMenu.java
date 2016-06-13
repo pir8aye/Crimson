@@ -54,8 +54,17 @@ public class MainMenu extends JPanel {
 	public ProgressArea progressArea;
 	private InfoMaster im;
 	private InfoSlave is;
+	private JMenu mnControls;
 
 	public MainMenu() {
+		init();
+	}
+
+	public void closeControls() {
+		mnControls.setSelected(false);
+	}
+
+	public void init() {
 		setForeground(UICommon.bg);
 		setBackground(UICommon.bg);
 
@@ -65,7 +74,7 @@ public class MainMenu extends JPanel {
 		menuBar.setBackground(UIManager.getColor("Button.background"));
 		add(menuBar, BorderLayout.CENTER);
 
-		JMenu mnControls = new JMenu("Controls");
+		mnControls = new JMenu("Controls");
 		mnControls.addMenuListener(new MenuListener() {
 
 			@Override

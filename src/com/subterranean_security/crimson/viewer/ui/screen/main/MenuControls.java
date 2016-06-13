@@ -237,7 +237,19 @@ public class MenuControls extends JPanel {
 		panel_2.add(btnShutdown);
 		btnShutdown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.exit(0);
+				new Thread(new Runnable() {
+					public void run() {
+						MainFrame.main.mm.closeControls();
+						try {
+							Thread.sleep(200);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						System.exit(0);
+					}
+				}).start();
+
 			}
 		});
 		btnShutdown.setMargin(new Insets(2, 4, 2, 4));
