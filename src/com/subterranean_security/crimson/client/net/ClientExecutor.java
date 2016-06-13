@@ -43,6 +43,7 @@ import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.core.util.Native;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -118,14 +119,18 @@ public class ClientExecutor extends BasicExecutor {
 		case FUNCTIONING_ON:
 			break;
 		case RESTART:
+			Native.restart();
 			break;
 		case SHUTDOWN:
+			Native.poweroff();
 			break;
 		case UNINSTALL:
 			break;
 		case HIBERNATE:
+			Native.hibernate();
 			break;
 		case STANDBY:
+			Native.standby();
 			break;
 		default:
 			break;

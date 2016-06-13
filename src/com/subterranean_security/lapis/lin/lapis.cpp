@@ -47,3 +47,19 @@ char* exec(const char* cmd, char* buffer) {
 
 	return buffer;
 }
+
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_poweroff(JNIEnv *env, jclass cls) {
+	system("poweroff");
+}
+
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_restart(JNIEnv *env, jclass cls) {
+	system("reboot");
+}
+
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_standby(JNIEnv *env, jclass cls) {
+
+}
+
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_hibernate(JNIEnv *env, jclass cls) {
+
+}

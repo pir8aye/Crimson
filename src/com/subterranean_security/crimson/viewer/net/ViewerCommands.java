@@ -41,6 +41,7 @@ import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.State.RQ_ChangeClientState;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
@@ -130,7 +131,7 @@ public enum ViewerCommands {
 		log.debug("Changing client state: {}", st.toString());
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid)
-					.setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)), 3);
+					.setRqChangeClientState(RQ_ChangeClientState.newBuilder().setNewState(st)), 3);
 			if (m == null) {
 				error.append("No response");
 			} else if (!m.getRsChangeServerState().getResult()) {

@@ -32,6 +32,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
 
 public class Client {
@@ -42,6 +43,8 @@ public class Client {
 	public static int connectionIterations = 0;
 
 	public static void main(String[] args) {
+
+		CUtil.Logging.configure();
 
 		log.info("Initializing client");
 

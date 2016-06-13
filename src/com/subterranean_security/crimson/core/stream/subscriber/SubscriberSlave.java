@@ -55,6 +55,10 @@ public class SubscriberSlave extends Stream {
 		if (param.getSubscriberParam().getKeylog()) {
 			ClientProfile cp = ServerStore.Profiles.getClient(param.getCID());
 
+			if (cp == null) {
+				System.out.println("CP IS NULL");
+			}
+
 			cp.getKeylog().addCallback(new LogCallback(this));
 		}
 

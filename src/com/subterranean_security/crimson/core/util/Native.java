@@ -6,4 +6,13 @@ public class Native {
 	public static native long getSystemUptime();
 
 	public static native long getCpuTemp();
+
+	public static native void poweroff();
+
+	public static native void restart();
+
+	public static native void standby();
+
+	public static native void hibernate();
+
 }

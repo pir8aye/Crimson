@@ -83,3 +83,19 @@ JNIEXPORT jlong JNICALL Java_com_subterranean_1security_crimson_core_util_Native
 	HRESULT hr = GetCpuTemperature(&temp);
 	return temp;
 }
+
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_poweroff(JNIEnv *env, jclass cls) {
+	system("shutdown /s /p");
+}
+
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_restart(JNIEnv *env, jclass cls) {
+	system("shutdown /r /p");
+}
+
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_standby(JNIEnv *env, jclass cls) {
+
+}
+
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_hibernate(JNIEnv *env, jclass cls) {
+	system("shutdown /h /p");
+}

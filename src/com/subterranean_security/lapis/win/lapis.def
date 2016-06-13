@@ -1,6 +1,8 @@
 LIBRARY   BTREE
 EXPORTS
-   Java_com_subterranean_1security_crimson_core_util_Native_getActiveWindow   @1
-   Java_com_subterranean_1security_crimson_core_util_Native_getSystemUptime   @2
-   Java_com_subterranean_1security_crimson_core_util_Native_getCpuTemp   @3
+   Java_com_subterranean_1security_crimson_core_util_Native_getActiveWindow	@1
+   Java_com_subterranean_1security_crimson_core_util_Native_getSystemUptime	@2
+   Java_com_subterranean_1security_crimson_core_util_Native_getCpuTemp		@3
+   Java_com_subterranean_1security_crimson_core_util_Native_poweroff		@4
+   Java_com_subterranean_1security_crimson_core_util_Native_restart			@5
    

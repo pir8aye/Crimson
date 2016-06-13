@@ -31,6 +31,38 @@ JNIEXPORT jlong JNICALL Java_com_subterranean_1security_crimson_core_util_Native
 JNIEXPORT jlong JNICALL Java_com_subterranean_1security_crimson_core_util_Native_getCpuTemp
   (JNIEnv *, jclass);
 
+/*
+ * Class:     com_subterranean_security_crimson_core_util_Native
+ * Method:    poweroff
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_poweroff
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_subterranean_security_crimson_core_util_Native
+ * Method:    restart
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_restart
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_subterranean_security_crimson_core_util_Native
+ * Method:    standby
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_standby
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_subterranean_security_crimson_core_util_Native
+ * Method:    hibernate
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_hibernate
+  (JNIEnv *, jclass);
+
 #ifdef __cplusplus
 }
 #endif
