@@ -71,7 +71,6 @@ public class MainMenu extends JPanel {
 		setLayout(new BorderLayout(0, 0));
 
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBackground(UIManager.getColor("Button.background"));
 		add(menuBar, BorderLayout.CENTER);
 
 		mnControls = new JMenu("Controls");
@@ -289,9 +288,6 @@ public class MainMenu extends JPanel {
 		});
 
 		mnAbout.add(wmTour);
-
-		progressArea = new ProgressArea();
-		add(progressArea, BorderLayout.EAST);
 
 	}
 }
