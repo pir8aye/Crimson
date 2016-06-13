@@ -30,6 +30,7 @@ import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.ui.debug.DebugFrame;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.EH;
 import com.subterranean_security.crimson.core.util.FileLocking;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.ServerProfile;
@@ -51,7 +52,7 @@ public class Viewer {
 		CUtil.Logging.configure();
 
 		// Establish the custom fallback exception handler
-		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
+		Thread.setDefaultUncaughtExceptionHandler(new EH());
 
 		// Establish the custom shutdown hook
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());

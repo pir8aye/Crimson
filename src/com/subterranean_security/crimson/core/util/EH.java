@@ -17,10 +17,29 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
-public enum EH {
-	;
-	public static void handle(Exception e) {
-		e.printStackTrace();
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.subterranean_security.crimson.core.Reporter;
+
+public class EH implements Thread.UncaughtExceptionHandler {
+
+	private static final Logger log = LoggerFactory.getLogger(EH.class);
+
+	@Override
+	public void uncaughtException(Thread thread, Throwable t) {
+
+		log.debug(CUtil.Misc.getStack(t));
+
+		Thread.currentThread().getStackTrace();// TODO send
+
+		Reporter.report(Reporter.newReport().setStackTrace(CUtil.Misc.getStack(t)).build());
+
+	}
+
+	public static void handle(Throwable t) {
+		log.debug(CUtil.Misc.getStack(t));
+		Reporter.report(Reporter.newReport().setStackTrace(CUtil.Misc.getStack(t)).build());
 	}
 
 }

@@ -32,6 +32,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
+import com.subterranean_security.crimson.core.util.EH;
 
 public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
@@ -45,7 +46,7 @@ public class Client {
 		log.info("Initializing client");
 
 		// Establish the custom fallback exception handler
-		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
+		Thread.setDefaultUncaughtExceptionHandler(new EH());
 
 		// Establish the custom shutdown hook
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());

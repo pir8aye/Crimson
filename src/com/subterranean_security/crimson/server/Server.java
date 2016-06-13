@@ -37,6 +37,7 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.EH;
 import com.subterranean_security.crimson.core.util.FileLocking;
 
 public final class Server {
@@ -50,7 +51,7 @@ public final class Server {
 
 		// Establish the custom fallback exception handler
 		log.debug("Initializing exception handler");
-		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
+		Thread.setDefaultUncaughtExceptionHandler(new EH());
 
 		// Establish the custom shutdown hook
 		log.debug("Initializing shutdown hook");

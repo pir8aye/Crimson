@@ -972,6 +972,7 @@ public enum CUtil {
 				CUtil.Files.substitute(config, "%LEVEL%", Common.isDebugMode() ? LogLevel.DEBUG.toString().toLowerCase()
 						: LogLevel.INFO.toString().toLowerCase());
 				CUtil.Files.substitute(config, "%LOGDIR%", config.getParent().replaceAll("\\\\", "/"));
+				CUtil.Files.substitute(config, "%INSTANCE%", Common.instance.toString());
 
 			}
 
