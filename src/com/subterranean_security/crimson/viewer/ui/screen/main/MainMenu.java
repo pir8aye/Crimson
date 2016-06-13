@@ -153,7 +153,10 @@ public class MainMenu extends JPanel {
 					GenDialog gd = new GenDialog();
 					gd.setVisible(true);
 				} else {
-					MainFrame.main.np.addNote("error", "Permission denied");
+					// TODO
+					// MainFrame.main.np.addNote("error", "Permission denied");
+					GenDialog gd = new GenDialog();
+					gd.setVisible(true);
 				}
 
 				wmGen.resetBG();
