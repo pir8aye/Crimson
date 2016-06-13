@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -49,7 +50,6 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.LogManager;
 import java.util.regex.Pattern;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
@@ -77,16 +77,14 @@ import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.viewer.Viewer;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.ConsoleAppender;
-import ch.qos.logback.core.FileAppender;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
+import io.netty.handler.logging.LogLevel;
 
 public enum CUtil {
 	;
-	private static final Logger log = CUtil.Logging.getLogger(CUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(CUtil.class);
 
 	public static class Files {
 
@@ -94,19 +92,21 @@ public enum CUtil {
 			public static final String prefix = "crimson_temp_";
 
 			public static File getFile(String name) {
-				File f = new File(Common.tmp.getAbsolutePath() + File.separator + name);
+				File f = new File(Common.Directories.tmp.getAbsolutePath() + File.separator + name);
 				f.deleteOnExit();
 				return f;
 			}
 
 			public static File getFile() {
-				File f = new File(Common.tmp.getAbsolutePath() + File.separator + prefix + Misc.randString(9));
+				File f = new File(
+						Common.Directories.tmp.getAbsolutePath() + File.separator + prefix + Misc.randString(9));
 				f.deleteOnExit();
 				return f;
 			}
 
 			public static File getDir() {
-				File f = new File(Common.tmp.getAbsolutePath() + File.separator + prefix + Misc.randString(9));
+				File f = new File(
+						Common.Directories.tmp.getAbsolutePath() + File.separator + prefix + Misc.randString(9));
 				f.mkdirs();
 				f.deleteOnExit();
 
@@ -114,7 +114,7 @@ public enum CUtil {
 			}
 
 			public static void clear() {
-				for (File f : Common.tmp.listFiles()) {
+				for (File f : Common.Directories.tmp.listFiles()) {
 					if (f.getName().startsWith(prefix)) {
 						// delete it
 						if (!delete(f)) {
@@ -402,6 +402,27 @@ public enum CUtil {
 			}
 		}
 
+		public static void substitute(File f, String target, String replacement) {
+			try {
+				FileReader fr = new FileReader(f);
+				String s;
+				String totalStr = "";
+				try (BufferedReader br = new BufferedReader(fr)) {
+
+					while ((s = br.readLine()) != null) {
+						totalStr += s;
+					}
+					totalStr = totalStr.replaceAll(target, replacement);
+					FileWriter fw = new FileWriter(f);
+					fw.write(totalStr);
+					fw.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
 	}
 
 	public static class Misc {
@@ -570,7 +591,7 @@ public enum CUtil {
 			if (!lib.endsWith(".jar")) {
 				lib += ".jar";
 			}
-			return getManifestAttr(attr, new File(Common.base.getAbsolutePath() + "/lib/java/" + lib));
+			return getManifestAttr(attr, new File(Common.Directories.base.getAbsolutePath() + "/lib/java/" + lib));
 		}
 
 		public static int uptime() {
@@ -943,49 +964,31 @@ public enum CUtil {
 
 	public static class Logging {
 
-		static {
-			// TODO find a better way to exclude
-			LogManager.getLogManager().reset();
-			ch.qos.logback.classic.Logger netty = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("io.netty");
-			netty.setLevel(Level.ERROR);
+		public static void configure() {
+			File config = new File(Common.Directories.varLog.getAbsolutePath() + "/logback.xml");
+			if (!config.exists()) {
+				CUtil.Files.extract("com/subterranean_security/crimson/core/util/logback.xml",
+						config.getAbsolutePath());
+				CUtil.Files.substitute(config, "%LEVEL%", Common.isDebugMode() ? LogLevel.DEBUG.toString().toLowerCase()
+						: LogLevel.INFO.toString().toLowerCase());
+				CUtil.Files.substitute(config, "%LOGDIR%", config.getParent().replaceAll("\\\\", "/"));
 
-			ch.qos.logback.classic.Logger jnative = (ch.qos.logback.classic.Logger) LoggerFactory
-					.getLogger("org.jnativehook");
-			jnative.setLevel(Level.OFF);
+			}
+
+			LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+
+			JoranConfigurator configurator = new JoranConfigurator();
+			configurator.setContext(context);
+
+			context.reset();
+			try {
+				configurator.doConfigure(config.getAbsolutePath());
+			} catch (JoranException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
-		public static Logger getLogger(Class c) {
-			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-			PatternLayoutEncoder ple = new PatternLayoutEncoder();
-
-			// ple.setPattern("[%date{yyyy-MM-dd
-			// HH:mm:ss}][%level{1}][%thread]
-			// %logger{10} %msg%n");
-			ple.setPattern("[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n");
-			ple.setContext(lc);
-			ple.start();
-
-			ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(c);
-			ConsoleAppender<ILoggingEvent> stdout = new ConsoleAppender<ILoggingEvent>();
-			stdout.setEncoder(ple);
-			stdout.setContext(lc);
-			stdout.setName("com.subterranean_security");
-			stdout.start();
-			logger.addAppender(stdout);
-			logger.setLevel(Common.isDebugMode() ? Level.DEBUG : Level.INFO);
-			logger.setAdditive(false);
-
-			return logger;
-		}
-
-		public static void tmp() {
-			FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
-			/*
-			 * fileAppender.setFile(file); fileAppender.setEncoder(ple);
-			 * fileAppender.setContext(lc); fileAppender.start();
-			 * logger.addAppender(fileAppender);
-			 */
-		}
 	}
 
 }

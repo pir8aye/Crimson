@@ -22,16 +22,16 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Receptor implements AutoCloseable {
 
-	private static final Logger log = CUtil.Logging.getLogger(Receptor.class);
+	private static final Logger log = LoggerFactory.getLogger(Receptor.class);
 
 	private Instance instance;
 	private int cvid;

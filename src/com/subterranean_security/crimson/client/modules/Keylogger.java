@@ -24,16 +24,16 @@ import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.modules.Keylogger.RefreshMethod;
 import com.subterranean_security.crimson.client.net.ClientCommands;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Native;
 
 public enum Keylogger {
 	;
-	private static final Logger log = CUtil.Logging.getLogger(Keylogger.class);
+	private static final Logger log = LoggerFactory.getLogger(Keylogger.class);
 
 	private static Thread monitor;
 

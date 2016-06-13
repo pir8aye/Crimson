@@ -100,7 +100,7 @@ public class ServerDB extends Database {
 
 			if (!ServerStore.Databases.loaded_viewers.containsKey(UID)) {
 				ServerStore.Databases.loaded_viewers.put(UID,
-						new ViewerDB(new File(Common.var + File.separator + UID + ".db")));
+						new ViewerDB(new File(Common.Directories.var + File.separator + UID + ".db")));
 			}
 
 			System.out.println("Testing hashes: " + hash + " , " + password);

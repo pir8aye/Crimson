@@ -17,7 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -25,10 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.storage.Headers;
-import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 
 public class HostListHeaders extends JPanel {
 

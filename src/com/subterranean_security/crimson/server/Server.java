@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
@@ -39,11 +40,13 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.FileLocking;
 
 public final class Server {
-	private static final Logger log = CUtil.Logging.getLogger(Server.class);
+	private static final Logger log = LoggerFactory.getLogger(Server.class);
 
 	private static boolean running = false;
 
 	public static void main(String[] argv) {
+
+		CUtil.Logging.configure();
 
 		// Establish the custom fallback exception handler
 		log.debug("Initializing exception handler");
@@ -71,7 +74,8 @@ public final class Server {
 
 		// initialize system database
 		try {
-			ServerStore.Databases.system = new ServerDB(new File(Common.var.getAbsolutePath() + "/system.db"));
+			ServerStore.Databases.system = new ServerDB(
+					new File(Common.Directories.var.getAbsolutePath() + "/system.db"));
 			Common.cvid = ServerStore.Databases.system.getInteger("cvid");
 		} catch (Exception e) {
 			log.error("Failed to initialize system database");
@@ -153,7 +157,7 @@ public final class Server {
 
 	// TODO move into a config class
 	private static void readConfig() {
-		File config = new File(Common.base.getAbsolutePath() + "/server.conf");
+		File config = new File(Common.Directories.base.getAbsolutePath() + "/server.conf");
 		try {
 			if (!config.exists()) {
 				config.createNewFile();

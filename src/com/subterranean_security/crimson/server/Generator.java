@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.util.Date;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
 
 import com.subterranean_security.crimson.core.Common;
@@ -33,7 +34,7 @@ import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Generator {
 
-	private static final Logger log = CUtil.Logging.getLogger(Generator.class);
+	private static final Logger log = LoggerFactory.getLogger(Generator.class);
 
 	private File temp = CUtil.Files.Temp.getDir();
 	private GenReport.Builder report = GenReport.newBuilder();
@@ -69,8 +70,9 @@ public class Generator {
 	private GenReport.Builder genJar(ClientConfig ic) throws IOException {
 		GenReport.Builder gReport = GenReport.newBuilder();
 		Date start = new Date();
-		log.debug("Generating jar installer (auth.type: {}, net.period: {})", ic.getAuthType().toString(), ic.getReconnectPeriod());
-		
+		log.debug("Generating jar installer (auth.type: {}, net.period: {})", ic.getAuthType().toString(),
+				ic.getReconnectPeriod());
+
 		File clientJar = new File(temp.getAbsolutePath() + "/installer.jar");
 		File clientDB = new File(temp.getAbsolutePath() + "/client.db");
 		File internal = new File(temp.getAbsolutePath() + "/internal.txt");
@@ -115,7 +117,7 @@ public class Generator {
 
 		// add libraries to jar // TODO only copy needed libs
 		ZipUtil.addEntry(clientJar, "com/subterranean_security/crimson/client/res/bin/lib.zip",
-				new File(Common.base.getAbsolutePath() + "/lib/lib.zip"));
+				new File(Common.Directories.base.getAbsolutePath() + "/lib/lib.zip"));
 
 		// create and add the internal.txt
 		internal.createNewFile();

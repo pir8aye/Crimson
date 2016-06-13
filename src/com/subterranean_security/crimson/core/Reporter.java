@@ -21,9 +21,9 @@ package com.subterranean_security.crimson.core;
 import java.util.Date;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.services.Services;
 
 /**
@@ -32,7 +32,7 @@ import com.subterranean_security.services.Services;
  */
 public class Reporter {
 
-	private static final Logger log = CUtil.Logging.getLogger(Reporter.class);
+	private static final Logger log = LoggerFactory.getLogger(Reporter.class);
 
 	public static void report(final MI_Report r) {
 		// add report to buffer TODO

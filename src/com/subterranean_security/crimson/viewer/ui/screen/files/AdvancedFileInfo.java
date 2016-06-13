@@ -8,6 +8,7 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.exception.InvalidObjectException;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
@@ -15,7 +16,6 @@ import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.ObjectTransfer;
 import com.subterranean_security.crimson.viewer.ui.common.components.DataViewer;
-import javax.swing.border.EtchedBorder;
 
 public class AdvancedFileInfo extends JPanel {
 

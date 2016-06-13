@@ -1,17 +1,17 @@
 package com.subterranean_security.crimson.viewer.ui.common.panels.npanel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import javax.swing.SwingConstants;
-import java.awt.Color;
 
 public class Notification extends JPanel {
 

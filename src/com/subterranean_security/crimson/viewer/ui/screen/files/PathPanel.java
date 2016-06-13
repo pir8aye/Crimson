@@ -19,19 +19,19 @@ package com.subterranean_security.crimson.viewer.ui.screen.files;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import javax.swing.UIManager;
-import javax.swing.JProgressBar;
-import java.awt.Dimension;
 
 public class PathPanel extends JPanel {
 

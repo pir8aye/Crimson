@@ -25,9 +25,9 @@ import java.util.concurrent.TimeUnit;
 import javax.xml.stream.XMLStreamException;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
-import com.subterranean_security.crimson.client.net.ClientRouter;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
@@ -77,7 +77,7 @@ import com.subterranean_security.services.Services;
 import io.netty.util.ReferenceCountUtil;
 
 public class ServerExecutor extends BasicExecutor {
-	private static final Logger log = CUtil.Logging.getLogger(ServerExecutor.class);
+	private static final Logger log = LoggerFactory.getLogger(ServerExecutor.class);
 
 	private Receptor receptor;
 

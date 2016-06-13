@@ -20,15 +20,15 @@ package com.subterranean_security.crimson.client;
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
-import com.subterranean_security.crimson.core.util.CUtil;
 
 public enum ClientStore {
 	;
 
-	private static final Logger log = CUtil.Logging.getLogger(ClientStore.class);
+	private static final Logger log = LoggerFactory.getLogger(ClientStore.class);
 
 	public static class Connections {
 		private static ArrayList<ClientConnector> connections = new ArrayList<ClientConnector>();

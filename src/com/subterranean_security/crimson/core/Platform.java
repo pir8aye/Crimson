@@ -35,6 +35,7 @@ import org.hyperic.sigar.ProcMem;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -43,7 +44,7 @@ import com.subterranean_security.crimson.core.util.Native;
 public enum Platform {
 	;
 
-	private static final Logger log = CUtil.Logging.getLogger(Platform.class);
+	private static final Logger log = LoggerFactory.getLogger(Platform.class);
 
 	public static final ARCH sysArch = null;
 	public static final ARCH javaArch = getJVMArch();
@@ -200,7 +201,8 @@ public enum Platform {
 
 		public static void loadSigar() {
 			System.setProperty("java.library.path",
-					new File(Common.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString()).getAbsolutePath());
+					new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString())
+							.getAbsolutePath());
 			log.debug("Loading SIGAR native library");
 
 			sigar = new Sigar();
@@ -224,7 +226,7 @@ public enum Platform {
 			log.debug("Loading LAPIS native library");
 
 			try {
-				System.load(new File(Common.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/"
+				System.load(new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/"
 						+ osFamily.getLapisName(javaArch)).getAbsolutePath());
 
 			} catch (Throwable e) {

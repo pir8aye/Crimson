@@ -28,14 +28,14 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Platform;
-import com.subterranean_security.crimson.core.util.CUtil;
 
 public enum UIUtil {
 	;
 
-	private static final Logger log = CUtil.Logging.getLogger(UIUtil.class);
+	private static final Logger log = LoggerFactory.getLogger(UIUtil.class);
 
 	public static ArrayList<Image> getIconList() {
 		ArrayList<Image> icons = new ArrayList<Image>();

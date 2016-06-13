@@ -23,6 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import javax.net.ssl.SSLException;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.client.Client;
@@ -34,7 +35,6 @@ import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 
 import io.netty.bootstrap.Bootstrap;
@@ -42,7 +42,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class ClientConnector extends BasicConnector {
 
-	private static final Logger log = CUtil.Logging.getLogger(ClientConnector.class);
+	private static final Logger log = LoggerFactory.getLogger(ClientConnector.class);
 
 	// Buffers
 	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();

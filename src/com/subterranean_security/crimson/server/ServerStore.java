@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
@@ -31,7 +32,6 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.storage.ViewerDB;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.Listener;
@@ -40,7 +40,7 @@ import com.subterranean_security.crimson.sv.ViewerProfile;
 public enum ServerStore {
 	;
 
-	private static final Logger log = CUtil.Logging.getLogger(ServerStore.class);
+	private static final Logger log = LoggerFactory.getLogger(ServerStore.class);
 
 	public static class Listeners {
 		public static ArrayList<Listener> listeners = new ArrayList<Listener>();

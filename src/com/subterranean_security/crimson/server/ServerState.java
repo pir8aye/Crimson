@@ -18,13 +18,12 @@
 package com.subterranean_security.crimson.server;
 
 import org.slf4j.Logger;
-
-import com.subterranean_security.crimson.core.util.CUtil;
+import org.slf4j.LoggerFactory;
 
 public enum ServerState {
 	;
 
-	private static final Logger log = CUtil.Logging.getLogger(ServerState.class);
+	private static final Logger log = LoggerFactory.getLogger(ServerState.class);
 
 	private static boolean exampleMode = false;
 	private static boolean cloudMode = false;

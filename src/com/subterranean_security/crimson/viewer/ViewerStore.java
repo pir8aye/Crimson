@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.BasicConnector;
@@ -33,7 +34,6 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.ServerProfile;
 import com.subterranean_security.crimson.sv.ViewerProfile;
@@ -44,7 +44,7 @@ public enum ViewerStore {
 
 	;
 
-	private static final Logger log = CUtil.Logging.getLogger(ViewerStore.class);
+	private static final Logger log = LoggerFactory.getLogger(ViewerStore.class);
 
 	public static class Connections {
 		private static HashMap<Integer, BasicConnector> connections = new HashMap<Integer, BasicConnector>();
@@ -79,7 +79,8 @@ public enum ViewerStore {
 		/**
 		 * The server executable
 		 */
-		public static final File bundledServer = new File(Common.base.getAbsolutePath() + "/Crimson-Server.jar");
+		public static final File bundledServer = new File(
+				Common.Directories.base.getAbsolutePath() + "/Crimson-Server.jar");
 
 		public static Process process;
 		private static OutputStream os;
@@ -122,7 +123,7 @@ public enum ViewerStore {
 
 		static {
 			try {
-				local = new LViewerDB(new File(Common.var.getAbsolutePath() + "/viewer.db"));
+				local = new LViewerDB(new File(Common.Directories.var.getAbsolutePath() + "/viewer.db"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

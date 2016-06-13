@@ -23,12 +23,50 @@ import java.net.URISyntaxException;
 import java.util.Date;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.cinstaller.Main;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public enum Common {
 	;
-	private static final Logger log = CUtil.Logging.getLogger(Common.class);
+
+	public enum Instance {
+		SERVER, CLIENT, VIEWER, INSTALLER, VIRIDIAN;
+	}
+
+	/**
+	 * Identifies this instance based on available packages
+	 */
+	public static final Instance instance = discoverInstance();
+
+	private static Instance discoverInstance() {
+
+		if (CUtil.Misc.findClass("com.subterranean_security.crimson.server.Server")) {
+			return Instance.SERVER;
+		}
+		if (CUtil.Misc.findClass("com.subterranean_security.crimson.viewer.Viewer")) {
+			return Instance.VIEWER;
+		}
+		if (CUtil.Misc.findClass("com.subterranean_security.crimson.client.Client")) {
+			return Instance.CLIENT;
+		}
+		if (CUtil.Misc.findClass("com.subterranean_security.cinstaller.Main")) {
+			return Instance.INSTALLER;
+		}
+		if (CUtil.Misc.findClass("com.subterranean_security.viridian.Main")) {
+			return Instance.VIRIDIAN;
+		}
+		System.exit(0);
+		return null;
+	}
+
+	private static final Logger log = LoggerFactory.getLogger(Common.class);
+
+	/**
+	 * Initialization Timestamp
+	 */
+	public static final Date start = new Date();
 
 	/**
 	 * When true, debug messages will be logged and additional functionality
@@ -38,7 +76,6 @@ public enum Common {
 
 	public static void setDebug(boolean d) {
 		debug = d;
-		log.debug("Debug mode %s", (d ? "enabled" : "disabled"));
 
 	}
 
@@ -60,17 +97,6 @@ public enum Common {
 
 	public static String build;
 
-	/**
-	 * Initialization Timestamp
-	 */
-	public static final Date start = new Date();
-
-	public static final Instance instance = discoverInstance();
-
-	public static final File base = discoverBaseDir();
-	public static final File tmp = discoverTmpDir();
-	public static final File var = discoverVarDir();
-
 	static {
 
 		try {
@@ -80,81 +106,98 @@ public enum Common {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		if (instance != Instance.INSTALLER) {
-			if ((!base.canRead() || !base.canWrite())) {
-				log.error("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
+
+	}
+
+	public enum Directories {
+		;
+
+		/**
+		 * Base contains binaries and configuration files
+		 */
+		public static final File base = discoverBaseDir();
+
+		/**
+		 * Temporary files
+		 */
+		public static final File tmp = discoverTmpDir();
+
+		/**
+		 * Var contains user and system databases
+		 */
+		public static final File var = discoverVarDir();
+
+		/**
+		 * Log files
+		 */
+		public static final File varLog = discoverLogDir();
+
+		static {
+			if (!varLog.exists()) {
+				varLog.mkdirs();
+			}
+			if (Common.instance != Instance.INSTALLER) {
+				if ((!base.canRead() || !base.canWrite())) {
+					log.error("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
+
+				}
+
+				log.debug("Base directory: " + base.getAbsolutePath());
+				log.debug("Temporary directory: " + tmp.getAbsolutePath());
 
 			}
 
-			log.debug("Base directory: " + base.getAbsolutePath());
-			log.debug("Temporary directory: " + tmp.getAbsolutePath());
-
 		}
 
-	}
-
-	public enum Instance {
-		SERVER, CLIENT, VIEWER, INSTALLER, VIRIDIAN;
-	}
-
-	private static Instance discoverInstance() {
-
-		if (CUtil.Misc.findClass("com.subterranean_security.crimson.server.Server")) {
-			return Instance.SERVER;
-		}
-		if (CUtil.Misc.findClass("com.subterranean_security.crimson.viewer.Viewer")) {
-			return Instance.VIEWER;
-		}
-		if (CUtil.Misc.findClass("com.subterranean_security.crimson.client.Client")) {
-			return Instance.CLIENT;
-		}
-		if (CUtil.Misc.findClass("com.subterranean_security.cinstaller.Main")) {
-			return Instance.INSTALLER;
-		}
-		if (CUtil.Misc.findClass("com.subterranean_security.viridian.Main")) {
-			return Instance.VIRIDIAN;
-		}
-		log.error("Unknown Instance");
-		return null;
-	}
-
-	private static File discoverBaseDir() {
-		if (instance == Instance.INSTALLER) {
-			return null;
-		}
-
-		try {
-			// the base will always be two dirs above the core library
-			String bpath = Common.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-
-			File f = new File(bpath.substring(0, bpath.length() - 16));
-			if (!f.exists() || !f.isDirectory()) {
-				log.error("Base directory does not exist: " + f.getAbsolutePath());
+		private static File discoverBaseDir() {
+			if (Common.instance == Instance.INSTALLER) {
+				return null;
 			}
-			return f;
-		} catch (URISyntaxException e) {
-			log.error("Null Base Directory");
-			return null;
-		}
-	}
 
-	private static File discoverTmpDir() {
-		if (instance == Instance.INSTALLER) {
-			return null;
-		}
-		return new File(System.getProperty("java.io.tmpdir"));
-	}
+			try {
+				// the base will always be two dirs above the core library
+				String bpath = Common.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 
-	private static File discoverVarDir() {
-		if (instance == Instance.INSTALLER) {
-			return null;
+				File f = new File(bpath.substring(0, bpath.length() - 16));
+				if (!f.exists() || !f.isDirectory()) {
+					log.error("Base directory does not exist: " + f.getAbsolutePath());
+				}
+				return f;
+			} catch (URISyntaxException e) {
+				log.error("Null Base Directory");
+				return null;
+			}
 		}
-		switch (Platform.osFamily) {
-		case WIN:
-			return new File(System.getProperty("user.home") + "/AppData/Local/Subterranean Security/Crimson/var");
-		default:
-			return new File(System.getProperty("user.home") +  "/.crimson/var");
 
+		private static File discoverTmpDir() {
+			if (Common.instance == Instance.INSTALLER) {
+				return null;
+			}
+			return new File(System.getProperty("java.io.tmpdir"));
+		}
+
+		private static File discoverVarDir() {
+			if (Common.instance == Instance.INSTALLER) {
+				return null;
+			}
+			switch (Platform.osFamily) {
+			case WIN:
+				return new File(System.getProperty("user.home") + "/AppData/Local/Subterranean Security/Crimson/var");
+			default:
+				return new File(System.getProperty("user.home") + "/.crimson/var");
+
+			}
+
+		}
+
+		private static File discoverLogDir() {
+			if (Common.instance == Instance.INSTALLER) {
+				return new File(Main.temp.getAbsolutePath() + "/log");
+			}
+			if (Common.instance == Instance.VIRIDIAN) {
+				return new File("/var/log/viridian");
+			}
+			return new File(var.getAbsolutePath() + "/log");
 		}
 
 	}

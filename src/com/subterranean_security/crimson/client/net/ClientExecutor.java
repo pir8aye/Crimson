@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.ClientStore;
@@ -46,7 +47,7 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import io.netty.util.ReferenceCountUtil;
 
 public class ClientExecutor extends BasicExecutor {
-	private static final Logger log = CUtil.Logging.getLogger(ClientExecutor.class);
+	private static final Logger log = LoggerFactory.getLogger(ClientExecutor.class);
 
 	private ClientConnector connector;
 

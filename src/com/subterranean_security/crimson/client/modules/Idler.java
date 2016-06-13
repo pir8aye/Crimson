@@ -24,11 +24,10 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
-
-import com.subterranean_security.crimson.core.util.CUtil;
+import org.slf4j.LoggerFactory;
 
 public class Idler extends Thread {
-	private static final Logger log = CUtil.Logging.getLogger(Idler.class);
+	private static final Logger log = LoggerFactory.getLogger(Idler.class);
 
 	private Queue<Runnable> buffer = new ConcurrentLinkedQueue<Runnable>();
 

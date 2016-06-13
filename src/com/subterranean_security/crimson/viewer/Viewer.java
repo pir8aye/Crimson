@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
@@ -43,9 +44,11 @@ import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.tweenengine.Tween;
 
 public class Viewer {
-	private static final Logger log = CUtil.Logging.getLogger(Viewer.class);
+	private static final Logger log = LoggerFactory.getLogger(Viewer.class);
 
 	public static void main(String[] argv) {
+
+		CUtil.Logging.configure();
 
 		// Establish the custom fallback exception handler
 		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());

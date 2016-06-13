@@ -26,9 +26,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
-import javax.swing.ScrollPaneConstants;
 
 public class Console extends JPanel {
 

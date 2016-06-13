@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
@@ -37,7 +38,7 @@ import com.subterranean_security.crimson.core.Common.Instance;
  */
 public enum FileLocking {
 	;
-	private static final Logger log = CUtil.Logging.getLogger(FileLocking.class);
+	private static final Logger log = LoggerFactory.getLogger(FileLocking.class);
 
 	private static final int lockBaseSize = 15;
 
@@ -89,7 +90,7 @@ public enum FileLocking {
 	public static boolean lockExists(Instance i) {
 		// search through the temp dir looking for a lock file
 
-		for (File f : Common.tmp.listFiles()) {
+		for (File f : Common.Directories.tmp.listFiles()) {
 			if (f.getName().startsWith("S")) {
 				// this could be a server lock
 				if (i != Instance.SERVER) {

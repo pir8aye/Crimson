@@ -45,6 +45,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
@@ -58,7 +59,7 @@ import com.subterranean_security.crimson.viewer.ui.UICommon;
 
 public class LoginPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = CUtil.Logging.getLogger(LoginPanel.class);
+	private static final Logger log = LoggerFactory.getLogger(LoginPanel.class);
 
 	private JTextField fld_user;
 	public JButton btn_cancel;

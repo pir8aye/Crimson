@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.FileManager.MI_CloseFileHandle;
@@ -55,7 +56,7 @@ import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerCommands {
 	;
-	private static final Logger log = CUtil.Logging.getLogger(ViewerCommands.class);
+	private static final Logger log = LoggerFactory.getLogger(ViewerCommands.class);
 
 	public static boolean login(String user, char[] pass) {
 		int id = IDGen.get();

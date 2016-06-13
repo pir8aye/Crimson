@@ -18,7 +18,6 @@
 
 package com.subterranean_security.crimson.core.fm;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -27,15 +26,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.util.B64;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.ObjectTransfer;
 
@@ -45,7 +43,7 @@ import com.subterranean_security.crimson.core.util.ObjectTransfer;
  */
 public class LocalFilesystem {
 
-	private static final Logger log = CUtil.Logging.getLogger(LocalFilesystem.class);
+	private static final Logger log = LoggerFactory.getLogger(LocalFilesystem.class);
 
 	private Path ref;
 
