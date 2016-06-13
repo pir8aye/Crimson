@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.LogManager;
 import java.util.regex.Pattern;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
@@ -976,6 +977,7 @@ public enum CUtil {
 
 			}
 
+			LogManager.getLogManager().reset();
 			LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
 			JoranConfigurator configurator = new JoranConfigurator();
