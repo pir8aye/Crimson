@@ -234,7 +234,7 @@ public class ClientExecutor extends BasicExecutor {
 
 		}
 		try {
-			ClientRouter.route(Message.newBuilder().setId(m.getId())
+			ClientStore.Connections.route(Message.newBuilder().setId(m.getId())
 					.setRsFileListing(RS_FileListing.newBuilder().setPath(lf.pwd()).addAllListing(lf.list()))
 					.setSid(m.getRid()).setRid(m.getSid()));
 		} catch (IOException e) {
@@ -245,13 +245,14 @@ public class ClientExecutor extends BasicExecutor {
 
 	private void rq_file_handle(Message m) {
 		log.debug("rq_file_handle");
-		ClientRouter.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid()).setRsFileHandle(
-				RS_FileHandle.newBuilder().setFmid(ClientStore.LocalFilesystems.add(new LocalFilesystem(true, true)))));
+		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+				.setRsFileHandle(RS_FileHandle.newBuilder()
+						.setFmid(ClientStore.LocalFilesystems.add(new LocalFilesystem(true, true)))));
 	}
 
 	private void rq_advanced_file_info(Message m) {
 		log.debug("rq_advance_file_info");
-		ClientRouter.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsAdvancedFileInfo(LocalFilesystem.getInfo(m.getRqAdvancedFileInfo().getFile())));
 	}
 

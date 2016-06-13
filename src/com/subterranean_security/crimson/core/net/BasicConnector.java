@@ -17,6 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.net;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.thavam.util.concurrent.BlockingHashMap;
+
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
 import io.netty.channel.EventLoopGroup;
@@ -25,6 +30,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 public abstract class BasicConnector implements AutoCloseable {
 
 	public abstract void write(Message m);
+
+	// Buffers
+	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
+	public final BlockingHashMap<Integer, Message> cq = new BlockingHashMap<Integer, Message>();
+	public final BlockingQueue<Message> uq = new LinkedBlockingQueue<Message>();
 
 	protected EventLoopGroup workerGroup = new NioEventLoopGroup();
 

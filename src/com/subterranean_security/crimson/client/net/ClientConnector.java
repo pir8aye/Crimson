@@ -17,14 +17,12 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.net.ConnectException;
 
 import javax.net.ssl.SSLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
@@ -44,11 +42,6 @@ public class ClientConnector extends BasicConnector {
 
 	private static final Logger log = LoggerFactory.getLogger(ClientConnector.class);
 
-	// Buffers
-	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
-	public final BlockingHashMap<Integer, Message> cq = new BlockingHashMap<Integer, Message>();
-	public final BlockingQueue<Message> uq = new LinkedBlockingQueue<Message>();
-
 	public ClientHandler handle = new ClientHandler(this);
 	public ClientExecutor executor = new ClientExecutor(this);
 
@@ -64,7 +57,7 @@ public class ClientConnector extends BasicConnector {
 		return state;
 	}
 
-	public ClientConnector(String host, int port) throws InterruptedException, SSLException {
+	public ClientConnector(String host, int port) throws InterruptedException, ConnectException {
 
 		Bootstrap b = new Bootstrap();
 		b.group(workerGroup)//

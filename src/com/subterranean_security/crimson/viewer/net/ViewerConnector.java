@@ -17,13 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net;
 
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import javax.net.ssl.SSLException;
-
-import org.thavam.util.concurrent.BlockingHashMap;
 
 import com.subterranean_security.crimson.core.net.BasicConnector;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
@@ -33,15 +28,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class ViewerConnector extends BasicConnector {
 
-	// Buffers
-	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
-	public final BlockingHashMap<Integer, Message> cq = new BlockingHashMap<Integer, Message>();
-	public final BlockingQueue<Message> uq = new LinkedBlockingQueue<Message>();
-
 	public ViewerHandler handle = new ViewerHandler(this);
 	public ViewerExecutor executor = new ViewerExecutor(this);
 
-	public ViewerConnector(String host, int port) throws InterruptedException, SSLException {
+	public ViewerConnector(String host, int port) throws InterruptedException, ConnectException {
 
 		Bootstrap b = new Bootstrap();
 		b.group(workerGroup)//
