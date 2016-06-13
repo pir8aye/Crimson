@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.Platform.OSFAMILY;
+import com.subterranean_security.crimson.core.Platform;
 
 /**
  * Locks a file in the system temp directory to prevent multiple instances of
@@ -76,7 +78,7 @@ public enum FileLocking {
 			file = CUtil.Files.Temp.getFile(hashBase(base));
 
 			channel = new RandomAccessFile(file, "rw").getChannel();
-			lock = channel.lock();
+			lock = channel.tryLock();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -118,15 +120,21 @@ public enum FileLocking {
 
 			if (f.getName().equals(hashBase(base))) {
 				// we found a lockfile created by Crimson
-				if (f.delete()) {
-					// the jvm that created this lockfile has exited
-					continue;
-				} else {
-					// could not delete it either locking is still active or no
-					// permissions to delete
+				if (Platform.osFamily == OSFAMILY.WIN) {
+					if (f.delete()) {
+						// the jvm that created this lockfile has exited
+						continue;
+					} else {
+						// could not delete it either locking is still active or
+						// no
+						// permissions to delete
 
+						return true;
+					}
+				} else {
 					return true;
 				}
+
 			}
 
 		}
