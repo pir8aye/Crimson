@@ -23,8 +23,10 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.stream.Stream;
+import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.ServerStore;
+import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 
@@ -71,8 +73,14 @@ public class SubscriberSlave extends Stream {
 	}
 
 	public void trigger(EV_KEvent k) {
-		ServerStore.Connections.getConnection(param.getVID()).handle
-				.write(Message.newBuilder().setUrgent(true).setSid(param.getCID()).setEvKevent(k).build());
+		Receptor r = ServerStore.Connections.getConnection(param.getVID());
+		if (r == null) {
+			// stop this stream
+			StreamStore.removeStream(getStreamID());
+			return;
+		}
+		r.handle.write(Message.newBuilder().setUrgent(true).setSid(param.getCID()).setEvKevent(k).build());
+
 	}
 
 }
