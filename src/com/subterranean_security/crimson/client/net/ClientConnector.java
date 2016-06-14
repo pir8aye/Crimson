@@ -19,8 +19,6 @@ package com.subterranean_security.crimson.client.net;
 
 import java.net.ConnectException;
 
-import javax.net.ssl.SSLException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,11 +66,7 @@ public class ClientConnector extends BasicConnector {
 		setState(ConnectionState.CONNECTED);
 
 		// SSL Connection established
-		authenticate();
 
-	}
-
-	private void authenticate() {
 		AuthType authType = null;
 		try {
 			authType = (AuthType) Client.clientDB.getObject("auth.type");
@@ -98,15 +92,9 @@ public class ClientConnector extends BasicConnector {
 			break;
 		case NO_AUTH:
 			setState(ConnectionState.AUTHENTICATED);
-			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			handle.write(
-					Message.newBuilder().setUrgent(true).setEvProfileDelta(Platform.Advanced.getFullProfile()).build());
+			handle.write(Message.newBuilder().setId(IDGen.get())
+					.setMiAuthRequest(auth.setPd(Platform.Advanced.getFullProfile())).build());
+
 			break;
 		case PASSWORD:
 			try {

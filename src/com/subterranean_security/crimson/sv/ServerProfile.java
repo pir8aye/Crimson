@@ -149,7 +149,7 @@ public class ServerProfile implements Serializable {
 			setCrimsonCpuUsage(String.format("%.2f%%", c.getCpuCrimsonUsage()));
 		}
 
-		for (ListenerConfig lc : c.getListenersList()) {
+		for (ListenerConfig lc : c.getListenerList()) {
 			for (ListenerConfig l : listeners) {
 				if (lc.getId() == l.getId()) {
 					listeners.remove(l);

@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.proto.Delta.MI_TriggerProfileDelta;
+import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.core.proto.FileManager.MI_CloseFileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileHandle;
@@ -50,6 +52,7 @@ import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FileTable;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
@@ -93,6 +96,7 @@ public enum ViewerCommands {
 				if (lrs.getRsLogin().getResponse()) {
 					ViewerStore.Profiles.server.amalgamate(lrs.getRsLogin().getSpd());
 					ViewerStore.Profiles.vp.amalgamate(lrs.getRsLogin().getVpd());
+					triggerProfileDelta();
 					return true;
 				}
 
@@ -104,6 +108,17 @@ public enum ViewerCommands {
 			log.debug("Login interrupted");
 		}
 		return false;
+	}
+
+	public static void triggerProfileDelta() {
+		log.debug("Triggering profile delta update");
+		MI_TriggerProfileDelta.Builder mi = MI_TriggerProfileDelta.newBuilder();
+		for (ClientProfile cp : ViewerStore.Profiles.clients) {
+			mi.addProfileTimestamp(
+					ProfileTimestamp.newBuilder().setCvid(cp.getCvid()).setTimestamp(cp.getLastUpdate().getTime()));
+		}
+		ViewerRouter.route(Message.newBuilder().setMiTriggerProfileDelta(mi));
+
 	}
 
 	public static boolean changeServerState(StringBuffer error, StateType st) {

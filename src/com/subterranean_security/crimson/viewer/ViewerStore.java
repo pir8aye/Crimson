@@ -178,7 +178,7 @@ public enum ViewerStore {
 				if (clients.get(i).getCvid() == change.getCvid()) {
 					flag = false;
 					clients.get(i).amalgamate(change);
-					if (MainFrame.main.panel.listLoaded) {
+					if (MainFrame.main != null && MainFrame.main.panel.listLoaded) {
 						MainFrame.main.panel.list.updateRow(i);
 					}
 					break;
@@ -189,12 +189,12 @@ public enum ViewerStore {
 				np.getKeylog().pages.setDatabase(Databases.local);
 				np.amalgamate(change);
 				clients.add(np);
-				if (MainFrame.main.panel.listLoaded) {
+				if (MainFrame.main != null && MainFrame.main.panel.listLoaded) {
 					MainFrame.main.panel.list.insertRow(clients.size() - 1);
 				}
 			}
 
-			if (MainFrame.main.panel.graphLoaded) {
+			if (MainFrame.main != null && MainFrame.main.panel.graphLoaded) {
 				// TODO refresh graph
 			}
 

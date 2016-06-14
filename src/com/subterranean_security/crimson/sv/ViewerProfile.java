@@ -28,7 +28,6 @@ public class ViewerProfile implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private int cvid;
-	private Date updateTimestamp = new Date();
 
 	private Attribute user;
 	private Attribute ip;
@@ -98,8 +97,6 @@ public class ViewerProfile implements Serializable {
 	}
 
 	public void amalgamate(EV_ViewerProfileDelta c) {
-		updateTimestamp = new Date();
-
 		if (c.hasUser()) {
 			setUser(c.getUser());
 		}

@@ -3,12 +3,22 @@ package com.subterranean_security.crimson.core.proto;
 import "net/sequences/Listener.proto";
 import "net/sequences/Users.proto";
 
+message MI_TriggerProfileDelta {
+	repeated ProfileTimestamp profile_timestamp = 1;
+}
+
+message ProfileTimestamp {
+	required int32 cvid = 1;
+	required int64 timestamp = 2;
+}
+
 message EV_ProfileDelta {
 
 	required int32 cvid = 1;
 	optional int64 departure_time = 2;
 	
 	// General attributes
+	optional bool online = 42;
 	optional string os_family = 17;
 	optional string os_name = 18;
 	optional string os_arch = 19;
@@ -63,7 +73,7 @@ message EV_ServerProfileDelta {
 	optional int32 user_count = 2;
 	optional int32 client_count = 3;
 	
-	repeated ListenerConfig listeners = 4;
+	repeated ListenerConfig listener = 4;
 	optional string net_hostname = 5;
 	
 	optional string cpu_model = 6;

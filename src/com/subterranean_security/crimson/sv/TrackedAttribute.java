@@ -18,7 +18,7 @@ public class TrackedAttribute extends Attribute {
 	public void set(String s, Date d) {
 		timestamps.add(d);
 		values.add(s);
-		current = s;
+		super.set(s);
 	}
 
 	public int size() {

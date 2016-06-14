@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.storage.MemMap;
@@ -87,6 +88,8 @@ public enum ServerStore {
 				users++;
 			} else {
 				clients++;
+				sendToAllAuthoritative(connection.getCvid(), Message.newBuilder()
+						.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(connection.getCvid()).setOnline(true)));
 			}
 			receptors.put(connection.getCvid(), connection);
 		}
@@ -99,6 +102,8 @@ public enum ServerStore {
 					users--;
 				} else {
 					clients--;
+					sendToAllAuthoritative(cvid, Message.newBuilder()
+							.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(cvid).setOnline(false)));
 				}
 				r.close();
 			}
@@ -127,6 +132,10 @@ public enum ServerStore {
 					receptors.get(cvid).handle.write(m);
 				}
 			}
+		}
+
+		public static void sendToAllAuthoritative(int vid, Message.Builder m) {
+			// TODO
 		}
 	}
 
@@ -249,30 +258,40 @@ public enum ServerStore {
 			return null;
 		}
 
+		public static ArrayList<ViewerProfile> getViewersWithAuthorityOnClient(int cvid) {
+			// TODO
+			ArrayList<ViewerProfile> vps = new ArrayList<ViewerProfile>();
+			try {
+				for (Integer i : viewerProfiles.keyset()) {
+					vps.add(viewerProfiles.get(i));
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return vps;
+		}
+
+		public static ArrayList<ClientProfile> getClientsUnderAuthority(int cvid) {
+			// TODO
+			ArrayList<ClientProfile> cps = new ArrayList<ClientProfile>();
+			try {
+				for (Integer i : clientProfiles.keyset()) {
+					cps.add(clientProfiles.get(i));
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return cps;
+		}
+
 		public static Set<Integer> getViewerKeyset() {
 			return viewerProfiles.keyset();
 		}
 
 		public static void addViewer(ViewerProfile p) {
 			viewerProfiles.put(p.getCvid(), p);
-		}
-
-		// TODO remove
-		public static void updateCvid(String username, int cvid) {
-			try {
-				for (Integer i : viewerProfiles.keyset()) {
-					ViewerProfile vp = viewerProfiles.get(i);
-					if (vp.getUser().equals(username)) {
-						vp.setCvid(cvid);
-						viewerProfiles.remove(i);
-						viewerProfiles.put(cvid, vp);
-						return;
-					}
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 
 	}

