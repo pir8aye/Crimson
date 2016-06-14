@@ -507,52 +507,105 @@ public class ClientProfile implements Serializable {
 		if (online.getTimestamp().after(d)) {
 			d = online.getTimestamp();
 		}
-
 		if (osFamily.getTimestamp().after(d)) {
 			d = osFamily.getTimestamp();
 		}
-
 		if (osName.getTimestamp().after(d)) {
 			d = osName.getTimestamp();
 		}
-
 		if (osArch.getTimestamp().after(d)) {
 			d = osArch.getTimestamp();
 		}
-
 		if (javaArch.getTimestamp().after(d)) {
 			d = javaArch.getTimestamp();
 		}
-
 		if (javaVersion.getTimestamp().after(d)) {
 			d = javaVersion.getTimestamp();
 		}
-
 		if (javaVendor.getTimestamp().after(d)) {
 			d = javaVendor.getTimestamp();
 		}
-
 		if (crimsonVersion.getTimestamp().after(d)) {
 			d = crimsonVersion.getTimestamp();
 		}
-
 		if (timezone.getTimestamp().after(d)) {
 			d = timezone.getTimestamp();
 		}
-
 		if (language.getTimestamp().after(d)) {
 			d = language.getTimestamp();
 		}
-
 		if (username.getTimestamp().after(d)) {
 			d = username.getTimestamp();
 		}
-
 		if (userStatus.getTimestamp().after(d)) {
 			d = userStatus.getTimestamp();
 		}
-
-		// TODO finish ...
+		if (userHome.getTimestamp().after(d)) {
+			d = userHome.getTimestamp();
+		}
+		if (activeWindow.getTimestamp().after(d)) {
+			d = activeWindow.getTimestamp();
+		}
+		if (virtualization.getTimestamp().after(d)) {
+			d = virtualization.getTimestamp();
+		}
+		if (messageLatency.getTimestamp().after(d)) {
+			d = messageLatency.getTimestamp();
+		}
+		if (systemRamCapacity.getTimestamp().after(d)) {
+			d = systemRamCapacity.getTimestamp();
+		}
+		if (systemRamUsage.getTimestamp().after(d)) {
+			d = systemRamUsage.getTimestamp();
+		}
+		if (crimsonRamUsage.getTimestamp().after(d)) {
+			d = crimsonRamUsage.getTimestamp();
+		}
+		if (cpuModel.getTimestamp().after(d)) {
+			d = cpuModel.getTimestamp();
+		}
+		if (cpuCache.getTimestamp().after(d)) {
+			d = cpuCache.getTimestamp();
+		}
+		if (crimsonCpuUsage.getTimestamp().after(d)) {
+			d = crimsonCpuUsage.getTimestamp();
+		}
+		if (cpuUsage.getTimestamp().after(d)) {
+			d = cpuUsage.getTimestamp();
+		}
+		if (hostname.getTimestamp().after(d)) {
+			d = hostname.getTimestamp();
+		}
+		if (extIp.getTimestamp().after(d)) {
+			d = extIp.getTimestamp();
+		}
+		if (dns1.getTimestamp().after(d)) {
+			d = dns1.getTimestamp();
+		}
+		if (dns2.getTimestamp().after(d)) {
+			d = dns2.getTimestamp();
+		}
+		if (fqdn.getTimestamp().after(d)) {
+			d = fqdn.getTimestamp();
+		}
+		if (latitude.getTimestamp().after(d)) {
+			d = latitude.getTimestamp();
+		}
+		if (longitude.getTimestamp().after(d)) {
+			d = longitude.getTimestamp();
+		}
+		if (country.getTimestamp().after(d)) {
+			d = country.getTimestamp();
+		}
+		if (countryCode.getTimestamp().after(d)) {
+			d = countryCode.getTimestamp();
+		}
+		if (region.getTimestamp().after(d)) {
+			d = region.getTimestamp();
+		}
+		if (city.getTimestamp().after(d)) {
+			d = city.getTimestamp();
+		}
 
 		log.debug("Found last update date: {}", d);
 		return d;
@@ -565,52 +618,100 @@ public class ClientProfile implements Serializable {
 		if (online.getTimestamp().after(last)) {
 			pd.setOnline(Boolean.parseBoolean(online.get()));
 		}
-
 		if (osFamily.getTimestamp().after(last)) {
 			pd.setOsFamily(osFamily.get());
 		}
-
 		if (osName.getTimestamp().after(last)) {
 			pd.setOsName(osName.get());
 		}
-
 		if (javaArch.getTimestamp().after(last)) {
 			pd.setJavaArch(javaArch.get());
 		}
-
 		if (javaVersion.getTimestamp().after(last)) {
 			pd.setJavaArch(javaVersion.get());
 		}
-
 		if (javaVendor.getTimestamp().after(last)) {
 			pd.setJavaVendor(javaVendor.get());
 		}
-
 		if (crimsonVersion.getTimestamp().after(last)) {
 			pd.setCrimsonVersion(crimsonVersion.get());
 		}
-
 		if (timezone.getTimestamp().after(last)) {
 			pd.setTimezone(timezone.get());
 		}
-
 		if (language.getTimestamp().after(last)) {
 			pd.setLanguage(language.get());
 		}
-
 		if (username.getTimestamp().after(last)) {
 			pd.setUserName(username.get());
 		}
-
 		if (userStatus.getTimestamp().after(last)) {
 			pd.setUserStatus(userStatus.get());
 		}
-
 		if (userHome.getTimestamp().after(last)) {
 			pd.setUserHome(userHome.get());
 		}
+		if (activeWindow.getTimestamp().after(last)) {
+			pd.setActiveWindow(activeWindow.get());
+		}
+		if (virtualization.getTimestamp().after(last)) {
+			pd.setVirtualization(virtualization.get());
+		}
 
-		// TODO finish ...
+		if (systemRamCapacity.getTimestamp().after(last)) {
+			// pd.setSystemRamCapacity(systemRamCapacity.get());
+		}
+		if (systemRamUsage.getTimestamp().after(last)) {
+			// pd.setSystemRamUsage(systemRamUsage.get());
+		}
+		if (crimsonRamUsage.getTimestamp().after(last)) {
+			// pd.setCrimsonRamUsage(crimsonRamUsage.get());
+		}
+		if (cpuModel.getTimestamp().after(last)) {
+			pd.setCpuModel(cpuModel.get());
+		}
+		if (cpuCache.getTimestamp().after(last)) {
+			pd.setCpuCache(cpuCache.get());
+		}
+		if (crimsonCpuUsage.getTimestamp().after(last)) {
+			// pd.setCrimsonCpuUsage(crimsonCpuUsage.get());
+		}
+		if (cpuUsage.getTimestamp().after(last)) {
+			//
+		}
+		if (hostname.getTimestamp().after(last)) {
+			pd.setHostname(hostname.get());
+		}
+		if (extIp.getTimestamp().after(last)) {
+			pd.setExtIp(extIp.get());
+		}
+		if (dns1.getTimestamp().after(last)) {
+			pd.setNetDns1(dns1.get());
+		}
+		if (dns2.getTimestamp().after(last)) {
+			pd.setNetDns2(dns2.get());
+		}
+		if (fqdn.getTimestamp().after(last)) {
+			pd.setFqdn(fqdn.get());
+		}
+		if (latitude.getTimestamp().after(last)) {
+			//
+		}
+		if (longitude.getTimestamp().after(last)) {
+			//
+		}
+		if (country.getTimestamp().after(last)) {
+			pd.setCountry(country.get());
+		}
+		if (countryCode.getTimestamp().after(last)) {
+			pd.setCountryCode(countryCode.get());
+		}
+		if (region.getTimestamp().after(last)) {
+			//
+		}
+		if (city.getTimestamp().after(last)) {
+			//
+		}
 
 		log.debug("Calulated profile update in {} ms", new Date().getTime() - start.getTime());
 		return pd.build();

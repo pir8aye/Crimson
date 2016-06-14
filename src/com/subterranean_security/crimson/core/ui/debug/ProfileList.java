@@ -111,8 +111,8 @@ class ProfileTM extends AbstractTableModel {
 	public int getRowCount() {
 		if (Common.instance == Instance.VIEWER) {
 
-			return ViewerStore.Profiles.clients.size();
-
+			// return ViewerStore.Profiles.clients.size();
+			return 0;
 		} else {
 			return 0;// TODO
 		}
@@ -128,7 +128,7 @@ class ProfileTM extends AbstractTableModel {
 		ClientProfile p = null;
 		if (Common.instance == Instance.VIEWER) {
 
-			p = ViewerStore.Profiles.clients.get(rowIndex);
+			// p = ViewerStore.Profiles.clients.get(rowIndex);
 
 		}
 		switch (headers[columnIndex]) {

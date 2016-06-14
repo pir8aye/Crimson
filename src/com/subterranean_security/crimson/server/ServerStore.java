@@ -36,6 +36,7 @@ import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.Listener;
+import com.subterranean_security.crimson.sv.PermissionTester;
 import com.subterranean_security.crimson.sv.ViewerProfile;
 
 public enum ServerStore {
@@ -82,16 +83,18 @@ public enum ServerStore {
 		private static int users = 0;
 		private static int clients = 0;
 
-		public static void add(Receptor connection) {
-			log.debug("Adding receptor (CVID: {})", connection.getCvid());
-			if (connection.getInstance() == Instance.VIEWER) {
+		public static void add(Receptor r) {
+			log.debug("Adding receptor (CVID: {})", r.getCvid());
+			if (r.getInstance() == Instance.VIEWER) {
 				users++;
 			} else {
 				clients++;
-				sendToAllAuthoritative(connection.getCvid(), Message.newBuilder()
-						.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(connection.getCvid()).setOnline(true)));
+				sendToViewersWithAuthorityOverClient(r.getCvid(),
+						Message.newBuilder()
+								.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid()).setOnline(true)),
+						"client_visibility");
 			}
-			receptors.put(connection.getCvid(), connection);
+			receptors.put(r.getCvid(), r);
 		}
 
 		public static void remove(int cvid) {
@@ -102,8 +105,8 @@ public enum ServerStore {
 					users--;
 				} else {
 					clients--;
-					sendToAllAuthoritative(cvid, Message.newBuilder()
-							.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(cvid).setOnline(false)));
+					sendToViewersWithAuthorityOverClient(cvid, Message.newBuilder().setEvProfileDelta(
+							EV_ProfileDelta.newBuilder().setCvid(cvid).setOnline(false)), "client_visibility");
 				}
 				r.close();
 			}
@@ -134,8 +137,22 @@ public enum ServerStore {
 			}
 		}
 
-		public static void sendToAllAuthoritative(int vid, Message.Builder m) {
-			// TODO
+		public static void sendToViewersWithAuthorityOverClient(int cid, Message.Builder m, String permission) {
+			for (int cvid : getKeySet()) {
+				if (receptors.get(cvid).getInstance() == Instance.VIEWER
+						&& PermissionTester.verifyClientPermission(cvid, cid, permission)) {
+					receptors.get(cvid).handle.write(m.build());
+				}
+			}
+		}
+
+		public static void sendToClientsUnderAuthorityOfViewer(int vid, Message.Builder m, String permission) {
+			for (int cvid : getKeySet()) {
+				if (receptors.get(cvid).getInstance() == Instance.CLIENT
+						&& PermissionTester.verifyClientPermission(vid, cvid, permission)) {
+					receptors.get(cvid).handle.write(m.build());
+				}
+			}
 		}
 	}
 

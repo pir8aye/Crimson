@@ -112,8 +112,12 @@ public enum ViewerCommands {
 
 	public static void triggerProfileDelta() {
 		log.debug("Triggering profile delta update");
+
+		// report last update timestamps for current clients
 		MI_TriggerProfileDelta.Builder mi = MI_TriggerProfileDelta.newBuilder();
-		for (ClientProfile cp : ViewerStore.Profiles.clients) {
+		for (int i = 0; i < ViewerStore.Profiles.clients.size(); i++) {
+			ClientProfile cp = ViewerStore.Profiles.clients.get(i);
+
 			mi.addProfileTimestamp(
 					ProfileTimestamp.newBuilder().setCvid(cp.getCvid()).setTimestamp(cp.getLastUpdate().getTime()));
 		}

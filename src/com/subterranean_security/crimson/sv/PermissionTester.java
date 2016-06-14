@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.sv;
 
 import com.subterranean_security.crimson.core.proto.Users.ClientPermissions;
 import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
+import com.subterranean_security.crimson.server.ServerStore;
 
 public enum PermissionTester {
 	;
@@ -53,6 +54,10 @@ public enum PermissionTester {
 
 	}
 
+	public static boolean verifyClientPermission(int vid, int cvid, String permission) {
+		return verifyClientPermission(ServerStore.Profiles.getViewer(vid).getPermissions(), cvid, permission);
+	}
+
 	public static boolean verifyClientPermission(ViewerPermissions p, int cvid, String permission) {
 		if (p.getSuper()) {
 			return true;
@@ -63,6 +68,10 @@ public enum PermissionTester {
 					return true;
 				}
 				switch (permission.toLowerCase()) {
+				case "client_visibility": {
+					// TODO
+					return true;
+				}
 				case "client_power": {
 					return cp.getClientPower();
 				}

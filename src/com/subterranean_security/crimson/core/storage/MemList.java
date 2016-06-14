@@ -17,12 +17,18 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.storage;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MemList<T> {
+public class MemList<T> implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Integer> index = new ArrayList<Integer>();
-	private Database database;
+	private transient Database database;
+
+	public MemList() {
+
+	}
 
 	public MemList(Database d) {
 		setDatabase(d);
@@ -38,9 +44,21 @@ public class MemList<T> {
 
 	}
 
-	public T get(Integer id) throws Exception {
-		return (T) database.get(index.get(id));
+	public T get(Integer id) {
+		try {
+			return (T) database.get(index.get(id));
+		} catch (Exception e) {
+			return null;
+		}
 
+	}
+
+	public void remove(Integer i) {
+		database.delete(index.get(i));
+	}
+
+	public int size() {
+		return index.size();
 	}
 
 }

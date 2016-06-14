@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -34,6 +34,8 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
+import com.subterranean_security.crimson.core.storage.MemList;
+import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.ServerProfile;
 import com.subterranean_security.crimson.sv.ViewerProfile;
@@ -134,31 +136,38 @@ public enum ViewerStore {
 		public static ClientProfile viewer = new ClientProfile();
 		public static ViewerProfile vp = new ViewerProfile();
 
-		public static ArrayList<ClientProfile> clients = new ArrayList<ClientProfile>();
+		public static MemList<ClientProfile> clients;
 
-		public static void remove(Integer id) {
-			Iterator<ClientProfile> pp = clients.iterator();
-			while (pp.hasNext()) {
-				if (pp.next().getCvid() == id) {
-					pp.remove();
-					return;
-				}
+		static {
+			try {
+				clients = (MemList<ClientProfile>) Databases.local.getObject("profiles.clients");
+				clients.setDatabase(Databases.local);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+
+		}
+
+		public static void removeClient(Integer id) {
+			clients.remove(id);
 		}
 
 		public static ClientProfile getClient(String hostname) {
-			for (ClientProfile cp : clients) {
-				if (cp.getHostname().equalsIgnoreCase(hostname)) {
-					return cp;
+			for (int i = 0; i < clients.size(); i++) {
+
+				if (clients.get(i).getHostname().equalsIgnoreCase(hostname)) {
+					return getClient(i);
 				}
 			}
 			return null;
 		}
 
 		public static ClientProfile getClient(int cid) {
-			for (ClientProfile cp : clients) {
-				if (cp.getCvid() == cid) {
-					return cp;
+			for (int i = 0; i < clients.size(); i++) {
+
+				if (clients.get(i).getCvid() == cid) {
+					return getClient(i);
 				}
 			}
 			return null;
@@ -174,7 +183,9 @@ public enum ViewerStore {
 
 		public static void update(EV_ProfileDelta change) {
 			boolean flag = true;
-			for (int i = 0; i < (ViewerState.trialMode ? Math.min(1, clients.size()) : clients.size()); i++) {
+
+			for (int i = 0; i < (ViewerState.trialMode ? Math.min(1, clients.size())
+					: clients.size()); i++) {
 				if (clients.get(i).getCvid() == change.getCvid()) {
 					flag = false;
 					clients.get(i).amalgamate(change);
