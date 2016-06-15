@@ -37,6 +37,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -208,7 +209,6 @@ public class HostList extends JPanel {
 	}
 
 	public void addOrUpdate(ClientProfile cp) {
-		System.out.println("addOrUpdate");
 		for (int i = 0; i < tm.getClientList().size(); i++) {
 			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
 				tm.fireTableRowsUpdated(i, i);
@@ -219,7 +219,6 @@ public class HostList extends JPanel {
 	}
 
 	public void removeClient(ClientProfile cp) {
-		System.out.println("removeClient");
 		for (int i = 0; i < tm.getClientList().size(); i++) {
 			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
 				tm.getClientList().remove(i);
@@ -247,7 +246,10 @@ class TM extends AbstractTableModel {
 	}
 
 	public void add(ClientProfile cp) {
-		System.out.println("tm.add");
+		if (ViewerState.trialMode && clients.size() == 1) {
+			MainFrame.main.np.addNote("info", "Host limitation (1) has been reached");
+			return;
+		}
 		cp.loadOsIcon();
 		clients.add(cp);
 		fireTableRowsInserted(clients.size() - 1, clients.size() - 1);

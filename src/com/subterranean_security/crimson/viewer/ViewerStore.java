@@ -157,7 +157,7 @@ public enum ViewerStore {
 			for (int i = 0; i < clients.size(); i++) {
 
 				if (clients.get(i).getHostname().equalsIgnoreCase(hostname)) {
-					return getClient(i);
+					return clients.get(i);
 				}
 			}
 			return null;
@@ -167,7 +167,7 @@ public enum ViewerStore {
 			for (int i = 0; i < clients.size(); i++) {
 
 				if (clients.get(i).getCvid() == cid) {
-					return getClient(i);
+					return clients.get(i);
 				}
 			}
 			return null;
@@ -182,21 +182,17 @@ public enum ViewerStore {
 		}
 
 		public static void update(EV_ProfileDelta change) {
-
 			ClientProfile cp = getClient(change.getCvid());
 			if (cp != null) {
-				log.debug("Amalgamating existing profile");
 				cp.amalgamate(change);
-			} else if (ViewerState.trialMode && clients.size() == 1) {
-				log.debug("Trial limitiation reached");
-				return;
-			}
+			} else {
+				// add new profile
+				cp = new ClientProfile(change.getCvid());
+				cp.getKeylog().pages.setDatabase(Databases.local);
+				cp.amalgamate(change);
+				clients.add(cp);
 
-			// add new profile
-			cp = new ClientProfile(change.getCvid());
-			cp.getKeylog().pages.setDatabase(Databases.local);
-			cp.amalgamate(change);
-			clients.add(cp);
+			}
 
 			if (cp.getOnline()) {
 				MainFrame.main.panel.list.addOrUpdate(cp);
