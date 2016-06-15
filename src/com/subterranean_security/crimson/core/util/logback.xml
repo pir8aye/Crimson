@@ -108,6 +108,12 @@
 		<appender-ref ref="%INSTANCE%" />
 		<appender-ref ref="STDOUT" />
 	</logger>
+	
+	<logger name="com.subterranean_security.services" level="%LEVEL%"
+		additivity="false">
+		<appender-ref ref="%INSTANCE%" />
+		<appender-ref ref="STDOUT" />
+	</logger>
 
 	<logger name="com.subterranean_security.viridian" level="%LEVEL%"
 		additivity="false">
