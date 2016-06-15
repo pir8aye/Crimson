@@ -34,10 +34,10 @@ import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.server.net.Receptor;
-import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.Listener;
 import com.subterranean_security.crimson.sv.PermissionTester;
-import com.subterranean_security.crimson.sv.ViewerProfile;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
 public enum ServerStore {
 	;
@@ -89,6 +89,7 @@ public enum ServerStore {
 				users++;
 			} else {
 				clients++;
+				Profiles.getClient(r.getCvid()).setOnline(true);
 				sendToViewersWithAuthorityOverClient(r.getCvid(),
 						Message.newBuilder()
 								.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid()).setOnline(true)),
@@ -105,6 +106,7 @@ public enum ServerStore {
 					users--;
 				} else {
 					clients--;
+					Profiles.getClient(cvid).setOnline(false);
 					sendToViewersWithAuthorityOverClient(cvid, Message.newBuilder().setEvProfileDelta(
 							EV_ProfileDelta.newBuilder().setCvid(cvid).setOnline(false)), "client_visibility");
 				}
