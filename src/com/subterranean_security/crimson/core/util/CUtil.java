@@ -978,14 +978,15 @@ public enum CUtil {
 	public static class Logging {
 
 		public static void configure() {
-			File config = new File(Common.Directories.varLog.getAbsolutePath() + "/logback.xml");
+			File config = new File(Common.Directories.varLog.getAbsolutePath() + "/logback-"
+					+ Common.instance.toString().toLowerCase() + ".xml");
 			if (!config.exists()) {
 				CUtil.Files.extract("com/subterranean_security/crimson/core/util/logback.xml",
 						config.getAbsolutePath());
 				CUtil.Files.substitute(config, "%LEVEL%", Common.isDebugMode() ? LogLevel.DEBUG.toString().toLowerCase()
 						: LogLevel.INFO.toString().toLowerCase());
 				CUtil.Files.substitute(config, "%LOGDIR%", config.getParent().replaceAll("\\\\", "/"));
-				CUtil.Files.substitute(config, "%INSTANCE%", Common.instance.toString());
+				CUtil.Files.substitute(config, "%INSTANCE%", Common.instance.toString().toLowerCase());
 
 			}
 

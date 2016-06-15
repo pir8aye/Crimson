@@ -9,48 +9,8 @@
 		</layout>
 	</appender>
 
-	<appender name="CINSTALLER" class="ch.qos.logback.core.FileAppender">
-		<file>%LOGDIR%/install.log</file>
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<Pattern>
-				[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n
-			</Pattern>
-		</encoder>
-
-	</appender>
-
-	<appender name="CLIENT" class="ch.qos.logback.core.FileAppender">
-		<file>%LOGDIR%/client.log</file>
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<Pattern>
-				[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n
-			</Pattern>
-		</encoder>
-
-	</appender>
-
-	<appender name="SERVER" class="ch.qos.logback.core.FileAppender">
-		<file>%LOGDIR%/server.log</file>
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<Pattern>
-				[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n
-			</Pattern>
-		</encoder>
-
-	</appender>
-
-	<appender name="VIEWER" class="ch.qos.logback.core.FileAppender">
-		<file>%LOGDIR%/viewer.log</file>
-		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<Pattern>
-				[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n
-			</Pattern>
-		</encoder>
-
-	</appender>
-
-	<appender name="VIRIDIAN" class="ch.qos.logback.core.FileAppender">
-		<file>%LOGDIR%/viridian.log</file>
+	<appender name="FILESYSTEM" class="ch.qos.logback.core.FileAppender">
+		<file>%LOGDIR%/%INSTANCE%.log</file>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>
 				[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n
@@ -81,43 +41,43 @@
 
 	<logger name="com.subterranean_security.cinstaller" level="%LEVEL%"
 		additivity="false">
-		<appender-ref ref="%INSTANCE%" />
+		<appender-ref ref="FILESYSTEM" />
 		<appender-ref ref="STDOUT" />
 	</logger>
 
 	<logger name="com.subterranean_security.crimson.core" level="%LEVEL%"
 		additivity="false">
-		<appender-ref ref="%INSTANCE%" />
+		<appender-ref ref="FILESYSTEM" />
 		<appender-ref ref="STDOUT" />
 	</logger>
 
 	<logger name="com.subterranean_security.crimson.client" level="%LEVEL%"
 		additivity="false">
-		<appender-ref ref="%INSTANCE%" />
+		<appender-ref ref="FILESYSTEM" />
 		<appender-ref ref="STDOUT" />
 	</logger>
 
 	<logger name="com.subterranean_security.crimson.server" level="%LEVEL%"
 		additivity="false">
-		<appender-ref ref="%INSTANCE%" />
+		<appender-ref ref="FILESYSTEM" />
 		<appender-ref ref="STDOUT" />
 	</logger>
 
 	<logger name="com.subterranean_security.crimson.viewer" level="%LEVEL%"
 		additivity="false">
-		<appender-ref ref="%INSTANCE%" />
+		<appender-ref ref="FILESYSTEM" />
 		<appender-ref ref="STDOUT" />
 	</logger>
 	
 	<logger name="com.subterranean_security.services" level="%LEVEL%"
 		additivity="false">
-		<appender-ref ref="%INSTANCE%" />
+		<appender-ref ref="FILESYSTEM" />
 		<appender-ref ref="STDOUT" />
 	</logger>
 
 	<logger name="com.subterranean_security.viridian" level="%LEVEL%"
 		additivity="false">
-		<appender-ref ref="%INSTANCE%" />
+		<appender-ref ref="FILESYSTEM" />
 		<appender-ref ref="STDOUT" />
 	</logger>
 
@@ -128,7 +88,7 @@
 
 	<logger name="com.subterranean_security.crimson.core.util.EH"
 		level="debug" additivity="false">
-		<appender-ref ref="%INSTANCE%" />
+		<appender-ref ref="FILESYSTEM" />
 	</logger>
 
 	<logger name="io.netty" level="%LEVEL%" additivity="false">
