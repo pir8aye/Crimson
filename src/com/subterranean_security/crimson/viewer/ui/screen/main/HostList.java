@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
@@ -35,7 +36,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.Headers;
-import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -83,7 +84,7 @@ public class HostList extends JPanel {
 					return;
 				}
 
-				final ClientProfile sp = ViewerStore.Profiles.clients.get(sourceRow);
+				final ClientProfile sp = tm.getRow(sourceRow);
 
 				if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
 					initContextActions(sp);
@@ -206,13 +207,26 @@ public class HostList extends JPanel {
 		quick.add(refresh);
 	}
 
-	public void updateRow(int r) {
-		// TODO update individual cell
-		tm.fireTableRowsUpdated(r, r);
+	public void addOrUpdate(ClientProfile cp) {
+		System.out.println("addOrUpdate");
+		for (int i = 0; i < tm.getClientList().size(); i++) {
+			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
+				tm.fireTableRowsUpdated(i, i);
+				return;
+			}
+		}
+		tm.add(cp);
 	}
 
-	public void insertRow(int r) {
-		tm.fireTableRowsInserted(r, r);
+	public void removeClient(ClientProfile cp) {
+		System.out.println("removeClient");
+		for (int i = 0; i < tm.getClientList().size(); i++) {
+			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
+				tm.getClientList().remove(i);
+				tm.fireTableRowsDeleted(i, i);
+				return;
+			}
+		}
 	}
 
 	public void refreshHeaders() {
@@ -226,7 +240,18 @@ class TM extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	public Headers[] headers = new Headers[] {};
 
-	private HashMap<String, ImageIcon> osCache = new HashMap<String, ImageIcon>();
+	private ArrayList<ClientProfile> clients = new ArrayList<ClientProfile>();
+
+	public ArrayList<ClientProfile> getClientList() {
+		return clients;
+	}
+
+	public void add(ClientProfile cp) {
+		System.out.println("tm.add");
+		cp.loadOsIcon();
+		clients.add(cp);
+		fireTableRowsInserted(clients.size() - 1, clients.size() - 1);
+	}
 
 	public TM() {
 		refreshHeaders();
@@ -249,7 +274,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerStore.Profiles.clients.size();
+		return clients.size();
 	}
 
 	@Override
@@ -261,60 +286,64 @@ class TM extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		switch (headers[columnIndex]) {
 		case USERNAME:
-			return ViewerStore.Profiles.clients.get(rowIndex).getUsername();
+			return clients.get(rowIndex).getUsername();
 		case USER_STATUS:
-			return ViewerStore.Profiles.clients.get(rowIndex).getUserStatus();
+			return clients.get(rowIndex).getUserStatus();
 		case HOSTNAME:
-			return ViewerStore.Profiles.clients.get(rowIndex).getHostname();
+			return clients.get(rowIndex).getHostname();
 		case INTERNAL_IP:
 			return null;
 		case EXTERNAL_IP:
-			return ViewerStore.Profiles.clients.get(rowIndex).getExtIp();
+			return clients.get(rowIndex).getExtIp();
 		case LANGUAGE:
-			return ViewerStore.Profiles.clients.get(rowIndex).getLanguage();
+			return clients.get(rowIndex).getLanguage();
 		case ACTIVE_WINDOW:
-			return ViewerStore.Profiles.clients.get(rowIndex).getActiveWindow();
+			return clients.get(rowIndex).getActiveWindow();
 		case COUNTRY:
-			return ViewerStore.Profiles.clients.get(rowIndex).getLocationIcon();
+			return clients.get(rowIndex).getLocationIcon();
 		case CPU_MODEL:
-			return ViewerStore.Profiles.clients.get(rowIndex).getCpuModel();
+			return clients.get(rowIndex).getCpuModel();
 		case CPU_USAGE:
-			return ViewerStore.Profiles.clients.get(rowIndex).getCpuUsage();
+			return clients.get(rowIndex).getCpuUsage();
 		case CPU_TEMP:
-			return ViewerStore.Profiles.clients.get(rowIndex).getCpuTempAverage();
+			return clients.get(rowIndex).getCpuTempAverage();
 		case CVID:
-			return ViewerStore.Profiles.clients.get(rowIndex).getCvid();
+			return clients.get(rowIndex).getCvid();
 		case RAM_CAPACITY:
-			return ViewerStore.Profiles.clients.get(rowIndex).getSystemRamCapacity();
+			return clients.get(rowIndex).getSystemRamCapacity();
 		case RAM_USAGE:
-			return ViewerStore.Profiles.clients.get(rowIndex).getSystemRamUsage();
+			return clients.get(rowIndex).getSystemRamUsage();
 		case CRIMSON_VERSION:
-			return ViewerStore.Profiles.clients.get(rowIndex).getCrimsonVersion();
+			return clients.get(rowIndex).getCrimsonVersion();
 		case OS_FAMILY:
-			return ViewerStore.Profiles.clients.get(rowIndex).getOsFamily();
+			return clients.get(rowIndex).getOsFamily();
 		case OS_ARCH:
-			return ViewerStore.Profiles.clients.get(rowIndex).getOsArch();
+			return clients.get(rowIndex).getOsArch();
 		case JAVA_VERSION:
-			return ViewerStore.Profiles.clients.get(rowIndex).getJavaVersion();
+			return clients.get(rowIndex).getJavaVersion();
 		case MONITOR_COUNT:
 			return null;
 		case VIRTUALIZATION:
-			return ViewerStore.Profiles.clients.get(rowIndex).getVirtualization();
+			return clients.get(rowIndex).getVirtualization();
 		case TIMEZONE:
-			return ViewerStore.Profiles.clients.get(rowIndex).getTimezone();
+			return clients.get(rowIndex).getTimezone();
 		case CPU_SPEED:
 			return null;
 		case MESSAGE_PING:
-			return ViewerStore.Profiles.clients.get(rowIndex).getMessageLatency();
+			return clients.get(rowIndex).getMessageLatency();
 		case SCREEN_PREVIEW:
 			return null;
 		case OS_NAME:
-			return ViewerStore.Profiles.clients.get(rowIndex).getOsNameIcon();
+			return clients.get(rowIndex).getOsNameIcon();
 		default:
 			return null;
 
 		}
 
+	}
+
+	public ClientProfile getRow(int selected) {
+		return clients.get(selected);
 	}
 
 }

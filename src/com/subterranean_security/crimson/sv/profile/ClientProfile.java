@@ -178,8 +178,12 @@ public class ClientProfile implements Serializable {
 
 	public void setOsName(String osName) {
 		this.osName.set(osName);
-		if (Common.instance == Instance.VIEWER) {
-			String icon = osName.replaceAll(" ", "_").toLowerCase();
+
+	}
+
+	public void loadOsIcon() {
+		if (osNameIcon == null) {
+			String icon = osName.get().replaceAll(" ", "_").toLowerCase();
 
 			if (icon.contains("ubuntu")) {
 				icon = "ubuntu";
@@ -194,10 +198,9 @@ public class ClientProfile implements Serializable {
 				// fall back to os family
 				osNameIcon = UIUtil.getIcon("icons16/platform/" + osFamily.get() + ".png");
 			}
-			osNameIcon.setDescription(osName);
+			osNameIcon.setDescription(osName.get());
 
 		}
-
 	}
 
 	public String getOsArch() {
