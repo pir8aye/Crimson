@@ -24,20 +24,20 @@ public abstract class Attribute implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	protected String current = "";
-	private Date mtime = new Date();
+	protected String current;
+	private Date timestamp = new Date(0);
 
 	public String get() {
 		return current;
 	}
 
 	public Date getTimestamp() {
-		return mtime;
+		return timestamp;
 	}
 
 	public void set(String s) {
 		current = s;
-		mtime = new Date();
+		timestamp = new Date();
 	}
 
 }
