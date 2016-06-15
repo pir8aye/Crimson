@@ -91,7 +91,7 @@ public enum ServerStore {
 				clients++;
 				Profiles.getClient(r.getCvid()).setOnline(true);
 				sendToViewersWithAuthorityOverClient(r.getCvid(),
-						Message.newBuilder()
+						Message.newBuilder().setUrgent(true)
 								.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid()).setOnline(true)),
 						"client_visibility");
 			}
@@ -107,7 +107,7 @@ public enum ServerStore {
 				} else {
 					clients--;
 					Profiles.getClient(cvid).setOnline(false);
-					sendToViewersWithAuthorityOverClient(cvid, Message.newBuilder().setEvProfileDelta(
+					sendToViewersWithAuthorityOverClient(cvid, Message.newBuilder().setUrgent(true).setEvProfileDelta(
 							EV_ProfileDelta.newBuilder().setCvid(cvid).setOnline(false)), "client_visibility");
 				}
 				r.close();
