@@ -26,7 +26,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.cinstaller.Main;
+import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.core.storage.Database;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.server.ServerStore;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public enum Common {
 	;
@@ -107,6 +111,21 @@ public enum Common {
 			e1.printStackTrace();
 		}
 
+	}
+
+	public static Database getInstanceDatabase() {
+		switch (Common.instance) {
+		case CLIENT:
+			return Client.clientDB;
+		case SERVER:
+			return ServerStore.Databases.system;
+		case VIEWER:
+			return ViewerStore.Databases.local;
+
+		default:
+			return null;
+
+		}
 	}
 
 	public enum Directories {
