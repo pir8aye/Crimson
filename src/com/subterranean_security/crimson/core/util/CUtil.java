@@ -260,6 +260,18 @@ public enum CUtil {
 			return a;
 		}
 
+		public static String readFileString(File f) throws IOException {
+			StringBuffer sb = new StringBuffer();
+			try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+				String line;
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
+					sb.append("\n");
+				}
+			}
+			return sb.toString();
+		}
+
 		/**
 		 * Gets a byte[] from a file in the main jar
 		 *

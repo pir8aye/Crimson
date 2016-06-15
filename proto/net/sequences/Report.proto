@@ -19,8 +19,9 @@ message MI_Report {
 	optional string sys_lang = 15;
 	optional string cr_lang = 16;
 	optional string charset = 17;
-	optional string log = 18;
-	optional string comment = 19;
+	optional string cr_log = 18;
+	optional string netty_log = 19;
+	optional string comment = 20;
 
-	optional string stack_trace = 20;
+	optional string stack_trace = 21;
 }

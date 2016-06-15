@@ -18,12 +18,15 @@
 
 package com.subterranean_security.crimson.core;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.services.Services;
 
 /**
@@ -60,8 +63,21 @@ public class Reporter {
 		rb.setOsFamily(Platform.osFamily.toString());
 		// rb.setSysArch(Platform.sysArch.toString());
 		rb.setJreArch(Platform.javaArch.toString());
+		rb.setJreUptime(CUtil.Misc.datediff(Common.start, new Date()));
 		rb.setSysLang(Platform.Advanced.getLanguage());
 		rb.setOsName(Platform.osName);
+		try {
+			rb.setCrLog(CUtil.Files.readFileString(new File(Common.Directories.varLog.getAbsolutePath() + "/"
+					+ Common.instance.toString().toLowerCase() + ".log")));
+		} catch (IOException e) {
+
+		}
+		try {
+			rb.setNettyLog(
+					CUtil.Files.readFileString(new File(Common.Directories.varLog.getAbsolutePath() + "/netty.log")));
+		} catch (IOException e) {
+
+		}
 
 		return rb;
 	}
