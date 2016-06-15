@@ -26,9 +26,14 @@ public class ShutdownHook extends Thread {
 
 	private static final Logger log = LoggerFactory.getLogger(ShutdownHook.class);
 
+	public static boolean shuttingdown = false;
+
 	@Override
 	public void run() {
+		shuttingdown = true;
 		log.debug("Shutting down");
+
+		ClientStore.Connections.close();
 		Client.clientDB.close();
 		FileLocking.unlock();
 	}

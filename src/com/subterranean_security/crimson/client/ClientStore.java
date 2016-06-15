@@ -62,7 +62,7 @@ public enum ClientStore {
 		}
 
 		public static void connectionRoutine() {
-			if (connecting) {
+			if (connecting || ShutdownHook.shuttingdown) {
 				return;
 			} else {
 				connecting = true;
@@ -105,6 +105,18 @@ public enum ClientStore {
 
 		public static void route(Message.Builder m) {
 			route(m.build());
+		}
+
+		public static void close() {
+			for (int i : connections.keySet()) {
+				try {
+					connections.get(i).close();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
 		}
 
 	}
