@@ -43,10 +43,7 @@ public class Reporter {
 
 			@Override
 			public void run() {
-				log.info("Reporting event");
-
 				Services.sendReport(r);
-
 			}
 
 		}).start();

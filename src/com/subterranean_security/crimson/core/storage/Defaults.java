@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
+import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 
 public enum Defaults {
 	;
@@ -84,13 +84,13 @@ public enum Defaults {
 
 	private static void softResetUniversal(Database db) {
 		db.storeObject("error_reporting", true);
-		db.storeObject("reports_sent", 0);
+		db.storeObject("reports.sent", 0);
 		db.storeObject("language", "en");
 	}
 
 	private static void hardResetUniversal(Database db) {
 		db.storeObject("cvid", 0);
-		db.storeObject("report_buffer", new ArrayList<Report>());
+		db.storeObject("reports.buffer", new ArrayList<MI_Report>());
 		db.storeObject("crimson.version", Common.version);
 		db.storeObject("crimson.build_number", Common.build);
 	}
