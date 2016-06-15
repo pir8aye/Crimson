@@ -36,9 +36,9 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
 import com.subterranean_security.crimson.core.storage.MemList;
 import com.subterranean_security.crimson.core.storage.MemMap;
-import com.subterranean_security.crimson.sv.ClientProfile;
-import com.subterranean_security.crimson.sv.ServerProfile;
-import com.subterranean_security.crimson.sv.ViewerProfile;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ServerProfile;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
@@ -182,31 +182,26 @@ public enum ViewerStore {
 		}
 
 		public static void update(EV_ProfileDelta change) {
-			boolean flag = true;
 
-			for (int i = 0; i < (ViewerState.trialMode ? Math.min(1, clients.size())
-					: clients.size()); i++) {
-				if (clients.get(i).getCvid() == change.getCvid()) {
-					flag = false;
-					clients.get(i).amalgamate(change);
-					if (MainFrame.main != null && MainFrame.main.panel.listLoaded) {
-						MainFrame.main.panel.list.updateRow(i);
-					}
-					break;
-				}
-			}
-			if (flag) {
-				ClientProfile np = new ClientProfile(change.getCvid());
-				np.getKeylog().pages.setDatabase(Databases.local);
-				np.amalgamate(change);
-				clients.add(np);
-				if (MainFrame.main != null && MainFrame.main.panel.listLoaded) {
-					MainFrame.main.panel.list.insertRow(clients.size() - 1);
-				}
+			ClientProfile cp = getClient(change.getCvid());
+			if (cp != null) {
+				log.debug("Amalgamating existing profile");
+				cp.amalgamate(change);
+			} else if (ViewerState.trialMode && clients.size() == 1) {
+				log.debug("Trial limitiation reached");
+				return;
 			}
 
-			if (MainFrame.main != null && MainFrame.main.panel.graphLoaded) {
-				// TODO refresh graph
+			// add new profile
+			cp = new ClientProfile(change.getCvid());
+			cp.getKeylog().pages.setDatabase(Databases.local);
+			cp.amalgamate(change);
+			clients.add(cp);
+
+			if (cp.getOnline()) {
+				MainFrame.main.panel.list.addOrUpdate(cp);
+			} else {
+				MainFrame.main.panel.list.removeClient(cp);
 			}
 
 		}
