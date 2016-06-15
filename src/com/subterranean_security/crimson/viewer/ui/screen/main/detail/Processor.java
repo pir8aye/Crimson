@@ -39,7 +39,7 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
-import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
 import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.ITrace2D;

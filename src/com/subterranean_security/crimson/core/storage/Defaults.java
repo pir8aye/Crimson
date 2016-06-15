@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
-import com.subterranean_security.crimson.sv.ClientProfile;
-import com.subterranean_security.crimson.sv.ServerProfile;
-import com.subterranean_security.crimson.sv.ViewerProfile;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ServerProfile;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 
 public enum Defaults {

@@ -52,7 +52,7 @@ import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FileTable;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;

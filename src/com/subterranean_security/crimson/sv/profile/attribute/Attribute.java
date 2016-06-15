@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.sv;
+package com.subterranean_security.crimson.sv.profile.attribute;
 
 import java.io.Serializable;
 import java.util.Date;

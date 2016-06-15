@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.sv;
+package com.subterranean_security.crimson.sv.profile;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,6 +36,9 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.NetworkInterface;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.keylogger.Log;
+import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
+import com.subterranean_security.crimson.sv.profile.attribute.TrackedAttribute;
+import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class ClientProfile implements Serializable {

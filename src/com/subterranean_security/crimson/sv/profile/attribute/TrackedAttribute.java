@@ -1,4 +1,4 @@
-package com.subterranean_security.crimson.sv;
+package com.subterranean_security.crimson.sv.profile.attribute;
 
 import java.util.ArrayList;
 import java.util.Date;

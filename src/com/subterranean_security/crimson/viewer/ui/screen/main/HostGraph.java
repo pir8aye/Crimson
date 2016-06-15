@@ -32,7 +32,7 @@ import javax.swing.JPopupMenu;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 import com.subterranean_security.crimson.core.storage.Headers;
-import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
 public class HostGraph extends JPanel implements MouseWheelListener {
 

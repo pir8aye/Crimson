@@ -19,7 +19,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 
 import javax.swing.JPanel;
 
-import com.subterranean_security.crimson.sv.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
 public class WorldMap extends JPanel implements DModule {
 

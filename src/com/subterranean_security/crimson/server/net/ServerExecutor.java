@@ -69,10 +69,10 @@ import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.server.ServerState;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
-import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.Listener;
 import com.subterranean_security.crimson.sv.PermissionTester;
-import com.subterranean_security.crimson.sv.ViewerProfile;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.services.Services;
 
 import io.netty.util.ReferenceCountUtil;
@@ -667,7 +667,6 @@ public class ServerExecutor extends BasicExecutor {
 	private void aux_acceptClient() {
 		receptor.setState(ConnectionState.AUTHENTICATED);
 		receptor.setInstance(Instance.CLIENT);
-		ServerStore.Connections.add(receptor);
 
 		try {
 			if (ServerStore.Profiles.getClient(receptor.getCvid()) == null) {
@@ -679,6 +678,8 @@ public class ServerExecutor extends BasicExecutor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		ServerStore.Connections.add(receptor);
 	}
 
 }

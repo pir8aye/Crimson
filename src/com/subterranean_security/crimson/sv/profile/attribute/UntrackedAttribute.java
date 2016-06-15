@@ -1,4 +1,4 @@
-package com.subterranean_security.crimson.sv;
+package com.subterranean_security.crimson.sv.profile.attribute;
 
 public class UntrackedAttribute extends Attribute {
 

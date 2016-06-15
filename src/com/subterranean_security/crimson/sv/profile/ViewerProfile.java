@@ -15,13 +15,16 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.sv;
+package com.subterranean_security.crimson.sv.profile;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
+import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
+import com.subterranean_security.crimson.sv.profile.attribute.TrackedAttribute;
+import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
 
 public class ViewerProfile implements Serializable {
 

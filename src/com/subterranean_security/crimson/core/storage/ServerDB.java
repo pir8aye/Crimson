@@ -31,7 +31,7 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.ServerStore;
-import com.subterranean_security.crimson.sv.ViewerProfile;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
 public class ServerDB extends Database {
 	private static final Logger log = LoggerFactory.getLogger(ServerDB.class);

