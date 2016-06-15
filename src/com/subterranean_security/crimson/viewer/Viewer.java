@@ -32,8 +32,8 @@ import com.subterranean_security.crimson.core.ui.debug.DebugFrame;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
 import com.subterranean_security.crimson.core.util.FileLocking;
-import com.subterranean_security.crimson.sv.ClientProfile;
-import com.subterranean_security.crimson.sv.ServerProfile;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore.Databases;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
@@ -106,6 +106,11 @@ public class Viewer {
 		Tween.registerAccessor(MovingPanel.class, new MovingPanel.Accessor());
 		SLAnimator.start();
 
+		loadState();
+
+		// Preload main interface
+		MainFrame.main = new MainFrame();
+
 		// show login dialog
 		LoginDialog login = new LoginDialog(ViewerStore.LocalServer.bundledServer.exists() && !localServerFound);
 
@@ -120,10 +125,7 @@ public class Viewer {
 		}
 		login = null;
 
-		loadState();
-
-		// Start the main interface
-		MainFrame.main = new MainFrame();
+		// Show the main interface
 		MainFrame.main.setVisible(true);
 		MainFrame.main.setLocationRelativeTo(null);
 
