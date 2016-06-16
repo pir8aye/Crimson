@@ -147,11 +147,6 @@ public class ClientProfile implements Serializable {
 		city = new UntrackedAttribute();
 	}
 
-	// TODO use
-	public void loadTransientAttributes() {
-
-	}
-
 	public Log getKeylog() {
 		return keylog;
 	}
@@ -182,7 +177,7 @@ public class ClientProfile implements Serializable {
 	}
 
 	public void loadOsIcon() {
-		if (osNameIcon == null) {
+		if (osNameIcon == null && osName.get() != null) {
 			String icon = osName.get().replaceAll(" ", "_").toLowerCase();
 
 			if (icon.contains("ubuntu")) {
