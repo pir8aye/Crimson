@@ -156,6 +156,13 @@ public enum ServerStore {
 				}
 			}
 		}
+
+		public static void close() {
+			for (int cvid : getKeySet()) {
+				receptors.get(cvid).close();
+			}
+			receptors.clear();
+		}
 	}
 
 	public static class Databases {

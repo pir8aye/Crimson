@@ -24,8 +24,8 @@ public class ShutdownHook extends Thread {
 	@Override
 	public void run() {
 
+		ServerStore.Connections.close();
 		ServerStore.Databases.system.close();
-
 		FileLocking.unlock();
 	}
 }
