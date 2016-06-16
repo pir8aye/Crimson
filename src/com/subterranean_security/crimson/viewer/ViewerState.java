@@ -38,16 +38,29 @@ public enum ViewerState {
 			online = false;
 			MainFrame.main.np.addNote("disconnection", "Connection to server lost", "Click to retry", new Runnable() {
 				public void run() {
-					MainFrame.main.ep.raise(new Relogin(MainFrame.main.ep), 120);
+					MainFrame.main.ep.raise(new Relogin(MainFrame.main.ep), 125);
 				}
 			});
 		}
 	}
 
-	public static void goOnline() {
+	private static String server;
+	private static int port;
+
+	public static void goOnline(String s, int p) {
 		if (!online) {
 			online = true;
+			server = s;
+			port = p;
 		}
+	}
+
+	public static String getServer() {
+		return server;
+	}
+
+	public static int getPort() {
+		return port;
 	}
 
 	/**

@@ -22,6 +22,8 @@ import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Relogin extends JPanel {
 
@@ -54,6 +56,7 @@ public class Relogin extends JPanel {
 		panel_1.add(btnCancel);
 
 		btnLogin = new JButton("Login");
+		btnLogin.setEnabled(false);
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				new Thread(new Runnable() {
@@ -64,7 +67,7 @@ public class Relogin extends JPanel {
 				}).start();
 			}
 		});
-		btnLogin.setMargin(new Insets(1, 5, 1, 5));
+		btnLogin.setMargin(new Insets(1, 8, 1, 9));
 		btnLogin.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_1.add(btnLogin);
 
@@ -72,14 +75,20 @@ public class Relogin extends JPanel {
 		add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new BorderLayout(0, 0));
 
+		lbl_status = new StatusLabel("Re-enter your password to reconnect to the server");
+		panel_2.add(lbl_status, BorderLayout.NORTH);
+
+		JPanel panel_3 = new JPanel();
+		panel_2.add(panel_3, BorderLayout.CENTER);
+
 		JPanel panel = new JPanel();
-		panel_2.add(panel);
+		panel_3.add(panel);
 		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] { 0, 0, 0, 0, 0 };
-		gbl_panel.rowHeights = new int[] { 0, 0, 0, 0 };
-		gbl_panel.columnWeights = new double[] { 1.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
-		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel.columnWidths = new int[] { 3, 0, 0, 3, 0 };
+		gbl_panel.rowHeights = new int[] { 0, 0, 0, 3, 0 };
+		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
 		JLabel lblServerl = new JLabel("Server:");
@@ -92,9 +101,11 @@ public class Relogin extends JPanel {
 		gbc_lblServerl.gridy = 0;
 		panel.add(lblServerl, gbc_lblServerl);
 
-		lbl_server = new JLabel("127.0.0.1:10101");
+		lbl_server = new JLabel(ViewerState.getServer() + ":" + ViewerState.getPort());
+		lbl_server.setEnabled(false);
 		lbl_server.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.anchor = GridBagConstraints.WEST;
 		gbc_label.insets = new Insets(0, 0, 5, 5);
 		gbc_label.gridx = 2;
 		gbc_label.gridy = 0;
@@ -110,9 +121,11 @@ public class Relogin extends JPanel {
 		gbc_lblUsername.gridy = 1;
 		panel.add(lblUsername, gbc_lblUsername);
 
-		lbl_user = new JLabel("admin");
+		lbl_user = new JLabel(ViewerStore.Profiles.vp.getUser());
+		lbl_user.setEnabled(false);
 		lbl_user.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblAdmin = new GridBagConstraints();
+		gbc_lblAdmin.anchor = GridBagConstraints.WEST;
 		gbc_lblAdmin.insets = new Insets(0, 0, 5, 5);
 		gbc_lblAdmin.gridx = 2;
 		gbc_lblAdmin.gridy = 1;
@@ -122,30 +135,30 @@ public class Relogin extends JPanel {
 		lblPassword.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblPassword.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
-		gbc_lblPassword.insets = new Insets(0, 0, 0, 5);
+		gbc_lblPassword.insets = new Insets(0, 0, 5, 5);
 		gbc_lblPassword.anchor = GridBagConstraints.EAST;
 		gbc_lblPassword.gridx = 1;
 		gbc_lblPassword.gridy = 2;
 		panel.add(lblPassword, gbc_lblPassword);
 
 		fld_pass = new JPasswordField();
+		fld_pass.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				btnLogin.setEnabled(testValues());
+			}
+		});
 		fld_pass.setColumns(14);
 		GridBagConstraints gbc_passwordField = new GridBagConstraints();
+		gbc_passwordField.insets = new Insets(0, 0, 5, 5);
 		gbc_passwordField.anchor = GridBagConstraints.WEST;
-		gbc_passwordField.insets = new Insets(0, 0, 0, 5);
 		gbc_passwordField.gridx = 2;
 		gbc_passwordField.gridy = 2;
 		panel.add(fld_pass, gbc_passwordField);
-
-		lbl_status = new StatusLabel("Re-enter your password to reconnect to the server");
-		panel_2.add(lbl_status, BorderLayout.SOUTH);
 	}
 
 	private void login(String server, String port, String user, char[] password) {
 
-		if (!testValues(password)) {
-			return;
-		}
 		startLogin();
 
 		try {
@@ -160,7 +173,7 @@ public class Relogin extends JPanel {
 			// test the credentials
 			if (ViewerCommands.login(user, password)) {
 				lbl_status.setGood("Login Successful");
-				ViewerState.goOnline();
+				ViewerState.goOnline(server, Integer.parseInt(port));
 				try {
 					Thread.sleep(400);
 				} catch (InterruptedException e) {
@@ -196,14 +209,10 @@ public class Relogin extends JPanel {
 
 	}
 
-	private boolean testValues(char[] password) {
+	private boolean testValues() {
 
-		if (!CUtil.Validation.password(password)) {
+		return CUtil.Validation.password(fld_pass.getPassword());
 
-			return false;
-		}
-
-		return true;
 	}
 
 }
