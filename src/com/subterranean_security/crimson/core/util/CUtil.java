@@ -880,10 +880,16 @@ public enum CUtil {
 		}
 
 		public static boolean dns(String dns) {
+			if (dns == null) {
+				return false;
+			}
 			return pDNS.matcher(dns).find();
 		}
 
 		public static boolean ip(String ip) {
+			if (ip == null) {
+				return false;
+			}
 			return pIP.matcher(ip).matches();
 		}
 
