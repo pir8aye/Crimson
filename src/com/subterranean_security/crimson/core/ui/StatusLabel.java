@@ -41,9 +41,10 @@ public class StatusLabel extends JLabel {
 	public StatusLabel(String s) {
 		super();
 		setHorizontalAlignment(SwingConstants.CENTER);
-		setVisible(true);
+
 		setFont(font);
 		setDefault(s);
+		setVisible(true);
 	}
 
 	public StatusLabel() {
@@ -65,7 +66,7 @@ public class StatusLabel extends JLabel {
 		}
 		new Thread(new Runnable() {
 			public void run() {
-				setVisible(false);
+				setText(" ");
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
@@ -74,7 +75,6 @@ public class StatusLabel extends JLabel {
 				setText(s.toUpperCase());
 				setForeground(good);
 				setBorder(new LineBorder(good, 1, true));
-				setVisible(true);
 			}
 		}).start();
 
@@ -86,7 +86,7 @@ public class StatusLabel extends JLabel {
 		}
 		new Thread(new Runnable() {
 			public void run() {
-				setVisible(false);
+				setText(" ");
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
@@ -95,7 +95,6 @@ public class StatusLabel extends JLabel {
 				setText(s.toUpperCase());
 				setForeground(warn);
 				setBorder(new LineBorder(warn, 1, true));
-				setVisible(true);
 			}
 		}).start();
 
@@ -107,7 +106,7 @@ public class StatusLabel extends JLabel {
 		}
 		new Thread(new Runnable() {
 			public void run() {
-				setVisible(false);
+				setText(" ");
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
@@ -116,7 +115,6 @@ public class StatusLabel extends JLabel {
 				setText(s.toUpperCase());
 				setForeground(bad);
 				setBorder(new LineBorder(bad, 1, true));
-				setVisible(true);
 			}
 		}).start();
 
@@ -128,7 +126,7 @@ public class StatusLabel extends JLabel {
 		}
 		new Thread(new Runnable() {
 			public void run() {
-				setVisible(false);
+				setText(" ");
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
@@ -137,7 +135,6 @@ public class StatusLabel extends JLabel {
 				setText(s.toUpperCase());
 				setForeground(info);
 				setBorder(new LineBorder(info, 1, true));
-				setVisible(true);
 			}
 		}).start();
 

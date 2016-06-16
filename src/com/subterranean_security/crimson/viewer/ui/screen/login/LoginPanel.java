@@ -211,7 +211,7 @@ public class LoginPanel extends JPanel {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lbl_status.setVisible(false);
+				lbl_status.setDefault();
 			}
 		});
 		fld_address.setBounds(20, 28, 280, 17);
@@ -236,7 +236,7 @@ public class LoginPanel extends JPanel {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lbl_status.setVisible(false);
+				lbl_status.setDefault();
 			}
 		});
 		fld_port.setDocument(new FieldLimiter(5, "\\d"));
@@ -268,7 +268,7 @@ public class LoginPanel extends JPanel {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lbl_status.setVisible(false);
+				lbl_status.setDefault();
 			}
 		});
 		fld_user.setHorizontalAlignment(SwingConstants.CENTER);
@@ -288,7 +288,7 @@ public class LoginPanel extends JPanel {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lbl_status.setVisible(false);
+				lbl_status.setDefault();
 			}
 		});
 		fld_pass.setDocument(new FieldLimiter(32));
@@ -309,8 +309,8 @@ public class LoginPanel extends JPanel {
 		lbl_pass.setBounds(228, 12, 140, 15);
 		panel_credentials.add(lbl_pass);
 
-		lbl_status = new StatusLabel();
-		lbl_status.setVisible(false);
+		lbl_status = new StatusLabel("Enter details to login to a crimson server");
+		lbl_status.setVisible(true);
 		lbl_status.setBounds(12, 120, 376, 15);
 		panel_body.add(lbl_status);
 
@@ -365,7 +365,7 @@ public class LoginPanel extends JPanel {
 			if (ViewerCommands.login(user, password)) {
 				lbl_status.unfreeze();
 				lbl_status.setGood("Login Successful");
-				ViewerState.goOnline();
+				ViewerState.goOnline(server, Integer.parseInt(port));
 				try {
 					Thread.sleep(400);
 				} catch (InterruptedException e) {
