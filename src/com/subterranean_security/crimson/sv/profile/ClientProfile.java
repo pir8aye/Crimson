@@ -29,9 +29,7 @@ import javax.swing.ImageIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Reporter;
-import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.NetworkInterface;
 import com.subterranean_security.crimson.core.util.CUtil;

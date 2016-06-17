@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.Platform.OSFAMILY;
 import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.Platform.OSFAMILY;
 
 /**
  * Locks a file in the system temp directory to prevent multiple instances of

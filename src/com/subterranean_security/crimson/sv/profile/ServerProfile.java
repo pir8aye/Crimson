@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.subterranean_security.crimson.core.proto.ClientAuth.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
@@ -42,6 +43,7 @@ public class ServerProfile implements Serializable {
 	private int connectedClients;
 
 	public ArrayList<ListenerConfig> listeners = new ArrayList<ListenerConfig>();
+	public ArrayList<AuthMethod> authMethods = new ArrayList<AuthMethod>();
 	public ArrayList<ViewerProfile> users = new ArrayList<ViewerProfile>();
 
 	// General attributes

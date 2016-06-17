@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
@@ -27,6 +28,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.State.StateType;
@@ -35,8 +37,6 @@ import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
-import javax.swing.JProgressBar;
-import java.awt.Dimension;
 
 public class ControlsTab extends JPanel implements CPPanel {
 
