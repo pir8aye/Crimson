@@ -22,7 +22,6 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -34,6 +33,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -130,8 +130,8 @@ public class HostList extends JPanel {
 
 				new Thread() {
 					public void run() {
-						StringBuffer error = new StringBuffer();
-						if (!ViewerCommands.changeClientState(error, cp.getCvid(), StateType.SHUTDOWN)) {
+						Outcome outcome = ViewerCommands.changeClientState(cp.getCvid(), StateType.SHUTDOWN);
+						if (!outcome.getResult()) {
 							// TODO
 						}
 					}
@@ -146,8 +146,8 @@ public class HostList extends JPanel {
 
 				new Thread() {
 					public void run() {
-						StringBuffer error = new StringBuffer();
-						if (!ViewerCommands.changeClientState(error, cp.getCvid(), StateType.RESTART)) {
+						Outcome outcome = ViewerCommands.changeClientState(cp.getCvid(), StateType.RESTART);
+						if (!outcome.getResult()) {
 							// TODO
 						}
 					}

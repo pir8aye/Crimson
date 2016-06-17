@@ -20,6 +20,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -247,7 +248,6 @@ public class AddUser extends JDialog {
 							public void run() {
 								if (verify()) {
 									sl.setInfo("Adding User...");
-									StringBuffer error = new StringBuffer();
 									ViewerPermissions vp = ViewerPermissions.newBuilder()
 											.setSuper(chckbxSuperuser.isSelected())
 											.setGenerate(chckbxGenerator.isSelected())
@@ -256,8 +256,9 @@ public class AddUser extends JDialog {
 											.setServerSettings(chckbxServerSettings.isSelected())
 											.setServerFsRead(chckbxServerFilesystemRead.isSelected())
 											.setServerFsWrite(chckbxServerFilesystemWrite.isSelected()).build();
-									if (ViewerCommands.addUser(error, textField.getText(), passwordField.getPassword(),
-											vp)) {
+									Outcome outcome = ViewerCommands.addUser(textField.getText(),
+											passwordField.getPassword(), vp);
+									if (outcome.getResult()) {
 										sl.setGood("Success!");
 										try {
 											Thread.sleep(700);
@@ -267,8 +268,8 @@ public class AddUser extends JDialog {
 										}
 										dispose();
 									} else {
-										if (error.length() != 0) {
-											sl.setBad("Failed: " + error.toString());
+										if (outcome.hasComment()) {
+											sl.setBad("Failed: " + outcome.getComment());
 										} else {
 											sl.setBad("Failed to add user!");
 										}

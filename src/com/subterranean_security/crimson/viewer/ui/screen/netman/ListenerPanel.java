@@ -72,7 +72,7 @@ public class ListenerPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				new Thread(new Runnable() {
 					public void run() {
-						ViewerCommands.removeListener(new StringBuffer(), lt.getSelected().getId());
+						ViewerCommands.removeListener(lt.getSelected().getId());
 					}
 				}).start();
 			}

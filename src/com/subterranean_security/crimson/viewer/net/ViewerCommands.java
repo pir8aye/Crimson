@@ -43,6 +43,7 @@ import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeClientState;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.State.StateType;
@@ -125,109 +126,129 @@ public enum ViewerCommands {
 
 	}
 
-	public static boolean changeServerState(StringBuffer error, StateType st) {
+	public static Outcome changeServerState(StateType st) {
 		log.debug("Changing server state: {}", st.toString());
+		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = ViewerRouter.routeAndWait(
 					Message.newBuilder().setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)), 3);
 			if (m == null) {
-				error.append("No response");
+				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsChangeServerState().getResult()) {
-				if (m.getRsChangeServerState().hasComment()) {
-					error.append(m.getRsChangeServerState().getComment());
-				}
+
+				outcome.setResult(false).setComment(m.getRsChangeServerState().hasComment()
+						? m.getRsChangeServerState().getComment() : "no comment");
+
 			} else {
-				return true;
+				outcome.setResult(true);
 			}
 		} catch (InterruptedException e) {
-			error.append("Interrupted");
+			outcome.setResult(false).setComment("Interrupted");
 		}
-		log.debug("error: {}", error.toString());
-		return false;
+		return outcome.build();
 	}
 
-	public static boolean changeClientState(StringBuffer error, int cid, StateType st) {
+	public static Outcome changeClientState(int cid, StateType st) {
 		log.debug("Changing client state: {}", st.toString());
+		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid)
 					.setRqChangeClientState(RQ_ChangeClientState.newBuilder().setNewState(st)), 3);
 			if (m == null) {
-				error.append("No response");
+				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsChangeServerState().getResult()) {
-				if (m.getRsChangeServerState().hasComment()) {
-					error.append(m.getRsChangeServerState().getComment());
-				}
+				outcome.setResult(false).setComment(m.getRsChangeClientState().hasComment()
+						? m.getRsChangeClientState().getComment() : "no comment");
 			} else {
-				return true;
+				outcome.setResult(true);
 			}
 		} catch (InterruptedException e) {
-			error.append("Interrupted");
+			outcome.setResult(false).setComment("Interrupted");
 		}
-		log.debug("error: {}", error.toString());
-		return false;
+		return outcome.build();
 	}
 
-	public static boolean addListener(StringBuffer error, ListenerConfig lf) {
+	public static Outcome addListener(ListenerConfig lf) {
+		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = ViewerRouter
 					.routeAndWait(Message.newBuilder().setRqAddListener(RQ_AddListener.newBuilder().setConfig(lf)), 3);
 			if (m == null) {
-				error.append("No response");
+				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsAddListener().getResult()) {
-				if (m.getRsAddListener().hasComment()) {
-					error.append(m.getRsAddListener().getComment());
-				}
-				return false;
+				outcome.setResult(false).setComment(
+						m.getRsAddListener().hasComment() ? m.getRsAddListener().getComment() : "no comment");
+
+			} else {
+				outcome.setResult(true);
 			}
 		} catch (InterruptedException e) {
-			error.append("Interrupted");
-			return false;
+			outcome.setResult(false).setComment("Interrupted");
 		}
 
-		return true;
+		return outcome.build();
 	}
 
-	public static boolean removeListener(StringBuffer error, int id) {
+	public static Outcome removeListener(int id) {
+		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = ViewerRouter.routeAndWait(
 					Message.newBuilder().setRqRemoveListener(RQ_RemoveListener.newBuilder().setId(id)), 3);
 			if (m == null) {
-				error.append("No response");
+				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsRemoveListener().getResult()) {
-				if (m.getRsRemoveListener().hasComment()) {
-					error.append(m.getRsRemoveListener().getComment());
-				}
-				return false;
+				outcome.setResult(false).setComment(
+						m.getRsRemoveListener().hasComment() ? m.getRsRemoveListener().getComment() : "no comment");
+
+			} else {
+				outcome.setResult(true);
 			}
 		} catch (InterruptedException e) {
-			error.append("Interrupted");
-			return false;
+			outcome.setResult(false).setComment("Interrupted");
 		}
 
-		return true;
+		return outcome.build();
 	}
 
-	public static boolean addUser(StringBuffer error, String user, char[] pass, ViewerPermissions vp) {
+	public static Outcome addAuthGroup() {
+		return null;
+	}
+
+	public static Outcome removeAuthGroup() {
+		return null;
+	}
+
+	public static Outcome addAuthPassword() {
+		return null;
+	}
+
+	public static Outcome removeAuthPassword() {
+		return null;
+	}
+
+	public static Outcome addUser(String user, char[] pass, ViewerPermissions vp) {
+		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRqAddUser(
 					RQ_AddUser.newBuilder().setUser(user).setPassword(new String(pass)).setPermissions(vp)), 2);
 			if (m == null) {
-				error.append("No response");
+				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsAddUser().getResult()) {
-				if (m.getRsAddUser().hasComment()) {
-					error.append(m.getRsAddUser().getComment());
-				}
-				return false;
+				outcome.setResult(false)
+						.setComment(m.getRsAddUser().hasComment() ? m.getRsAddUser().getComment() : "no comment");
+
+			} else {
+				outcome.setResult(true);
 			}
 		} catch (InterruptedException e) {
-			error.append("Interrupted");
-			return false;
+			outcome.setResult(false).setComment("Interrupted");
 		}
 
-		return true;
+		return outcome.build();
 	}
 
-	public static boolean editUser(StringBuffer error, String user, char[] pass, ViewerPermissions vp) {
+	public static Outcome editUser(String user, char[] pass, ViewerPermissions vp) {
+		Outcome.Builder outcome = Outcome.newBuilder();
 
 		RQ_AddUser.Builder rqau = RQ_AddUser.newBuilder().setUser(user).setPermissions(vp);
 		if (pass != null) {
@@ -238,19 +259,20 @@ public enum ViewerCommands {
 			Message m = ViewerRouter
 					.routeAndWait(Message.newBuilder().setRqEditUser(RQ_EditUser.newBuilder().setUser(rqau)), 2);
 			if (m == null) {
-				error.append("No response");
+				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsEditUser().getResult()) {
-				if (m.getRsEditUser().hasComment()) {
-					error.append(m.getRsEditUser().getComment());
-				}
-				return false;
+
+				outcome.setResult(false)
+						.setComment(m.getRsEditUser().hasComment() ? m.getRsEditUser().getComment() : "no comment");
+
+			} else {
+				outcome.setResult(true);
 			}
 		} catch (InterruptedException e) {
-			error.append("Interrupted");
-			return false;
+			outcome.setResult(false).setComment("Interrupted");
 		}
 
-		return true;
+		return outcome.build();
 	}
 
 	public static void generate(ClientConfig config, String output, Date creation) {

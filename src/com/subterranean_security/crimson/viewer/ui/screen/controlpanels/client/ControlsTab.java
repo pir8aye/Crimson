@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
@@ -103,9 +104,9 @@ public class ControlsTab extends JPanel implements CPPanel {
 						barShutdown.setIndeterminate(true);
 						setControlsEnabled(false);
 						console.addLine("Sending shutdown signal to client: " + profile.getHostname());
-						StringBuffer error = new StringBuffer();
-						if (!ViewerCommands.changeClientState(error, profile.getCvid(), StateType.SHUTDOWN)) {
-							console.addLine("Shutdown error: " + error.toString());
+						Outcome outcome = ViewerCommands.changeClientState(profile.getCvid(), StateType.SHUTDOWN);
+						if (!outcome.getResult()) {
+							console.addLine("Shutdown error: " + outcome.getComment());
 						}
 						setControlsEnabled(true);
 						barShutdown.setIndeterminate(false);
@@ -136,9 +137,9 @@ public class ControlsTab extends JPanel implements CPPanel {
 						barRestart.setIndeterminate(true);
 						setControlsEnabled(false);
 						console.addLine("Sending restart signal to client: " + profile.getHostname());
-						StringBuffer error = new StringBuffer();
-						if (!ViewerCommands.changeClientState(error, profile.getCvid(), StateType.RESTART)) {
-							console.addLine("Restart error: " + error.toString());
+						Outcome outcome = ViewerCommands.changeClientState(profile.getCvid(), StateType.RESTART);
+						if (!outcome.getResult()) {
+							console.addLine("Restart error: " + outcome.getComment());
 						}
 						setControlsEnabled(true);
 						barRestart.setIndeterminate(false);
@@ -169,9 +170,9 @@ public class ControlsTab extends JPanel implements CPPanel {
 						barStandby.setIndeterminate(true);
 						setControlsEnabled(false);
 						console.addLine("Sending standby signal to client: " + profile.getHostname());
-						StringBuffer error = new StringBuffer();
-						if (!ViewerCommands.changeClientState(error, profile.getCvid(), StateType.STANDBY)) {
-							console.addLine("Standby error: " + error.toString());
+						Outcome outcome = ViewerCommands.changeClientState(profile.getCvid(), StateType.STANDBY);
+						if (!outcome.getResult()) {
+							console.addLine("Standby error: " + outcome.getComment());
 						}
 						setControlsEnabled(true);
 						barStandby.setIndeterminate(false);
@@ -202,9 +203,9 @@ public class ControlsTab extends JPanel implements CPPanel {
 						barHibernate.setIndeterminate(true);
 						setControlsEnabled(false);
 						console.addLine("Sending hibernate signal to client: " + profile.getHostname());
-						StringBuffer error = new StringBuffer();
-						if (!ViewerCommands.changeClientState(error, profile.getCvid(), StateType.HIBERNATE)) {
-							console.addLine("Hibernate error: " + error.toString());
+						Outcome outcome = ViewerCommands.changeClientState(profile.getCvid(), StateType.HIBERNATE);
+						if (!outcome.getResult()) {
+							console.addLine("Hibernate error: " + outcome.getComment());
 						}
 						setControlsEnabled(true);
 						barHibernate.setIndeterminate(false);
@@ -229,9 +230,9 @@ public class ControlsTab extends JPanel implements CPPanel {
 					public void run() {
 						setControlsEnabled(false);
 						console.addLine("Sending uninstall signal to client: " + profile.getHostname());
-						StringBuffer error = new StringBuffer();
-						if (!ViewerCommands.changeClientState(error, profile.getCvid(), StateType.UNINSTALL)) {
-							console.addLine("Uninstall error: " + error.toString());
+						Outcome outcome = ViewerCommands.changeClientState(profile.getCvid(), StateType.UNINSTALL);
+						if (!outcome.getResult()) {
+							console.addLine("Uninstall error: " + outcome.getComment());
 						}
 						setControlsEnabled(true);
 					}

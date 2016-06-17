@@ -17,6 +17,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
@@ -138,7 +139,6 @@ public class EditUser extends JDialog {
 							public void run() {
 								if (verify()) {
 									sl.setInfo("Applying changes...");
-									StringBuffer error = new StringBuffer();
 									ViewerPermissions vp = ViewerPermissions.newBuilder()
 											.setSuper(chckbxSuperuser.isSelected())
 											.setGenerate(chckbxGenerator.isSelected())
@@ -147,7 +147,8 @@ public class EditUser extends JDialog {
 											.setServerSettings(chckbxServerSettings.isSelected())
 											.setServerFsRead(chckbxServerFilesystemRead.isSelected())
 											.setServerFsWrite(chckbxServerFilesystemWrite.isSelected()).build();
-									if (ViewerCommands.editUser(error, original.getUser(), null, vp)) {
+									Outcome outcome = ViewerCommands.editUser(original.getUser(), null, vp);
+									if (outcome.getResult()) {
 										sl.setGood("Success!");
 										try {
 											Thread.sleep(700);
@@ -157,8 +158,8 @@ public class EditUser extends JDialog {
 										}
 										dispose();
 									} else {
-										if (error.length() != 0) {
-											sl.setBad("Failed: " + error.toString());
+										if (outcome.hasComment()) {
+											sl.setBad("Failed: " + outcome.getComment());
 										} else {
 											sl.setBad("Failed to edit user!");
 										}

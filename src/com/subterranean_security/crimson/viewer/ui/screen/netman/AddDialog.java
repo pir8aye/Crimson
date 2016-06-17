@@ -273,9 +273,8 @@ public class AddDialog extends JDialog {
 								if (!verify()) {
 									return;
 								}
-								StringBuffer error = new StringBuffer();
-								ViewerCommands.addListener(error,
-										ListenerConfig.newBuilder()
+								ViewerCommands
+										.addListener(ListenerConfig.newBuilder()
 												.setName(fld_name.getText().isEmpty() ? "Unnamed Listener"
 														: fld_name.getText())
 												.setClientAcceptor(chckbxAcceptClients.isSelected())

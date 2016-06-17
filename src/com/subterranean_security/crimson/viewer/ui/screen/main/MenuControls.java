@@ -102,8 +102,7 @@ public class MenuControls extends JPanel {
 						// TODO handle errors
 						btnStartServer.setEnabled(false);
 						btnStopServer.setEnabled(false);
-						StringBuffer error = new StringBuffer();
-						ViewerCommands.changeServerState(error, StateType.FUNCTIONING_ON);
+						ViewerCommands.changeServerState(StateType.FUNCTIONING_ON);
 						try {
 							Thread.sleep(500);
 						} catch (InterruptedException e) {
@@ -129,8 +128,7 @@ public class MenuControls extends JPanel {
 						// TODO handle errors
 						btnStartServer.setEnabled(false);
 						btnStopServer.setEnabled(false);
-						StringBuffer error = new StringBuffer();
-						ViewerCommands.changeServerState(error, StateType.FUNCTIONING_OFF);
+						ViewerCommands.changeServerState(StateType.FUNCTIONING_OFF);
 						try {
 							Thread.sleep(500);
 						} catch (InterruptedException e) {
