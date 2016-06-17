@@ -867,6 +867,10 @@ public enum CUtil {
 			return !pUSER.matcher(user).matches();
 		}
 
+		public static boolean groupname(String group) {
+			return true;
+		}
+
 		public static boolean password(String password) {
 			if (password.length() < 4 || password.length() > 32) {
 				return false;
