@@ -49,5 +49,9 @@ public enum IDGen {
 	public static int getListenerID() {
 		return Math.abs(random.nextInt());
 	}
+	
+	public static int getAuthMethodID() {
+		return Math.abs(random.nextInt());
+	}
 
 }

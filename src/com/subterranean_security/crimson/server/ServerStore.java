@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.server;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -26,13 +27,16 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
+import com.subterranean_security.crimson.core.proto.ClientAuth.AuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.storage.ClientDB;
+import com.subterranean_security.crimson.core.storage.MemList;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.Listener;
 import com.subterranean_security.crimson.sv.PermissionTester;
@@ -190,37 +194,50 @@ public enum ServerStore {
 	}
 
 	public static class Authentication {
-		public static ArrayList<Group> groups = null;
-		private static ArrayList<String> passwords = null;
+
+		private static MemList<AuthMethod> methods = null;
 
 		static {
 			try {
-				groups = (ArrayList<Group>) Databases.system.getObject("groups");
+				methods = (MemList<AuthMethod>) Databases.system.getObject("auth.methods");
+				methods.setDatabase(Databases.system);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			try {
-				passwords = (ArrayList<String>) Databases.system.getObject("passwords");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+
 		}
 
-		public static Group getGroup(String groupname) {
-			for (Group g : groups) {
-				if (g.getName().equals(groupname)) {
-					return g;
+		public static AuthMethod getGroup(String groupname) {
+			for (int i = 0; i < methods.size(); i++) {
+				AuthMethod m = methods.get(i);
+				if (m.hasGroup() && m.getGroup().getName().equals(groupname)) {
+					return m;
 				}
 			}
+
 			return null;
 		}
 
-		public static boolean tryPassword(String s) {
-			for (String p : passwords) {
-				if (s.equals(p)) {
-					return true;
+		public static void create(Group g, String owner) {
+			create(AuthMethod.newBuilder().setId(IDGen.getAuthMethodID()).setCreation(new Date().getTime()).setGroup(g)
+					.addOwner(owner).build());
+		}
+
+		public static void create(AuthMethod am) {
+			methods.add(am);
+		}
+
+		public static void remove(int id) {
+			for (int i = 0; i < methods.size(); i++) {
+				if (methods.get(i).getId() == id) {
+					methods.remove(i);
+					return;
 				}
 			}
+		}
+
+		public static boolean tryPassword(String s) {
+
 			return false;
 		}
 	}

@@ -33,7 +33,40 @@ enum AuthType {
 	GROUP = 0; PASSWORD = 1; NO_AUTH = 2;
 }
 
-message Group {
+message AuthMethod {
+	required int32 id = 1;
+	required int64 creation = 2;
+	required AuthType type = 3;
+	
+	repeated string owner = 4;
+	repeated string member = 5;
+	
+	// if group auth
+	optional Group group = 6;
+	
+	// if password auth
+	optional string password = 7;
+}
+
+message Group {	
 	required string name = 1;
 	required string key = 2;
+}
+
+message RQ_CreateAuthMethod {
+	required AuthMethod auth_method = 1;
+}
+
+message RS_CreateAuthMethod {
+	required bool result = 1;
+	optional string comment = 2;
+}
+
+message RQ_RemoveAuthMethod {
+	required int32 id = 1;
+}
+
+message RS_RemoveAuthMethod {
+	required bool result = 1;
+	optional string comment = 2;
 }

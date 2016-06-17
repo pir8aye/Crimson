@@ -17,9 +17,15 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 
 public enum Crypto {
 	;
@@ -92,6 +98,19 @@ public enum Crypto {
 			e.printStackTrace();
 		}
 		return CUtil.Misc.randString(8);
+	}
+
+	public static Outcome exportGroup(Group g, File output) {
+
+		try {
+			PrintWriter pw = new PrintWriter(output);
+			pw.println(B64.encode(g.toByteArray()));
+
+			pw.close();
+		} catch (FileNotFoundException e) {
+			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
+		}
+		return Outcome.newBuilder().setResult(true).build();
 	}
 
 }

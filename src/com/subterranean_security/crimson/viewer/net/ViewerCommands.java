@@ -25,6 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.proto.ClientAuth.AuthMethod;
+import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_CreateAuthMethod;
+import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_RemoveAuthMethod;
 import com.subterranean_security.crimson.core.proto.Delta.MI_TriggerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.core.proto.FileManager.MI_CloseFileHandle;
@@ -156,7 +159,7 @@ public enum ViewerCommands {
 					.setRqChangeClientState(RQ_ChangeClientState.newBuilder().setNewState(st)), 3);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
-			} else if (!m.getRsChangeServerState().getResult()) {
+			} else if (!m.getRsChangeClientState().getResult()) {
 				outcome.setResult(false).setComment(m.getRsChangeClientState().hasComment()
 						? m.getRsChangeClientState().getComment() : "no comment");
 			} else {
@@ -210,20 +213,45 @@ public enum ViewerCommands {
 		return outcome.build();
 	}
 
-	public static Outcome addAuthGroup() {
-		return null;
+	public static Outcome createAuthMethod(AuthMethod at) {
+		Outcome.Builder outcome = Outcome.newBuilder();
+		try {
+			Message m = ViewerRouter.routeAndWait(
+					Message.newBuilder().setRqCreateAuthMethod(RQ_CreateAuthMethod.newBuilder().setAuthMethod(at)), 3);
+			if (m == null) {
+				outcome.setResult(false).setComment("Request timeout");
+			} else if (!m.getRsCreateAuthMethod().getResult()) {
+				outcome.setResult(false).setComment(
+						m.getRsCreateAuthMethod().hasComment() ? m.getRsCreateAuthMethod().getComment() : "no comment");
+
+			} else {
+				outcome.setResult(true);
+			}
+		} catch (InterruptedException e) {
+			outcome.setResult(false).setComment("Interrupted");
+		}
+		return outcome.build();
 	}
 
-	public static Outcome removeAuthGroup() {
-		return null;
-	}
+	public static Outcome removeAuthMethod(int id) {
+		Outcome.Builder outcome = Outcome.newBuilder();
+		try {
+			Message m = ViewerRouter.routeAndWait(
+					Message.newBuilder().setRqRemoveAuthMethod(RQ_RemoveAuthMethod.newBuilder().setId(id)), 3);
+			if (m == null) {
+				outcome.setResult(false).setComment("Request timeout");
+			} else if (!m.getRsRemoveAuthMethod().getResult()) {
+				outcome.setResult(false).setComment(
+						m.getRsRemoveAuthMethod().hasComment() ? m.getRsRemoveAuthMethod().getComment() : "no comment");
 
-	public static Outcome addAuthPassword() {
-		return null;
-	}
+			} else {
+				outcome.setResult(true);
+			}
+		} catch (InterruptedException e) {
+			outcome.setResult(false).setComment("Interrupted");
+		}
 
-	public static Outcome removeAuthPassword() {
-		return null;
+		return outcome.build();
 	}
 
 	public static Outcome addUser(String user, char[] pass, ViewerPermissions vp) {

@@ -88,7 +88,7 @@ message EV_ServerProfileDelta {
 	optional string os_version = 13;
 	optional string crimson_version = 14;
 	
-	repeated EV_ViewerProfileDelta users = 15;
+	repeated EV_ViewerProfileDelta viewer_user = 15;
 }
 
 message EV_ViewerProfileDelta {

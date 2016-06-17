@@ -62,23 +62,41 @@ public class EPanel extends SLPanel {
 	}
 
 	public synchronized void raise(JPanel panel, int height) {
-		if (!showing) {
-			showing = true;
-			note.setPanel(panel);
-			pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0,
-					movingBar);
+
+		if (showing) {
 			movingMain.runAction();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
+		showing = true;
+		note.setPanel(panel);
+		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+		movingMain.runAction();
+
 	}
 
 	public synchronized void raise(JPanel panel, float height) {
-		if (!showing) {
-			showing = true;
-			note.setPanel(panel);
-			pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0,
-					movingBar);
+
+		if (showing) {
 			movingMain.runAction();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
+		showing = true;
+		note.setPanel(panel);
+		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+		movingMain.runAction();
+
 	}
 
 	public synchronized void drop() {
@@ -135,6 +153,7 @@ public class EPanel extends SLPanel {
 		}
 
 		public void setPanel(JPanel j) {
+			j.setVisible(true);
 			panel.removeAll();
 			panel.add(j, BorderLayout.CENTER);
 		}

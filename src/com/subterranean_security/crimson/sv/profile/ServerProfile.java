@@ -167,7 +167,7 @@ public class ServerProfile implements Serializable {
 			UIStore.netMan.lp.lt.fireTableDataChanged();
 		}
 
-		for (EV_ViewerProfileDelta lc : c.getUsersList()) {
+		for (EV_ViewerProfileDelta lc : c.getViewerUserList()) {
 			boolean modified = false;
 			for (ViewerProfile l : users) {
 				if (lc.getUser().equals(l.getUser())) {

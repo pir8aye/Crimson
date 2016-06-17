@@ -169,6 +169,10 @@ public class ServerExecutor extends BasicExecutor {
 						rq_key_update(m);
 					} else if (m.hasMiTriggerProfileDelta()) {
 						mi_trigger_profile_delta(m);
+					} else if (m.hasRqCreateAuthMethod()) {
+						rq_create_auth_method(m);
+					} else if (m.hasRqRemoveAuthMethod()) {
+						rq_remove_auth_method(m);
 					} else {
 						receptor.cq.put(m.getId(), m);
 					}
@@ -277,7 +281,7 @@ public class ServerExecutor extends BasicExecutor {
 		switch (auth.getType()) {
 
 		case GROUP:
-			final Group group = ServerStore.Authentication.getGroup(auth.getGroupName());
+			final Group group = ServerStore.Authentication.getGroup(auth.getGroupName()).getGroup();
 			if (group == null) {
 				log.debug("Authentication failed: Invalid Group: {}", auth.getGroupName());
 				receptor.setState(ConnectionState.CONNECTED);
@@ -372,7 +376,7 @@ public class ServerExecutor extends BasicExecutor {
 			return;
 		}
 		RQ_GroupChallenge rq = m.getRqGroupChallenge();
-		Group group = ServerStore.Authentication.getGroup(rq.getGroupName());
+		Group group = ServerStore.Authentication.getGroup(rq.getGroupName()).getGroup();
 
 		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder().setResult(Crypto.sign(rq.getMagic(), group.getKey()))
 				.build();
@@ -474,7 +478,7 @@ public class ServerExecutor extends BasicExecutor {
 				try {
 					for (Integer i : ServerStore.Profiles.getViewerKeyset()) {
 						ViewerProfile vpi = ServerStore.Profiles.getViewer(i);
-						sid.addUsers(EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
+						sid.addViewerUser(EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
 								.setLoginIp(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
 										? vpi.getIp() : "<hidden>")
 								.setLoginTime(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
@@ -605,8 +609,9 @@ public class ServerExecutor extends BasicExecutor {
 				m.getRqAddUser().getPermissions());
 
 		Message update = Message.newBuilder().setUrgent(true)
-				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addUsers(EV_ViewerProfileDelta.newBuilder()
-						.setUser(m.getRqAddUser().getUser()).setViewerPermissions(m.getRqAddUser().getPermissions())))
+				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder()
+						.addViewerUser(EV_ViewerProfileDelta.newBuilder().setUser(m.getRqAddUser().getUser())
+								.setViewerPermissions(m.getRqAddUser().getPermissions())))
 				.build();
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
 
@@ -642,7 +647,7 @@ public class ServerExecutor extends BasicExecutor {
 		}
 
 		Message update = Message.newBuilder().setUrgent(true)
-				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addUsers(b)).build();
+				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addViewerUser(b)).build();
 
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
 
@@ -662,6 +667,25 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void rq_change_client_state(Message m) {
 		log.debug("Executing: rq_change_client_state");
+	}
+
+	private void rq_create_auth_method(Message m) {
+		log.debug("Creating new auth method");
+		ServerStore.Authentication.create(m.getRqCreateAuthMethod().getAuthMethod());
+		// TODO respond
+
+		Message update = Message.newBuilder().setUrgent(true)
+				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder()
+						.addViewerUser(EV_ViewerProfileDelta.newBuilder().setUser(m.getRqAddUser().getUser())
+								.setViewerPermissions(m.getRqAddUser().getPermissions())))
+				.build();
+		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
+
+	}
+
+	private void rq_remove_auth_method(Message m) {
+		ServerStore.Authentication.remove(m.getRqRemoveAuthMethod().getId());
+		// TODO respond
 	}
 
 	private void aux_acceptClient() {

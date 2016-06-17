@@ -20,7 +20,7 @@ package com.subterranean_security.crimson.core.storage;
 import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.ClientAuth.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -33,8 +33,7 @@ public enum Defaults {
 	public static void softReset(ServerDB db) {
 		softResetUniversal(db);
 
-		db.storeObject("groups", new ArrayList<Group>());
-		db.storeObject("passwords", new ArrayList<String>());
+		db.storeObject("auth.methods", new MemList<AuthMethod>());
 		db.storeObject("listeners", new ArrayList<ListenerConfig>());
 		db.storeObject("profiles.clients", new MemMap<Integer, ClientProfile>());
 		db.storeObject("profiles.viewers", new MemMap<Integer, ViewerProfile>());
