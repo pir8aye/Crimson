@@ -172,7 +172,6 @@ public enum Common {
 
 			try {
 				String bpath = Common.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-				System.out.println("bpath: " + bpath);
 				File f = new File(bpath).getParentFile();
 				if (!f.exists() || !f.isDirectory()) {
 					log.error("Base directory does not exist: " + f.getAbsolutePath());
