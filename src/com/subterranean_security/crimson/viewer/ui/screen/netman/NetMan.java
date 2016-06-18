@@ -17,10 +17,10 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.netman;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -47,14 +47,14 @@ public class NetMan extends JFrame {
 		setTitle("Network Manager");
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(hp);
-		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+		contentPane.setLayout(new BorderLayout());
 
 		StatsPanel sp = new StatsPanel();
 		sp.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		contentPane.add(sp);
+		contentPane.add(sp, BorderLayout.NORTH);
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		contentPane.add(tabbedPane);
+		contentPane.add(tabbedPane, BorderLayout.CENTER);
 
 		lp = new ListenerPanel();
 		tabbedPane.add(lp);

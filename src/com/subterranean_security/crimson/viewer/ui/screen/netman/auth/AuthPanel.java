@@ -62,12 +62,12 @@ public class AuthPanel extends JPanel {
 		JButton btnAddGroup = new JButton(UIUtil.getIcon("icons16/general/group_add.png"));
 		btnAddGroup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (UIStore.createGroup == null) {
+				if (UIStore.ECreateGroup == null) {
 					new Thread(new Runnable() {
 						public void run() {
 							resetEPanels();
-							UIStore.createGroup = new CreateGroup(ep);
-							ep.raise(UIStore.createGroup, 240);
+							UIStore.ECreateGroup = new CreateGroup(ep);
+							ep.raise(UIStore.ECreateGroup, 240);
 						}
 					}).start();
 				}
@@ -134,12 +134,12 @@ public class AuthPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				resetEPanels();
 
-				if (UIStore.createPassword == null) {
+				if (UIStore.ECreatePassword == null) {
 					new Thread(new Runnable() {
 						public void run() {
 							resetEPanels();
-							UIStore.createPassword = new CreatePassword(ep);
-							ep.raise(UIStore.createPassword, 100);
+							UIStore.ECreatePassword = new CreatePassword(ep);
+							ep.raise(UIStore.ECreatePassword, 100);
 						}
 					}).start();
 				}
@@ -152,8 +152,8 @@ public class AuthPanel extends JPanel {
 	}
 
 	public void resetEPanels() {
-		UIStore.createGroup = null;
-		UIStore.createPassword = null;
+		UIStore.ECreateGroup = null;
+		UIStore.ECreatePassword = null;
 	}
 
 }

@@ -1,9 +1,9 @@
 package com.subterranean_security.crimson.viewer.ui;
 
-import com.subterranean_security.crimson.viewer.ui.screen.netman.AddDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.auth.CreateGroup;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.auth.CreatePassword;
+import com.subterranean_security.crimson.viewer.ui.screen.netman.listener.AddListener;
 import com.subterranean_security.crimson.viewer.ui.screen.users.UserMan;
 
 /**
@@ -14,9 +14,9 @@ public enum UIStore {
 
 	public static NetMan netMan;
 	public static UserMan userMan;
-	public static AddDialog addDialog;
+	public static AddListener EAddListener;
 
-	public static CreateGroup createGroup;
-	public static CreatePassword createPassword;
+	public static CreateGroup ECreateGroup;
+	public static CreatePassword ECreatePassword;
 
 }

@@ -99,7 +99,7 @@ public class CreateGroup extends JPanel {
 		btnCancel.setFont(new Font("Dialog", Font.BOLD, 10));
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				UIStore.createGroup = null;
+				UIStore.ECreateGroup = null;
 				ep.drop();
 			}
 		});
@@ -129,7 +129,7 @@ public class CreateGroup extends JPanel {
 								Thread.sleep(300);
 							} catch (InterruptedException e) {
 							}
-							UIStore.createGroup = null;
+							UIStore.ECreateGroup = null;
 							ep.drop();
 						} else {
 							sl.setBad(outcome.hasComment() ? "Failed: " + outcome.getComment() : "Creation failed!");

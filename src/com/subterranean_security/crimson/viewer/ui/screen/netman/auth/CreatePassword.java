@@ -52,7 +52,7 @@ public class CreatePassword extends JPanel {
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				UIStore.createPassword = null;
+				UIStore.ECreatePassword = null;
 				ep.drop();
 			}
 		});
