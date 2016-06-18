@@ -35,7 +35,9 @@ import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
+import com.subterranean_security.crimson.core.proto.ClientAuth.RS_CreateAuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
+import com.subterranean_security.crimson.core.proto.ClientAuth.RS_RemoveAuthMethod;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
@@ -672,19 +674,17 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_create_auth_method(Message m) {
 		log.debug("Creating new auth method");
 		ServerStore.Authentication.create(m.getRqCreateAuthMethod().getAuthMethod());
-		// TODO respond
 
-		Message update = Message.newBuilder().setUrgent(true)
-				.setEvServerProfileDelta(
-						EV_ServerProfileDelta.newBuilder().addAuthMethod(m.getRqCreateAuthMethod().getAuthMethod()))
-				.build();
-		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
+		receptor.handle.write(
+				Message.newBuilder().setRsCreateAuthMethod(RS_CreateAuthMethod.newBuilder().setResult(true)).build());
 
 	}
 
 	private void rq_remove_auth_method(Message m) {
 		ServerStore.Authentication.remove(m.getRqRemoveAuthMethod().getId());
-		// TODO respond
+		// TODO check if removed
+		receptor.handle.write(
+				Message.newBuilder().setRsRemoveAuthMethod(RS_RemoveAuthMethod.newBuilder().setResult(true)).build());
 	}
 
 	private void aux_acceptClient() {

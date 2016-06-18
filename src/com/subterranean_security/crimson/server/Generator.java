@@ -46,10 +46,6 @@ public class Generator {
 
 	public Generator(ClientConfig config) throws Exception {
 
-		// store the group
-		// ServerStore.Authentication.create(config.getGroup(), "admin");//
-		// TODO!!!!!!!!!
-
 		String output = config.getOutputType().toLowerCase();
 		if (output.endsWith("(.jar)")) {
 
@@ -84,19 +80,17 @@ public class Generator {
 			ClientDB database = new ClientDB(clientDB);
 			database.storeObject("generation_date", start);
 			database.storeObject("cvid", 0);
-			database.storeObject("reconnect_period", ic.getReconnectPeriod());
 
-			database.storeObject("nts", ic.getTargetList());
+			database.storeObject("ic", ic);
 
-			database.storeObject("auth.type", ic.getAuthType());
 			switch (ic.getAuthType()) {
 			case GROUP:
-				database.storeObject("auth.group", ic.getGroup());
+				ServerStore.Authentication.create(ic.getGroup(), "admin");// TODO
+																			// admin
 				break;
 			case NO_AUTH:
 				break;
 			case PASSWORD:
-				database.storeObject("auth.password", ic.getPassword());
 				break;
 			default:
 				break;
@@ -106,9 +100,9 @@ public class Generator {
 			database.close();
 			log.debug("Created client database successfully");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			gReport.setComment("Failed to create client database: " + e.getMessage());
+			gReport.setResult(false);
+			return gReport;
 		}
 
 		// copy the client jar out

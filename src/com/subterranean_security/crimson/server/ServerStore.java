@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
@@ -224,7 +225,16 @@ public enum ServerStore {
 		}
 
 		public static void create(AuthMethod am) {
+			for (int i = 0; i < methods.size(); i++) {
+				if (methods.get(i).getId() == am.getId()) {
+					methods.remove(i);
+					break;
+				}
+			}
 			methods.add(am);
+			Message update = Message.newBuilder().setUrgent(true)
+					.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addAuthMethod(am)).build();
+			ServerStore.Connections.sendToAll(Instance.VIEWER, update);
 		}
 
 		public static void remove(int id) {

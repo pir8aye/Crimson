@@ -171,10 +171,9 @@ public enum Common {
 			}
 
 			try {
-				// the base will always be two dirs above the core library
 				String bpath = Common.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-
-				File f = new File(bpath.substring(0, bpath.length() - 16));
+				System.out.println("bpath: " + bpath);
+				File f = new File(bpath).getParentFile();
 				if (!f.exists() || !f.isDirectory()) {
 					log.error("Base directory does not exist: " + f.getAbsolutePath());
 				}

