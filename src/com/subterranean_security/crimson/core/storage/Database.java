@@ -154,7 +154,6 @@ public abstract class Database extends Thread implements AutoCloseable {
 			log.error("Could not query key: " + key);
 			throw new Exception();
 		} else {
-			log.debug("Returning: " + rs.getString("Data") + " for key: " + key);
 			return rs.getString("Data");
 		}
 
