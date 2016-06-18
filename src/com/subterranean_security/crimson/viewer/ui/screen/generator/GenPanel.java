@@ -84,12 +84,6 @@ public class GenPanel extends JPanel {
 	private NetworkTargetTable table;
 	private JTextField fld_server;
 	private JTextField fld_port;
-	private JCheckBox cbx_allow_win;
-	private JCheckBox cbx_allow_lin;
-	private JCheckBox cbx_allow_bsd;
-	private JCheckBox cbx_allow_sol;
-	private JCheckBox cbx_allow_osx;
-	private JCheckBox cbx_allow_and;
 
 	private static final String jar = "Runnable Java Archive (.jar)";
 	private static final String exe = "Windows Portable Executable (.exe)";
@@ -98,7 +92,7 @@ public class GenPanel extends JPanel {
 	private JSpinner fld_delay;
 	private JSpinner fld_connect_period;
 
-	private String group_text = "Group authentication is the most secure mechanism. A \"group key\" is embedded in the client and only servers that posses this key may authenticate with the client.";
+	private String group_text = "Group authentication is the most secure mechanism. A \"group key\" is embedded in the client and only servers that posses this key may authenticate with the client and vice versa.";
 	private String pass_text = "A simple password is used to authenticate the client. This is less secure than group authentication";
 	private String none_text = "The client will request to skip authentication entirely.";
 
@@ -114,6 +108,19 @@ public class GenPanel extends JPanel {
 	private GroupTimer gt = new GroupTimer();
 
 	public GenPanel() {
+		init();
+
+		changeToJar();
+
+		if (Common.isDebugMode()) {
+			table.add(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build());
+			fld_path.setText("C:/Users/dev/Desktop/client.jar");
+			cbx_waiver.setSelected(true);
+		}
+		timer.schedule(gt, 0, 750);
+	}
+
+	public void init() {
 		setLayout(new BorderLayout(0, 0));
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
@@ -189,7 +196,7 @@ public class GenPanel extends JPanel {
 
 		JLabel lblInstallMessage = new JLabel("Install Message:");
 		panel_15.add(lblInstallMessage, BorderLayout.WEST);
-		lblInstallMessage.setFont(new Font("Dialog", Font.BOLD, 11));
+		lblInstallMessage.setFont(new Font("Dialog", Font.BOLD, 10));
 
 		JScrollPane scrollPane = new JScrollPane();
 		panel_15.add(scrollPane, BorderLayout.EAST);
@@ -219,6 +226,7 @@ public class GenPanel extends JPanel {
 		panel_16.setLayout(new BorderLayout(0, 0));
 
 		JLabel lblIdentifier = new JLabel("Identifier:");
+		lblIdentifier.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_16.add(lblIdentifier, BorderLayout.WEST);
 
 		textField = new JTextField();
@@ -228,73 +236,75 @@ public class GenPanel extends JPanel {
 		etab = new JPanel();
 		tabbedPane.addTab(null, etab);
 		tabbedPane.setTabComponentAt(1, new GenTabComponent("checkerboard", "Execution"));
-		etab.setLayout(null);
+		etab.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(
-				new TitledBorder(null, "Allow Execution", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_2.setBounds(12, 12, 341, 60);
+		panel_2.setPreferredSize(new Dimension(300, 60));
+		panel_2.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Platforms", TitledBorder.LEADING,
+				TitledBorder.TOP, null, new Color(51, 51, 51)));
 		etab.add(panel_2);
 		panel_2.setLayout(null);
 
-		cbx_allow_win = new JCheckBox("Windows");
-		cbx_allow_win.setFont(new Font("Dialog", Font.BOLD, 10));
-		cbx_allow_win.setBounds(8, 18, 80, 17);
-		panel_2.add(cbx_allow_win);
+		lblWindows = new JLabel("Windows");
+		lblWindows.setToolTipText("Runs on Vista through Windows 10");
+		lblWindows.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblWindows.setBounds(12, 18, 70, 15);
+		panel_2.add(lblWindows);
 
-		cbx_allow_lin = new JCheckBox("Linux");
-		cbx_allow_lin.setFont(new Font("Dialog", Font.BOLD, 10));
-		cbx_allow_lin.setBounds(129, 18, 61, 17);
-		panel_2.add(cbx_allow_lin);
+		lblSolaris = new JLabel("Solaris");
+		lblSolaris.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblSolaris.setBounds(12, 37, 70, 15);
+		panel_2.add(lblSolaris);
 
-		cbx_allow_bsd = new JCheckBox("BSD");
-		cbx_allow_bsd.setFont(new Font("Dialog", Font.BOLD, 10));
-		cbx_allow_bsd.setBounds(129, 37, 55, 17);
-		panel_2.add(cbx_allow_bsd);
+		lblLinux = new JLabel("Linux");
+		lblLinux.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblLinux.setBounds(132, 18, 70, 15);
+		panel_2.add(lblLinux);
 
-		cbx_allow_sol = new JCheckBox("Solaris");
-		cbx_allow_sol.setFont(new Font("Dialog", Font.BOLD, 10));
-		cbx_allow_sol.setBounds(8, 37, 71, 17);
-		panel_2.add(cbx_allow_sol);
+		lblBsd = new JLabel("BSD");
+		lblBsd.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblBsd.setBounds(132, 37, 70, 15);
+		panel_2.add(lblBsd);
 
-		cbx_allow_osx = new JCheckBox("Mac OS X");
-		cbx_allow_osx.setFont(new Font("Dialog", Font.BOLD, 10));
-		cbx_allow_osx.setBounds(216, 18, 85, 17);
-		panel_2.add(cbx_allow_osx);
+		lblMacOsX = new JLabel("Mac OS X");
+		lblMacOsX.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblMacOsX.setBounds(214, 18, 70, 15);
+		panel_2.add(lblMacOsX);
 
-		cbx_allow_and = new JCheckBox("Android");
-		cbx_allow_and.setFont(new Font("Dialog", Font.BOLD, 10));
-		cbx_allow_and.setBounds(216, 37, 101, 17);
-		panel_2.add(cbx_allow_and);
+		lblAndroid = new JLabel("Android");
+		lblAndroid.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblAndroid.setBounds(214, 37, 70, 15);
+		panel_2.add(lblAndroid);
 
 		JPanel panel_7 = new JPanel();
+		panel_7.setPreferredSize(new Dimension(300, 180));
 		panel_7.setBorder(new TitledBorder(null, "Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_7.setBounds(12, 84, 341, 169);
 		etab.add(panel_7);
 		panel_7.setLayout(null);
 
-		JLabel lblDelay = new JLabel("Delay:");
+		JLabel lblDelay = new JLabel("Execution delay:");
 		lblDelay.setFont(new Font("Dialog", Font.BOLD, 11));
-		lblDelay.setBounds(12, 20, 57, 15);
+		lblDelay.setBounds(12, 20, 126, 15);
 		panel_7.add(lblDelay);
 
 		fld_delay = new JSpinner();
 		fld_delay.setModel(new SpinnerNumberModel(0, 0, 3600, 1));
-		fld_delay.setBounds(200, 17, 57, 19);
+		fld_delay.setBounds(161, 17, 57, 19);
 		panel_7.add(fld_delay);
 
 		JLabel lblSeconds = new JLabel("seconds");
 		lblSeconds.setFont(new Font("Dialog", Font.BOLD, 11));
-		lblSeconds.setBounds(261, 20, 57, 15);
+		lblSeconds.setBounds(229, 20, 57, 15);
 		panel_7.add(lblSeconds);
 
 		JCheckBox chckbxRecoverFromErrors = new JCheckBox("Recover from errors");
-		chckbxRecoverFromErrors.setFont(new Font("Dialog", Font.BOLD, 11));
-		chckbxRecoverFromErrors.setBounds(12, 40, 306, 23);
+		chckbxRecoverFromErrors.setFont(new Font("Dialog", Font.BOLD, 10));
+		chckbxRecoverFromErrors.setBounds(12, 40, 280, 23);
 		panel_7.add(chckbxRecoverFromErrors);
 
 		JCheckBox chckbxInstallWhenIdle = new JCheckBox("Install when IDLE");
-		chckbxInstallWhenIdle.setBounds(12, 67, 171, 25);
+		chckbxInstallWhenIdle.setFont(new Font("Dialog", Font.BOLD, 10));
+		chckbxInstallWhenIdle.setBounds(12, 67, 274, 25);
 		panel_7.add(chckbxInstallWhenIdle);
 
 		JPanel ptab = new JPanel();
@@ -368,17 +378,22 @@ public class GenPanel extends JPanel {
 		ntab = new JPanel();
 		tabbedPane.addTab(null, ntab);
 		tabbedPane.setTabComponentAt(3, new GenTabComponent("computer", "Network"));
-		ntab.setLayout(null);
+		ntab.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+
+		JPanel panel_17 = new JPanel();
+		panel_17.setPreferredSize(new Dimension(354, 300));
+		ntab.add(panel_17);
+		panel_17.setLayout(null);
 
 		table = new NetworkTargetTable();
 		table.setBounds(12, 12, 330, 65);
-		ntab.add(table);
+		panel_17.add(table);
 
 		JPanel panel_4 = new JPanel();
+		panel_4.setBounds(12, 89, 330, 66);
+		panel_17.add(panel_4);
 		panel_4.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Add New Target",
 				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		panel_4.setBounds(12, 80, 330, 66);
-		ntab.add(panel_4);
 		panel_4.setLayout(null);
 
 		fld_server = new JTextField();
@@ -434,25 +449,26 @@ public class GenPanel extends JPanel {
 		panel_4.add(lblServer);
 
 		JPanel panel_5 = new JPanel();
+		panel_5.setBounds(12, 168, 330, 101);
+		panel_17.add(panel_5);
 		panel_5.setBorder(
 				new TitledBorder(null, "Network Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_5.setBounds(12, 152, 330, 101);
-		ntab.add(panel_5);
 		panel_5.setLayout(null);
 
 		fld_connect_period = new JSpinner();
+		fld_connect_period.setFont(new Font("Dialog", Font.BOLD, 10));
 		fld_connect_period.setModel(new SpinnerNumberModel(20, 5, 3600, 1));
 		fld_connect_period.setBounds(207, 17, 55, 20);
 		panel_5.add(fld_connect_period);
 
 		JLabel lblConnectionPeriod = new JLabel("Connection Period:");
-		lblConnectionPeriod.setFont(new Font("Dialog", Font.BOLD, 11));
+		lblConnectionPeriod.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblConnectionPeriod.setBounds(12, 20, 129, 15);
 		panel_5.add(lblConnectionPeriod);
 
 		JLabel lblSeconds_1 = new JLabel("seconds");
-		lblSeconds_1.setFont(new Font("Dialog", Font.BOLD, 11));
-		lblSeconds_1.setBounds(267, 20, 63, 15);
+		lblSeconds_1.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblSeconds_1.setBounds(267, 20, 51, 15);
 		panel_5.add(lblSeconds_1);
 
 		JPanel atab = new JPanel();
@@ -534,6 +550,7 @@ public class GenPanel extends JPanel {
 		panel_13.setLayout(new BorderLayout(0, 0));
 
 		JLabel lblGroupName = new JLabel("  Group Name:");
+		lblGroupName.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_13.add(lblGroupName, BorderLayout.WEST);
 
 		JPanel panel_14 = new JPanel();
@@ -600,13 +617,55 @@ public class GenPanel extends JPanel {
 		otab.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		tabbedPane.addTab(null, otab);
 		tabbedPane.setTabComponentAt(5, new GenTabComponent("linechart", "Output"));
-		otab.setLayout(null);
+		otab.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+
+		JPanel panel_18 = new JPanel();
+		panel_18.setPreferredSize(new Dimension(354, 300));
+		otab.add(panel_18);
+		panel_18.setLayout(null);
+
+		cbx_waiver = new JCheckBox(
+				"<html>I will use Crimson in accordance with all applicable laws and never on unauthorized machines.");
+		cbx_waiver.setBounds(12, 232, 333, 41);
+		panel_18.add(cbx_waiver);
+		cbx_waiver.setFont(new Font("Dialog", Font.BOLD, 10));
+
+		JPanel pl_timestamps = new JPanel();
+		pl_timestamps.setBounds(12, 92, 330, 68);
+		panel_18.add(pl_timestamps);
+		pl_timestamps.setBorder(
+				new TitledBorder(null, "Arbitrary Timestamps", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+
+		JButton btnRandom = new JButton("Random");
+		btnRandom.setBounds(263, 19, 55, 17);
+		btnRandom.setPreferredSize(new Dimension(55, 17));
+		btnRandom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setCreationDate(new Date(CUtil.Misc.rand(0L, new Date().getTime())));
+			}
+		});
+		pl_timestamps.setLayout(null);
+
+		JLabel lblCreation = new JLabel("Creation:");
+		lblCreation.setBounds(12, 20, 52, 13);
+		lblCreation.setFont(new Font("Dialog", Font.BOLD, 10));
+		pl_timestamps.add(lblCreation);
+
+		fld_ctime = new JTextField();
+		fld_ctime.setBounds(82, 19, 176, 17);
+		fld_ctime.setHorizontalAlignment(SwingConstants.CENTER);
+		fld_ctime.setFont(new Font("Dialog", Font.PLAIN, 10));
+		pl_timestamps.add(fld_ctime);
+		fld_ctime.setColumns(20);
+		btnRandom.setFont(new Font("Dialog", Font.BOLD, 9));
+		btnRandom.setMargin(new Insets(1, 4, 1, 4));
+		pl_timestamps.add(btnRandom);
 
 		JPanel pl_output = new JPanel();
+		pl_output.setBounds(12, 12, 330, 68);
+		panel_18.add(pl_output);
 		pl_output.setBorder(
 				new TitledBorder(null, "Output Location", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pl_output.setBounds(12, 40, 330, 68);
-		otab.add(pl_output);
 		pl_output.setLayout(null);
 
 		JButton btnBrowse = new JButton("Browse");
@@ -627,12 +686,12 @@ public class GenPanel extends JPanel {
 
 		fld_path = new JTextField();
 		fld_path.setFont(new Font("Dialog", Font.PLAIN, 11));
-		fld_path.setBounds(49, 18, 214, 19);
+		fld_path.setBounds(65, 18, 198, 19);
 		pl_output.add(fld_path);
 		fld_path.setColumns(10);
 
 		JLabel lblFile = new JLabel("File:");
-		lblFile.setFont(new Font("Dialog", Font.BOLD, 11));
+		lblFile.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblFile.setBounds(12, 20, 49, 15);
 		pl_output.add(lblFile);
 
@@ -643,66 +702,6 @@ public class GenPanel extends JPanel {
 		lblApproximateOutputSize.setBounds(20, 44, 290, 15);
 		pl_output.add(lblApproximateOutputSize);
 
-		cbx_waiver = new JCheckBox(
-				"<html>I will use Crimson in accordance with all applicable laws and<br> never on unauthorized machines.");
-		cbx_waiver.setFont(new Font("Dialog", Font.BOLD, 10));
-		cbx_waiver.setBounds(12, 230, 333, 34);
-		otab.add(cbx_waiver);
-
-		JPanel pl_timestamps = new JPanel();
-		pl_timestamps.setBorder(
-				new TitledBorder(null, "Arbitrary Timestamps", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pl_timestamps.setBounds(12, 120, 330, 47);
-		otab.add(pl_timestamps);
-
-		JButton btnRandom = new JButton("Random");
-		btnRandom.setPreferredSize(new Dimension(55, 17));
-		btnRandom.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				setCreationDate(new Date(CUtil.Misc.rand(0L, new Date().getTime())));
-			}
-		});
-		pl_timestamps.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-
-		JLabel lblCreation = new JLabel("Creation:");
-		lblCreation.setFont(new Font("Dialog", Font.BOLD, 11));
-		pl_timestamps.add(lblCreation);
-
-		fld_ctime = new JTextField();
-		fld_ctime.setHorizontalAlignment(SwingConstants.CENTER);
-		fld_ctime.setFont(new Font("Dialog", Font.PLAIN, 10));
-		pl_timestamps.add(fld_ctime);
-		fld_ctime.setColumns(24);
-		btnRandom.setFont(new Font("Dialog", Font.BOLD, 9));
-		btnRandom.setMargin(new Insets(1, 4, 1, 4));
-		pl_timestamps.add(btnRandom);
-
-		// JCalendarButton btnNewButton = new JCalendarButton(new Date());
-		// btnNewButton.addPropertyChangeListener(new PropertyChangeListener() {
-		// public void propertyChange(PropertyChangeEvent arg0) {
-		// if (arg0.getNewValue() instanceof Date) {
-		// Date target = (Date) arg0.getNewValue();
-		// if (target != null) {
-		// setCreationDate(target);
-		// }
-		// }
-
-		// }
-		// });
-		// btnNewButton.setBounds(238, 20, 20, 19);
-		// pl_timestamps.add(btnNewButton);
-
-		JComboBox<String> comboBox_6 = new JComboBox<String>();
-		comboBox_6.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				// sizes must come from server
-
-			}
-		});
-		comboBox_6.setBounds(107, 8, 140, 24);
-		otab.add(comboBox_6);
-		comboBox_6.setModel(new DefaultComboBoxModel<String>(new String[] { "Downloader", "Integrated" }));
-
 		JPanel panel = new JPanel();
 		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		add(panel, BorderLayout.SOUTH);
@@ -711,16 +710,6 @@ public class GenPanel extends JPanel {
 		lbl_status = new StatusLabel();
 		lbl_status.setInfo(defaultHint);
 		panel.add(lbl_status);
-
-		changeToJar();
-
-		if (Common.isDebugMode()) {
-			cbx_allow_win.setSelected(true);
-			table.add(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build());
-			fld_path.setText("C:/Users/dev/Desktop/client.jar");
-			cbx_waiver.setSelected(true);
-		}
-		timer.schedule(gt, 0, 750);
 
 	}
 
@@ -735,6 +724,12 @@ public class GenPanel extends JPanel {
 	private JLabel key_prefix;
 	private JTextField textField;
 	private JComboBox authType;
+	private JLabel lblWindows;
+	private JLabel lblSolaris;
+	private JLabel lblLinux;
+	private JLabel lblBsd;
+	private JLabel lblMacOsX;
+	private JLabel lblAndroid;
 
 	private void setCreationDate(Date d) {
 		currentCTime = d;
@@ -755,12 +750,6 @@ public class GenPanel extends JPanel {
 		ic.setReconnectPeriod((int) fld_connect_period.getValue());
 
 		ic.setImsg(fld_install_message.getText());
-		ic.setAllowBsd(cbx_allow_bsd.isSelected());
-		ic.setAllowLin(cbx_allow_lin.isSelected());
-		ic.setAllowOsx(cbx_allow_osx.isSelected());
-		ic.setAllowSol(cbx_allow_sol.isSelected());
-		ic.setAllowWin(cbx_allow_win.isSelected());
-		ic.setAllowAnd(cbx_allow_and.isSelected());
 
 		switch ((String) authType.getSelectedItem()) {
 		case "Group": {
@@ -862,43 +851,58 @@ public class GenPanel extends JPanel {
 
 		txt_output_desc.setText(
 				"A jar file installer can install Crimson on Windows, OS X, Linux, BSD, and Solaris machines, and is the most popular way to install Crimson.  Java 1.8 or greater is required before installation.");
-		cbx_allow_and.setSelected(false);
-		cbx_allow_and.setEnabled(false);
-		cbx_allow_bsd.setEnabled(true);
-		cbx_allow_lin.setEnabled(true);
-		cbx_allow_osx.setEnabled(true);
-		cbx_allow_sol.setEnabled(true);
-		cbx_allow_win.setEnabled(true);
+
+		fld_install_bsd.setEnabled(true);
+
+		lblAndroid.setForeground(StatusLabel.bad);
+		lblMacOsX.setForeground(StatusLabel.good);
+		lblBsd.setForeground(StatusLabel.good);
+		lblLinux.setForeground(StatusLabel.good);
+		lblSolaris.setForeground(StatusLabel.good);
+		lblWindows.setForeground(StatusLabel.good);
 	}
 
 	private void changeToExe() {
 
 		txt_output_desc.setText(
 				"An executable installer can install Crimson on Windows machines only.  Java is NOT required before installation.");
-		cbx_allow_and.setSelected(false);
-		cbx_allow_and.setEnabled(false);
-		cbx_allow_bsd.setSelected(false);
-		cbx_allow_bsd.setEnabled(false);
+
 		fld_install_bsd.setEnabled(false);
-		cbx_allow_lin.setSelected(false);
-		cbx_allow_lin.setEnabled(false);
-		cbx_allow_osx.setSelected(false);
-		cbx_allow_osx.setEnabled(false);
-		cbx_allow_sol.setSelected(false);
-		cbx_allow_sol.setEnabled(false);
-		cbx_allow_win.setSelected(true);
-		cbx_allow_win.setEnabled(true);
+
+		lblAndroid.setForeground(StatusLabel.bad);
+		lblMacOsX.setForeground(StatusLabel.bad);
+		lblBsd.setForeground(StatusLabel.bad);
+		lblLinux.setForeground(StatusLabel.bad);
+		lblSolaris.setForeground(StatusLabel.bad);
+		lblWindows.setForeground(StatusLabel.good);
 	}
 
 	private void changeToApk() {
 
 		txt_output_desc.setText("An Android installer can install Crimson on Android devices version 2.2 and up.");
 
+		fld_install_bsd.setEnabled(false);
+
+		lblAndroid.setForeground(StatusLabel.good);
+		lblMacOsX.setForeground(StatusLabel.bad);
+		lblBsd.setForeground(StatusLabel.bad);
+		lblLinux.setForeground(StatusLabel.bad);
+		lblSolaris.setForeground(StatusLabel.bad);
+		lblWindows.setForeground(StatusLabel.bad);
 	}
 
 	private void changeToSh() {
 
 		txt_output_desc.setText("");
+
+		fld_install_bsd.setEnabled(true);
+
+		lblAndroid.setForeground(StatusLabel.bad);
+		lblMacOsX.setForeground(StatusLabel.good);
+		lblBsd.setForeground(StatusLabel.good);
+		lblLinux.setForeground(StatusLabel.good);
+		lblSolaris.setForeground(StatusLabel.good);
+		lblWindows.setForeground(StatusLabel.bad);
 
 	}
 

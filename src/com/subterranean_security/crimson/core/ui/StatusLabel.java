@@ -27,10 +27,10 @@ import javax.swing.border.LineBorder;
 public class StatusLabel extends JLabel {
 
 	private static final long serialVersionUID = 1L;
-	private static final Color good = new Color(0, 149, 39);
-	private static final Color warn = new Color(200, 116, 0);
-	private static final Color bad = new Color(200, 0, 0);
-	private static final Color info = new Color(20, 23, 139);
+	public static final Color good = new Color(0, 149, 39);
+	public static final Color warn = new Color(200, 116, 0);
+	public static final Color bad = new Color(200, 0, 0);
+	public static final Color info = new Color(20, 23, 139);
 
 	private static final Font font = new Font("Dialog", Font.BOLD, 9);
 
