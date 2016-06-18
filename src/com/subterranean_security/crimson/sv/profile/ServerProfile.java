@@ -193,7 +193,6 @@ public class ServerProfile implements Serializable {
 				}
 			}
 			if (!modified) {
-				System.out.println("Adding new auth method");
 				authMethods.add(am);
 			}
 		}

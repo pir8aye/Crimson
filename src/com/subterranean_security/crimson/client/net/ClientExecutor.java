@@ -144,15 +144,7 @@ public class ClientExecutor extends BasicExecutor {
 			return;
 		}
 
-		Group group = null;
-		try {
-			group = (Group) Client.clientDB.getObject("auth.group");
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			log.debug("Unable to get group information");
-			return;
-		}
-		String result = Crypto.sign(m.getRqGroupChallenge().getMagic(), group.getKey());
+		String result = Crypto.sign(m.getRqGroupChallenge().getMagic(), Client.ic.getGroup().getKey());
 		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder().setResult(result).build();
 		connector.handle.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
 	}
@@ -169,14 +161,7 @@ public class ClientExecutor extends BasicExecutor {
 			connector.setState(ConnectionState.AUTH_STAGE2);
 		}
 
-		Group group = null;
-		try {
-			group = (Group) Client.clientDB.getObject("auth.group");
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			log.debug("Unable to get group information");
-			return;
-		}
+		Group group = Client.ic.getGroup();
 		final String key = group.getKey();
 
 		// Send authentication challenge

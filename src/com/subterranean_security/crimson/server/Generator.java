@@ -100,6 +100,7 @@ public class Generator {
 			database.close();
 			log.debug("Created client database successfully");
 		} catch (Exception e) {
+			e.printStackTrace();
 			gReport.setComment("Failed to create client database: " + e.getMessage());
 			gReport.setResult(false);
 			return gReport;

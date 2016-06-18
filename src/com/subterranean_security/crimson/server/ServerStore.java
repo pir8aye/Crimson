@@ -32,6 +32,7 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
+import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.storage.MemList;
@@ -220,8 +221,8 @@ public enum ServerStore {
 		}
 
 		public static void create(Group g, String owner) {
-			create(AuthMethod.newBuilder().setId(IDGen.getAuthMethodID()).setCreation(new Date().getTime()).setGroup(g)
-					.addOwner(owner).build());
+			create(AuthMethod.newBuilder().setType(AuthType.GROUP).setId(IDGen.getAuthMethodID())
+					.setCreation(new Date().getTime()).setGroup(g).addOwner(owner).build());
 		}
 
 		public static void create(AuthMethod am) {

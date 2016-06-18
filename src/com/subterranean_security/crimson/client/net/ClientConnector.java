@@ -73,13 +73,7 @@ public class ClientConnector extends BasicConnector {
 
 		switch (authType) {
 		case GROUP:
-			Group group = null;
-			try {
-				group = (Group) Client.clientDB.getObject("auth.group");
-			} catch (Exception e1) {
-				e1.printStackTrace();
-				return;
-			}
+			Group group = Client.ic.getGroup();
 			auth.setGroupName(group.getName());
 			setState(ConnectionState.AUTH_STAGE1);
 			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
@@ -91,13 +85,8 @@ public class ClientConnector extends BasicConnector {
 
 			break;
 		case PASSWORD:
-			try {
-				auth.setPassword(Client.clientDB.getString("auth.password"));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return;
-			}
+			auth.setPassword(Client.ic.getPassword());
+
 			setState(ConnectionState.AUTH_STAGE1);
 			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
 			break;

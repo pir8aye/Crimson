@@ -513,11 +513,8 @@ public class ServerExecutor extends BasicExecutor {
 			res = g.getResult();
 		} catch (Exception e) {
 			log.info("Could not generate installer");
-			e.printStackTrace();
 
-			GenReport.Builder gr = GenReport.newBuilder();
-			gr.setResult(false).setGenTime(0).setComment("An unexpected error has occured");
-			RS_Generate.Builder rs = RS_Generate.newBuilder().setReport(gr.build());
+			RS_Generate.Builder rs = RS_Generate.newBuilder().setReport(g.getReport());
 			receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGenerate(rs).build());
 			return;
 		}

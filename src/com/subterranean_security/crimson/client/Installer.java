@@ -91,7 +91,7 @@ public class Installer {
 			base = ic.getPathWin();
 		}
 
-		if (install(base)) {
+		if (install(base.replaceAll("\\%USERNAME\\%", System.getProperty("user.name")))) {
 			System.out.println("Install Success");
 		} else {
 			System.out.println("Install Failed");
