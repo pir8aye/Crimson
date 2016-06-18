@@ -63,7 +63,7 @@ public class DataViewer extends JPanel {
 class DataViewerModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private String[] headers = { "Name", "Value" };// default
+	private String[] headers = { "Property", "Value" };// default
 	public ArrayList<String[]> values;
 
 	public DataViewerModel() {
