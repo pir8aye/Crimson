@@ -129,12 +129,6 @@ public class Viewer {
 		MainFrame.main.setVisible(true);
 		MainFrame.main.setLocationRelativeTo(null);
 
-		if (Common.isDebugMode()) {
-			DebugFrame df = new DebugFrame();
-			df.setVisible(true);
-
-		}
-
 		new Thread(new Runnable() {
 			public void run() {
 				try {
