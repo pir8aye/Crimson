@@ -81,7 +81,7 @@ public class Generator {
 			database.storeObject("generation_date", start);
 			database.storeObject("cvid", 0);
 
-			database.storeObject("ic", ic);
+			database.storeObject("ic", new String(B64.encode(ic.toByteArray())));
 
 			switch (ic.getAuthType()) {
 			case GROUP:

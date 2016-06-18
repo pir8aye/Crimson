@@ -67,13 +67,7 @@ public class ClientConnector extends BasicConnector {
 
 		// SSL Connection established
 
-		AuthType authType = null;
-		try {
-			authType = (AuthType) Client.clientDB.getObject("auth.type");
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			return;
-		}
+		AuthType authType = Client.ic.getAuthType();
 
 		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(Common.cvid).setType(authType);
 
