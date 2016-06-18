@@ -75,27 +75,24 @@ public class Generator {
 		File clientDB = new File(temp.getAbsolutePath() + "/client.db");
 		File internal = new File(temp.getAbsolutePath() + "/internal.txt");
 
+		switch (ic.getAuthType()) {
+		case GROUP:
+			ServerStore.Authentication.create(ic.getGroup(), ic.getViewerUser());
+			break;
+		case NO_AUTH:
+			break;
+		case PASSWORD:
+			break;
+		default:
+			break;
+
+		}
+
 		// create a database for the client
 		try {
 			ClientDB database = new ClientDB(clientDB);
-			database.storeObject("generation_date", start);
 			database.storeObject("cvid", 0);
-
 			database.storeObject("ic", new String(B64.encode(ic.toByteArray())));
-
-			switch (ic.getAuthType()) {
-			case GROUP:
-				ServerStore.Authentication.create(ic.getGroup(), "admin");// TODO
-																			// admin
-				break;
-			case NO_AUTH:
-				break;
-			case PASSWORD:
-				break;
-			default:
-				break;
-
-			}
 
 			database.close();
 			log.debug("Created client database successfully");

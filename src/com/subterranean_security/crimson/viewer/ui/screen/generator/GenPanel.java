@@ -66,6 +66,7 @@ import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.screen.password.EntropyHarvester;
 
 public class GenPanel extends JPanel {
@@ -745,6 +746,7 @@ public class GenPanel extends JPanel {
 
 		ClientConfig.Builder ic = ClientConfig.newBuilder();
 
+		ic.setViewerUser(ViewerStore.Profiles.vp.getUser());
 		ic.setOutputType((String) type_comboBox.getSelectedItem());
 		ic.setDelay((int) fld_delay.getValue());
 		ic.setReconnectPeriod((int) fld_connect_period.getValue());

@@ -32,12 +32,8 @@ message ClientConfig {
 	optional string path_osx = 11;
 	optional string path_sol = 12;
 	optional string path_bsd = 13;
-	optional bool allow_win = 14;
-	optional bool allow_lin = 15;
-	optional bool allow_osx = 16;
-	optional bool allow_sol = 17;
-	optional bool allow_bsd = 18;
-	optional bool allow_and = 19;
+
+	optional string viewer_user = 14;
 	
 	required AuthType authType = 21;
 	optional Group group = 22;
