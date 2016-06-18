@@ -14,6 +14,7 @@ message RS_GroupChallenge {
 
 message MI_GroupChallengeResult {
 	required bool result = 1;
+	optional EV_ProfileDelta pd = 2;
 }
 
 message MI_AuthRequest {

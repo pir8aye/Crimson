@@ -260,6 +260,7 @@ public class ServerExecutor extends BasicExecutor {
 		}
 		if (m.getMiChallengeresult().getResult()) {
 			aux_acceptClient();
+			ev_profileDelta(m.getMiChallengeresult().getPd());
 		} else {
 			log.debug("Authentication failed");
 			receptor.setState(ConnectionState.CONNECTED);

@@ -27,6 +27,7 @@ import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
@@ -192,12 +193,17 @@ public class ClientExecutor extends BasicExecutor {
 				}
 
 				MI_GroupChallengeResult.Builder oneway = MI_GroupChallengeResult.newBuilder().setResult(flag);
+
 				if (flag) {
 					connector.setState(ConnectionState.AUTHENTICATED);
+
+					oneway.setPd(Platform.Advanced.getFullProfile());
 				} else {
+					// TODO handle more
 					connector.setState(ConnectionState.CONNECTED);
 				}
 				connector.handle.write(Message.newBuilder().setId(id).setMiChallengeresult(oneway.build()).build());
+
 			}
 		}).start();
 
