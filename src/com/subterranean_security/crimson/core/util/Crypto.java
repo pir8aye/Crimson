@@ -17,14 +17,22 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
+import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 
 public enum Crypto {
@@ -100,17 +108,36 @@ public enum Crypto {
 		return CUtil.Misc.randString(8);
 	}
 
-	public static Outcome exportGroup(Group g, File output) {
+	public static Outcome exportGroup(AuthMethod am, File output) {
 
 		try {
 			PrintWriter pw = new PrintWriter(output);
-			pw.println(B64.encode(g.toByteArray()));
+			pw.println(B64.encode(am.toByteArray()));
 
 			pw.close();
 		} catch (FileNotFoundException e) {
 			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
 		}
 		return Outcome.newBuilder().setResult(true).build();
+	}
+
+	public static AuthMethod importGroup(File input) {
+
+		try (BufferedReader br = new BufferedReader(new FileReader(input))) {
+
+			return AuthMethod.parseFrom(B64.decode(br.readLine()));
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidProtocolBufferException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

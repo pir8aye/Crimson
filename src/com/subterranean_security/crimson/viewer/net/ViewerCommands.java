@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.ClientAuth.AuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_CreateAuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_RemoveAuthMethod;
 import com.subterranean_security.crimson.core.proto.Delta.MI_TriggerProfileDelta;
@@ -46,6 +45,7 @@ import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeClientState;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeServerState;

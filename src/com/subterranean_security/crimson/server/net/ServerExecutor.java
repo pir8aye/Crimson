@@ -32,7 +32,6 @@ import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
-import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
@@ -53,6 +52,7 @@ import com.subterranean_security.crimson.core.proto.Listener.RS_AddListener;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.proto.SMSG.RS_CloudUser;
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
@@ -675,9 +675,8 @@ public class ServerExecutor extends BasicExecutor {
 		// TODO respond
 
 		Message update = Message.newBuilder().setUrgent(true)
-				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder()
-						.addViewerUser(EV_ViewerProfileDelta.newBuilder().setUser(m.getRqAddUser().getUser())
-								.setViewerPermissions(m.getRqAddUser().getPermissions())))
+				.setEvServerProfileDelta(
+						EV_ServerProfileDelta.newBuilder().addAuthMethod(m.getRqCreateAuthMethod().getAuthMethod()))
 				.build();
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
 

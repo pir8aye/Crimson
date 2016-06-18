@@ -6,3 +6,34 @@ message Outcome {
 	optional string comment = 2;
 
 }
+
+message NetworkInterface {
+	optional string name = 1;
+	optional string ip = 2;
+	required string mac = 3;
+	optional string netmask = 4;
+}
+
+enum AuthType {
+	GROUP = 0; PASSWORD = 1; NO_AUTH = 2;
+}
+
+message AuthMethod {
+	required int32 id = 1;
+	required int64 creation = 2;
+	required AuthType type = 3;
+	
+	repeated string owner = 4;
+	repeated string member = 5;
+	
+	// if group auth
+	optional Group group = 6;
+	
+	// if password auth
+	optional string password = 7;
+}
+
+message Group {	
+	required string name = 1;
+	required string key = 2;
+}

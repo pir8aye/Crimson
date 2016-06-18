@@ -28,7 +28,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
@@ -76,28 +78,51 @@ public class AuthPanel extends JPanel {
 		btnAddGroup.setMargin(new Insets(2, 2, 2, 2));
 		menuBar.add(btnAddGroup);
 
-		JButton btnNewButton_2 = new JButton(UIUtil.getIcon("icons16/general/group_import.png"));
-		btnNewButton_2.setToolTipText("Import group from file");
-		btnNewButton_2.setMargin(new Insets(2, 4, 2, 4));
-		menuBar.add(btnNewButton_2);
+		JButton btnImport = new JButton(UIUtil.getIcon("icons16/general/group_import.png"));
+		btnImport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				new Thread(new Runnable() {
+					public void run() {
+						btnImport.setEnabled(false);
+						JFileChooser jfc = new JFileChooser();
+						jfc.setDialogTitle("Select group to import");
+
+						if (jfc.showDialog(null, "Import") == JFileChooser.APPROVE_OPTION) {
+							File file = jfc.getSelectedFile();
+							AuthMethod am = Crypto.importGroup(file);
+							ViewerCommands.createAuthMethod(am);
+						}
+
+						btnImport.setEnabled(true);
+					}
+				}).start();
+
+			}
+		});
+		btnImport.setToolTipText("Import group from file");
+		btnImport.setMargin(new Insets(2, 4, 2, 4));
+		menuBar.add(btnImport);
 
 		btnExport = new JButton(UIUtil.getIcon("icons16/general/group_export.png"));
 		btnExport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				btnExport.setEnabled(false);
-				JFileChooser jfc = new JFileChooser();
-				jfc.setDialogTitle("Export selected group to file");
 
-				if (jfc.showDialog(null, "Export") == JFileChooser.APPROVE_OPTION) {
-					File file = jfc.getSelectedFile();
-					new Thread(new Runnable() {
-						public void run() {
-							Crypto.exportGroup(authTable.getSelected().getGroup(), file);
+				new Thread(new Runnable() {
+					public void run() {
+						btnExport.setEnabled(false);
+						JFileChooser jfc = new JFileChooser();
+						jfc.setDialogTitle("Export selected group to file");
+
+						if (jfc.showDialog(null, "Export") == JFileChooser.APPROVE_OPTION) {
+							File file = jfc.getSelectedFile();
+							Crypto.exportGroup(authTable.getSelected(), file);
 						}
-					}).start();
-				}
-
+						btnExport.setEnabled(true);
+					}
+				}).start();
 			}
+
 		});
 		btnExport.setEnabled(false);
 		btnExport.setToolTipText("Export group to file");
@@ -126,7 +151,7 @@ public class AuthPanel extends JPanel {
 
 	}
 
-	private void resetEPanels() {
+	public void resetEPanels() {
 		UIStore.createGroup = null;
 		UIStore.createPassword = null;
 	}

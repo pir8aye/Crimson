@@ -18,75 +18,43 @@
 package com.subterranean_security.crimson.viewer.ui.screen.netman.auth;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.util.Date;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
+
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
+import com.subterranean_security.crimson.viewer.ui.common.components.DataViewer;
 
 public class GroupInfo extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public GroupInfo(String name, String key) {
+	public GroupInfo(AuthMethod am) {
 		setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
 		add(panel, BorderLayout.CENTER);
 
 		JPanel panel_2 = new JPanel();
+		panel_2.setPreferredSize(new Dimension(400, 100));
 		panel_2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panel.add(panel_2);
-		GridBagLayout gbl_panel_2 = new GridBagLayout();
-		gbl_panel_2.columnWidths = new int[] { 0, 0, 0, 0, 0 };
-		gbl_panel_2.rowHeights = new int[] { 0, 0, 0 };
-		gbl_panel_2.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gbl_panel_2.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-		panel_2.setLayout(gbl_panel_2);
+		panel_2.setLayout(new BorderLayout(0, 0));
 
-		JLabel lblGroupName = new JLabel("Group name:");
-		GridBagConstraints gbc_lblGroupName = new GridBagConstraints();
-		gbc_lblGroupName.anchor = GridBagConstraints.EAST;
-		gbc_lblGroupName.insets = new Insets(0, 0, 5, 5);
-		gbc_lblGroupName.gridx = 1;
-		gbc_lblGroupName.gridy = 0;
-		panel_2.add(lblGroupName, gbc_lblGroupName);
+		DataViewer dv = new DataViewer();
+		dv.addRow(new String[] { "Authentication Type", "GROUP" });
+		dv.addRow(new String[] { "ID", "" + am.getId() });
+		dv.addRow(new String[] { "Name", am.getGroup().getName() });
+		dv.addRow(new String[] { "Key", am.getGroup().getKey() });
+		dv.addRow(new String[] { "Creation Date", new Date(am.getCreation()).toString() });
 
-		JLabel lblValue = new JLabel("value");
-		GridBagConstraints gbc_lblValue = new GridBagConstraints();
-		gbc_lblValue.insets = new Insets(0, 0, 5, 5);
-		gbc_lblValue.gridx = 2;
-		gbc_lblValue.gridy = 0;
-		panel_2.add(lblValue, gbc_lblValue);
+		panel_2.add(dv, BorderLayout.CENTER);
 
-		JLabel lblCreation = new JLabel("Creation:");
-		GridBagConstraints gbc_lblCreation = new GridBagConstraints();
-		gbc_lblCreation.anchor = GridBagConstraints.EAST;
-		gbc_lblCreation.insets = new Insets(0, 0, 0, 5);
-		gbc_lblCreation.gridx = 1;
-		gbc_lblCreation.gridy = 1;
-		panel_2.add(lblCreation, gbc_lblCreation);
-
-		JLabel lblValue_1 = new JLabel("value");
-		GridBagConstraints gbc_lblValue_1 = new GridBagConstraints();
-		gbc_lblValue_1.insets = new Insets(0, 0, 0, 5);
-		gbc_lblValue_1.gridx = 2;
-		gbc_lblValue_1.gridy = 1;
-		panel_2.add(lblValue_1, gbc_lblValue_1);
-
-		JPanel panel_1 = new JPanel();
-		add(panel_1, BorderLayout.SOUTH);
-
-		JButton btnClose = new JButton("Close");
-		btnClose.setMargin(new Insets(2, 4, 2, 4));
-		btnClose.setFont(new Font("Dialog", Font.BOLD, 10));
-		panel_1.add(btnClose);
-
-		JLabel lblGroupKeyfbddefca = new JLabel("Group Key: 2f9bdd30efc0a01");
+		JLabel lblGroupKeyfbddefca = new JLabel("Group Key: " + am.getGroup().getKey());
 		lblGroupKeyfbddefca.setFont(new Font("Dialog", Font.BOLD, 9));
 		add(lblGroupKeyfbddefca, BorderLayout.NORTH);
 

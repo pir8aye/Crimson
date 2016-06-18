@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.subterranean_security.crimson.core.proto.ClientAuth.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
@@ -184,6 +184,20 @@ public class ServerProfile implements Serializable {
 			}
 
 		}
+		for (AuthMethod am : c.getAuthMethodList()) {
+			boolean modified = false;
+			for (AuthMethod a : authMethods) {
+				if (a.getId() == am.getId()) {
+					a = AuthMethod.newBuilder().mergeFrom(a).mergeFrom(am).build();
+					modified = true;
+				}
+			}
+			if (!modified) {
+				System.out.println("Adding new auth method");
+				authMethods.add(am);
+			}
+		}
+
 		if (UIStore.userMan != null) {
 			UIStore.userMan.up.ut.fireTableDataChanged();
 		}

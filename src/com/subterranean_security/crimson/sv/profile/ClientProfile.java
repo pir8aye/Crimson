@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.core.proto.Delta.NetworkInterface;
+import com.subterranean_security.crimson.core.proto.Misc.NetworkInterface;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;

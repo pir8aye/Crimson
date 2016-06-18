@@ -39,12 +39,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.proto.ClientAuth.AuthMethod;
-import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
-import com.subterranean_security.crimson.core.proto.ClientAuth.Group;
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
+import com.subterranean_security.crimson.core.proto.Misc.AuthType;
+import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -55,7 +56,6 @@ import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.password.EntropyHarvester;
-import javax.swing.UIManager;
 
 public class CreateGroup extends JPanel {
 
@@ -134,6 +134,7 @@ public class CreateGroup extends JPanel {
 						} else {
 							sl.setBad(outcome.hasComment() ? "Failed: " + outcome.getComment() : "Creation failed!");
 							timer = new Timer();
+							gt = new GroupTimer();
 							timer.schedule(gt, 0, 750);
 						}
 

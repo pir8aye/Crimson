@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.netman.auth;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -26,8 +27,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.subterranean_security.crimson.core.proto.ClientAuth.AuthMethod;
-import com.subterranean_security.crimson.core.proto.ClientAuth.AuthType;
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
+import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
@@ -55,6 +56,9 @@ public class AuthTable extends JScrollPane {
 				final int sourceRow = source.rowAtPoint(e.getPoint());
 				if (sourceRow == -1) {
 					source.clearSelection();
+					parent.btnExport.setEnabled(false);
+					parent.resetEPanels();
+					parent.ep.drop();
 					return;
 				}
 				// select row
@@ -69,12 +73,12 @@ public class AuthTable extends JScrollPane {
 					popup = new JPopupMenu();
 					if (am.getType() == AuthType.GROUP) {
 						export = new JMenuItem("Export Group");
-						export.setIcon(UIUtil.getIcon("icons16/general/cog.png"));
+						export.setIcon(UIUtil.getIcon("icons16/general/group_export.png"));
 
 						popup.add(export);
 					} else {
 						copyPassword = new JMenuItem("Copy Password");
-						copyPassword.setIcon(UIUtil.getIcon("icons16/general/diagramm.png"));
+						copyPassword.setIcon(UIUtil.getIcon("icons16/general/page_copy.png"));
 						popup.add(copyPassword);
 					}
 					popup.show(table, e.getX(), e.getY());
@@ -82,10 +86,12 @@ public class AuthTable extends JScrollPane {
 					if (am.getType() == AuthType.GROUP) {
 						parent.btnExport.setEnabled(true);
 
-						parent.ep.raise(new GroupInfo(am.getGroup().getName(), am.getGroup().getKey()), 100);
+						parent.resetEPanels();
+						parent.ep.raise(new GroupInfo(am), 120);
 					} else {
 						parent.btnExport.setEnabled(false);
 
+						parent.resetEPanels();
 						parent.ep.raise(new PasswordInfo(), 100);
 					}
 				}
@@ -106,7 +112,7 @@ public class AuthTable extends JScrollPane {
 class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private final String[] headers = new String[] { "Auth Method", "Name" };
+	private final String[] headers = new String[] { "ID", "Authentication Type", "Name", "Creation Date" };
 
 	@Override
 	public int getColumnCount() {
@@ -127,8 +133,12 @@ class TM extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 
 		switch (headers[columnIndex]) {
-		case "Auth Method":
+		case "ID":
+			return ViewerStore.Profiles.server.authMethods.get(rowIndex).getId();
+		case "Authentication Type":
 			return ViewerStore.Profiles.server.authMethods.get(rowIndex).getType();
+		case "Creation Date":
+			return new Date(ViewerStore.Profiles.server.authMethods.get(rowIndex).getCreation()).toString();
 
 		}
 		return null;
