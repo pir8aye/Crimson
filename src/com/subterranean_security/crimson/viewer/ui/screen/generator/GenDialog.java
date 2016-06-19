@@ -32,6 +32,7 @@ import javax.swing.JDialog;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
@@ -69,7 +70,7 @@ public class GenDialog extends JDialog {
 							return;
 						}
 						if (gp.testValues(config)) {
-							MainFrame.main.np.addNote("info", "Please wait while the server generates your installer");
+							MainFrame.main.panel.console.addLine("Generating target on server...", LineType.GREEN);
 							dispose();
 							ViewerCommands.generate(config, out, creation);
 
