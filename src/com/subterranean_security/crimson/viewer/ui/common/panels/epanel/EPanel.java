@@ -44,7 +44,9 @@ public class EPanel extends SLPanel {
 
 	private ENote note = new ENote();
 
-	private boolean showing = false;
+	private boolean open = false;
+
+	private int timeout = 900;
 
 	public EPanel(JPanel main) {
 		thisNP = this;
@@ -61,55 +63,65 @@ public class EPanel extends SLPanel {
 
 	}
 
-	public synchronized void raise(JPanel panel, int height) {
+	public synchronized boolean isOpen() {
+		return open;
+	}
 
-		if (showing) {
-			movingMain.runAction();
+	public synchronized void raise(JPanel panel, int height) {
+		if (isOpen()) {
+			drop();
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(timeout);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 		}
-		showing = true;
+
+		open = true;
 		note.setPanel(panel);
 		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+
 		movingMain.runAction();
+		try {
+			Thread.sleep(timeout);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
 	public synchronized void raise(JPanel panel, float height) {
 
-		if (showing) {
+		if (isOpen()) {
 			movingMain.runAction();
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(timeout);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 		}
-		showing = true;
+		open = true;
 		note.setPanel(panel);
 		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
 		movingMain.runAction();
-
 	}
 
 	public synchronized void drop() {
-		if (showing) {
+		if (isOpen()) {
 			movingMain.runAction();
-			showing = false;
+			open = false;
 		}
 	}
 
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
-			thisNP.createTransition().push(new SLKeyframe(pos2, 0.9f).setStartSide(SLSide.BOTTOM, movingBar)
+			thisNP.createTransition().push(new SLKeyframe(pos2, timeout / 1000f).setStartSide(SLSide.BOTTOM, movingBar)
 					.setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
@@ -123,7 +135,7 @@ public class EPanel extends SLPanel {
 	private final Runnable actionDN = new Runnable() {
 		@Override
 		public void run() {
-			thisNP.createTransition().push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.BOTTOM, movingBar)
+			thisNP.createTransition().push(new SLKeyframe(pos1, timeout / 1000f).setEndSide(SLSide.BOTTOM, movingBar)
 					.setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
@@ -137,8 +149,6 @@ public class EPanel extends SLPanel {
 	class ENote extends JPanel {
 
 		private static final long serialVersionUID = 1L;
-
-		public int maxHeight = 150;
 
 		public JPanel panel = new JPanel();
 

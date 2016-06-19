@@ -17,7 +17,10 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.files;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -29,8 +32,7 @@ public class FMFrame extends JFrame {
 
 	private Type type;
 
-	// TODO remove static context!
-	public static EPanel epanel;
+	public EPanel epanel;
 
 	public FMFrame(Type type) {
 
@@ -39,8 +41,12 @@ public class FMFrame extends JFrame {
 		setTitle("File Manager");
 		setIconImages(UIUtil.getIconList());
 
-		FMPanel fmp = new FMPanel(Type.VV);
-		epanel = new EPanel(fmp);
+		JPanel root = new JPanel();
+		root.setLayout(new BorderLayout());
+
+		epanel = new EPanel(root);
+		FMPanel fmp = new FMPanel(Type.VV, epanel);
+		root.add(fmp, BorderLayout.CENTER);
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);

@@ -19,6 +19,8 @@ package com.subterranean_security.crimson.viewer.ui.screen.files;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -56,6 +58,8 @@ public class FileTable extends JPanel {
 
 	}
 
+	private ArrayList<FileItem> selection = null;
+
 	public void init() {
 
 		setLayout(new BorderLayout());
@@ -81,11 +85,11 @@ public class FileTable extends JPanel {
 				}
 
 				if (e.getButton() == MouseEvent.BUTTON3) {
-					ArrayList<FileItem> selection = new ArrayList<FileItem>();
+					selection = new ArrayList<FileItem>();
 					for (int i : source.getSelectedRows()) {
 						selection.add(tm.getFile(i));
 					}
-					initContextActions(selection);
+					initContextActions();
 
 					popup.show(table, e.getPoint().x, e.getPoint().y);
 				} else if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
@@ -158,10 +162,24 @@ public class FileTable extends JPanel {
 
 		menu_properties = new JMenuItem("Properties");
 		menu_properties.setIcon(UIUtil.getIcon("icons16/general/attributes_display.png"));
+		menu_properties.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				new Thread(new Runnable() {
+					public void run() {
+						pane.info(selection.get(0).getIcon().getDescription());
+
+					}
+				}).start();
+
+			}
+
+		});
 
 	}
 
-	private void initContextActions(ArrayList<FileItem> selection) {
+	private void initContextActions() {
 
 		popup.removeAll();
 
@@ -170,20 +188,6 @@ public class FileTable extends JPanel {
 		} else if (selection.size() == 1) {
 			popup.add(menu_rename);
 			popup.add(menu_properties);
-			menu_properties.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-
-					new Thread(new Runnable() {
-						public void run() {
-							pane.info(selection.get(0).getIcon().getDescription());
-
-						}
-					}).start();
-
-				}
-
-			});
 
 		} else {
 

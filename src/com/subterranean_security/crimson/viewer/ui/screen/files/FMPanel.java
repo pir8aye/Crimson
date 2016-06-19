@@ -24,6 +24,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 
 public class FMPanel extends JPanel {
@@ -32,7 +33,10 @@ public class FMPanel extends JPanel {
 
 	public Console console = new Console();
 
-	public FMPanel(Type type) {
+	public EPanel ep;
+
+	public FMPanel(Type type, EPanel ep) {
+		this.ep = ep;
 		setLayout(new BorderLayout(0, 0));
 
 		JToolBar jtb = new JToolBar();

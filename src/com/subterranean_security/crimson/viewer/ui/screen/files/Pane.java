@@ -30,6 +30,7 @@ import javax.swing.JComboBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 
@@ -195,7 +196,8 @@ public class Pane extends JPanel {
 
 		}
 
-		FMFrame.epanel.raise(new AdvancedFileInfo(rs), 70);
+		parent.ep.raise(new AdvancedFileInfo(rs, parent.ep), 80);
+
 	}
 
 	public void refresh() {
