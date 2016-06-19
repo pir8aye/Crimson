@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer.ui.common.components;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.JPanel;
@@ -28,6 +29,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 public class Console extends JPanel {
@@ -38,6 +41,15 @@ public class Console extends JPanel {
 	private JTextPane txtpndateLoadedConsole = new JTextPane();
 	private JScrollPane jsp = new JScrollPane(txtpndateLoadedConsole);
 
+	private static final Color blue = new Color(0, 204, 204);
+	private Style blueStyle = null;
+	private static final Color green = new Color(0, 215, 123);
+	private Style greenStyle = null;
+	private static final Color orange = new Color(255, 191, 0);
+	private Style orangeStyle = null;
+
+	private SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+
 	public Console() {
 		setLayout(new BorderLayout(0, 0));
 
@@ -46,15 +58,43 @@ public class Console extends JPanel {
 		txtpndateLoadedConsole.setFont(new Font("Monospaced", Font.PLAIN, 11));
 		txtpndateLoadedConsole.setForeground(Color.WHITE);
 		txtpndateLoadedConsole.setBackground(Color.DARK_GRAY);
-		jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		add(jsp, BorderLayout.CENTER);
+
+		blueStyle = txtpndateLoadedConsole.addStyle("blueConsoleStyle", null);
+		StyleConstants.setForeground(blueStyle, blue);
+
+		greenStyle = txtpndateLoadedConsole.addStyle("greenConsoleStyle", null);
+		StyleConstants.setForeground(greenStyle, green);
+
+		orangeStyle = txtpndateLoadedConsole.addStyle("orangeConsoleStyle", null);
+		StyleConstants.setForeground(orangeStyle, orange);
 	}
 
 	public synchronized void addLine(String s) {
+		addLine(s, LineType.BLUE);
+	}
+
+	public synchronized void addLine(String s, LineType lt) {
+
+		Style style = null;
+		switch (lt) {
+		case ORANGE:
+			style = orangeStyle;
+			break;
+		case BLUE:
+			style = blueStyle;
+			break;
+		case GREEN:
+			style = greenStyle;
+			break;
+		default:
+			style = null;
+
+		}
 
 		try {
-			doc.insertString(doc.getLength(), "\n[" + new Date().toString() + "] " + s, null);
+			doc.insertString(doc.getLength(), "[" + formatter.format(new Date()) + "] " + s + "\n", style);
 		} catch (BadLocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -65,6 +105,11 @@ public class Console extends JPanel {
 	public void scroll() {
 		JScrollBar vertical = jsp.getVerticalScrollBar();
 		vertical.setValue(vertical.getMaximum());
+	}
+
+	public enum LineType {
+		ORANGE, BLUE, GREEN;
+
 	}
 
 }
