@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -51,6 +52,12 @@ public class HPanel extends SLPanel {
 	public HiddenMenu hmenu = new HiddenMenu();
 	public NormalMenu nmenu = new NormalMenu();
 
+	private JButton btnUp;
+
+	private static int transitionTime = 900;
+
+	private boolean moving = false;
+
 	public HPanel(JPanel main) {
 		thisHP = this;
 
@@ -75,40 +82,59 @@ public class HPanel extends SLPanel {
 	ImageIcon close = UIUtil.getIcon("icons16/general/close_hmenu.png");
 
 	public JButton initBtnUP() {
-		final JButton btnUp = new JButton(open);
+		btnUp = new JButton(open);
 		btnUp.setPreferredSize(UICommon.dim_btn_up);
 		btnUp.setMargin(new Insets(2, 0, 2, 0));
 		btnUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				movingMain.runAction();
-				if (btnUp.getIcon().equals(open)) {
-					btnUp.setIcon(close);
-				} else {
-					btnUp.setIcon(open);
+				if (!moving) {
+					moving = true;
+					movingMain.runAction();
+
+					if (btnUp.getIcon().equals(open)) {
+						btnUp.setIcon(close);
+					} else {
+						btnUp.setIcon(open);
+					}
+					new ButtonWorker().execute();
 				}
+
 			}
 		});
 		return btnUp;
 	}
 
+	class ButtonWorker extends SwingWorker<Void, Void> {
+		protected Void doInBackground() throws Exception {
+
+			Thread.sleep(transitionTime);
+			return null;
+		}
+
+		protected void done() {
+			moving = false;
+		}
+	}
+
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
-			thisHP.createTransition().push(new SLKeyframe(pos2, 0.9f).setCallback(new SLKeyframe.Callback() {
-				@Override
-				public void done() {
-					movingMain.setAction(actionDN);
-					movingMain.enableAction();
-				}
-			})).play();
+			thisHP.createTransition()
+					.push(new SLKeyframe(pos2, transitionTime / 1000f).setCallback(new SLKeyframe.Callback() {
+						@Override
+						public void done() {
+							movingMain.setAction(actionDN);
+							movingMain.enableAction();
+						}
+					})).play();
 		}
 	};
 
 	private final Runnable actionDN = new Runnable() {
 		@Override
 		public void run() {
-			thisHP.createTransition().push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.BOTTOM, movingHMenu)
-					.setCallback(new SLKeyframe.Callback() {
+			thisHP.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
+					.setEndSide(SLSide.BOTTOM, movingHMenu).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							movingMain.setAction(actionUP);
