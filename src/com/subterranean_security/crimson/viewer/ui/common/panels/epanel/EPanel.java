@@ -67,7 +67,15 @@ public class EPanel extends SLPanel {
 		return open;
 	}
 
+	private JPanel last = null;
+
 	public synchronized void raise(JPanel panel, int height) {
+		if (panel.equals(last)) {
+			return;
+		} else {
+			last = panel;
+		}
+
 		if (isOpen()) {
 			drop();
 			try {
@@ -94,9 +102,14 @@ public class EPanel extends SLPanel {
 	}
 
 	public synchronized void raise(JPanel panel, float height) {
+		if (panel.equals(last)) {
+			return;
+		} else {
+			last = panel;
+		}
 
 		if (isOpen()) {
-			movingMain.runAction();
+			drop();
 			try {
 				Thread.sleep(timeout);
 			} catch (InterruptedException e) {
@@ -105,10 +118,19 @@ public class EPanel extends SLPanel {
 			}
 
 		}
+
 		open = true;
 		note.setPanel(panel);
 		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+
 		movingMain.runAction();
+		try {
+			Thread.sleep(timeout);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	public synchronized void drop() {
