@@ -21,13 +21,12 @@ import java.util.Random;
 
 public enum IDGen {
 	;
-	private static byte counter = 0;
+	private static int counter = 0;
 
-	public static synchronized int get() {
+	public static int get() {
+		counter++;
 		if (counter == 16) {
 			counter = 0;
-		} else {
-			counter++;
 		}
 		return counter;
 	}
@@ -41,7 +40,7 @@ public enum IDGen {
 	public static int getFmid() {
 		return random.nextInt();
 	}
-	
+
 	public static int getStreamid() {
 		return random.nextInt();
 	}
@@ -49,7 +48,7 @@ public enum IDGen {
 	public static int getListenerID() {
 		return Math.abs(random.nextInt());
 	}
-	
+
 	public static int getAuthMethodID() {
 		return Math.abs(random.nextInt());
 	}
