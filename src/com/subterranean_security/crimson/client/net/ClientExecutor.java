@@ -40,6 +40,7 @@ import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
@@ -99,6 +100,8 @@ public class ClientExecutor extends BasicExecutor {
 						rq_file_handle(m);
 					} else if (m.hasRqAdvancedFileInfo()) {
 						rq_advanced_file_info(m);
+					} else if (m.hasRqGetClientConfig()) {
+						rq_get_client_config(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -264,6 +267,11 @@ public class ClientExecutor extends BasicExecutor {
 		log.debug("stream_stop_ev");
 		StreamStore.removeStream(m.getMiStreamStop().getStreamID());
 
+	}
+
+	private void rq_get_client_config(Message m) {
+		ClientStore.Connections.route(Message.newBuilder().setId(m.getId())
+				.setRsGetClientConfig(RS_GetClientConfig.newBuilder().setConfig(Client.ic)));
 	}
 
 }

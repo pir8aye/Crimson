@@ -50,6 +50,7 @@ import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeClientState;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.State.StateType;
+import com.subterranean_security.crimson.core.proto.Update.RQ_GetClientConfig;
 import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RQ_EditUser;
 import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
@@ -345,8 +346,9 @@ public enum ViewerCommands {
 
 	public static int getFileHandle(int cid) {
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
-					.setSid(Common.cvid).setRqFileHandle(RQ_FileHandle.newBuilder()), 2);
+			Message m = ViewerRouter.routeAndWait(
+					Message.newBuilder().setRid(cid).setSid(Common.cvid).setRqFileHandle(RQ_FileHandle.newBuilder()),
+					2);
 			if (m != null) {
 				return m.getRsFileHandle().getFmid();
 			}
@@ -367,8 +369,8 @@ public enum ViewerCommands {
 
 	public static void fm_down(FileTable ft, int cid, int fmid, String name, boolean mtime, boolean size) {
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
-					.setSid(Common.cvid).setRqFileListing(RQ_FileListing.newBuilder().setDown(name).setFmid(fmid)), 2);
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+					.setRqFileListing(RQ_FileListing.newBuilder().setDown(name).setFmid(fmid)), 2);
 			ft.pane.pwd.setPwd(m.getRsFileListing().getPath());
 			ft.setFiles(m.getRsFileListing().getListingList());
 		} catch (InterruptedException e) {
@@ -379,8 +381,8 @@ public enum ViewerCommands {
 
 	public static void fm_up(FileTable ft, int cid, int fmid, boolean mtime, boolean size) {
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
-					.setSid(Common.cvid).setRqFileListing(RQ_FileListing.newBuilder().setUp(true).setFmid(fmid)), 2);
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+					.setRqFileListing(RQ_FileListing.newBuilder().setUp(true).setFmid(fmid)), 2);
 			ft.pane.pwd.setPwd(m.getRsFileListing().getPath());
 			ft.setFiles(m.getRsFileListing().getListingList());
 		} catch (InterruptedException e) {
@@ -391,8 +393,8 @@ public enum ViewerCommands {
 
 	public static void fm_list(FileTable ft, int cid, int fmid, boolean mtime, boolean size) {
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
-					.setSid(Common.cvid).setRqFileListing(RQ_FileListing.newBuilder().setFmid(fmid)), 2);
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+					.setRqFileListing(RQ_FileListing.newBuilder().setFmid(fmid)), 2);
 			ft.pane.pwd.setPwd(m.getRsFileListing().getPath());
 			ft.setFiles(m.getRsFileListing().getListingList());
 		} catch (InterruptedException e) {
@@ -403,8 +405,8 @@ public enum ViewerCommands {
 
 	public static RS_AdvancedFileInfo fm_file_info(int cid, String path) {
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setId(IDGen.get()).setRid(cid)
-					.setSid(Common.cvid).setRqAdvancedFileInfo(RQ_AdvancedFileInfo.newBuilder().setFile(path)), 2);
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+					.setRqAdvancedFileInfo(RQ_AdvancedFileInfo.newBuilder().setFile(path)), 2);
 			return m.getRsAdvancedFileInfo();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -417,7 +419,7 @@ public enum ViewerCommands {
 		log.debug("Triggering keylog update");
 		try {
 			Message m = ViewerRouter.routeAndWait(
-					Message.newBuilder().setId(IDGen.get()).setRqKeyUpdate(
+					Message.newBuilder().setRqKeyUpdate(
 							RQ_KeyUpdate.newBuilder().setCid(cid).setStartDate(target == null ? 0 : target.getTime())),
 					30);
 			if (m != null) {
@@ -428,6 +430,22 @@ public enum ViewerCommands {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public static ClientConfig getClientConfig(int cid) {
+		log.debug("Retrieving client config");
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+					.setRqGetClientConfig(RQ_GetClientConfig.newBuilder()), 30);
+			if (m != null) {
+				return m.getRsGetClientConfig().getConfig();
+			}
+
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

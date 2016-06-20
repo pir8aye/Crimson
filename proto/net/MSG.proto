@@ -11,7 +11,9 @@ import "net/sequences/Stream.proto";
 import "net/sequences/CVID.proto";
 import "net/sequences/Listener.proto";
 import "net/sequences/Users.proto";
+import "net/sequences/Update.proto";
 import "net/sequences/State.proto";
+
 message Message {
 	optional bool urgent = 1;
 	optional int32 id = 2;
@@ -59,6 +61,8 @@ message Message {
 	optional RS_CreateAuthMethod rs_create_auth_method = 131;
 	optional RQ_RemoveAuthMethod rq_remove_auth_method = 132;
 	optional RS_RemoveAuthMethod rs_remove_auth_method = 133;
+	optional RQ_GetClientConfig rq_get_client_config = 134;
+	optional RS_GetClientConfig rs_get_client_config = 135;
 
 	optional MI_TriggerProfileDelta mi_trigger_profile_delta = 199;
 	optional MI_StreamStart mi_stream_start = 200;
