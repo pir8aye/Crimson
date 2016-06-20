@@ -17,13 +17,19 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.core.net.BasicHandler;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.viewer.net.ViewerHandler;
 
 import io.netty.channel.ChannelHandlerContext;
 
 public class ClientHandler extends BasicHandler {
+
+	private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
 	private ClientConnector connector;
 
@@ -59,6 +65,9 @@ public class ClientHandler extends BasicHandler {
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext arg0, Message msg) throws Exception {
+
+		log.debug("RECEIVE \n{}", msg.toString());
+
 		if (msg.hasUrgent()) {
 			connector.uq.add(msg);
 		} else {

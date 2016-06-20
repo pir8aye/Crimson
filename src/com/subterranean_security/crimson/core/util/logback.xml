@@ -19,6 +19,17 @@
 
 	</appender>
 
+	<appender name="NETWORK" class="ch.qos.logback.core.FileAppender">
+		<param name="Append" value="false" />
+		<file>E:/logs/%INSTANCE%_network.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n
+			</Pattern>
+		</encoder>
+
+	</appender>
+
 	<appender name="NETTY" class="ch.qos.logback.core.FileAppender">
 		<file>%LOGDIR%/netty.log</file>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -51,6 +62,11 @@
 		<appender-ref ref="STDOUT" />
 	</logger>
 
+	<logger name="com.subterranean_security.crimson.client.net.ClientHandler"
+		level="%LEVEL%" additivity="false">
+		<appender-ref ref="NETWORK" />
+	</logger>
+
 	<logger name="com.subterranean_security.crimson.core" level="%LEVEL%"
 		additivity="false">
 		<appender-ref ref="FILESYSTEM" />
@@ -63,6 +79,11 @@
 		<appender-ref ref="STDOUT" />
 	</logger>
 
+	<logger name="com.subterranean_security.crimson.server.net.ServerHandler"
+		level="%LEVEL%" additivity="false">
+		<appender-ref ref="NETWORK" />
+	</logger>
+
 	<logger name="com.subterranean_security.crimson.sv" level="%LEVEL%"
 		additivity="false">
 		<appender-ref ref="FILESYSTEM" />
@@ -73,6 +94,11 @@
 		additivity="false">
 		<appender-ref ref="FILESYSTEM" />
 		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<logger name="com.subterranean_security.crimson.viewer.net.ViewerHandler"
+		level="%LEVEL%" additivity="false">
+		<appender-ref ref="NETWORK" />
 	</logger>
 
 	<logger name="com.subterranean_security.services" level="%LEVEL%"
