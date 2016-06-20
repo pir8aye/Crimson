@@ -102,6 +102,7 @@ public class ClientProfile implements Serializable {
 	public ClientProfile(int cvid) {
 		this();
 		this.cvid = cvid;
+		log.debug("Created new ClientProfile: {}", cvid);
 	}
 
 	public ClientProfile() {
