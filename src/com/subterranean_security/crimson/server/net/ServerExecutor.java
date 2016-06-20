@@ -217,6 +217,10 @@ public class ServerExecutor extends BasicExecutor {
 				}
 			}
 		}
+		if (pd.getCvid() != receptor.getCvid()) {
+			pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCvid(receptor.getCvid()).build();
+		}
+
 		ServerStore.Profiles.getClient(receptor.getCvid()).amalgamate(pd);
 
 		for (int svid : ServerStore.Connections.getKeySet()) {
