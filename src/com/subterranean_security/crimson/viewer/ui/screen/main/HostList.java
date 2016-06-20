@@ -41,7 +41,6 @@ import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.panels.dpanel.DPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 
 public class HostList extends JPanel {
@@ -72,7 +71,7 @@ public class HostList extends JPanel {
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (MainFrame.main.dp.moving) {
+				if (MainFrame.main.dp.isMoving()) {
 					return;
 				}
 

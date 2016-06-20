@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
@@ -49,8 +50,19 @@ public class DPanel extends SLPanel {
 	private MovingPanel movingMain;
 
 	public Detail detail = new Detail();
-	public boolean showing = false;
-	public boolean moving = false;
+
+	private boolean showing = false;
+	private boolean moving = false;
+
+	public boolean isOpen() {
+		return showing;
+	}
+
+	public boolean isMoving() {
+		return moving;
+	}
+
+	private static int transitionTime = 900;
 
 	public DPanel(JPanel main) {
 		thisDP = this;
@@ -59,7 +71,6 @@ public class DPanel extends SLPanel {
 		movingMain = new MovingPanel(main);
 		movingMain.setAction(actionUP);
 
-		// replace these configs
 		pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f).place(0, 0, movingMain);
 		pos2 = new SLConfig(this).gap(0, 0).row(5f).col(3f).col(1f).place(0, 0, movingMain).place(0, 1, movingBar);
 
@@ -73,37 +84,54 @@ public class DPanel extends SLPanel {
 				movingBar);
 	}
 
-	public synchronized void showDetail(ClientProfile sp) {
-		if (!showing) {
-			// move the detail panel out
-			moving = true;
-			movingMain.runAction();
+	public void showDetail(ClientProfile sp) {
+		if (!moving) {
+			if (!showing) {
+				// move the detail panel out
+				moving = true;
+				movingMain.runAction();
+				new EndMotion().execute();
+				showing = true;
+			}
+
 			detail.nowOpen(sp);
-			showing = true;
-			moving = false;
+
 		}
 
 	}
 
-	public synchronized void closeDetail() {
+	public void closeDetail() {
 
-		if (showing) {
+		if (showing && !moving) {
 			// move the detail panel back
 			moving = true;
 			movingMain.runAction();
+			new EndMotion().execute();
 			detail.nowClosed();
 			showing = false;
-			moving = false;
+
 		}
 
+	}
+
+	class EndMotion extends SwingWorker<Void, Void> {
+		protected Void doInBackground() throws Exception {
+
+			Thread.sleep(transitionTime);
+			return null;
+		}
+
+		protected void done() {
+			moving = false;
+		}
 	}
 
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
 
-			thisDP.createTransition().push(new SLKeyframe(pos2, 0.9f).setStartSide(SLSide.RIGHT, movingBar)
-					.setCallback(new SLKeyframe.Callback() {
+			thisDP.createTransition().push(new SLKeyframe(pos2, transitionTime / 1000f)
+					.setStartSide(SLSide.RIGHT, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							movingMain.setAction(actionDN);
@@ -117,8 +145,8 @@ public class DPanel extends SLPanel {
 		@Override
 		public void run() {
 
-			thisDP.createTransition().push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.RIGHT, movingBar)
-					.setCallback(new SLKeyframe.Callback() {
+			thisDP.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
+					.setEndSide(SLSide.RIGHT, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							movingMain.setAction(actionUP);
