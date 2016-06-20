@@ -32,6 +32,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.ProgressBarFactory;
 
 public class PathPanel extends JPanel {
 
@@ -58,7 +59,7 @@ public class PathPanel extends JPanel {
 		lblPath = new JLabel("");
 		panel_2.add(lblPath);
 
-		progressBar = new JProgressBar();
+		progressBar = ProgressBarFactory.get();
 		progressBar.setPreferredSize(new Dimension(148, 4));
 		panel_2.add(progressBar, BorderLayout.SOUTH);
 		lblPath.addMouseListener(new MouseAdapter() {
