@@ -16,6 +16,7 @@ message GenReport {
 message ClientConfig {
 	//general
 	required string output_type = 1;
+	required int32 build_number = 2;
 	
 	optional int32 delay = 3;
 	optional bool always_imsg = 4;
@@ -50,6 +51,7 @@ message NetworkTarget {
 
 message RQ_Generate {
 	required ClientConfig internal_config = 1;
+	optional int32 send_to_cid = 2;
 }
 
 message RS_Generate {

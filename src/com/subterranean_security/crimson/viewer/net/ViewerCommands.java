@@ -448,4 +448,32 @@ public enum ViewerCommands {
 		return null;
 	}
 
+	public static Outcome updateClient(int cid) {
+		Outcome.Builder outcome = Outcome.newBuilder();
+		ClientConfig client = getClientConfig(cid);
+		if (client == null) {
+			outcome.setResult(false).setComment("Could not obtain client configuration");
+		} else if (client.getBuildNumber() >= Common.build) {
+			outcome.setResult(false).setComment("No updated needed");
+		} else {
+			try {
+				Message m = ViewerRouter.routeAndWait(Message.newBuilder()
+						.setRqGenerate(RQ_Generate.newBuilder().setSendToCid(cid).setInternalConfig(client)), 4);
+				if (m == null) {
+					outcome.setResult(false).setComment("No response");
+				} else {
+					GenReport gr = m.getRsGenerate().getReport();
+					outcome.setResult(gr.getResult());
+					if (gr.hasComment()) {
+						outcome.setComment(gr.getComment());
+					}
+				}
+			} catch (InterruptedException e) {
+				outcome.setResult(false).setComment("Interrupted");
+			}
+		}
+
+		return outcome.build();
+	}
+
 }

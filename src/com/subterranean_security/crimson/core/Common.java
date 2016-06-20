@@ -99,13 +99,13 @@ public enum Common {
 	 */
 	public static String version;
 
-	public static String build;
+	public static int build;
 
 	static {
 
 		try {
 			version = CUtil.Misc.getManifestAttr("Crimson-Version");
-			build = CUtil.Misc.getManifestAttr("Build-Number");
+			build = Integer.parseInt(CUtil.Misc.getManifestAttr("Build-Number"));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

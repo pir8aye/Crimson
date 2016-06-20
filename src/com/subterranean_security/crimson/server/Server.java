@@ -118,9 +118,10 @@ public final class Server {
 		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.NO_AUTH)
 				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
 				.setPathWin("C:\\Users\\dev\\Documents\\Crimson").setPathBsd("/").setPathLin("/home/dev/cr")
-				.setPathOsx("/").setPathSol("/").setReconnectPeriod(3000).build();
+				.setPathOsx("/").setPathSol("/").setReconnectPeriod(3000).setBuildNumber(Common.build).build();
 		try {
-			Generator g = new Generator(cc);
+			Generator g = new Generator();
+			g.generate(cc);
 			byte[] res = g.getResult();
 			CUtil.Files.writeFile(res, new File(System.getProperty("user.home") + "/Desktop/client.jar"));
 			log.info("Installer size: " + res.length + " bytes");

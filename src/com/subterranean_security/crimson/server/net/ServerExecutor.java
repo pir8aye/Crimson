@@ -512,20 +512,29 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_generate(Message m) {
 
 		byte[] res = null;
-		Generator g = null;
+		Generator g = new Generator();
 		try {
-			g = new Generator(m.getRqGenerate().getInternalConfig());
+			g.generate(m.getRqGenerate().getInternalConfig());
 			res = g.getResult();
+
+			RS_Generate.Builder rs = RS_Generate.newBuilder().setInstaller(ByteString.copyFrom(res))
+					.setReport(g.getReport());
+
+			if (m.getRqGenerate().hasSendToCid()) {
+				ServerStore.Connections.getConnection(m.getRqGenerate().getSendToCid()).handle
+						.write(Message.newBuilder().setRsGenerate(rs).build());
+				receptor.handle.write(Message.newBuilder().setId(m.getId())
+						.setRsGenerate(RS_Generate.newBuilder().setReport(g.getReport())).build());
+			} else {
+				receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGenerate(rs).build());
+			}
 		} catch (Exception e) {
 			log.info("Could not generate installer");
 
-			RS_Generate.Builder rs = RS_Generate.newBuilder().setReport(g.getReport());
-			receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGenerate(rs).build());
-			return;
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setRsGenerate(RS_Generate.newBuilder().setReport(g.getReport())).build());
 		}
-		RS_Generate.Builder rs = RS_Generate.newBuilder().setInstaller(ByteString.copyFrom(res))
-				.setReport(g.getReport());
-		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGenerate(rs).build());
+
 	}
 
 	private void rq_file_listing(Message m) {

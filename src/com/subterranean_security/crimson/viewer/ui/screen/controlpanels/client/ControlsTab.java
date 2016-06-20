@@ -24,11 +24,13 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
@@ -38,6 +40,7 @@ import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 
 public class ControlsTab extends JPanel implements CPPanel {
 
@@ -52,11 +55,14 @@ public class ControlsTab extends JPanel implements CPPanel {
 	private JButton btnHibernate;
 	private JButton btnUninstall;
 
+	private JButton btnUpdate;
+
 	public ControlsTab(ClientProfile profile, Console console) {
 		this.profile = profile;
 		this.console = console;
 
 		init();
+		refreshControls();
 	}
 
 	public void setControlsEnabled(boolean e) {
@@ -65,6 +71,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 		btnStandby.setEnabled(e);
 		btnHibernate.setEnabled(e);
 		btnUninstall.setEnabled(e);
+		btnUpdate.setEnabled(e);
 
 	}
 
@@ -249,12 +256,42 @@ public class ControlsTab extends JPanel implements CPPanel {
 		btnRelocate.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_4.add(btnRelocate);
 
-		JButton btnUpdate = new JButton("Update");
-		btnUpdate.setEnabled(false);
-		btnUpdate.setIcon(UIUtil.getIcon("icons16/general/upload_for_cloud.png"));
+		btnUpdate = new JButton("Update");
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setControlsEnabled(false);
+				new SwingWorker<Outcome, Void>() {
+
+					@Override
+					protected Outcome doInBackground() throws Exception {
+						return ViewerCommands.updateClient(profile.getCvid());
+					}
+
+					protected void done() {
+						try {
+							Outcome outcome = get();
+							if (!outcome.getResult()) {
+								console.addLine("Update failed: " + outcome.getComment(), LineType.ORANGE);
+							}
+						} catch (InterruptedException | ExecutionException e) {
+							console.addLine("Update failed: " + e.getMessage(), LineType.ORANGE);
+						}
+
+						setControlsEnabled(true);
+					};
+
+				}.execute();
+
+			}
+		});
+		btnUpdate.setIcon(UIUtil.getIcon("icons16/general/update.png"));
 		btnUpdate.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_4.add(btnUpdate);
 
+	}
+
+	public void refreshControls() {
+		// refresh update
 	}
 
 }

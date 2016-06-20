@@ -43,8 +43,13 @@ public class Generator {
 	public GenReport getReport() {
 		return report.build();
 	}
+	
+	public Generator() {
+		
+	}
+	
 
-	public Generator(ClientConfig config) throws Exception {
+	public void generate(ClientConfig config) throws Exception {
 
 		String output = config.getOutputType().toLowerCase();
 		if (output.endsWith("(.jar)")) {

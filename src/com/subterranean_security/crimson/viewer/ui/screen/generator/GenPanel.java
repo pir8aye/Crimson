@@ -746,6 +746,7 @@ public class GenPanel extends JPanel {
 
 		ClientConfig.Builder ic = ClientConfig.newBuilder();
 
+		ic.setBuildNumber(Common.build);
 		ic.setViewerUser(ViewerStore.Profiles.vp.getUser());
 		ic.setOutputType((String) type_comboBox.getSelectedItem());
 		ic.setDelay((int) fld_delay.getValue());

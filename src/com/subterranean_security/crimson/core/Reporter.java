@@ -54,7 +54,7 @@ public class Reporter {
 		MI_Report.Builder rb = MI_Report.newBuilder();
 		rb.setInitDate(new Date().getTime());
 		rb.setCrVersion(Common.version);
-		rb.setCrBuild(Common.build);
+		rb.setCrBuild("" + Common.build);
 		rb.setJreVersion(Platform.Advanced.getJavaVersion());
 		rb.setInstance(Common.instance.toString());
 		rb.setOsFamily(Platform.osFamily.toString());
