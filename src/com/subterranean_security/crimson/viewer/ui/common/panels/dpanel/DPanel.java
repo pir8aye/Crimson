@@ -49,8 +49,8 @@ public class DPanel extends SLPanel {
 	private MovingPanel movingMain;
 
 	public Detail detail = new Detail();
-	public static boolean showing = false;
-	public static boolean moving = false;
+	public boolean showing = false;
+	public boolean moving = false;
 
 	public DPanel(JPanel main) {
 		thisDP = this;

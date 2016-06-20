@@ -72,7 +72,7 @@ public class HostList extends JPanel {
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (DPanel.moving) {
+				if (MainFrame.main.dp.moving) {
 					return;
 				}
 
