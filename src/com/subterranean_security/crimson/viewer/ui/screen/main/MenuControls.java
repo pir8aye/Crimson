@@ -356,11 +356,13 @@ public class MenuControls extends JPanel {
 		JButton btnConsole = new JButton("Console");
 		btnConsole.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				btnConsole.setSelected(!btnConsole.isSelected());
-				if (btnConsole.isSelected()) {
-					MainFrame.main.panel.openConsole();
-				} else {
-					MainFrame.main.panel.closeConsole();
+				if (!MainFrame.main.ep.isMoving()) {
+					btnConsole.setSelected(!btnConsole.isSelected());
+					if (btnConsole.isSelected()) {
+						MainFrame.main.panel.openConsole();
+					} else {
+						MainFrame.main.panel.closeConsole();
+					}
 				}
 
 			}

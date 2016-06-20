@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer.ui.common.panels.epanel;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
@@ -45,8 +46,9 @@ public class EPanel extends SLPanel {
 	private ENote note = new ENote();
 
 	private boolean open = false;
+	private boolean moving = false;
 
-	private int timeout = 900;
+	private int transitionTime = 900;
 
 	public EPanel(JPanel main) {
 		thisNP = this;
@@ -63,79 +65,82 @@ public class EPanel extends SLPanel {
 
 	}
 
-	public synchronized boolean isOpen() {
+	public boolean isOpen() {
 		return open;
 	}
 
-	private JPanel last = null;
+	public boolean isMoving() {
+		return moving;
+	}
 
-	public synchronized void raise(JPanel panel, int height) {
-		if (panel.equals(last)) {
+	public void raise(JPanel panel, int height) {
+
+		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+		raise(panel);
+
+	}
+
+	public void raise(JPanel panel, float height) {
+		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+		raise(panel);
+	}
+
+	private JPanel panel;
+
+	private void raise(JPanel panel) {
+		if (moving) {
 			return;
-		} else {
-			last = panel;
 		}
+
+		this.panel = panel;
 
 		if (isOpen()) {
 			drop();
-			try {
-				Thread.sleep(timeout);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			new WaitAndRaise().execute();
+		} else {
+			open = true;
+			note.setPanel(panel);
 
-		}
-
-		open = true;
-		note.setPanel(panel);
-		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
-
-		movingMain.runAction();
-		try {
-			Thread.sleep(timeout);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			moving = true;
+			movingMain.runAction();
+			new EndMotion().execute();
 		}
 
 	}
 
-	public synchronized void raise(JPanel panel, float height) {
-		if (panel.equals(last)) {
-			return;
-		} else {
-			last = panel;
+	class WaitAndRaise extends SwingWorker<Void, Void> {
+		protected Void doInBackground() throws Exception {
+
+			Thread.sleep(transitionTime);
+			return null;
 		}
 
-		if (isOpen()) {
-			drop();
-			try {
-				Thread.sleep(timeout);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		protected void done() {
+			open = true;
+			note.setPanel(panel);
 
+			moving = true;
+			movingMain.runAction();
+			new EndMotion().execute();
 		}
-
-		open = true;
-		note.setPanel(panel);
-		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
-
-		movingMain.runAction();
-		try {
-			Thread.sleep(timeout);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
-	public synchronized void drop() {
+	class EndMotion extends SwingWorker<Void, Void> {
+		protected Void doInBackground() throws Exception {
+			moving = true;
+			Thread.sleep(transitionTime);
+			return null;
+		}
+
+		protected void done() {
+			moving = false;
+		}
+	}
+
+	public void drop() {
 		if (isOpen()) {
 			movingMain.runAction();
+			new EndMotion().execute();
 			open = false;
 		}
 	}
@@ -143,8 +148,8 @@ public class EPanel extends SLPanel {
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
-			thisNP.createTransition().push(new SLKeyframe(pos2, timeout / 1000f).setStartSide(SLSide.BOTTOM, movingBar)
-					.setCallback(new SLKeyframe.Callback() {
+			thisNP.createTransition().push(new SLKeyframe(pos2, transitionTime / 1000f)
+					.setStartSide(SLSide.BOTTOM, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							movingMain.setAction(actionDN);
@@ -157,8 +162,8 @@ public class EPanel extends SLPanel {
 	private final Runnable actionDN = new Runnable() {
 		@Override
 		public void run() {
-			thisNP.createTransition().push(new SLKeyframe(pos1, timeout / 1000f).setEndSide(SLSide.BOTTOM, movingBar)
-					.setCallback(new SLKeyframe.Callback() {
+			thisNP.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
+					.setEndSide(SLSide.BOTTOM, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							movingMain.setAction(actionUP);
