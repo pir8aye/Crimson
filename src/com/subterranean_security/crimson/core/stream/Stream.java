@@ -60,8 +60,8 @@ public abstract class Stream {
 	}
 
 	public void stop() {
-		ViewerRouter.route(
-				Message.newBuilder().setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
+		ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
+				.setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
 
 	}
 
