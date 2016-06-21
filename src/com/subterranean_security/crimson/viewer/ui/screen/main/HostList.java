@@ -21,7 +21,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -31,6 +33,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -42,6 +45,7 @@ import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 
 public class HostList extends JPanel {
@@ -146,6 +150,36 @@ public class HostList extends JPanel {
 
 		screenshot = new JMenuItem("Screenshot");
 		screenshot.setIcon(UIUtil.getIcon("icons16/general/picture.png"));
+		screenshot.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				new SwingWorker<Outcome, Void>() {
+
+					@Override
+					protected Outcome doInBackground() throws Exception {
+						return ViewerCommands.quickScreenshot(selected.getCvid());
+					}
+
+					protected void done() {
+						try {
+							Outcome outcome = get();
+							if (outcome.getResult()) {
+								MainFrame.main.panel.console.addLine("Saved screenshot: " + outcome.getComment(),
+										LineType.GREEN);
+							} else {
+								MainFrame.main.panel.console.addLine("Failed to capture screen", LineType.ORANGE);
+							}
+
+						} catch (InterruptedException | ExecutionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					};
+
+				}.execute();
+			}
+		});
 		quick.add(screenshot);
 
 		JMenu state = new JMenu("Change State");

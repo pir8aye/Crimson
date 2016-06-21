@@ -17,10 +17,10 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.imageio.ImageIO;
@@ -481,22 +481,29 @@ public enum ViewerCommands {
 		return outcome.build();
 	}
 
-	public static BufferedImage quickScreenshot(int cid) {
+	private static SimpleDateFormat screenshotDate = new SimpleDateFormat("YYYY-MM-dd hh.mm.ss");
+
+	public static Outcome quickScreenshot(int cid) {
+		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
-					.setRqQuickScreenshot(RQ_QuickScreenshot.newBuilder()), 5);
+					.setRqQuickScreenshot(RQ_QuickScreenshot.newBuilder()), 3);
+			File file = new File(
+					System.getProperty("user.home") + "/Crimson/" + screenshotDate.format(new Date()) + ".jpg");
+			file.getParentFile().mkdirs();
 			if (m != null) {
-				return ImageIO.read(new ByteArrayInputStream(m.getRsQuickScreenshot().getBin().toByteArray()));
+				outcome.setComment(file.getAbsolutePath());
+				CUtil.Files.writeFile(m.getRsQuickScreenshot().getBin().toByteArray(), file);
+				outcome.setResult(file.exists());
+
 			}
 
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			outcome.setResult(false).setComment("Error: Interrupted");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			outcome.setResult(false).setComment("Error: " + e.getMessage());
 		}
-		return null;
+		return outcome.build();
 	}
 
 }
