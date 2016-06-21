@@ -59,7 +59,7 @@ public class Notification extends JPanel {
 	public void set(String type, String string, String subtext, Runnable r) {
 		this.subtext.setText(subtext);
 
-		text.setText(string.substring(string.indexOf(':') + 1));
+		text.setText(string);
 		this.r = r;
 
 		switch (type) {
