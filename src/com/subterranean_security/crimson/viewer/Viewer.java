@@ -22,6 +22,9 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,24 +129,7 @@ public class Viewer {
 		// Show the main interface
 		MainFrame.main.setVisible(true);
 		MainFrame.main.setLocationRelativeTo(null);
-
-		new Thread(new Runnable() {
-			public void run() {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				if (ViewerStore.Profiles.vp.getLastLoginIp() != null) {
-					MainFrame.main.np.addNote("info",
-							"Last Login at " + ViewerStore.Profiles.vp.getLastLoginTime().toString() + " from "
-									+ ViewerStore.Profiles.vp.getLastLoginIp());
-				}
-
-			}
-		}).start();
+		MainFrame.main.invokeAfterload();
 
 	}
 

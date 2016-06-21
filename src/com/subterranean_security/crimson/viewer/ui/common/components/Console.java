@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.viewer.ui.common.components;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,6 +60,8 @@ public class Console extends JPanel {
 		txtpndateLoadedConsole.setForeground(Color.WHITE);
 		txtpndateLoadedConsole.setBackground(Color.DARK_GRAY);
 		jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		jsp.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
 		add(jsp, BorderLayout.CENTER);
 
 		blueStyle = txtpndateLoadedConsole.addStyle("blueConsoleStyle", null);

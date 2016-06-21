@@ -24,6 +24,8 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
@@ -114,5 +116,36 @@ public class MainFrame extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void invokeAfterload() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				MainFrame.main.panel.openConsole();
+			}
+		});
+
+		new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				try {
+					Thread.sleep(800);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+			protected void done() {
+				if (ViewerStore.Profiles.vp.getLastLoginIp() != null) {
+					MainFrame.main.np.addNote("info",
+							"Last Login at " + ViewerStore.Profiles.vp.getLastLoginTime().toString() + " from "
+									+ ViewerStore.Profiles.vp.getLastLoginIp());
+				}
+			};
+
+		}.execute();
 	}
 }
