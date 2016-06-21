@@ -1,0 +1,8 @@
+package com.subterranean_security.crimson.core.proto;
+
+message RQ_QuickScreenshot {
+}
+
+message RS_QuickScreenshot {
+	required bytes bin = 1;
+}

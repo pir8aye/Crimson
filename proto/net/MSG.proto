@@ -13,6 +13,7 @@ import "net/sequences/Listener.proto";
 import "net/sequences/Users.proto";
 import "net/sequences/Update.proto";
 import "net/sequences/State.proto";
+import "net/sequences/Screenshot.proto";
 
 message Message {
 	optional bool urgent = 1;
@@ -63,6 +64,8 @@ message Message {
 	optional RS_RemoveAuthMethod rs_remove_auth_method = 133;
 	optional RQ_GetClientConfig rq_get_client_config = 134;
 	optional RS_GetClientConfig rs_get_client_config = 135;
+	optional RQ_QuickScreenshot rq_quick_screenshot = 136;
+	optional RS_QuickScreenshot rs_quick_screenshot = 137;
 
 	optional MI_TriggerProfileDelta mi_trigger_profile_delta = 199;
 	optional MI_StreamStart mi_stream_start = 200;

