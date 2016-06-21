@@ -133,11 +133,11 @@ public class GenPanel extends JPanel {
 		optab.setLayout(new BoxLayout(optab, BoxLayout.Y_AXIS));
 
 		JPanel panel_3 = new JPanel();
-		panel_3.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Generation Type",
-				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+
 		optab.add(panel_3);
 
 		type_comboBox = new JComboBox<String>();
+		type_comboBox.setEnabled(false);
 		type_comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				switch ((String) type_comboBox.getSelectedItem()) {
@@ -182,68 +182,10 @@ public class GenPanel extends JPanel {
 		panel_100.add(Box.createVerticalStrut(5), BorderLayout.NORTH);
 		panel_3.add(Box.createHorizontalStrut(5), BorderLayout.EAST);
 		panel_3.add(Box.createHorizontalStrut(5), BorderLayout.WEST);
-		panel_3.add(Box.createVerticalStrut(5), BorderLayout.SOUTH);
-
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(
-				new TitledBorder(null, "Optional Information", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		optab.add(panel_1);
-		panel_1.setLayout(new BorderLayout(0, 0));
-
-		JPanel panel_15 = new JPanel();
-
-		panel_1.add(panel_15, BorderLayout.CENTER);
-		panel_15.setLayout(new BorderLayout(0, 0));
-
-		JLabel lblInstallMessage = new JLabel("Install Message:");
-		panel_15.add(lblInstallMessage, BorderLayout.WEST);
-		lblInstallMessage.setFont(new Font("Dialog", Font.BOLD, 10));
-
-		JScrollPane scrollPane = new JScrollPane();
-		panel_15.add(scrollPane, BorderLayout.EAST);
-		panel_15.add(Box.createVerticalStrut(5), BorderLayout.NORTH);
-		panel_15.add(Box.createVerticalStrut(5), BorderLayout.SOUTH);
-
-		fld_install_message = new JTextArea();
-		fld_install_message.setColumns(25);
-		fld_install_message.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				lbl_status.setInfo("a message to be displayed on client installation");
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				lbl_status.setInfo(defaultHint);
-			}
-		});
-		fld_install_message.setLineWrap(true);
-		fld_install_message.setWrapStyleWord(true);
-		fld_install_message.setFont(new Font("Dialog", Font.PLAIN, 10));
-		scrollPane.setViewportView(fld_install_message);
-
-		JPanel panel_16 = new JPanel();
-		panel_1.add(panel_16, BorderLayout.NORTH);
-		panel_16.setLayout(new BorderLayout(0, 0));
-
-		JLabel lblIdentifier = new JLabel("Identifier:");
-		lblIdentifier.setFont(new Font("Dialog", Font.BOLD, 10));
-		panel_16.add(lblIdentifier, BorderLayout.WEST);
-
-		textField = new JTextField();
-		panel_16.add(textField, BorderLayout.EAST);
-		textField.setColumns(15);
-
-		etab = new JPanel();
-		tabbedPane.addTab(null, etab);
-		tabbedPane.setTabComponentAt(1, new GenTabComponent("checkerboard", "Execution"));
-		etab.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setPreferredSize(new Dimension(300, 60));
-		panel_2.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Platforms", TitledBorder.LEADING,
-				TitledBorder.TOP, null, new Color(51, 51, 51)));
-		etab.add(panel_2);
+		panel_2.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Platform Compatibility", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		panel_2.setLayout(null);
 
 		lblWindows = new JLabel("Windows");
@@ -276,15 +218,72 @@ public class GenPanel extends JPanel {
 		lblAndroid.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblAndroid.setBounds(214, 37, 70, 15);
 		panel_2.add(lblAndroid);
+		panel_3.add(panel_2, BorderLayout.SOUTH);
+
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(
+				new TitledBorder(null, "Optional Information", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		optab.add(panel_1);
+		panel_1.setLayout(new BorderLayout(0, 0));
+
+		JPanel panel_15 = new JPanel();
+
+		panel_1.add(panel_15, BorderLayout.CENTER);
+		panel_15.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblInstallMessage = new JLabel("Install Message:");
+		lblInstallMessage.setVerticalAlignment(SwingConstants.TOP);
+		panel_15.add(lblInstallMessage, BorderLayout.WEST);
+		lblInstallMessage.setFont(new Font("Dialog", Font.BOLD, 10));
+
+		JScrollPane scrollPane = new JScrollPane();
+		panel_15.add(scrollPane, BorderLayout.EAST);
+		panel_15.add(Box.createVerticalStrut(5), BorderLayout.NORTH);
+		panel_15.add(Box.createVerticalStrut(5), BorderLayout.SOUTH);
+
+		fld_install_message = new JTextArea();
+		fld_install_message.setColumns(20);
+		fld_install_message.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lbl_status.setInfo("a message to be displayed on client installation");
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lbl_status.setInfo(defaultHint);
+			}
+		});
+		fld_install_message.setLineWrap(true);
+		fld_install_message.setWrapStyleWord(true);
+		fld_install_message.setFont(new Font("Dialog", Font.PLAIN, 10));
+		scrollPane.setViewportView(fld_install_message);
+
+		JPanel panel_16 = new JPanel();
+		panel_1.add(panel_16, BorderLayout.NORTH);
+		panel_16.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblIdentifier = new JLabel("Client Identifier:");
+		lblIdentifier.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel_16.add(lblIdentifier, BorderLayout.WEST);
+
+		textField = new JTextField();
+		panel_16.add(textField, BorderLayout.EAST);
+		textField.setColumns(15);
+
+		etab = new JPanel();
+		tabbedPane.addTab(null, etab);
+		tabbedPane.setTabComponentAt(1, new GenTabComponent("checkerboard", "Execution"));
+		etab.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JPanel panel_7 = new JPanel();
-		panel_7.setPreferredSize(new Dimension(300, 180));
+		panel_7.setPreferredSize(new Dimension(330, 100));
 		panel_7.setBorder(new TitledBorder(null, "Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		etab.add(panel_7);
 		panel_7.setLayout(null);
 
 		JLabel lblDelay = new JLabel("Execution delay:");
-		lblDelay.setFont(new Font("Dialog", Font.BOLD, 11));
+		lblDelay.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblDelay.setBounds(12, 20, 126, 15);
 		panel_7.add(lblDelay);
 
@@ -294,7 +293,7 @@ public class GenPanel extends JPanel {
 		panel_7.add(fld_delay);
 
 		JLabel lblSeconds = new JLabel("seconds");
-		lblSeconds.setFont(new Font("Dialog", Font.BOLD, 11));
+		lblSeconds.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblSeconds.setBounds(229, 20, 57, 15);
 		panel_7.add(lblSeconds);
 
@@ -853,7 +852,7 @@ public class GenPanel extends JPanel {
 	private void changeToJar() {
 
 		txt_output_desc.setText(
-				"A jar file installer can install Crimson on Windows, OS X, Linux, BSD, and Solaris machines, and is the most popular way to install Crimson.  Java 1.8 or greater is required before installation.");
+				"The jar file installer works on many platforms and is the most popular way to install Crimson on clients.  Java 1.8 or greater is required before installation.");
 
 		fld_install_bsd.setEnabled(true);
 
@@ -868,7 +867,7 @@ public class GenPanel extends JPanel {
 	private void changeToExe() {
 
 		txt_output_desc.setText(
-				"An executable installer can install Crimson on Windows machines only.  Java is NOT required before installation.");
+				"The executable installer can install Crimson on Windows machines only.  Java is NOT required before installation.");
 
 		fld_install_bsd.setEnabled(false);
 
@@ -882,7 +881,7 @@ public class GenPanel extends JPanel {
 
 	private void changeToApk() {
 
-		txt_output_desc.setText("An Android installer can install Crimson on Android devices version 2.2 and up.");
+		txt_output_desc.setText("The Android installer can install Crimson on Android devices version 2.2 and up.");
 
 		fld_install_bsd.setEnabled(false);
 
