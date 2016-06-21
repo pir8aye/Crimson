@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.common.components;
 
+import java.awt.Color;
+
 import javax.swing.JProgressBar;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
@@ -33,6 +35,7 @@ public class ProgressBarFactory {
 		case OSX:
 		case SOL:
 			JProgressBar jp = new JProgressBar();
+			jp.setForeground(new Color(255, 191, 0));
 			return jp;
 		case WIN:
 			LookAndFeel previousLF = UIManager.getLookAndFeel();
