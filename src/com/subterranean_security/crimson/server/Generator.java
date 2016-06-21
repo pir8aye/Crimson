@@ -43,18 +43,21 @@ public class Generator {
 	public GenReport getReport() {
 		return report.build();
 	}
-	
+
 	public Generator() {
-		
+
 	}
-	
 
 	public void generate(ClientConfig config) throws Exception {
+		generate(config, 0);
+	}
+
+	public void generate(ClientConfig config, int cvid) throws Exception {
 
 		String output = config.getOutputType().toLowerCase();
 		if (output.endsWith("(.jar)")) {
 
-			report = genJar(config).setOutputType("Runnable Java Archive");
+			report = genJar(config, cvid).setOutputType("Runnable Java Archive");
 
 		} else if (output.endsWith("(.exe)")) {
 
@@ -70,7 +73,7 @@ public class Generator {
 		return CUtil.Files.readFile(new File(temp.getAbsolutePath() + "/installer.jar"));
 	}
 
-	private GenReport.Builder genJar(ClientConfig ic) throws IOException {
+	private GenReport.Builder genJar(ClientConfig ic, int cvid) throws IOException {
 		GenReport.Builder gReport = GenReport.newBuilder();
 		Date start = new Date();
 		log.debug("Generating jar installer (auth.type: {}, net.period: {})", ic.getAuthType().toString(),
@@ -96,7 +99,7 @@ public class Generator {
 		// create a database for the client
 		try {
 			ClientDB database = new ClientDB(clientDB);
-			database.storeObject("cvid", 0);
+			database.storeObject("cvid", cvid);
 			database.storeObject("ic", new String(B64.encode(ic.toByteArray())));
 
 			database.close();

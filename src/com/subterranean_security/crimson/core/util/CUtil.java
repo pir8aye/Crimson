@@ -506,7 +506,7 @@ public enum CUtil {
 			case SOL:
 			case BSD:
 			case LIN:
-				command = "nohup " + c;
+				command = "nohup " + c + " &";
 				break;
 			case OSX:
 				break;

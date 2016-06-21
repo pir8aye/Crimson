@@ -29,6 +29,7 @@ import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.Platform.OSFAMILY;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
@@ -278,12 +279,17 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void rs_generate(Message m) {
+		// TODO flush any pending data
+
 		// update client
 		File temp = CUtil.Files.Temp.getDir();
 		try {
 			CUtil.Files.writeFile(m.getRsGenerate().getInstaller().toByteArray(),
 					new File(temp.getAbsolutePath() + "/installer.jar"));
-			CUtil.Misc.runBackgroundCommand("java -jar \"" + temp.getAbsolutePath() + "/installer.jar\"");
+			CUtil.Misc.runBackgroundCommand(
+					((Platform.osFamily == OSFAMILY.WIN && !Common.isDebugMode()) ? "javaw" : "java") + " -jar \""
+							+ temp.getAbsolutePath() + "/installer.jar\" update");
+			System.exit(0);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

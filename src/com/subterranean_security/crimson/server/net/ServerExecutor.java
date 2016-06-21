@@ -514,7 +514,12 @@ public class ServerExecutor extends BasicExecutor {
 		byte[] res = null;
 		Generator g = new Generator();
 		try {
-			g.generate(m.getRqGenerate().getInternalConfig());
+			if (m.getRqGenerate().hasSendToCid()) {
+				g.generate(m.getRqGenerate().getInternalConfig(), m.getRqGenerate().getSendToCid());
+			} else {
+				g.generate(m.getRqGenerate().getInternalConfig());
+			}
+
 			res = g.getResult();
 
 			RS_Generate.Builder rs = RS_Generate.newBuilder().setInstaller(ByteString.copyFrom(res))

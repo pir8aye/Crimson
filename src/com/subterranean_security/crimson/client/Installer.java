@@ -46,6 +46,16 @@ public class Installer {
 			System.exit(1);
 		}
 
+		if (args.length > 0) {
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
 		if (isInstalled()) {
 			Client.main(args);
 			return;
@@ -129,6 +139,9 @@ public class Installer {
 
 	public static boolean install(String base) {
 		System.out.println("Starting installation");
+
+		CUtil.Files.delete(base);
+
 		if (!(new File(base)).mkdirs()) {
 			System.out.println("Failed to create install base");
 			return false;
@@ -154,7 +167,8 @@ public class Installer {
 		}
 
 		System.out.println("Extracting client database");
-		CUtil.Files.extract("com/subterranean_security/crimson/client/res/bin/client.db", base + "var/client.db");
+		File db = new File(base + "var/client.db");
+		CUtil.Files.extract("com/subterranean_security/crimson/client/res/bin/client.db", db.getAbsolutePath());
 
 		System.out.println("Copying client jar");
 		File client = new File(base + "/client.jar");
