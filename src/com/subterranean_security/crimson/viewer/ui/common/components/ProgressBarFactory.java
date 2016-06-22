@@ -35,7 +35,6 @@ public class ProgressBarFactory {
 		case OSX:
 		case SOL:
 			JProgressBar jp = new JProgressBar();
-			jp.setForeground(new Color(255, 191, 0));
 			return jp;
 		case WIN:
 			LookAndFeel previousLF = UIManager.getLookAndFeel();
@@ -47,6 +46,7 @@ public class ProgressBarFactory {
 				e.printStackTrace();
 			}
 			JProgressBar jpwin = new JProgressBar();
+			jpwin.setForeground(new Color(0, 204, 204));
 			try {
 				UIManager.setLookAndFeel(previousLF);
 			} catch (UnsupportedLookAndFeelException e) {
