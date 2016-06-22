@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -109,6 +110,8 @@ public final class Server {
 				}
 
 			}
+		} catch (NoSuchElementException e) {
+			// ignore because server is probably shutting down
 		}
 
 	}
