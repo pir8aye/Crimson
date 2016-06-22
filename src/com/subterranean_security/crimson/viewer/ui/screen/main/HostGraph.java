@@ -23,16 +23,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map.Entry;
 
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxConstants;
 import com.mxgraph.view.mxGraph;
+import com.mxgraph.view.mxStylesheet;
 import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public class HostGraph extends JPanel implements MouseWheelListener {
 
@@ -46,17 +48,28 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 	public HashMap<Object, Integer> vertices = new HashMap<Object, Integer>();
 
 	public HostGraph() {
+		init();
+		addInitialClients();
+	}
+
+	public void init() {
 
 		// insert server
 		try {
 			graph.getModel().beginUpdate();
+
+			mxStylesheet stylesheet = graph.getStylesheet();
+			Hashtable<String, Object> style = new Hashtable<String, Object>();
+			style.put(mxConstants.STYLE_FONTCOLOR, "#774400");
+			stylesheet.putCellStyle("style", style);
+
 			graph.setCellsEditable(false);
 			graph.setCellsResizable(false);
 			graph.setAllowDanglingEdges(false);
 			graph.setConnectableEdges(false);
 			graph.setAllowNegativeCoordinates(false);
 			serverVertex = graph.insertVertex(parent, null, "\n\n\nServer", 260, 135, 80, 30,
-					"shape=image;image=/com/subterranean_security/crimson/viewer/ui/res/image/icons16/server.png");
+					"shape=image;image=/com/subterranean_security/crimson/viewer/ui/res/image/icons32/general/server.png");
 
 		} finally {
 			graph.getModel().endUpdate();
@@ -74,35 +87,17 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 				if (cell != null && cell != serverVertex) {
 
-					// get client id
-					int id = vertices.get(cell);
-					ClientProfile selected = null;
+					// get profile
+					ClientProfile selected = ViewerStore.Profiles.getClient(vertices.get(cell));
 
 					if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
 
-						JPopupMenu popup = new JPopupMenu();
-						JMenuItem control = new JMenuItem();
-						control.setText("Control Panel");
-						control.addMouseListener(new MouseAdapter() {
-							@Override
-							public void mousePressed(MouseEvent e) {
-
-								new Thread() {
-									public void run() {
-
-										// open cp
-									}
-								}.start();
-							}
-
-						});
 						// select the cell
 						graph.setSelectionCell(cell);
 
-						popup.add(control);
-						popup.show(graphComponent, e.getX(), e.getY());
+						ContextMenu.getMenu(selected, "graph").show(graphComponent, e.getX(), e.getY());
 
-					} else {
+					} else if (e.getButton() == java.awt.event.MouseEvent.BUTTON1) {
 						// left click
 						MainFrame.main.dp.showDetail(selected);
 					}
@@ -116,12 +111,26 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 	}
 
+	private void addInitialClients() {
+		for (int i = 0; i < ViewerStore.Profiles.clients.size(); i++) {
+			addClient(ViewerStore.Profiles.clients.get(i));
+		}
+
+	}
+
 	public void addClient(ClientProfile p) {
+		for (Object o : vertices.keySet()) {
+			if (vertices.get(o) == p.getCvid()) {
+				// TODO
+				return;
+			}
+		}
+
 		// generate coordinates for the new vertex
 		int xMin = 0;
-		int xMax = 600;
+		int xMax = this.getWidth();
 		int yMin = 0;
-		int yMax = 300;
+		int yMax = this.getHeight();
 		int x = 0;
 		int y = 0;
 
@@ -196,7 +205,8 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		try {
 
 			Object v = graph.insertVertex(parent, null, "\n\n\n" + text, x, y, 80, 30,
-					"shape=image;image=/com/subterranean_security/crimson/viewer/ui/res/image/icons16/viewer.png");
+					"shape=image;image=/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
+							+ p.getOsName().replaceAll(" ", "_").toLowerCase() + ".png");
 			vertices.put(v, p.getCvid());
 
 			graph.insertEdge(parent, null, "", serverVertex, v);
@@ -206,7 +216,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		}
 	}
 
-	public void removeConnection(ClientProfile p) {
+	public void removeClient(ClientProfile p) {
 		if (p == null) {
 			return;
 		}

@@ -191,9 +191,15 @@ public enum ViewerStore {
 			}
 
 			if (cp.getOnline()) {
-				MainFrame.main.panel.list.addOrUpdate(cp);
+				if (MainFrame.main.panel.listLoaded)
+					MainFrame.main.panel.list.addOrUpdate(cp);
+				if (MainFrame.main.panel.graphLoaded)
+					MainFrame.main.panel.graph.addClient(cp);
 			} else {
-				MainFrame.main.panel.list.removeClient(cp);
+				if (MainFrame.main.panel.listLoaded)
+					MainFrame.main.panel.list.removeClient(cp);
+				if (MainFrame.main.panel.graphLoaded)
+					MainFrame.main.panel.graph.removeClient(cp);
 			}
 
 		}

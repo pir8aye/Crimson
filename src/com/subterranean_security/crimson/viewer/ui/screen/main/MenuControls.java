@@ -65,8 +65,22 @@ public class MenuControls extends JPanel {
 	private JButton btnStopServer;
 	private JLabel valIp;
 	private JLabel valUsername;
+	private JToggleButton tglbtnList;
+	private JToggleButton tglbtnGraph;
 
 	public MenuControls() {
+		init();
+		String view = null;
+		try {
+			view = ViewerStore.Databases.local.getString("view.last");
+		} catch (Exception e1) {
+			view = "list";
+		}
+		tglbtnList.setSelected(view.equals("list"));
+		tglbtnGraph.setSelected(view.equals("graph"));
+	}
+
+	public void init() {
 		mc = this;
 		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		setSize(new Dimension(400, 240));
@@ -310,34 +324,28 @@ public class MenuControls extends JPanel {
 		panel.add(panel_4);
 		panel_4.setLayout(null);
 
-		final JToggleButton tglbtnList = new JToggleButton("Host List");
+		tglbtnList = new JToggleButton("Host List");
 		tglbtnList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				MainFrame.main.panel.switchToList();
+				MainFrame.main.mm.closeControls();
 			}
 		});
-		String view = null;
-		try {
-			view = ViewerStore.Databases.local.getString("view.last");
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
-		tglbtnList.setSelected(view.equals("list"));
 		tglbtnList.setFont(new Font("Dialog", Font.BOLD, 10));
 		tglbtnList.setMargin(new Insets(2, 4, 2, 4));
 		tglbtnList.setBounds(12, 20, 88, 20);
 		panel_4.add(tglbtnList);
 
-		final JToggleButton tglbtnGraph = new JToggleButton("Host Graph");
+		tglbtnGraph = new JToggleButton("Host Graph");
 		tglbtnGraph.setMargin(new Insets(2, 4, 2, 4));
 		tglbtnGraph.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MainFrame.main.panel.switchToGraph();
+				MainFrame.main.mm.closeControls();
 			}
 		});
-		tglbtnGraph.setSelected(view.equals("graph"));
+
 		tglbtnGraph.setFont(new Font("Dialog", Font.BOLD, 10));
 		tglbtnGraph.setBounds(100, 20, 88, 20);
 		panel_4.add(tglbtnGraph);

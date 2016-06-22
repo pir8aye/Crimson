@@ -21,32 +21,19 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
-import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 
 public class HostList extends JPanel {
 
@@ -56,22 +43,8 @@ public class HostList extends JPanel {
 	private TM tm = new TM();
 	private TR tr = new TR();
 
-	private ClientProfile selected = null;
-
-	private JPopupMenu popup;
-	private JMenuItem control;
-	private JMenuItem screenshot;
-	private JMenuItem graph;
-
-	private JMenuItem poweroff;
-	private JMenuItem restart;
-	private JMenuItem refresh;
-
-	private JMenuItem uninstall;
-
 	public HostList() {
 		init();
-		initContextMenu();
 	}
 
 	public void init() {
@@ -96,10 +69,10 @@ public class HostList extends JPanel {
 					return;
 				}
 
-				selected = tm.getRow(sourceRow);
+				ClientProfile selected = tm.getRow(sourceRow);
 
 				if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
-					popup.show(table, e.getX(), e.getY());
+					ContextMenu.getMenu(selected, "list").show(table, e.getX(), e.getY());
 
 				} else {
 					// open up the detail
@@ -116,136 +89,6 @@ public class HostList extends JPanel {
 		JScrollPane jsp = new JScrollPane(table);
 
 		add(jsp, BorderLayout.CENTER);
-	}
-
-	private void initContextMenu() {
-		popup = new JPopupMenu();
-		control = new JMenuItem("Control Panel");
-		control.setIcon(UIUtil.getIcon("icons16/general/cog.png"));
-		control.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						ClientCPFrame ccpf = new ClientCPFrame(selected);
-						ccpf.setLocationRelativeTo(null);
-						ccpf.setVisible(true);
-
-					}
-				});
-
-			}
-
-		});
-		popup.add(control);
-
-		graph = new JMenuItem("Find in Graph");
-		graph.setIcon(UIUtil.getIcon("icons16/general/diagramm.png"));
-		popup.add(graph);
-
-		JMenu quick = new JMenu("Quick Commands");
-		quick.setIcon(UIUtil.getIcon("icons16/general/bow.png"));
-		popup.add(quick);
-
-		screenshot = new JMenuItem("Screenshot");
-		screenshot.setIcon(UIUtil.getIcon("icons16/general/picture.png"));
-		screenshot.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				new SwingWorker<Outcome, Void>() {
-
-					@Override
-					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.quickScreenshot(selected.getCvid());
-					}
-
-					protected void done() {
-						try {
-							Outcome outcome = get();
-							if (outcome.getResult()) {
-								MainFrame.main.panel.console.addLine("Saved screenshot: " + outcome.getComment(),
-										LineType.GREEN);
-							} else {
-								MainFrame.main.panel.console.addLine("Failed to capture screen", LineType.ORANGE);
-							}
-
-						} catch (InterruptedException | ExecutionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-					};
-
-				}.execute();
-			}
-		});
-		quick.add(screenshot);
-
-		JMenu state = new JMenu("Change State");
-		state.setIcon(UIUtil.getIcon("icons16/general/power_surge.png"));
-		quick.add(state);
-
-		poweroff = new JMenuItem("Shutdown");
-		poweroff.setIcon(UIUtil.getIcon("icons16/general/lcd_tv_off.png"));
-		poweroff.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-				new Thread() {
-					public void run() {
-						Outcome outcome = ViewerCommands.changeClientState(selected.getCvid(), StateType.SHUTDOWN);
-						if (!outcome.getResult()) {
-							// TODO
-						}
-					}
-				}.start();
-
-			}
-
-		});
-		state.add(poweroff);
-
-		restart = new JMenuItem("Restart");
-		restart.setIcon(UIUtil.getIcon("icons16/general/arrow_redo.png"));
-		restart.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-				new Thread() {
-					public void run() {
-						Outcome outcome = ViewerCommands.changeClientState(selected.getCvid(), StateType.RESTART);
-						if (!outcome.getResult()) {
-							// TODO
-						}
-					}
-				}.start();
-
-			}
-
-		});
-		state.add(restart);
-
-		uninstall = new JMenuItem("Uninstall Crimson");
-		uninstall.setIcon(UIUtil.getIcon("icons16/general/radioactivity.png"));
-		state.add(uninstall);
-
-		refresh = new JMenuItem("Refresh");
-		refresh.setIcon(UIUtil.getIcon("icons16/general/inbox_download.png"));
-		refresh.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-				new Thread() {
-					public void run() {
-
-					}
-				}.start();
-
-			}
-
-		});
-		quick.add(refresh);
 	}
 
 	public void addOrUpdate(ClientProfile cp) {
