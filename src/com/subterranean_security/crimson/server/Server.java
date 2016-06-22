@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -39,6 +40,8 @@ import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
 import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.viridian.Database;
+import com.subterranean_security.viridian.mail.Mail;
 
 public final class Server {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
@@ -87,6 +90,25 @@ public final class Server {
 
 		if (Common.isDebugMode() && !ServerState.isCloudMode() && !ServerState.isExampleMode()) {
 			generateDebugInstaller();
+		}
+
+		parse();
+	}
+
+	public static void parse() {
+
+		try (Scanner stdin = new Scanner(System.in)) {
+			while (true) {
+				String input = stdin.nextLine();
+				String[] parts = input.split("\\s+");
+
+				if (input.isEmpty()) {
+					continue;
+				} else if (parts[0].equals("quit") || parts[0].equals("exit")) {
+					System.exit(0);
+				}
+
+			}
 		}
 
 	}

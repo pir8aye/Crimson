@@ -101,11 +101,10 @@ public enum ViewerStore {
 			if (os != null) {
 				// kill server
 				try {
-					os.write("\u0003\n".getBytes());
+					os.write("quit\n".getBytes());
 					os.flush();
 					process.waitFor(3, TimeUnit.SECONDS);
 					os.close();
-					process.destroyForcibly();
 				} catch (IOException e) {
 
 				} catch (InterruptedException e) {
