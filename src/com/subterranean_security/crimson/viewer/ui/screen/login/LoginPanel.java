@@ -26,7 +26,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -38,6 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -48,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -329,12 +334,8 @@ public class LoginPanel extends JPanel {
 		btn_login.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				new Thread(new Runnable() {
-					public void run() {
-						login((String) fld_address.getSelectedItem(), fld_port.getText(), fld_user.getText(),
-								fld_pass.getPassword());
-					}
-				}).start();
+				login((String) fld_address.getSelectedItem(), fld_port.getText(), fld_user.getText(),
+						fld_pass.getPassword());
 
 			}
 		});
@@ -349,57 +350,88 @@ public class LoginPanel extends JPanel {
 		}
 		startLogin();
 
-		try {
+		new SwingWorker<Outcome, Void>() {
 
-			try {
-				ViewerStore.Connections.put(0, new ViewerConnector(server, Integer.parseInt(port)));
-			} catch (Throwable e) {
-				e.printStackTrace();
-				btn_login.setEnabled(true);
-				lbl_status.unfreeze();
-				lbl_status.setBad("Unable to Connect");
-				return;
+			@Override
+			protected Outcome doInBackground() throws Exception {
+				Outcome.Builder outcome = Outcome.newBuilder();
+
+				try {
+					ViewerStore.Connections.put(0, new ViewerConnector(server, Integer.parseInt(port)));
+				} catch (Throwable e) {
+					outcome.setResult(false);
+					try {
+						outcome.setComment(
+								"Unable to connect to server: " + InetAddress.getByName(server).getHostAddress());
+					} catch (UnknownHostException e1) {
+						outcome.setComment("Unable to resolve server: " + server);
+					}
+
+					return outcome.build();
+				}
+
+				// test the credentials
+				if (ViewerCommands.login(user, password)) {
+					outcome.setResult(true);
+					ViewerState.goOnline(server, Integer.parseInt(port));
+
+					if (!server.equals("127.0.0.1")) {
+						// update recents
+						try {
+							String successfulLogin = server + ":" + port;
+							ArrayList<String> recents = (ArrayList<String>) ViewerStore.Databases.local
+									.getObject("login.recents");
+							recents.remove(successfulLogin);
+							recents.add(successfulLogin);
+
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+
+				} else {
+					ViewerStore.Connections.closeAll();
+					outcome.setResult(false).setComment("Failed to login");
+				}
+
+				return outcome.build();
 			}
 
-			// test the credentials
-			if (ViewerCommands.login(user, password)) {
-				lbl_status.unfreeze();
-				lbl_status.setGood("Login Successful");
-				ViewerState.goOnline(server, Integer.parseInt(port));
+			protected void done() {
 				try {
-					Thread.sleep(400);
-				} catch (InterruptedException e) {
+					Outcome outcome = get();
+
+					lbl_status.unfreeze();
+					if (outcome.getResult()) {
+						lbl_status.setGood("Login successful!");
+						new SwingWorker<Void, Void>() {
+
+							@Override
+							protected Void doInBackground() throws Exception {
+								Thread.sleep(500);
+								return null;
+							}
+
+							protected void done() {
+								synchronized (parent) {
+									parent.notifyAll();
+								}
+								parent.dispose();
+							};
+						}.execute();
+
+					} else {
+						lbl_status.setBad(outcome.getComment());
+					}
+				} catch (InterruptedException | ExecutionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} finally {
+					endLogin();
 				}
-
-				if (!server.equals("127.0.0.1")) {
-					// update recents
-					try {
-						String successfulLogin = server + ":" + port;
-						ArrayList<String> recents = (ArrayList<String>) ViewerStore.Databases.local
-								.getObject("login.recents");
-						recents.remove(successfulLogin);
-						recents.add(successfulLogin);
-
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				synchronized (parent) {
-					parent.notifyAll();
-				}
-				parent.dispose();
-			} else {
-				ViewerStore.Connections.closeAll();
-				lbl_status.unfreeze();
-				lbl_status.setBad("Failed to Login");
-				btn_login.setEnabled(true);
-			}
-		} finally {
-			endLogin();
-		}
+			};
+		}.execute();
 
 	}
 
@@ -435,7 +467,7 @@ public class LoginPanel extends JPanel {
 		lbl_pass.setEnabled(false);
 		lbl_user.setEnabled(false);
 
-		lbl_status.setInfo("Attempting Login");
+		lbl_status.setInfo("Attempting Connection");
 		lbl_status.freeze();
 	}
 
