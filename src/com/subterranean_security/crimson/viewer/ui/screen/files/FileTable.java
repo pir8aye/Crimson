@@ -308,8 +308,7 @@ class FileItem {
 		} else {
 			this.size = CUtil.Misc.familiarize(size, CUtil.Misc.BYTES);
 
-			icon = UIUtil.getIcon("/com/subterranean_security/crimson/viewer/ui/res/image/icons16/files/file_extension_"
-					+ name.substring(name.lastIndexOf('.') + 1) + ".png");
+			icon = UIUtil.getIcon("icons16/files/file_extension_" + name.substring(name.lastIndexOf('.') + 1) + ".png");
 			if (icon == null) {
 				icon = UIUtil.getIcon("icons16/files/file_extension_default.png");
 			}
