@@ -16,7 +16,7 @@ JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Nati
 		JNIEnv *env, jclass cls) {
 	char buffer[1024];
 	exec(
-			"xprop -id $(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME | cut -d \" -f2",
+			"xprop -id $(xprop -root 32x \'\t$0\' _NET_ACTIVE_WINDOW | cut -f 2) _NET_WM_NAME | cut -d \\\" -f2",
 			buffer);
 
 	return env->NewStringUTF(buffer);
