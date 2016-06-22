@@ -28,9 +28,12 @@ import java.util.ArrayList;
 
 import javax.swing.filechooser.FileSystemView;
 
+import org.hyperic.sigar.FileInfo;
+import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.util.B64;
@@ -123,13 +126,26 @@ public class LocalFilesystem {
 		}
 	}
 
+	private static FileInfo fileInfo = new FileInfo();
+
 	public static RS_AdvancedFileInfo getInfo(String path) {
 		File f = new File(path);
+
 		RS_AdvancedFileInfo.Builder rs = RS_AdvancedFileInfo.newBuilder();
 		rs.setLocalIcon(new String(
 				B64.encode(ObjectTransfer.Default.serialize(FileSystemView.getFileSystemView().getSystemIcon(f)))));
+		rs.setName(f.getName());
+		rs.setPath(f.getParent());
 		rs.setSize(f.length());
 		rs.setMtime(f.lastModified());
+		try {
+			fileInfo.gather(Platform.Advanced.getSigar(), f.getAbsolutePath());
+			rs.setAtime(fileInfo.getAtime());
+			rs.setCtime(fileInfo.getCtime());
+		} catch (SigarException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return rs.build();
 	}

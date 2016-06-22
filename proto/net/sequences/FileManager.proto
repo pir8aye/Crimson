@@ -25,11 +25,13 @@ message RQ_AdvancedFileInfo {
 }
 
 message RS_AdvancedFileInfo {
-	optional string path = 1;
-	optional string local_icon = 2;
-	optional int64 ctime = 3;
-	optional int64 mtime = 4;
-	optional int64 size = 5;
+	optional string local_icon = 1;
+	optional string path = 2;
+	optional string name = 3;
+	optional int64 ctime = 4;
+	optional int64 mtime = 5;
+	optional int64 atime = 6;
+	optional int64 size = 7;
 }
 
 message RQ_FileHandle {

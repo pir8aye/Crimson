@@ -37,10 +37,17 @@ public class AdvancedFileInfo extends JPanel {
 		panel.setLayout(new BorderLayout(0, 0));
 
 		DataViewer dv = new DataViewer();
-		dv.addRow(new String[] { "Path", rs.hasPath() ? rs.getPath() : "" });
+		dv.addRow(new String[] { "Filename", rs.getName() });
+		dv.addRow(new String[] { "Path", rs.getPath() });
 		dv.addRow(new String[] { "Size",
 				CUtil.Misc.familiarize(rs.getSize(), CUtil.Misc.BYTES) + " (" + rs.getSize() + " bytes)" });
-		dv.addRow(new String[] { "Last Modification", new Date(rs.getMtime()).toString() });
+		if (rs.hasCtime())
+			dv.addRow(new String[] { "Creation Time", new Date(rs.getCtime()).toString() });
+		if (rs.hasMtime())
+			dv.addRow(new String[] { "Last Modification Time", new Date(rs.getMtime()).toString() });
+		if (rs.hasAtime())
+			dv.addRow(new String[] { "Last Access Time", new Date(rs.getAtime()).toString() });
+
 		panel.add(dv, BorderLayout.CENTER);
 
 		JPanel panel_1 = new JPanel();
