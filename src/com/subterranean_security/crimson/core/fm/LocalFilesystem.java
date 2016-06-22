@@ -36,7 +36,9 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.util.B64;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.ObjectTransfer;
 
@@ -148,6 +150,17 @@ public class LocalFilesystem {
 		}
 
 		return rs.build();
+	}
+
+	public static Outcome delete(Iterable<String> targets, boolean overwrite) {
+		Outcome.Builder outcome = Outcome.newBuilder().setResult(true);
+		for (String s : targets) {
+			if (!CUtil.Files.delete(new File(s), overwrite)) {
+				outcome.setResult(false);
+			}
+		}
+
+		return outcome.build();
 	}
 
 }

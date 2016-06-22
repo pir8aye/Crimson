@@ -23,6 +23,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -30,15 +32,18 @@ import javax.swing.JComboBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.screen.files.ep.AdvancedFileInfo;
+import com.subterranean_security.crimson.viewer.ui.screen.files.ep.DeleteConfirmation;
 
 public class Pane extends JPanel {
 
@@ -62,6 +67,9 @@ public class Pane extends JPanel {
 	public boolean loading = false;
 	public PathPanel pwd = new PathPanel();
 	private JComboBox typeBox;
+	public JButton btnUp;
+	public JButton btnProperties;
+	public JButton btnDelete;
 
 	public Pane(FMPanel parent) {
 		this.parent = parent;
@@ -121,18 +129,45 @@ public class Pane extends JPanel {
 		JMenuBar menuBar = new JMenuBar();
 		panel.add(menuBar, BorderLayout.NORTH);
 
-		JButton btnNewButton_1 = new JButton("");
-		btnNewButton_1.setFocusable(false);
-		btnNewButton_1.setRequestFocusEnabled(false);
-		btnNewButton_1.addActionListener(new ActionListener() {
+		btnUp = new JButton("");
+		btnUp.setFocusable(false);
+		btnUp.setRequestFocusEnabled(false);
+		btnUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pwd.openView();
 				up();
 			}
 		});
-		btnNewButton_1.setMargin(new Insets(0, 0, 0, 0));
-		btnNewButton_1.setIcon(UIUtil.getIcon("icons16/general/folder_up.png"));
-		menuBar.add(btnNewButton_1);
+		btnUp.setMargin(new Insets(0, 0, 0, 0));
+		btnUp.setIcon(UIUtil.getIcon("icons16/general/folder_up.png"));
+		menuBar.add(btnUp);
+
+		btnDelete = new JButton("");
+		btnDelete.setEnabled(false);
+		btnDelete.setFocusable(false);
+		btnDelete.setRequestFocusEnabled(false);
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				delete(ft.selection);
+			}
+		});
+		btnDelete.setMargin(new Insets(0, 0, 0, 0));
+		btnDelete.setIcon(UIUtil.getIcon("icons16/general/folder_delete.png"));
+		menuBar.add(btnDelete);
+
+		btnProperties = new JButton("");
+		btnProperties.setEnabled(false);
+		btnProperties.setFocusable(false);
+		btnProperties.setRequestFocusEnabled(false);
+		btnProperties.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// TODO multi selection
+				info(ft.selection.get(0).getIcon().getDescription());
+			}
+		});
+		btnProperties.setMargin(new Insets(0, 0, 0, 0));
+		btnProperties.setIcon(UIUtil.getIcon("icons16/general/attributes_display.png"));
+		menuBar.add(btnProperties);
 
 		JMenu mnView = new JMenu("View");
 		menuBar.add(mnView);
@@ -183,20 +218,45 @@ public class Pane extends JPanel {
 	}
 
 	public void info(String name) {
-		RS_AdvancedFileInfo rs = null;
-		String path = pwd.getPwd() + "/" + name;
-		switch (type) {
-		case CLIENT:
-		case SERVER:
-			rs = ViewerCommands.fm_file_info(cid, path);
-			break;
-		case VIEWER:
-			rs = LocalFilesystem.getInfo(path);
-			break;
 
+		new SwingWorker<RS_AdvancedFileInfo, Void>() {
+
+			@Override
+			protected RS_AdvancedFileInfo doInBackground() throws Exception {
+				RS_AdvancedFileInfo rs = null;
+				String path = pwd.getPwd() + "/" + name;
+				switch (type) {
+				case CLIENT:
+				case SERVER:
+					rs = ViewerCommands.fm_file_info(cid, path);
+					break;
+				case VIEWER:
+					rs = LocalFilesystem.getInfo(path);
+					break;
+
+				}
+				return rs;
+			}
+
+			protected void done() {
+				try {
+					parent.ep.raise(new AdvancedFileInfo(get(), parent.ep), 80);
+				} catch (InterruptedException | ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			};
+
+		}.execute();
+
+	}
+
+	public void delete(ArrayList<FileItem> f) {
+		ArrayList<String> targets = new ArrayList<String>();
+		for (FileItem fi : f) {
+			targets.add(pwd.getPwd() + "/" + fi.getIcon().getDescription());
 		}
-
-		parent.ep.raise(new AdvancedFileInfo(rs, parent.ep), 80);
+		parent.ep.raise(new DeleteConfirmation(this, cid, targets, type), 100);
 
 	}
 

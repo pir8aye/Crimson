@@ -58,7 +58,7 @@ public class FileTable extends JPanel {
 
 	}
 
-	private ArrayList<FileItem> selection = null;
+	public ArrayList<FileItem> selection = null;
 
 	public void init() {
 
@@ -75,6 +75,9 @@ public class FileTable extends JPanel {
 				// get source of click
 				JTable source = (JTable) e.getSource();
 				final int sourceRow = source.rowAtPoint(e.getPoint());
+
+				pane.btnProperties.setEnabled(sourceRow != -1);
+				pane.btnDelete.setEnabled(sourceRow != -1);
 				if (sourceRow == -1) {
 					source.clearSelection();
 					return;
@@ -84,11 +87,13 @@ public class FileTable extends JPanel {
 					source.changeSelection(sourceRow, 0, false, false);
 				}
 
+				selection = new ArrayList<FileItem>();
+				for (int i : source.getSelectedRows()) {
+					selection.add(tm.getFile(i));
+				}
+
 				if (e.getButton() == MouseEvent.BUTTON3) {
-					selection = new ArrayList<FileItem>();
-					for (int i : source.getSelectedRows()) {
-						selection.add(tm.getFile(i));
-					}
+
 					initContextActions();
 
 					popup.show(table, e.getPoint().x, e.getPoint().y);
@@ -150,6 +155,12 @@ public class FileTable extends JPanel {
 
 		menu_delete = new JMenuItem("Delete");
 		menu_delete.setIcon(UIUtil.getIcon("icons16/general/folder_delete.png"));
+		menu_delete.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pane.delete(selection);
+			}
+		});
 
 		menu_rename = new JMenuItem("Rename");
 		menu_rename.setIcon(UIUtil.getIcon("icons16/general/textfield_rename.png"));
@@ -165,16 +176,9 @@ public class FileTable extends JPanel {
 		menu_properties.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-				new Thread(new Runnable() {
-					public void run() {
-						pane.info(selection.get(0).getIcon().getDescription());
-
-					}
-				}).start();
-
+				// TODO multi selection
+				pane.info(selection.get(0).getIcon().getDescription());
 			}
-
 		});
 
 	}

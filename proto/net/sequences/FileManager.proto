@@ -1,5 +1,7 @@
 package com.subterranean_security.crimson.core.proto;
 
+import "net/misc/Misc.proto";
+
 message FileListlet {
 	required string name = 1;
 	required bool dir = 3;
@@ -32,6 +34,15 @@ message RS_AdvancedFileInfo {
 	optional int64 mtime = 5;
 	optional int64 atime = 6;
 	optional int64 size = 7;
+}
+
+message RQ_Delete {
+	repeated string target = 1;
+	optional bool overwrite = 2;
+}
+
+message RS_Delete {
+	required Outcome outcome = 1;
 }
 
 message RQ_FileHandle {

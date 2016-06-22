@@ -43,6 +43,7 @@ import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallenge
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_Delete;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
@@ -115,6 +116,8 @@ public class ClientExecutor extends BasicExecutor {
 						rs_generate(m);
 					} else if (m.hasRqQuickScreenshot()) {
 						rq_quick_screenshot(m);
+					} else if (m.hasRqDelete()) {
+						rq_delete(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -261,6 +264,13 @@ public class ClientExecutor extends BasicExecutor {
 		log.debug("rq_advance_file_info");
 		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsAdvancedFileInfo(LocalFilesystem.getInfo(m.getRqAdvancedFileInfo().getFile())));
+	}
+
+	private void rq_delete(Message m) {
+		log.debug("rq_delete");
+		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+				.setRsDelete(RS_Delete.newBuilder().setOutcome(
+						LocalFilesystem.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))));
 	}
 
 	private void assign_1w(Message m) {

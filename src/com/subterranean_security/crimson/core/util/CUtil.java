@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -33,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -199,21 +201,8 @@ public enum CUtil {
 		 *            the file or directory to delete
 		 * @return true on success false on failure
 		 */
-		public static boolean delete(File f) {
-
-			if (f.exists()) {
-				File[] files = f.listFiles();
-				if (null != files) {
-					for (int i = 0; i < files.length; i++) {
-						if (files[i].isDirectory()) {
-							delete(files[i]);
-						} else {
-							files[i].delete();
-						}
-					}
-				}
-			}
-			return (f.delete());
+		public static boolean delete(String f) {
+			return delete(new File(f));
 		}
 
 		/**
@@ -223,8 +212,50 @@ public enum CUtil {
 		 *            the file or directory to delete
 		 * @return true on success false on failure
 		 */
-		public static boolean delete(String f) {
-			return delete(new File(f));
+		public static boolean delete(File f) {
+			return delete(f, false);
+		}
+
+		/**
+		 * Recursively delete a file or directory
+		 *
+		 * @param f
+		 *            the file or directory to delete
+		 * @return true on success false on failure
+		 */
+		public static boolean delete(File f, boolean overwrite) {
+
+			if (f.exists()) {
+				File[] files = f.listFiles();
+				if (null != files) {
+					for (int i = 0; i < files.length; i++) {
+						if (files[i].isDirectory()) {
+							delete(files[i]);
+						} else {
+							if (overwrite) {
+								overwrite(files[i]);
+							}
+							files[i].delete();
+						}
+					}
+				}
+			}
+			return (f.delete());
+		}
+
+		public static boolean overwrite(File f) {
+			try {
+				RandomAccessFile raf = new RandomAccessFile(f, "w");
+				for (long i = 0; i < raf.length(); i++) {
+					raf.writeByte(0);// TODO random
+				}
+				raf.close();
+				return true;
+			} catch (FileNotFoundException e) {
+				return false;
+			} catch (IOException e) {
+				return false;
+			}
 		}
 
 		/**

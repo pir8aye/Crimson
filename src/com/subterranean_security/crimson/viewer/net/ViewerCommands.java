@@ -17,13 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-
-import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +33,7 @@ import com.subterranean_security.crimson.core.proto.Delta.MI_TriggerProfileDelta
 import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.core.proto.FileManager.MI_CloseFileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_AdvancedFileInfo;
+import com.subterranean_security.crimson.core.proto.FileManager.RQ_Delete;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
@@ -418,6 +417,24 @@ public enum ViewerCommands {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public static Outcome fm_delete(int cid, ArrayList<String> targets, boolean overwrite) {
+		Outcome.Builder outcome = Outcome.newBuilder();
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+					.setRqDelete(RQ_Delete.newBuilder().addAllTarget(targets).setOverwrite(overwrite)), 2);
+
+			if (m == null) {
+				outcome.setResult(false).setComment("No response");
+			} else {
+				return m.getRsDelete().getOutcome();
+			}
+
+		} catch (InterruptedException e) {
+			outcome.setResult(false).setComment("Interrupted");
+		}
+		return outcome.build();
 	}
 
 	public static void trigger_key_update(int cid, Date target) {
