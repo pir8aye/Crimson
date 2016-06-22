@@ -34,6 +34,7 @@ import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.util.IDGen;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class ClientConnector extends BasicConnector {
@@ -58,6 +59,7 @@ public class ClientConnector extends BasicConnector {
 	public ClientConnector(String host, int port) throws InterruptedException, ConnectException {
 
 		Bootstrap b = new Bootstrap();
+		b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
 		b.group(workerGroup)//
 				.channel(NioSocketChannel.class)//
 				.handler(new ClientInitializer(host, port, handle));

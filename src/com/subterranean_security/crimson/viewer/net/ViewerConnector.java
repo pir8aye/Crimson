@@ -24,6 +24,7 @@ import com.subterranean_security.crimson.core.net.BasicConnector;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class ViewerConnector extends BasicConnector {
@@ -34,6 +35,7 @@ public class ViewerConnector extends BasicConnector {
 	public ViewerConnector(String host, int port) throws InterruptedException, ConnectException {
 
 		Bootstrap b = new Bootstrap();
+		b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
 		b.group(workerGroup)//
 				.channel(NioSocketChannel.class)//
 				.handler(new ViewerInitializer(host, port, handle));
