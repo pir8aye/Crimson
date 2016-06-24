@@ -4,11 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -27,6 +30,8 @@ public class Logs extends JPanel implements CPPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTabbedPane tabbedPane;
+	private JButton btnExport;
+	private JButton btnClose;
 
 	public Logs(ClientProfile profile, Console console) {
 		setLayout(new BorderLayout(0, 0));
@@ -35,6 +40,7 @@ public class Logs extends JPanel implements CPPanel {
 		add(menuBar, BorderLayout.NORTH);
 
 		JButton btnNewButton = new JButton(UIUtil.getIcon("icons16/general/arrow_refresh.png"));
+		btnNewButton.setToolTipText("Refresh");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				new SwingWorker<Iterable<LogFile>, Void>() {
@@ -57,16 +63,29 @@ public class Logs extends JPanel implements CPPanel {
 					protected void done() {
 						try {
 							for (LogFile lf : get()) {
-								for (int i = 0; i < tabbedPane.getComponentCount(); i++) {
-									LogPane pane = (LogPane) tabbedPane.getTabComponentAt(i);
+								if (lf == null) {
+									continue;
+								}
+								boolean mod = false;
+								for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+									LogPane pane = (LogPane) tabbedPane.getComponentAt(i);
+									if (pane == null) {
+										System.out.println("pane is null");
+									}
+
 									if (pane.getLogType() == lf.getName()) {
 										pane.setLog(lf.getLog());
-										return;
+										mod = true;
+										break;
 									}
 
 								}
-								LogPane lp = new LogPane(lf.getName(), lf.getLog());
-								tabbedPane.add(lf.getName().toString(), lp);
+								if (!mod) {
+									LogPane lp = new LogPane(lf.getName(), lf.getLog());
+									tabbedPane.add(lf.getName().toString(), lp);
+									btnExport.setEnabled(true);
+									btnClose.setEnabled(true);
+								}
 
 							}
 						} catch (InterruptedException | ExecutionException e) {
@@ -80,8 +99,53 @@ public class Logs extends JPanel implements CPPanel {
 		btnNewButton.setMargin(new Insets(2, 2, 2, 2));
 		menuBar.add(btnNewButton);
 
-		JButton btnNewButton_1 = new JButton("export");
-		menuBar.add(btnNewButton_1);
+		btnExport = new JButton(UIUtil.getIcon("icons16/general/export_log.png"));
+		btnExport.setToolTipText("Export log to filesystem");
+		btnExport.setMargin(new Insets(2, 2, 2, 2));
+		btnExport.setEnabled(false);
+		btnExport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				btnExport.setEnabled(false);
+
+				JFileChooser jfc = new JFileChooser();
+				jfc.setDialogTitle("Export log");
+
+				new SwingWorker<Void, Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						if (jfc.showDialog(null, "Export") == JFileChooser.APPROVE_OPTION) {
+							File file = jfc.getSelectedFile();
+							PrintWriter pw = new PrintWriter(file);
+							pw.print(((LogPane) tabbedPane.getSelectedComponent()).getLog());
+							pw.close();
+						}
+						return null;
+					}
+
+					protected void done() {
+						btnExport.setEnabled(true);
+					};
+
+				}.execute();
+			}
+		});
+		menuBar.add(btnExport);
+
+		btnClose = new JButton(UIUtil.getIcon("icons16/general/close_log.png"));
+		btnClose.setToolTipText("Close tab");
+		btnClose.setMargin(new Insets(2, 2, 2, 2));
+		btnClose.setEnabled(false);
+		btnClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				tabbedPane.removeTabAt(tabbedPane.getSelectedIndex());
+				if (tabbedPane.getTabCount() == 0) {
+					btnClose.setEnabled(false);
+					btnExport.setEnabled(false);
+				}
+			}
+		});
+		menuBar.add(btnClose);
 
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));

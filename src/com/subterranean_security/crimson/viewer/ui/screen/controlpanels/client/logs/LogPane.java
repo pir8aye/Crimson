@@ -37,4 +37,8 @@ public class LogPane extends JPanel {
 		return type;
 	}
 
+	public String getLog() {
+		return textArea.getText();
+	}
+
 }
