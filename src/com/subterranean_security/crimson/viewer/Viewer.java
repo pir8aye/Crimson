@@ -127,8 +127,8 @@ public class Viewer {
 		login = null;
 
 		// Show the main interface
-		MainFrame.main.setVisible(true);
 		MainFrame.main.setLocationRelativeTo(null);
+		MainFrame.main.setVisible(true);
 		MainFrame.main.invokeAfterload();
 
 	}
