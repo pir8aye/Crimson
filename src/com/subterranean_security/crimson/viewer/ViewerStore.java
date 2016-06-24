@@ -37,6 +37,7 @@ import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public enum ViewerStore {
@@ -183,6 +184,9 @@ public enum ViewerStore {
 				cp.amalgamate(change);
 			} else {
 				// add new profile
+				MainFrame.main.panel.console.addLine(
+						"Received new client connection" + (change.hasExtIp() ? " from: " + change.getExtIp() : ""),
+						LineType.GREEN);
 				cp = new ClientProfile(change.getCvid());
 				cp.getKeylog().pages.setDatabase(Databases.local);
 				cp.amalgamate(change);
