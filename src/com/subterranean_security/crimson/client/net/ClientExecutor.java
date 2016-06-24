@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +45,9 @@ import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_Delete;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
+import com.subterranean_security.crimson.core.proto.Log.LogFile;
+import com.subterranean_security.crimson.core.proto.Log.LogType;
+import com.subterranean_security.crimson.core.proto.Log.RS_Logs;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.proto.Screenshot.RS_QuickScreenshot;
@@ -56,6 +58,7 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.Native;
+import com.subterranean_security.crimson.sc.Logsystem;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -118,6 +121,8 @@ public class ClientExecutor extends BasicExecutor {
 						rq_quick_screenshot(m);
 					} else if (m.hasRqDelete()) {
 						rq_delete(m);
+					} else if (m.hasRqLogs()) {
+						rq_logs(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -332,6 +337,20 @@ public class ClientExecutor extends BasicExecutor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void rq_logs(Message m) {
+		RS_Logs.Builder rs = RS_Logs.newBuilder();
+		if (m.getRqLogs().hasLog()) {
+			rs.addLog(LogFile.newBuilder().setName(m.getRqLogs().getLog())
+					.setLog(Logsystem.getLog(m.getRqLogs().getLog())));
+		} else {
+			for (LogType lt : Logsystem.getApplicableLogs()) {
+				rs.addLog(LogFile.newBuilder().setName(lt).setLog(Logsystem.getLog(lt)));
+			}
+		}
+		ClientStore.Connections
+				.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid).setRsLogs(rs));
 	}
 
 }

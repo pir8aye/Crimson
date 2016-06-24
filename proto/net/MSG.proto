@@ -7,6 +7,7 @@ import "net/sequences/Generator.proto";
 import "net/sequences/Report.proto";
 import "net/sequences/Delta.proto";
 import "net/sequences/FileManager.proto";
+import "net/sequences/Log.proto";
 import "net/sequences/Stream.proto";
 import "net/sequences/CVID.proto";
 import "net/sequences/Listener.proto";
@@ -68,6 +69,8 @@ message Message {
 	optional RS_QuickScreenshot rs_quick_screenshot = 137;
 	optional RQ_Delete rq_delete = 138;
 	optional RS_Delete rs_delete = 139;
+	optional RQ_Logs rq_logs = 140;
+	optional RS_Logs rs_logs = 141;
 
 	optional MI_TriggerProfileDelta mi_trigger_profile_delta = 199;
 	optional MI_StreamStart mi_stream_start = 200;

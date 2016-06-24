@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
-import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
@@ -52,6 +51,9 @@ import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
 import com.subterranean_security.crimson.core.proto.Keylogger.RS_KeyUpdate;
 import com.subterranean_security.crimson.core.proto.Listener.RS_AddListener;
+import com.subterranean_security.crimson.core.proto.Log.LogFile;
+import com.subterranean_security.crimson.core.proto.Log.LogType;
+import com.subterranean_security.crimson.core.proto.Log.RS_Logs;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
@@ -67,6 +69,7 @@ import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.sc.Logsystem;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.server.ServerState;
@@ -178,6 +181,8 @@ public class ServerExecutor extends BasicExecutor {
 						rq_create_auth_method(m);
 					} else if (m.hasRqRemoveAuthMethod()) {
 						rq_remove_auth_method(m);
+					} else if (m.hasRqLogs()) {
+						rq_logs(m);
 					} else {
 						receptor.cq.put(m.getId(), m);
 					}
@@ -712,6 +717,19 @@ public class ServerExecutor extends BasicExecutor {
 		// TODO check if removed
 		receptor.handle.write(
 				Message.newBuilder().setRsRemoveAuthMethod(RS_RemoveAuthMethod.newBuilder().setResult(true)).build());
+	}
+
+	private void rq_logs(Message m) {
+		RS_Logs.Builder rs = RS_Logs.newBuilder();
+		if (m.getRqLogs().hasLog()) {
+			rs.addLog(LogFile.newBuilder().setName(m.getRqLogs().getLog())
+					.setLog(Logsystem.getLog(m.getRqLogs().getLog())));
+		} else {
+			for (LogType lt : Logsystem.getApplicableLogs()) {
+				rs.addLog(LogFile.newBuilder().setName(lt).setLog(Logsystem.getLog(lt)));
+			}
+		}
+		receptor.handle.write(Message.newBuilder().setRsLogs(rs).build());
 	}
 
 	private void aux_acceptClient() {

@@ -1,0 +1,20 @@
+package com.subterranean_security.crimson.core.proto;
+
+message RQ_Logs {
+	optional LogType log = 1;
+}
+
+message RS_Logs {
+	repeated LogFile log = 1;
+}
+
+message LogFile {
+	required LogType name = 1;
+	required string log = 2;
+}
+
+enum LogType {
+	CRIMSON = 1;
+	BOOT = 2;
+	AUTH = 3;
+}
