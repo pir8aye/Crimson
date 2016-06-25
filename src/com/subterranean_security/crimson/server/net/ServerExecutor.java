@@ -676,8 +676,8 @@ public class ServerExecutor extends BasicExecutor {
 			b.setViewerPermissions(rqad.getPermissions());
 		}
 
-		if (rqad.hasPassword()
-				&& ServerStore.Databases.system.validLogin(rqad.getUser(), m.getRqEditUser().getOldPassword())) {
+		if (rqad.hasPassword() && ServerStore.Databases.system.validLogin(rqad.getUser(), Crypto
+				.hashPass(m.getRqEditUser().getOldPassword(), ServerStore.Databases.system.getSalt(rqad.getUser())))) {
 			ServerStore.Databases.system.changePassword(rqad.getUser(), rqad.getPassword());
 
 		}
