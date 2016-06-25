@@ -64,6 +64,7 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.swing.JPasswordField;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
@@ -932,16 +933,14 @@ public enum CUtil {
 			return true;
 		}
 
-		public static boolean password(String password) {
-			if (password.length() < 4 || password.length() > 32) {
-				return false;
+		public static boolean password(JPasswordField field) {
+			char[] password = field.getPassword();
+			boolean outcome = true;
+			if (password.length < 4 || password.length > 32) {
+				outcome = false;
 			}
-
-			return true;
-		}
-
-		public static boolean password(char[] password) {
-			return password(new String(password));
+			CUtil.Misc.clearChar(password);
+			return outcome;
 		}
 
 		public static boolean dns(String dns) {

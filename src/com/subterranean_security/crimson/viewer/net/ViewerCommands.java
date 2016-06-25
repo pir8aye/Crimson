@@ -75,7 +75,7 @@ public enum ViewerCommands {
 	;
 	private static final Logger log = LoggerFactory.getLogger(ViewerCommands.class);
 
-	public static boolean login(String user, char[] pass) {
+	public static boolean login(String user, String pass) {
 		int id = IDGen.get();
 
 		ViewerRouter.route(Message.newBuilder().setId(id).setRqLogin(RQ_Login.newBuilder().setUsername(user)).build());
@@ -87,7 +87,7 @@ public enum ViewerCommands {
 				return false;
 			} else if (lcrq.hasRqLoginChallenge()) {
 				RQ_LoginChallenge challenge = lcrq.getRqLoginChallenge();
-				String result = challenge.getCloud() ? Crypto.hashOCPass(new String(pass), challenge.getSalt())
+				String result = challenge.getCloud() ? Crypto.hashOCPass(pass, challenge.getSalt())
 						: Crypto.hashPass(pass, challenge.getSalt());
 				ViewerRouter.route(Message.newBuilder().setId(id)
 						.setRsLoginChallenge(RS_LoginChallenge.newBuilder().setResult(result)).build());
@@ -263,11 +263,11 @@ public enum ViewerCommands {
 		return outcome.build();
 	}
 
-	public static Outcome addUser(String user, char[] pass, ViewerPermissions vp) {
+	public static Outcome addUser(String user, String pass, ViewerPermissions vp) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRqAddUser(
-					RQ_AddUser.newBuilder().setUser(user).setPassword(new String(pass)).setPermissions(vp)), 2);
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder()
+					.setRqAddUser(RQ_AddUser.newBuilder().setUser(user).setPassword(pass).setPermissions(vp)), 2);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsAddUser().getResult()) {

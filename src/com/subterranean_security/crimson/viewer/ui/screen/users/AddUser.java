@@ -257,7 +257,7 @@ public class AddUser extends JDialog {
 											.setServerFsRead(chckbxServerFilesystemRead.isSelected())
 											.setServerFsWrite(chckbxServerFilesystemWrite.isSelected()).build();
 									Outcome outcome = ViewerCommands.addUser(textField.getText(),
-											passwordField.getPassword(), vp);
+											UIUtil.getPassword(passwordField), vp);
 									if (outcome.getResult()) {
 										sl.setGood("Success!");
 										try {
@@ -302,7 +302,7 @@ public class AddUser extends JDialog {
 			}
 		}
 
-		if (!CUtil.Validation.password(passwordField.getPassword())) {
+		if (!CUtil.Validation.password(passwordField)) {
 			sl.setBad("Invalid Password");
 			return false;
 		}

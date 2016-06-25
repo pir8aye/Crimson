@@ -61,6 +61,7 @@ import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class LoginPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -334,8 +335,7 @@ public class LoginPanel extends JPanel {
 		btn_login.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				login((String) fld_address.getSelectedItem(), fld_port.getText(), fld_user.getText(),
-						fld_pass.getPassword());
+				login((String) fld_address.getSelectedItem(), fld_port.getText(), fld_user.getText());
 
 			}
 		});
@@ -343,9 +343,9 @@ public class LoginPanel extends JPanel {
 		btn_login.setMaximumSize(new Dimension(60, 25));
 	}
 
-	private void login(String server, String port, String user, char[] password) {
+	private void login(String server, String port, String user) {
 
-		if (!testValues(server, port, user, password)) {
+		if (!testValues(server, port, user)) {
 			return;
 		}
 		startLogin();
@@ -371,7 +371,7 @@ public class LoginPanel extends JPanel {
 				}
 
 				// test the credentials
-				if (ViewerCommands.login(user, password)) {
+				if (ViewerCommands.login(user, UIUtil.getPassword(fld_pass))) {
 					outcome.setResult(true);
 					ViewerState.goOnline(server, Integer.parseInt(port));
 
@@ -435,13 +435,13 @@ public class LoginPanel extends JPanel {
 
 	}
 
-	private boolean testValues(String server, String port, String user, char[] password) {
+	private boolean testValues(String server, String port, String user) {
 		removeErrorBorders();
 		if (!CUtil.Validation.port(port)) {
 			setPortError();
 			return false;
 		}
-		if (!CUtil.Validation.password(password)) {
+		if (!CUtil.Validation.password(fld_pass)) {
 			setPassError();
 			return false;
 		}

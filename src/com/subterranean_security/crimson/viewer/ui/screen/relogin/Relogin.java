@@ -23,6 +23,7 @@ import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 
 public class Relogin extends JPanel {
@@ -62,7 +63,7 @@ public class Relogin extends JPanel {
 				new Thread(new Runnable() {
 					public void run() {
 						String[] parts = lbl_server.getText().split(":");
-						login(parts[0], parts[1], lbl_user.getText(), fld_pass.getPassword());
+						login(parts[0], parts[1], lbl_user.getText());
 					}
 				}).start();
 			}
@@ -157,7 +158,7 @@ public class Relogin extends JPanel {
 		panel.add(fld_pass, gbc_passwordField);
 	}
 
-	private void login(String server, String port, String user, char[] password) {
+	private void login(String server, String port, String user) {
 
 		startLogin();
 
@@ -171,7 +172,7 @@ public class Relogin extends JPanel {
 			}
 
 			// test the credentials
-			if (ViewerCommands.login(user, password)) {
+			if (ViewerCommands.login(user, UIUtil.getPassword(fld_pass))) {
 				lbl_status.setGood("Login Successful");
 				ViewerState.goOnline(server, Integer.parseInt(port));
 				try {
@@ -211,7 +212,7 @@ public class Relogin extends JPanel {
 
 	private boolean testValues() {
 
-		return CUtil.Validation.password(fld_pass.getPassword());
+		return CUtil.Validation.password(fld_pass);
 
 	}
 
