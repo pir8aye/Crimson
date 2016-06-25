@@ -284,17 +284,18 @@ public enum ViewerCommands {
 		return outcome.build();
 	}
 
-	public static Outcome editUser(String user, char[] pass, ViewerPermissions vp) {
+	public static Outcome editUser(String user, String oldpass, String newpass, ViewerPermissions vp) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 
 		RQ_AddUser.Builder rqau = RQ_AddUser.newBuilder().setUser(user).setPermissions(vp);
-		if (pass != null) {
-			rqau.setPassword(new String(pass));
+		RQ_EditUser.Builder rqeu = RQ_EditUser.newBuilder();
+		if (oldpass != null && newpass != null) {
+			rqau.setPassword(newpass);
+			rqeu.setOldPassword(oldpass);
 		}
 
 		try {
-			Message m = ViewerRouter
-					.routeAndWait(Message.newBuilder().setRqEditUser(RQ_EditUser.newBuilder().setUser(rqau)), 2);
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRqEditUser(rqeu.setUser(rqau)), 2);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsEditUser().getResult()) {

@@ -18,14 +18,17 @@
 package com.subterranean_security.crimson.viewer.ui.screen.users;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.screen.users.ep.EditUser;
 
 public class UsersPanel extends JPanel {
 
@@ -33,11 +36,11 @@ public class UsersPanel extends JPanel {
 	public JButton btnRemove;
 	public JButton btnAddUser;
 	public JButton btnEditPermissions;
-	public JButton btnChangePassword;
 
 	public static AddUser addDialog;
-	public static EditUser editDialog;
 	public UserTable ut;
+
+	private EPanel ep;
 
 	public UsersPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -45,7 +48,8 @@ public class UsersPanel extends JPanel {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout(0, 0));
 
-		add(panel, BorderLayout.CENTER);
+		ep = new EPanel(panel);
+		add(ep, BorderLayout.CENTER);
 
 		JPanel panel_2 = new JPanel();
 		panel.add(panel_2, BorderLayout.CENTER);
@@ -54,34 +58,17 @@ public class UsersPanel extends JPanel {
 		ut = new UserTable(this);
 		panel_2.add(ut);
 
-		JPanel panel_3 = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panel_3.getLayout();
-		flowLayout.setAlignment(FlowLayout.RIGHT);
-		panel.add(panel_3, BorderLayout.SOUTH);
-
-		btnChangePassword = new JButton("Change Password");
-		btnChangePassword.setEnabled(false);
-		btnChangePassword.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnChangePassword.setMargin(new Insets(2, 4, 2, 4));
-		panel_3.add(btnChangePassword);
+		JMenuBar panel_3 = new JMenuBar();
+		panel.add(panel_3, BorderLayout.NORTH);
 
 		btnEditPermissions = new JButton("Edit User");
 		btnEditPermissions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO check permissions
-				if (editDialog == null) {
-					editDialog = new EditUser(ut.getSelected());
-					editDialog.setVisible(true);
-					editDialog.setLocationRelativeTo(null);
-				} else {
-					editDialog.toFront();
-				}
+				ep.raise(new EditUser(ep, ut.getSelected()), 245);
+
 			}
 		});
-		btnEditPermissions.setEnabled(false);
-		btnEditPermissions.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnEditPermissions.setMargin(new Insets(2, 4, 2, 4));
-		panel_3.add(btnEditPermissions);
 
 		btnAddUser = new JButton("Add User");
 		btnAddUser.addActionListener(new ActionListener() {
@@ -100,6 +87,10 @@ public class UsersPanel extends JPanel {
 		btnAddUser.setFont(new Font("Dialog", Font.BOLD, 10));
 		btnAddUser.setMargin(new Insets(2, 4, 2, 4));
 		panel_3.add(btnAddUser);
+		btnEditPermissions.setEnabled(false);
+		btnEditPermissions.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnEditPermissions.setMargin(new Insets(2, 4, 2, 4));
+		panel_3.add(btnEditPermissions);
 
 		btnRemove = new JButton("Delete User");
 		btnRemove.setEnabled(false);

@@ -46,7 +46,7 @@ public enum UICommon {
 	public static final Dimension dim_ccp = new Dimension(550, 300);
 	public static final Dimension min_files = new Dimension(600, 350);
 	public static final Dimension min_netman = new Dimension(573, 600);
-	public static final Dimension dim_min_users = new Dimension(450, 300);
+	public static final Dimension dim_min_users = new Dimension(450, 400);
 	public static final Dimension dim_control_button = new Dimension(100, 27);
 
 }

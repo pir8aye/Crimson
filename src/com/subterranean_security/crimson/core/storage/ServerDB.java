@@ -113,6 +113,25 @@ public class ServerDB extends Database {
 		return false;
 	}
 
+	public boolean changePassword(String user, String password) {
+		String salt = Crypto.genSalt();
+		String hash = Crypto.hashPass(password, salt);
+
+		try {
+			PreparedStatement stmt = db.prepareStatement("UPDATE users SET Salt=?,Hash=? WHERE Username=?;");
+			stmt.setString(1, salt);
+			stmt.setString(2, hash);
+			stmt.setString(3, user);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+
 	public String getUID(String username) {
 		try {
 			PreparedStatement stmt = db.prepareStatement("SELECT * FROM users WHERE `Username`=?");

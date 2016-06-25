@@ -676,8 +676,10 @@ public class ServerExecutor extends BasicExecutor {
 			b.setViewerPermissions(rqad.getPermissions());
 		}
 
-		if (rqad.hasPassword()) {
-			// TODO password change
+		if (rqad.hasPassword()
+				&& ServerStore.Databases.system.validLogin(rqad.getUser(), m.getRqEditUser().getOldPassword())) {
+			ServerStore.Databases.system.changePassword(rqad.getUser(), rqad.getPassword());
+
 		}
 
 		Message update = Message.newBuilder().setUrgent(true)

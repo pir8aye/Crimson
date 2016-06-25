@@ -54,8 +54,8 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
+import com.subterranean_security.crimson.viewer.ui.common.components.EntropyHarvester;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
-import com.subterranean_security.crimson.viewer.ui.screen.password.EntropyHarvester;
 
 public class CreateGroup extends JPanel {
 

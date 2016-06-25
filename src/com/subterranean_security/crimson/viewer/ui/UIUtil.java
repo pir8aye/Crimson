@@ -20,10 +20,12 @@ package com.subterranean_security.crimson.viewer.ui;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JPasswordField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -31,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Crypto;
 
 public enum UIUtil {
 	;
@@ -82,6 +86,18 @@ public enum UIUtil {
 			break;
 
 		}
+	}
+
+	public static String getPassword(JPasswordField field) {
+		char[] password = field.getPassword();
+		String hash = null;
+		try {
+			hash = Crypto.hash("SHA-256", password);
+		} catch (NoSuchAlgorithmException e) {
+
+		}
+		CUtil.Misc.clearChar(password);
+		return hash;
 	}
 
 }

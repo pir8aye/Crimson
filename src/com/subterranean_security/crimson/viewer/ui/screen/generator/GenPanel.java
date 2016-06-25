@@ -67,7 +67,7 @@ import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.ui.screen.password.EntropyHarvester;
+import com.subterranean_security.crimson.viewer.ui.common.components.EntropyHarvester;
 
 public class GenPanel extends JPanel {
 

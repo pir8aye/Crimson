@@ -22,17 +22,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
-import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 
 public enum Crypto {
@@ -47,12 +44,27 @@ public enum Crypto {
 
 	}
 
-	private static String hash(String type, String target) throws NoSuchAlgorithmException {
+	public static String hash(String type, char[] target) throws NoSuchAlgorithmException {
+		byte[] t = CUtil.Misc.toBytes(target);
+
 		MessageDigest digest;
 
 		digest = MessageDigest.getInstance(type);
-		digest.update(target.getBytes());
+		digest.update(t);
 		byte messageDigest[] = digest.digest();
+		Arrays.fill(t, (byte) 0);
+
+		StringBuffer hexString = new StringBuffer();
+		for (int i = 0; i < messageDigest.length; i++)
+			hexString.append(String.format("%02X", 0xFF & messageDigest[i]));
+
+		return hexString.toString().toLowerCase();
+
+	}
+
+	private static String hash(String type, String target) throws NoSuchAlgorithmException {
+
+		byte messageDigest[] = hash(type, target.getBytes());
 
 		StringBuffer hexString = new StringBuffer();
 		for (int i = 0; i < messageDigest.length; i++)

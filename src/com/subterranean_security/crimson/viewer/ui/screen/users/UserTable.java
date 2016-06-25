@@ -47,7 +47,6 @@ public class UserTable extends JScrollPane {
 				final int sourceRow = source.rowAtPoint(e.getPoint());
 				parent.btnRemove.setEnabled(sourceRow >= 0);
 				parent.btnEditPermissions.setEnabled(sourceRow >= 0);
-				parent.btnChangePassword.setEnabled(sourceRow >= 0);
 				if (sourceRow == -1) {
 					source.clearSelection();
 					return;

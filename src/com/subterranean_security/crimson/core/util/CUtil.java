@@ -42,11 +42,15 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -774,6 +778,21 @@ public enum CUtil {
 				sum += d;
 			}
 			return sum / list.size();
+		}
+
+		public static void clearChar(char[] a) {
+			for (int i = 0; i < a.length; i++) {
+				a[i] = (char) rand.nextInt();
+			}
+		}
+
+		public static byte[] toBytes(char[] chars) {
+			CharBuffer charBuffer = CharBuffer.wrap(chars);
+			ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+			byte[] bytes = Arrays.copyOfRange(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit());
+			Arrays.fill(charBuffer.array(), '\u0000');
+			Arrays.fill(byteBuffer.array(), (byte) 0);
+			return bytes;
 		}
 
 	}

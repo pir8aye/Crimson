@@ -37,7 +37,7 @@ message RS_AddUser {
 
 message RQ_EditUser {
 	required RQ_AddUser user = 1;
-
+	optional string old_password = 2;
 }
 
 message RS_EditUser {
