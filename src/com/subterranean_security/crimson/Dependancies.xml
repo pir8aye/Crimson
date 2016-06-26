@@ -3,7 +3,7 @@
 
 	<CrimsonVersion>1.0.0.0</CrimsonVersion>
 
-	<!-- S = Server V = Viewer C = Client Q = Viridian -->
+	<!-- S = Server, V = Viewer, C = Client, Q = Viridian, I = Installer -->
 	<JAR>
 		<Lib CID="c01">
 			<Name>Crimson Core Library</Name>
@@ -141,7 +141,7 @@
 			<License>BSD</License>
 			<Requisites>V</Requisites>
 		</Lib>
-		
+
 		<Lib CID="c18">
 			<Name>JChart2D</Name>
 			<CVersion>1</CVersion>
@@ -149,13 +149,21 @@
 			<License>LGPL</License>
 			<Requisites>V</Requisites>
 		</Lib>
-		
+
 		<Lib CID="c19">
 			<Name>JNativeHook</Name>
 			<CVersion>1</CVersion>
 			<EVersion>2.0.3</EVersion>
 			<License>LGPL</License>
 			<Requisites>C</Requisites>
+		</Lib>
+
+		<Lib CID="c20">
+			<Name>mslinks</Name>
+			<CVersion>1</CVersion>
+			<EVersion>1</EVersion>
+			<License>DWTFYWTPL</License>
+			<Requisites>I</Requisites>
 		</Lib>
 
 	</JAR>
