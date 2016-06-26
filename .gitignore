@@ -1,5 +1,7 @@
 /bin/
-/build/
+/build/bin
+/build/build.number
+/build/build.properties
 /scripts/
 /.classpath
 /.project
