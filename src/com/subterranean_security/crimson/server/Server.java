@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -41,8 +40,6 @@ import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
 import com.subterranean_security.crimson.core.util.FileLocking;
-import com.subterranean_security.viridian.Database;
-import com.subterranean_security.viridian.mail.Mail;
 
 public final class Server {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);

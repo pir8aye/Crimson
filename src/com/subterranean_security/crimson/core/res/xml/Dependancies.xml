@@ -5,12 +5,13 @@
 
 	<!-- S = Server, V = Viewer, C = Client, Q = Viridian, I = Installer -->
 	<JAR>
+
 		<Lib CID="c01">
-			<Name>Crimson Core Library</Name>
-			<CVersion>1</CVersion>
-			<EVersion>1</EVersion>
-			<License>Apache 2</License>
-			<Requisites>SVCQ</Requisites>
+			<Name></Name>
+			<CVersion></CVersion>
+			<EVersion></EVersion>
+			<License></License>
+			<Requisites></Requisites>
 		</Lib>
 
 		<Lib CID="c02">
@@ -26,7 +27,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>1</EVersion>
 			<License>Apache 2</License>
-			<Requisites>SV</Requisites>
+			<Requisites>SVI</Requisites>
 		</Lib>
 
 		<Lib CID="c04">
@@ -42,7 +43,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>1</EVersion>
 			<License>Proprietary</License>
-			<Requisites>SVC</Requisites>
+			<Requisites>SVCI</Requisites>
 		</Lib>
 
 		<Lib CID="c06">
@@ -50,7 +51,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>4.0.30</EVersion>
 			<License>Apache 2</License>
-			<Requisites>SVCQ</Requisites>
+			<Requisites>SVCQI</Requisites>
 			v
 		</Lib>
 
@@ -59,7 +60,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>3.8.10.1</EVersion>
 			<License>Apache 2</License>
-			<Requisites>SVC</Requisites>
+			<Requisites>SVCI</Requisites>
 		</Lib>
 
 		<Lib CID="c08">
@@ -75,7 +76,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>2.6.1</EVersion>
 			<License>BSD</License>
-			<Requisites>SVCQ</Requisites>
+			<Requisites>SVCQI</Requisites>
 		</Lib>
 
 		<Lib CID="c10">
@@ -83,7 +84,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>1.7.13</EVersion>
 			<License>MIT</License>
-			<Requisites>SVCQ</Requisites>
+			<Requisites>SVCQI</Requisites>
 		</Lib>
 
 		<Lib CID="c11">
@@ -91,7 +92,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>1.1.3</EVersion>
 			<License>LGPL</License>
-			<Requisites>SVCQ</Requisites>
+			<Requisites>SVCQI</Requisites>
 		</Lib>
 
 		<Lib CID="c12">
@@ -99,7 +100,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>1.1.3</EVersion>
 			<License>LGPL</License>
-			<Requisites>SVCQ</Requisites>
+			<Requisites>SVCQI</Requisites>
 		</Lib>
 
 		<Lib CID="c13">
@@ -131,7 +132,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>1.0</EVersion>
 			<License>LGPL</License>
-			<Requisites>SVCQ</Requisites>
+			<Requisites>SVCQI</Requisites>
 		</Lib>
 
 		<Lib CID="c17">

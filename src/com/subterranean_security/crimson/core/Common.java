@@ -37,6 +37,24 @@ public enum Common {
 
 	public enum Instance {
 		SERVER, CLIENT, VIEWER, INSTALLER, VIRIDIAN;
+
+		public String getLabel() {
+			switch (this) {
+			case CLIENT:
+				return "C";
+			case INSTALLER:
+				return "I";
+			case SERVER:
+				return "S";
+			case VIEWER:
+				return "V";
+			case VIRIDIAN:
+				return "Q";
+			default:
+				return null;
+
+			}
+		}
 	}
 
 	/**
@@ -64,8 +82,6 @@ public enum Common {
 		System.exit(0);
 		return null;
 	}
-
-	private static final Logger log = LoggerFactory.getLogger(Common.class);
 
 	/**
 	 * Initialization Timestamp
@@ -130,6 +146,8 @@ public enum Common {
 
 	public enum Directories {
 		;
+
+		private static final Logger log = LoggerFactory.getLogger(Directories.class);
 
 		/**
 		 * Base contains binaries and configuration files

@@ -79,8 +79,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.subterranean_security.cinstaller.Main;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.viewer.Viewer;
@@ -994,30 +996,54 @@ public enum CUtil {
 
 	}
 
-	public static class Versions {
+	public static class Libraries {
 
-		public static String[] getRequisites() {
-			ArrayList<Element> elements = null;
+		public static boolean loadRequisites() {
+			CUtil.Files.extract("com/subterranean_security/cinstaller/res/bin/lib.zip",
+					Main.temp.getAbsolutePath() + "/lib.zip");
 			try {
-				elements = readDependancyXML(new FileInputStream(new File("Dependancies.xml")));
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				CUtil.Files.unzip(Main.temp.getAbsolutePath() + "/lib.zip", Main.temp.getAbsolutePath());
+			} catch (IOException e2) {
+				return false;
 			}
 
-			String[] a = new String[elements.size()];
-			for (int i = 0; i < a.length; i++) {
-				a[i] = elements.get(i).getElementsByTagName("Requisites").item(0).getTextContent();
+			// load libraries
+			try {
+				for (String lib : getRequisites(Common.instance)) {
+					CUtil.Files.loadJar(Main.temp.getAbsolutePath() + "/java/" + lib + ".jar");
+				}
+
+			} catch (Exception e1) {
+				return false;
 			}
-			return a;
+			return true;
 		}
 
-		private static ArrayList<Element> readDependancyXML(InputStream xml) throws Exception {
+		public static ArrayList<String> getRequisites(Instance instance) {
+			ArrayList<Element> elements = null;
+			try {
+				elements = readDependancyXML();
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+
+			ArrayList<String> req = new ArrayList<String>();
+			for (Element e : elements) {
+
+				if (e.getElementsByTagName("Requisites").item(0).getTextContent().contains(instance.getLabel())) {
+					req.add(e.getAttribute("CID"));
+				}
+			}
+			return req;
+		}
+
+		private static ArrayList<Element> readDependancyXML() throws Exception {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 
-			Document doc = builder.parse(CUtil.class.getResourceAsStream("com/subterranean_security/crimson/core/res/xml/Dependancies.xml"));
+			Document doc = builder.parse(CUtil.class.getClassLoader()
+					.getResourceAsStream("com/subterranean_security/crimson/core/res/xml/Dependancies.xml"));
 
 			doc.getDocumentElement().normalize();
 			NodeList nList = doc.getElementsByTagName("Lib");
