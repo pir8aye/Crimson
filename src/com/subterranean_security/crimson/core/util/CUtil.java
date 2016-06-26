@@ -1017,26 +1017,16 @@ public enum CUtil {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 
-			Document doc = builder.parse(xml);
+			Document doc = builder.parse(CUtil.class.getResourceAsStream("com/subterranean_security/crimson/core/res/xml/Dependancies.xml"));
 
 			doc.getDocumentElement().normalize();
 			NodeList nList = doc.getElementsByTagName("Lib");
 			ArrayList<Element> elements = new ArrayList<Element>();
 			for (int temp = 0; temp < nList.getLength(); temp++) {
 				Node nNode = nList.item(temp);
-				// System.out.println("\nCurrent Element :" +
-				// nNode.getNodeName());
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
 					elements.add(eElement);
-					// System.out.println("CID: " +
-					// eElement.getAttribute("CID"));
-					// System.out
-					// .println("EVersion: " +
-					// eElement.getElementsByTagName("EVersion").item(0).getTextContent());
-					// System.out.println(
-					// "Requisites: " +
-					// eElement.getElementsByTagName("Requisites").item(0).getTextContent());
 				}
 			}
 
@@ -1051,7 +1041,7 @@ public enum CUtil {
 			File config = new File(Common.Directories.varLog.getAbsolutePath() + "/logback-"
 					+ Common.instance.toString().toLowerCase() + ".xml");
 			if (!config.exists()) {
-				CUtil.Files.extract("com/subterranean_security/crimson/core/util/logback.xml",
+				CUtil.Files.extract("com/subterranean_security/crimson/core/res/xml/logback.xml",
 						config.getAbsolutePath());
 				CUtil.Files.substitute(config, "%LEVEL%", Common.isDebugMode() ? LogLevel.DEBUG.toString().toLowerCase()
 						: LogLevel.INFO.toString().toLowerCase());
