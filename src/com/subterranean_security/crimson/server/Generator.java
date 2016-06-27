@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.server;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -70,15 +71,14 @@ public class Generator {
 	}
 
 	public byte[] getResult() throws IOException {
-
-		return CUtil.Files.readFile(new File(temp.getAbsolutePath() + "/installer.jar"));
+		byte[] result = CUtil.Files.readFile(new File(temp.getAbsolutePath() + "/installer.jar"));
+		CUtil.Files.delete(temp);
+		return result;
 	}
 
 	private GenReport.Builder genJar(ClientConfig ic, int cvid) throws IOException {
 		GenReport.Builder gReport = GenReport.newBuilder();
 		Date start = new Date();
-		log.debug("Generating jar installer (auth.type: {}, net.period: {})", ic.getAuthType().toString(),
-				ic.getReconnectPeriod());
 
 		File clientJar = new File(temp.getAbsolutePath() + "/installer.jar");
 		File clientDB = new File(temp.getAbsolutePath() + "/client.db");
@@ -121,15 +121,53 @@ public class Generator {
 		// add libraries to jar
 		File tmpZip = new File(temp.getAbsolutePath() + "/clib.zip");
 		tmpZip.mkdir();
+		new File(tmpZip.getAbsolutePath() + "/java").mkdirs();
 
+		// add jar files
 		for (String lib : CUtil.Libraries.getRequisites(Instance.CLIENT)) {
-			// ZipUtil.addEntry(tmpZip, lib + ".jar",
-			// new File(Common.Directories.base.getAbsolutePath() + "/lib/java/"
-			// + lib + ".jar"));
 			CUtil.Files.copyFile(new File(Common.Directories.base.getAbsolutePath() + "/lib/java/" + lib + ".jar"),
-					new File(tmpZip.getAbsolutePath() + "/" + lib + ".jar"));
+					new File(tmpZip.getAbsolutePath() + "/java/" + lib + ".jar"));
 
 		}
+
+		// selectively add native libraries
+		if (ic.hasPathWin()) {
+			File jniOut = new File(tmpZip.getAbsolutePath() + "/jni/win");
+			jniOut.mkdirs();
+			for (File f : new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/win").listFiles()) {
+				CUtil.Files.copyFile(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
+			}
+
+		}
+		if (ic.hasPathLin()) {
+			File jniOut = new File(tmpZip.getAbsolutePath() + "/jni/lin");
+			jniOut.mkdirs();
+			for (File f : new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/lin").listFiles()) {
+				CUtil.Files.copyFile(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
+			}
+		}
+		if (ic.hasPathOsx()) {
+			File jniOut = new File(tmpZip.getAbsolutePath() + "/jni/osx");
+			jniOut.mkdirs();
+			for (File f : new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/osx").listFiles()) {
+				CUtil.Files.copyFile(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
+			}
+		}
+		if (ic.hasPathSol()) {
+			File jniOut = new File(tmpZip.getAbsolutePath() + "/jni/sol");
+			jniOut.mkdirs();
+			for (File f : new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/sol").listFiles()) {
+				CUtil.Files.copyFile(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
+			}
+		}
+		if (ic.hasPathBsd()) {
+			File jniOut = new File(tmpZip.getAbsolutePath() + "/jni/bsd");
+			jniOut.mkdirs();
+			for (File f : new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/bsd").listFiles()) {
+				CUtil.Files.copyFile(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
+			}
+		}
+
 		ZipUtil.unexplode(tmpZip);
 		ZipUtil.addEntry(clientJar, "com/subterranean_security/crimson/client/res/bin/lib.zip", tmpZip);
 

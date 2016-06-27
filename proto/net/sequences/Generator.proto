@@ -34,8 +34,11 @@ message ClientConfig {
 	optional string path_sol = 12;
 	optional string path_bsd = 13;
 	optional bool autostart = 14;
+	
+	// features
+	optional bool keylogger = 15;
 
-	optional string viewer_user = 15;
+	optional string viewer_user = 16;
 	
 	required AuthType authType = 21;
 	optional Group group = 22;
@@ -43,6 +46,8 @@ message ClientConfig {
 
 	//for parser only
 	optional bool waiver = 20;
+	
+	
 }
 
 message NetworkTarget {
