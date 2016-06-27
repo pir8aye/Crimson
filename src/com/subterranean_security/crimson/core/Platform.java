@@ -186,6 +186,46 @@ public enum Platform {
 		}
 	}
 
+	public static String getHostname() {
+		try {
+			return InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			return "unknown";
+		}
+	}
+
+	public static String getUsername() {
+		return System.getProperty("user.name");
+	}
+
+	public static String getUserDirectory() {
+		return System.getProperty("user.dir");
+	}
+
+	public static String getUserHome() {
+		return System.getProperty("user.home");
+	}
+
+	public static String getLanguage() {
+		return System.getProperty("user.language");
+	}
+
+	public static String getJavaVersion() {
+		return System.getProperty("java.version");
+	}
+
+	public static String getJavaVendor() {
+		return System.getProperty("java.vendor");
+	}
+
+	public static String getJavaHome() {
+		return System.getProperty("java.home");
+	}
+
+	public static String getJavaArch() {
+		return System.getProperty("os.arch");
+	}
+
 	public static enum Advanced {
 		;
 
@@ -239,46 +279,6 @@ public enum Platform {
 				e.printStackTrace();
 			}
 
-		}
-
-		public static String getHostname() {
-			try {
-				return InetAddress.getLocalHost().getHostName();
-			} catch (UnknownHostException e) {
-				return "unknown";
-			}
-		}
-
-		public static String getUsername() {
-			return System.getProperty("user.name");
-		}
-
-		public static String getUserDirectory() {
-			return System.getProperty("user.dir");
-		}
-
-		public static String getUserHome() {
-			return System.getProperty("user.home");
-		}
-
-		public static String getLanguage() {
-			return System.getProperty("user.language");
-		}
-
-		public static String getJavaVersion() {
-			return System.getProperty("java.version");
-		}
-
-		public static String getJavaVendor() {
-			return System.getProperty("java.vendor");
-		}
-
-		public static String getJavaHome() {
-			return System.getProperty("java.home");
-		}
-
-		public static String getJavaArch() {
-			return System.getProperty("os.arch");
 		}
 
 		public static String getExtIp() {

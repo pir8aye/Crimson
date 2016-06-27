@@ -55,13 +55,13 @@ public class Reporter {
 		rb.setInitDate(new Date().getTime());
 		rb.setCrVersion(Common.version);
 		rb.setCrBuild("" + Common.build);
-		rb.setJreVersion(Platform.Advanced.getJavaVersion());
+		rb.setJreVersion(Platform.getJavaVersion());
 		rb.setInstance(Common.instance.toString());
 		rb.setOsFamily(Platform.osFamily.toString());
 		// rb.setSysArch(Platform.sysArch.toString());
 		rb.setJreArch(Platform.javaArch.toString());
 		rb.setJreUptime(CUtil.Misc.datediff(Common.start, new Date()));
-		rb.setSysLang(Platform.Advanced.getLanguage());
+		rb.setSysLang(Platform.getLanguage());
 		rb.setOsName(Platform.osName);
 		try {
 			rb.setCrLog(CUtil.Files.readFileString(new File(Common.Directories.varLog.getAbsolutePath() + "/"
