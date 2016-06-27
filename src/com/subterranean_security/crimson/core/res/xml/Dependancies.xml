@@ -124,7 +124,7 @@
 			<CVersion>1</CVersion>
 			<EVersion>1.9</EVersion>
 			<License>Apache 2</License>
-			<Requisites>S</Requisites>
+			<Requisites>SI</Requisites>
 		</Lib>
 
 		<Lib CID="c16">
