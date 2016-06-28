@@ -17,6 +17,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
@@ -77,8 +78,8 @@ public class NTab extends JPanel {
 		btnTest = new JButton(UIUtil.getIcon("icons16/general/server_chart.png"));
 		btnTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				ep.raise(new ViewNetworktarget("example.com", 0), 50);
+				NetworkTarget nt = table.getSelected();
+				ep.raise(new ViewNetworktarget(ep, nt.getServer(), nt.getPort()), 80);
 			}
 		});
 		btnTest.setEnabled(false);

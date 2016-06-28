@@ -72,6 +72,10 @@ public class NetworkTargetTable extends JScrollPane {
 		tm.removeAt(table.getSelectedRow());
 	}
 
+	public NetworkTarget getSelected() {
+		return tm.getAt(table.getSelectedRow());
+	}
+
 	public ArrayList<NetworkTarget> getTargets() {
 		return tm.getTargets();
 	}
