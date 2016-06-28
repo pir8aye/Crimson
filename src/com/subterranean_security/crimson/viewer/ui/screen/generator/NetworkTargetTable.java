@@ -26,6 +26,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
+import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.NTab;
 
 public class NetworkTargetTable extends JScrollPane {
 
@@ -33,7 +34,10 @@ public class NetworkTargetTable extends JScrollPane {
 	private JTable table = new JTable();
 	private TM tm = new TM();
 
-	public NetworkTargetTable() {
+	private NTab parent;
+
+	public NetworkTargetTable(NTab ntab) {
+		parent = ntab;
 		table.setModel(tm);
 		table.setFillsViewportHeight(true);
 		table.setShowVerticalLines(false);
@@ -45,6 +49,8 @@ public class NetworkTargetTable extends JScrollPane {
 				// get source of click
 				JTable source = (JTable) e.getSource();
 				final int sourceRow = source.rowAtPoint(e.getPoint());
+				parent.btnRemove.setEnabled(sourceRow != -1);
+				parent.btnTest.setEnabled(sourceRow != -1);
 				if (sourceRow == -1) {
 					source.clearSelection();
 					return;
@@ -54,17 +60,16 @@ public class NetworkTargetTable extends JScrollPane {
 					source.changeSelection(sourceRow, 0, false, false);
 				}
 
-				if (e.getButton() == MouseEvent.BUTTON3) {
-					NetworkTarget selected = tm.getAt(sourceRow);
-					// right click
-
-				}
 			}
 		});
 	}
 
 	public void add(NetworkTarget nt) {
 		tm.add(nt);
+	}
+
+	public void remove() {
+		tm.removeAt(table.getSelectedRow());
 	}
 
 	public ArrayList<NetworkTarget> getTargets() {
@@ -124,6 +129,7 @@ class TM extends AbstractTableModel {
 
 	public void removeAt(int row) {
 		targets.remove(row);
+		this.fireTableDataChanged();
 	}
 
 }

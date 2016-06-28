@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -55,7 +56,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.Common;
@@ -67,14 +67,19 @@ import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.common.components.EntropyHarvester;
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.FTab;
+import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.NTab;
 
 public class GenPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	public JTextField fld_path;
 	private JPanel otab;
-	private JPanel ntab;
+	private NTab ntab;
+	private FTab ftab;
 	private JPanel etab;
 	private JPanel optab;
 	public JTextField fld_ctime;
@@ -82,16 +87,12 @@ public class GenPanel extends JPanel {
 	private JCheckBox cbx_waiver;
 	private JTextField fld_group_name;
 	private JTextArea txt_output_desc;
-	private NetworkTargetTable table;
-	private JTextField fld_server;
-	private JTextField fld_port;
 
 	private static final String jar = "Runnable Java Archive (.jar)";
 	private static final String exe = "Windows Portable Executable (.exe)";
 	private static final String apk = "Android Application (.apk)";
 	private static final String sh = "Shell Script (.sh)";
 	private JSpinner fld_delay;
-	private JSpinner fld_connect_period;
 
 	private String group_text = "Group authentication is the most secure mechanism. A \"group key\" is embedded in the client and only servers that posses this key may authenticate with the client and vice versa.";
 	private String pass_text = "A simple password is used to authenticate the client. This is less secure than group authentication";
@@ -103,8 +104,6 @@ public class GenPanel extends JPanel {
 	private String[] ipath_sol = new String[] { "/home/%USERNAME%/.crimson" };
 	private String[] ipath_bsd = new String[] { "/home/%USERNAME%/.crimson" };
 
-	private static final String defaultHint = "set or load generation options";
-
 	private Timer timer = new Timer();
 	private GroupTimer gt = new GroupTimer();
 
@@ -114,7 +113,7 @@ public class GenPanel extends JPanel {
 		changeToJar();
 
 		if (Common.isDebugMode()) {
-			table.add(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build());
+			ntab.table.add(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build());
 			fld_path.setText("C:/Users/dev/Desktop/client.jar");
 			cbx_waiver.setSelected(true);
 		}
@@ -180,49 +179,50 @@ public class GenPanel extends JPanel {
 		txt_output_desc.setOpaque(false);
 		panel_100.add(txt_output_desc);
 		panel_100.add(Box.createVerticalStrut(5), BorderLayout.NORTH);
-		panel_3.add(Box.createHorizontalStrut(5), BorderLayout.EAST);
-		panel_3.add(Box.createHorizontalStrut(5), BorderLayout.WEST);
+		panel_3.add(Box.createHorizontalStrut(10), BorderLayout.EAST);
+		panel_3.add(Box.createHorizontalStrut(10), BorderLayout.WEST);
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setPreferredSize(new Dimension(300, 60));
-		panel_2.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Platform Compatibility", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		panel_2.setLayout(null);
+		panel_2.setBorder(new TitledBorder(UICommon.basic, "Platform Compatibility", TitledBorder.LEADING,
+				TitledBorder.TOP, null, new Color(51, 51, 51)));
+		panel_2.setLayout(new GridLayout(0, 3, 0, 0));
 
 		lblWindows = new JLabel("Windows");
+		lblWindows.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWindows.setToolTipText("Runs on Vista through Windows 10");
 		lblWindows.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblWindows.setBounds(12, 18, 70, 15);
 		panel_2.add(lblWindows);
 
-		lblSolaris = new JLabel("Solaris");
-		lblSolaris.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblSolaris.setBounds(12, 37, 70, 15);
-		panel_2.add(lblSolaris);
-
 		lblLinux = new JLabel("Linux");
+		lblLinux.setHorizontalAlignment(SwingConstants.CENTER);
 		lblLinux.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblLinux.setBounds(132, 18, 70, 15);
 		panel_2.add(lblLinux);
 
-		lblBsd = new JLabel("BSD");
-		lblBsd.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblBsd.setBounds(132, 37, 70, 15);
-		panel_2.add(lblBsd);
-
 		lblMacOsX = new JLabel("Mac OS X");
+		lblMacOsX.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMacOsX.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblMacOsX.setBounds(214, 18, 70, 15);
 		panel_2.add(lblMacOsX);
 
+		lblSolaris = new JLabel("Solaris");
+		lblSolaris.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSolaris.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel_2.add(lblSolaris);
+
+		lblBsd = new JLabel("BSD");
+		lblBsd.setHorizontalAlignment(SwingConstants.CENTER);
+		lblBsd.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel_2.add(lblBsd);
+
 		lblAndroid = new JLabel("Android");
+		lblAndroid.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAndroid.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblAndroid.setBounds(214, 37, 70, 15);
 		panel_2.add(lblAndroid);
 		panel_3.add(panel_2, BorderLayout.SOUTH);
 
 		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(
-				new TitledBorder(null, "Optional Information", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_1.setBorder(new TitledBorder(UICommon.basic, "Optional Information", TitledBorder.LEADING,
+				TitledBorder.TOP, null, null));
 		optab.add(panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
 
@@ -231,7 +231,7 @@ public class GenPanel extends JPanel {
 		panel_1.add(panel_15, BorderLayout.CENTER);
 		panel_15.setLayout(new BorderLayout(0, 0));
 
-		JLabel lblInstallMessage = new JLabel("Install Message:");
+		JLabel lblInstallMessage = new JLabel("  Install Message:");
 		lblInstallMessage.setVerticalAlignment(SwingConstants.TOP);
 		panel_15.add(lblInstallMessage, BorderLayout.WEST);
 		lblInstallMessage.setFont(new Font("Dialog", Font.BOLD, 10));
@@ -251,7 +251,7 @@ public class GenPanel extends JPanel {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lbl_status.setInfo(defaultHint);
+				lbl_status.setDefault();
 			}
 		});
 		fld_install_message.setLineWrap(true);
@@ -263,213 +263,165 @@ public class GenPanel extends JPanel {
 		panel_1.add(panel_16, BorderLayout.NORTH);
 		panel_16.setLayout(new BorderLayout(0, 0));
 
-		JLabel lblIdentifier = new JLabel("Client Identifier:");
+		JLabel lblIdentifier = new JLabel("  Client Identifier:");
 		lblIdentifier.setFont(new Font("Dialog", Font.BOLD, 10));
 		panel_16.add(lblIdentifier, BorderLayout.WEST);
 
 		textField = new JTextField();
+		textField.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				lbl_status.setInfo("an optional text identifier");
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lbl_status.setDefault();
+			}
+		});
 		panel_16.add(textField, BorderLayout.EAST);
 		textField.setColumns(15);
 
+		ftab = new FTab();
+		tabbedPane.addTab(null, ftab);
+		tabbedPane.setTabComponentAt(1, new GenTabComponent("plugin", "Features"));
+
 		etab = new JPanel();
 		tabbedPane.addTab(null, etab);
-		tabbedPane.setTabComponentAt(1, new GenTabComponent("checkerboard", "Execution"));
+		tabbedPane.setTabComponentAt(2, new GenTabComponent("checkerboard", "Execution"));
 		etab.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		JPanel panel_7 = new JPanel();
-		panel_7.setPreferredSize(new Dimension(330, 100));
-		panel_7.setBorder(new TitledBorder(null, "Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_7.setPreferredSize(new Dimension(340, 120));
+		panel_7.setBorder(
+				new TitledBorder(UICommon.basic, "Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		etab.add(panel_7);
 		panel_7.setLayout(null);
 
 		JLabel lblDelay = new JLabel("Execution delay:");
+		lblDelay.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblDelay.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblDelay.setBounds(12, 20, 126, 15);
+		lblDelay.setBounds(12, 20, 107, 15);
 		panel_7.add(lblDelay);
 
 		fld_delay = new JSpinner();
 		fld_delay.setModel(new SpinnerNumberModel(0, 0, 3600, 1));
-		fld_delay.setBounds(161, 17, 57, 19);
+		fld_delay.setBounds(132, 17, 57, 19);
 		panel_7.add(fld_delay);
 
 		JLabel lblSeconds = new JLabel("seconds");
 		lblSeconds.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblSeconds.setBounds(229, 20, 57, 15);
+		lblSeconds.setBounds(195, 20, 73, 15);
 		panel_7.add(lblSeconds);
 
-		JCheckBox chckbxRecoverFromErrors = new JCheckBox("Recover from errors");
+		chckbxRecoverFromErrors = new JCheckBox("Recover from errors");
 		chckbxRecoverFromErrors.setFont(new Font("Dialog", Font.BOLD, 10));
-		chckbxRecoverFromErrors.setBounds(12, 40, 280, 23);
+		chckbxRecoverFromErrors.setBounds(8, 64, 151, 20);
 		panel_7.add(chckbxRecoverFromErrors);
 
-		JCheckBox chckbxInstallWhenIdle = new JCheckBox("Install when IDLE");
+		chckbxInstallWhenIdle = new JCheckBox("Delay until idle");
 		chckbxInstallWhenIdle.setFont(new Font("Dialog", Font.BOLD, 10));
-		chckbxInstallWhenIdle.setBounds(12, 67, 274, 25);
+		chckbxInstallWhenIdle.setBounds(8, 43, 151, 20);
 		panel_7.add(chckbxInstallWhenIdle);
 
-		JPanel ptab = new JPanel();
-		tabbedPane.addTab(null, ptab);
-		tabbedPane.setTabComponentAt(2, new GenTabComponent("folder", "Paths"));
-		ptab.setLayout(null);
+		chckbxInstallAutostartModule = new JCheckBox("Install autostart module");
+		chckbxInstallAutostartModule.setFont(new Font("Dialog", Font.BOLD, 10));
+		chckbxInstallAutostartModule.setBounds(163, 43, 166, 20);
+		panel_7.add(chckbxInstallAutostartModule);
+
+		chckbxDeleteInstaller = new JCheckBox("Delete installer");
+		chckbxDeleteInstaller.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				lbl_status.setInfo("delete installer after installation");
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lbl_status.setDefault();
+			}
+		});
+		chckbxDeleteInstaller.setBounds(163, 64, 164, 23);
+		panel_7.add(chckbxDeleteInstaller);
+		chckbxDeleteInstaller.setFont(new Font("Dialog", Font.BOLD, 10));
 
 		JPanel panel_6 = new JPanel();
-		panel_6.setBorder(
-				new TitledBorder(null, "Installation Directory", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_6.setPreferredSize(new Dimension(340, 150));
+		panel_6.setBorder(new TitledBorder(UICommon.basic, "Installation Directory", TitledBorder.LEADING,
+				TitledBorder.TOP, null, null));
 		panel_6.setBounds(12, 12, 341, 144);
-		ptab.add(panel_6);
+		etab.add(panel_6);
 		panel_6.setLayout(null);
 
 		fld_install_windows = new JComboBox<String>();
-		fld_install_windows.setFont(new Font("Dialog", Font.BOLD, 10));
+		fld_install_windows.setFont(new Font("Dialog", Font.BOLD, 9));
 		fld_install_windows.setModel(new DefaultComboBoxModel<String>(ipath_win));
 		fld_install_windows.setEditable(true);
-		fld_install_windows.setBounds(90, 17, 228, 19);
+		fld_install_windows.setBounds(90, 17, 239, 19);
 		panel_6.add(fld_install_windows);
 
 		fld_install_linux = new JComboBox<String>();
 		fld_install_linux.setFont(new Font("Dialog", Font.BOLD, 10));
 		fld_install_linux.setModel(new DefaultComboBoxModel<String>(ipath_lin));
 		fld_install_linux.setEditable(true);
-		fld_install_linux.setBounds(90, 42, 228, 19);
+		fld_install_linux.setBounds(90, 42, 239, 19);
 		panel_6.add(fld_install_linux);
 
 		fld_install_osx = new JComboBox<String>();
 		fld_install_osx.setFont(new Font("Dialog", Font.BOLD, 10));
 		fld_install_osx.setModel(new DefaultComboBoxModel<String>(ipath_osx));
 		fld_install_osx.setEditable(true);
-		fld_install_osx.setBounds(90, 67, 228, 19);
+		fld_install_osx.setBounds(90, 67, 239, 19);
 		panel_6.add(fld_install_osx);
 
 		fld_install_bsd = new JComboBox<String>();
 		fld_install_bsd.setFont(new Font("Dialog", Font.BOLD, 10));
 		fld_install_bsd.setModel(new DefaultComboBoxModel<String>(ipath_bsd));
 		fld_install_bsd.setEditable(true);
-		fld_install_bsd.setBounds(90, 117, 228, 19);
+		fld_install_bsd.setBounds(90, 117, 239, 19);
 		panel_6.add(fld_install_bsd);
 
 		fld_install_solaris = new JComboBox<String>();
 		fld_install_solaris.setFont(new Font("Dialog", Font.BOLD, 10));
 		fld_install_solaris.setModel(new DefaultComboBoxModel<String>(ipath_sol));
 		fld_install_solaris.setEditable(true);
-		fld_install_solaris.setBounds(90, 92, 228, 19);
+		fld_install_solaris.setBounds(90, 92, 239, 19);
 		panel_6.add(fld_install_solaris);
 
 		JLabel lblWindows = new JLabel("Windows:");
-		lblWindows.setFont(new Font("Dialog", Font.BOLD, 11));
+		lblWindows.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblWindows.setBounds(12, 20, 70, 15);
 		panel_6.add(lblWindows);
 
 		JLabel lblLinux = new JLabel("Linux:");
+		lblLinux.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblLinux.setBounds(12, 44, 70, 15);
 		panel_6.add(lblLinux);
 
 		JLabel lblOsX = new JLabel("OS X:");
+		lblOsX.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblOsX.setBounds(12, 69, 70, 15);
 		panel_6.add(lblOsX);
 
 		JLabel lblSolaris = new JLabel("Solaris:");
+		lblSolaris.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblSolaris.setBounds(12, 94, 70, 15);
 		panel_6.add(lblSolaris);
 
 		JLabel lblBsd = new JLabel("BSD:");
+		lblBsd.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblBsd.setBounds(12, 119, 70, 15);
 		panel_6.add(lblBsd);
 
-		ntab = new JPanel();
-		tabbedPane.addTab(null, ntab);
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		EPanel ep = new EPanel(panel);
+		ntab = new NTab(ep);
+		panel.add(ntab, BorderLayout.CENTER);
+
+		tabbedPane.addTab(null, ep);
 		tabbedPane.setTabComponentAt(3, new GenTabComponent("computer", "Network"));
 		ntab.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-
-		JPanel panel_17 = new JPanel();
-		panel_17.setPreferredSize(new Dimension(354, 300));
-		ntab.add(panel_17);
-		panel_17.setLayout(null);
-
-		table = new NetworkTargetTable();
-		table.setBounds(12, 12, 330, 65);
-		panel_17.add(table);
-
-		JPanel panel_4 = new JPanel();
-		panel_4.setBounds(12, 89, 330, 66);
-		panel_17.add(panel_4);
-		panel_4.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Add New Target",
-				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		panel_4.setLayout(null);
-
-		fld_server = new JTextField();
-		fld_server.setBounds(72, 17, 246, 19);
-		panel_4.add(fld_server);
-		fld_server.setColumns(10);
-
-		fld_port = new JTextField();
-		fld_port.setBounds(72, 39, 47, 19);
-		panel_4.add(fld_port);
-		fld_port.setColumns(10);
-
-		JButton btnAdd = new JButton("Add Target");
-		btnAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				String server = fld_server.getText();
-				String port = fld_port.getText();
-				if (!CUtil.Validation.port(port)) {
-					lbl_status.setBad("Invalid port");
-					return;
-				}
-				for (NetworkTarget nt : table.getTargets()) {
-					if (nt.getServer().equals(server) && nt.getPort() == Integer.parseInt(port)) {
-						lbl_status.setBad("Target already exists");
-						return;
-					}
-				}
-				if (CUtil.Validation.dns(server) || CUtil.Validation.ip(server)) {
-					table.add(NetworkTarget.newBuilder().setServer(server).setPort(Integer.parseInt(port)).build());
-					fld_server.setText("");
-					fld_port.setText("");
-					lbl_status.setGood("Added Target");
-				} else {
-					lbl_status.setBad("Invalid server address");
-					return;
-				}
-
-			}
-		});
-		btnAdd.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnAdd.setMargin(new Insets(2, 4, 2, 4));
-		btnAdd.setBounds(240, 40, 78, 19);
-		panel_4.add(btnAdd);
-
-		JLabel lblPort = new JLabel("Port:");
-		lblPort.setFont(new Font("Dialog", Font.BOLD, 11));
-		lblPort.setBounds(12, 43, 53, 15);
-		panel_4.add(lblPort);
-
-		JLabel lblServer = new JLabel("Server:");
-		lblServer.setFont(new Font("Dialog", Font.BOLD, 11));
-		lblServer.setBounds(12, 20, 53, 15);
-		panel_4.add(lblServer);
-
-		JPanel panel_5 = new JPanel();
-		panel_5.setBounds(12, 168, 330, 101);
-		panel_17.add(panel_5);
-		panel_5.setBorder(
-				new TitledBorder(null, "Network Options", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_5.setLayout(null);
-
-		fld_connect_period = new JSpinner();
-		fld_connect_period.setFont(new Font("Dialog", Font.BOLD, 10));
-		fld_connect_period.setModel(new SpinnerNumberModel(20, 5, 3600, 1));
-		fld_connect_period.setBounds(207, 17, 55, 20);
-		panel_5.add(fld_connect_period);
-
-		JLabel lblConnectionPeriod = new JLabel("Connection Period:");
-		lblConnectionPeriod.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblConnectionPeriod.setBounds(12, 20, 129, 15);
-		panel_5.add(lblConnectionPeriod);
-
-		JLabel lblSeconds_1 = new JLabel("seconds");
-		lblSeconds_1.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblSeconds_1.setBounds(267, 20, 51, 15);
-		panel_5.add(lblSeconds_1);
 
 		JPanel atab = new JPanel();
 		tabbedPane.addTab(null, atab);
@@ -565,7 +517,7 @@ public class GenPanel extends JPanel {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lbl_status.setInfo(defaultHint);
+				lbl_status.setDefault();
 			}
 		});
 		fld_group_name.setBounds(130, 20, 117, 19);
@@ -655,8 +607,10 @@ public class GenPanel extends JPanel {
 		fld_ctime.setBounds(82, 19, 176, 17);
 		fld_ctime.setHorizontalAlignment(SwingConstants.CENTER);
 		fld_ctime.setFont(new Font("Dialog", Font.PLAIN, 10));
-		pl_timestamps.add(fld_ctime);
 		fld_ctime.setColumns(20);
+		setCreationDate(new Date());
+		pl_timestamps.add(fld_ctime);
+
 		btnRandom.setFont(new Font("Dialog", Font.BOLD, 9));
 		btnRandom.setMargin(new Insets(1, 4, 1, 4));
 		pl_timestamps.add(btnRandom);
@@ -702,14 +656,13 @@ public class GenPanel extends JPanel {
 		lblApproximateOutputSize.setBounds(20, 44, 290, 15);
 		pl_output.add(lblApproximateOutputSize);
 
-		JPanel panel = new JPanel();
-		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		add(panel, BorderLayout.SOUTH);
-		panel.setLayout(new BorderLayout(0, 0));
+		JPanel panel1 = new JPanel();
+		panel1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		add(panel1, BorderLayout.SOUTH);
+		panel1.setLayout(new BorderLayout(0, 0));
 
-		lbl_status = new StatusLabel();
-		lbl_status.setInfo(defaultHint);
-		panel.add(lbl_status);
+		lbl_status = new StatusLabel("set or load generation options");
+		panel1.add(lbl_status);
 
 	}
 
@@ -730,6 +683,10 @@ public class GenPanel extends JPanel {
 	private JLabel lblBsd;
 	private JLabel lblMacOsX;
 	private JLabel lblAndroid;
+	private JCheckBox chckbxInstallAutostartModule;
+	private JCheckBox chckbxInstallWhenIdle;
+	private JCheckBox chckbxRecoverFromErrors;
+	private JCheckBox chckbxDeleteInstaller;
 
 	private void setCreationDate(Date d) {
 		currentCTime = d;
@@ -746,10 +703,12 @@ public class GenPanel extends JPanel {
 		ClientConfig.Builder ic = ClientConfig.newBuilder();
 
 		ic.setBuildNumber(Common.build);
+		ic.setMelt(chckbxDeleteInstaller.isSelected());
+		ic.setAutostart(chckbxInstallAutostartModule.isSelected());
 		ic.setViewerUser(ViewerStore.Profiles.vp.getUser());
 		ic.setOutputType((String) type_comboBox.getSelectedItem());
 		ic.setDelay((int) fld_delay.getValue());
-		ic.setReconnectPeriod((int) fld_connect_period.getValue());
+		ic.setReconnectPeriod((int) ntab.fld_connect_period.getValue());
 
 		ic.setImsg(fld_install_message.getText());
 
@@ -799,7 +758,7 @@ public class GenPanel extends JPanel {
 			ic.setPathBsd((String) fld_install_bsd.getSelectedItem());
 		}
 
-		for (NetworkTarget nt : table.getTargets()) {
+		for (NetworkTarget nt : ntab.table.getTargets()) {
 			if (nt != null) {
 				ic.addTarget(nt);
 			}
@@ -808,7 +767,7 @@ public class GenPanel extends JPanel {
 		return ic.build();
 	}
 
-	public boolean testValues(ClientConfig config) {// TODO finsh
+	public boolean testValues(ClientConfig config) {
 
 		if (config == null) {
 			lbl_status.setBad("You must agree to the terms first");

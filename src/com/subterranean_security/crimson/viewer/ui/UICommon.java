@@ -21,6 +21,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
+import javax.swing.border.LineBorder;
+
 public enum UICommon {
 	;
 	// paths
@@ -49,4 +51,6 @@ public enum UICommon {
 	public static final Dimension dim_min_users = new Dimension(450, 400);
 	public static final Dimension dim_control_button = new Dimension(100, 27);
 
+	// borders
+	public static final LineBorder basic = new LineBorder(new Color(184, 207, 229));
 }
