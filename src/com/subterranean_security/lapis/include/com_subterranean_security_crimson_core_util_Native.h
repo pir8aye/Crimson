@@ -63,6 +63,14 @@ JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_
 JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_hibernate
   (JNIEnv *, jclass);
 
+/*
+ * Class:     com_subterranean_security_crimson_core_util_Native
+ * Method:    execute
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Native_execute
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif

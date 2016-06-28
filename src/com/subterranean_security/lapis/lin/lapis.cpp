@@ -63,3 +63,12 @@ JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_
 JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_hibernate(JNIEnv *env, jclass cls) {
 
 }
+
+JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Native_execute(
+		JNIEnv *env, jclass cls, jstring cmd) {
+
+	char buffer[128];
+	exec(env->GetStringUTFChars(cmd, NULL), buffer);
+
+	return env->NewStringUTF(buffer);
+}

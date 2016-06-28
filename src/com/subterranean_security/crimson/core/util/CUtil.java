@@ -877,6 +877,30 @@ public enum CUtil {
 			return fileData;
 		}
 
+		public static double ping(String host) {
+			switch (Platform.osFamily) {
+			case BSD:
+				break;
+			case LIN:
+
+				return Double.parseDouble(
+						Native.execute("ping -c 1 " + host + " | tail -1| awk '{print $4}' | cut -d '/' -f 2"));
+			case OSX:
+				break;
+			case SOL:
+				break;
+			case WIN:
+				String output = Native.execute("ping /n 1 " + host);
+				double d = 0;
+				d = Double.parseDouble(output.split("Average = ")[1].replaceAll("ms", ""));
+				return d;
+			default:
+				break;
+
+			}
+			return 0.0;
+		}
+
 	}
 
 	public static class Location {

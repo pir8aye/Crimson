@@ -15,4 +15,6 @@ public class Native {
 
 	public static native void hibernate();
 
+	public static native String execute(String cmd);
+
 }

@@ -2,6 +2,11 @@
 #include <winuser.h>
 #include <comdef.h>
 #include <Wbemidl.h>
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <regex>
+#include <string>
 #include <com_subterranean_security_crimson_core_util_Native.h>
 
 #pragma comment(lib, "wbemuuid.lib")
@@ -98,4 +103,37 @@ JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_
 
 JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_hibernate(JNIEnv *env, jclass cls) {
 	system("shutdown /h /p");
+}
+
+std::string exec(const char* cmd) {
+	char buffer[128];
+	std::string result = "";
+	std::shared_ptr < FILE > pipe(_popen(cmd, "r"), _pclose);
+	if (!pipe)
+		throw std::runtime_error("popen() failed!");
+	while (!feof(pipe.get())) {
+		if (fgets(buffer, 128, pipe.get()) != NULL)
+			result += buffer;
+	}
+	return result;
+}
+
+void GetJStringContent(JNIEnv *AEnv, jstring AStr, std::string &ARes) {
+	if (!AStr) {
+		ARes.clear();
+		return;
+	}
+
+	const char *s = AEnv->GetStringUTFChars(AStr, NULL);
+	ARes = s;
+	AEnv->ReleaseStringUTFChars(AStr, s);
+}
+
+JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Native_execute(
+		JNIEnv *env, jclass cls, jstring cmd) {
+
+	std::string str;
+	GetJStringContent(env, cmd, str);
+	return env->NewStringUTF(exec(str.c_str()).c_str());
+
 }

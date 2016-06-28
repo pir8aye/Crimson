@@ -8,6 +8,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
+
+import com.subterranean_security.crimson.core.util.CUtil;
+
 import javax.swing.SwingConstants;
 
 public class ViewNetworktarget extends JPanel {
@@ -96,7 +99,12 @@ public class ViewNetworktarget extends JPanel {
 		new SwingWorker<String, Void>() {
 			@Override
 			protected String doInBackground() throws Exception {
-				return null;
+				double ping = CUtil.Network.ping(server);
+				if (ping == 0) {
+					return "failed";
+				} else {
+					return "" + ping + "ms";
+				}
 			}
 
 			protected void done() {
