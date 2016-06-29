@@ -41,6 +41,7 @@ import java.util.TimerTask;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -68,6 +69,7 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.EntropyHarvester;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.FTab;
@@ -449,10 +451,11 @@ public class GenPanel extends JPanel {
 		atab.add(panel_9, BorderLayout.CENTER);
 		panel_9.setLayout(new CardLayout(0, 0));
 
-		authType = new JComboBox();
+		authType = new JComboBox<ImageIcon>();
+		authType.setRenderer(new AuthComboBoxRenderer());
 		authType.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				switch ((String) authType.getSelectedItem()) {
+				switch (((ImageIcon) authType.getSelectedItem()).getDescription()) {
 				case "Group": {
 					txtrGroupAuthenticationIs.setText(group_text);
 					((CardLayout) panel_9.getLayout()).show(panel_9, "group");
@@ -471,7 +474,14 @@ public class GenPanel extends JPanel {
 				}
 			}
 		});
-		authType.setModel(new DefaultComboBoxModel(new String[] { "Group", "Password", "None" }));
+
+		ImageIcon group = UIUtil.getIcon("icons16/general/group.png");
+		group.setDescription("Group");
+		ImageIcon password = UIUtil.getIcon("icons16/general/textfield_password.png");
+		password.setDescription("Password");
+		ImageIcon na = UIUtil.getIcon("icons16/general/radioactivity.png");
+		na.setDescription("None");
+		authType.setModel(new DefaultComboBoxModel(new ImageIcon[] { group, password, na }));
 		panel_10.add(authType);
 
 		JPanel authpanel_group = new JPanel();
@@ -676,7 +686,7 @@ public class GenPanel extends JPanel {
 	private JComboBox<String> type_comboBox;
 	private JLabel key_prefix;
 	private JTextField textField;
-	private JComboBox authType;
+	private JComboBox<ImageIcon> authType;
 	private JLabel lblWindows;
 	private JLabel lblSolaris;
 	private JLabel lblLinux;
@@ -712,7 +722,7 @@ public class GenPanel extends JPanel {
 
 		ic.setImsg(fld_install_message.getText());
 
-		switch ((String) authType.getSelectedItem()) {
+		switch (((ImageIcon) authType.getSelectedItem()).getDescription()) {
 		case "Group": {
 			ic.setAuthType(AuthType.GROUP);
 			ic.setGroup(Group.newBuilder().setName(fld_group_name.getText()).setKey(CUtil.Misc.randString(64)).build());
