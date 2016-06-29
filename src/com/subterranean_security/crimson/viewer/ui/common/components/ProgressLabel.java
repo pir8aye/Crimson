@@ -29,12 +29,15 @@ public class ProgressLabel extends JPanel {
 
 		label = new JLabel();
 		label.setFont(new Font("Dialog", Font.BOLD, 10));
-		add(label, BorderLayout.CENTER);
+		add(label, BorderLayout.WEST);
 
 		progressBar = ProgressBarFactory.get();
 		progressBar.setPreferredSize(new Dimension(148, 4));
 		progressBar.setVisible(false);
 		add(progressBar, BorderLayout.SOUTH);
+
+		JPanel panel = new JPanel();
+		add(panel, BorderLayout.CENTER);
 
 	}
 
@@ -43,6 +46,7 @@ public class ProgressLabel extends JPanel {
 	}
 
 	public void startLoading() {
+		label.setText("loading...");
 		progressBar.setVisible(true);
 		progressBar.setIndeterminate(true);
 	}

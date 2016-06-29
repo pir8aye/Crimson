@@ -58,56 +58,32 @@ public class ViewNetworktarget extends JPanel {
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] { 54, 64, 0 };
-		gbl_panel.rowHeights = new int[] { 0, 0, 0 };
-		gbl_panel.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-		gbl_panel.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-		panel.setLayout(gbl_panel);
 
 		jp.add(panel);
+		panel.setLayout(null);
 
 		JLabel lblPing = new JLabel("Ping:");
 		lblPing.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblPing.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblPing.setBounds(12, 28, 57, 15);
-		GridBagConstraints gbc_lblPing = new GridBagConstraints();
-		gbc_lblPing.anchor = GridBagConstraints.NORTHEAST;
-		gbc_lblPing.insets = new Insets(0, 0, 5, 5);
-		gbc_lblPing.gridx = 0;
-		gbc_lblPing.gridy = 0;
-		panel.add(lblPing, gbc_lblPing);
+		lblPing.setBounds(23, 2, 28, 13);
+		panel.add(lblPing);
 
-		lblPing_1 = new ProgressLabel("loading...");
+		lblPing_1 = new ProgressLabel();
+		lblPing_1.setBounds(56, 2, 45, 15);
 		lblPing_1.startLoading();
 
-		lblPing_1.setPreferredSize(new Dimension(64, 15));
-		GridBagConstraints gbc_lblPing_1 = new GridBagConstraints();
-		gbc_lblPing_1.anchor = GridBagConstraints.NORTHWEST;
-		gbc_lblPing_1.insets = new Insets(0, 0, 5, 0);
-		gbc_lblPing_1.gridx = 1;
-		gbc_lblPing_1.gridy = 0;
-		panel.add(lblPing_1, gbc_lblPing_1);
+		panel.add(lblPing_1);
 
 		JLabel lblTargetVisibility = new JLabel("Status:");
 		lblTargetVisibility.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblTargetVisibility.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblTargetVisibility.setBounds(12, 45, 57, 15);
-		GridBagConstraints gbc_lblTargetVisibility = new GridBagConstraints();
-		gbc_lblTargetVisibility.anchor = GridBagConstraints.NORTHEAST;
-		gbc_lblTargetVisibility.insets = new Insets(0, 0, 0, 5);
-		gbc_lblTargetVisibility.gridx = 0;
-		gbc_lblTargetVisibility.gridy = 1;
-		panel.add(lblTargetVisibility, gbc_lblTargetVisibility);
+		lblTargetVisibility.setBounds(10, 22, 41, 13);
+		panel.add(lblTargetVisibility);
 
-		lblVisibility = new ProgressLabel("loading...");
+		lblVisibility = new ProgressLabel();
+		lblVisibility.setBounds(56, 22, 45, 15);
 		lblVisibility.startLoading();
-		lblVisibility.setPreferredSize(new Dimension(64, 15));
-		GridBagConstraints gbc_lblVisibility = new GridBagConstraints();
-		gbc_lblVisibility.anchor = GridBagConstraints.NORTHWEST;
-		gbc_lblVisibility.gridx = 1;
-		gbc_lblVisibility.gridy = 1;
-		panel.add(lblVisibility, gbc_lblVisibility);
+		panel.add(lblVisibility);
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
