@@ -68,6 +68,7 @@ public class Viewer {
 		// Load native libraries
 		Platform.Advanced.loadSigar();
 		Platform.Advanced.loadLapis();
+		Platform.Advanced.loadJDBC();
 
 		// Make platform specific UI tweaks
 		UIUtil.adaptPlatform();

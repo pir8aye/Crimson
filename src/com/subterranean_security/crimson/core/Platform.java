@@ -107,6 +107,38 @@ public enum Platform {
 			}
 		}
 
+		public String getJDBCName(ARCH arch) {
+			switch (this) {
+
+			case SOL:
+			case BSD:
+			case LIN:
+				switch (arch) {
+				case X64:
+					return "libjdbc64.so";
+				case X86:
+					return "libjdbc32.so";
+				default:
+					return null;
+				}
+
+			case OSX:
+				return null;
+
+			case WIN:
+				switch (arch) {
+				case X64:
+					return "jdbc64.dll";
+				case X86:
+					return "jdbc32.dll";
+				default:
+					return null;
+				}
+			default:
+				return null;
+			}
+		}
+
 	}
 
 	public enum ARCH {
@@ -279,6 +311,19 @@ public enum Platform {
 				e.printStackTrace();
 			}
 
+		}
+
+		public static void loadJDBC() {
+			log.debug("Loading JDBC native library");
+
+			try {
+				System.load(new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/"
+						+ osFamily.getJDBCName(javaArch)).getAbsolutePath());
+
+			} catch (Throwable e) {
+				log.error("Failed to load jdbc!");
+				e.printStackTrace();
+			}
 		}
 
 		public static String getExtIp() {

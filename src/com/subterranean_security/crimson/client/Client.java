@@ -53,6 +53,7 @@ public class Client {
 		// Load native libraries
 		Platform.Advanced.loadLapis();
 		Platform.Advanced.loadSigar();
+		Platform.Advanced.loadJDBC();
 
 		try {
 			clientDB = new ClientDB(new File(Common.Directories.base + "/var/client.db"));
