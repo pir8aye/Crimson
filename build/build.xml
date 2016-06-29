@@ -176,6 +176,24 @@
 			</manifest>
 		</jar>
 
+		<!-- Calculate file sizes -->
+		<length file="${lib.dir}/java/c19.jar" property="jnativehook.size" />
+		<length property="jni-win.size" mode="all">
+			<fileset dir="${lib.dir}" includes="**/jni/win/**" />
+		</length>
+		<length property="jni-lin.size" mode="all">
+			<fileset dir="${lib.dir}" includes="**/jni/lin/**" />
+		</length>
+		<length property="jni-osx.size" mode="all">
+			<fileset dir="${lib.dir}" includes="**/jni/osx/**" />
+		</length>
+		<length property="jni-bsd.size" mode="all">
+			<fileset dir="${lib.dir}" includes="**/jni/bsd/**" />
+		</length>
+		<length property="jni-sol.size" mode="all">
+			<fileset dir="${lib.dir}" includes="**/jni/sol/**" />
+		</length>
+
 		<!-- Create viewer.jar -->
 		<jar destfile="${installres.dir}/Crimson-Viewer.jar">
 			<fileset dir="${bin.dir}">
@@ -192,6 +210,14 @@
 				<attribute name="Application-Name" value="Crimson" />
 				<attribute name="Instance" value="Viewer" />
 				<attribute name="SplashScreen-Image" value="com/subterranean_security/crimson/viewer/ui/res/image/splash/splash.png" />
+
+				<!-- File sizes -->
+				<attribute name="jnativehook-size" value="${jnativehook.size}" />
+				<attribute name="jni-win-size" value="${jni-win.size}" />
+				<attribute name="jni-lin-size" value="${jni-lin.size}" />
+				<attribute name="jni-osx-size" value="${jni-osx.size}" />
+				<attribute name="jni-bsd-size" value="${jni-bsd.size}" />
+				<attribute name="jni-sol-size" value="${jni-sol.size}" />
 			</manifest>
 		</jar>
 
