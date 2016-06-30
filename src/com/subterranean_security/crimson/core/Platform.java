@@ -276,7 +276,6 @@ public enum Platform {
 			System.setProperty("java.library.path",
 					new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString())
 							.getAbsolutePath());
-			log.debug("Loading SIGAR native library");
 
 			sigar = new Sigar();
 			cpu = new Cpu();
@@ -297,33 +296,6 @@ public enum Platform {
 
 		public static Sigar getSigar() {
 			return sigar;
-		}
-
-		public static void loadLapis() {
-			log.debug("Loading LAPIS native library");
-
-			try {
-				System.load(new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/"
-						+ osFamily.getLapisName(javaArch)).getAbsolutePath());
-
-			} catch (Throwable e) {
-				log.error("Failed to load lapis!");
-				e.printStackTrace();
-			}
-
-		}
-
-		public static void loadJDBC() {
-			log.debug("Loading JDBC native library");
-
-			try {
-				System.load(new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/" + osFamily.toString() + "/"
-						+ osFamily.getJDBCName(javaArch)).getAbsolutePath());
-
-			} catch (Throwable e) {
-				log.error("Failed to load jdbc!");
-				e.printStackTrace();
-			}
 		}
 
 		public static String getExtIp() {

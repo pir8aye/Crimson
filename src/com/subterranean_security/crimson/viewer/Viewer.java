@@ -22,17 +22,14 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
 import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore.Databases;
@@ -63,12 +60,10 @@ public class Viewer {
 			System.exit(0);
 		}
 
-		loadDatabaseValues();
-
 		// Load native libraries
-		Platform.Advanced.loadSigar();
-		Platform.Advanced.loadLapis();
-		Platform.Advanced.loadJDBC();
+		Native.Loader.load();
+
+		loadDatabaseValues();
 
 		// Make platform specific UI tweaks
 		UIUtil.adaptPlatform();
