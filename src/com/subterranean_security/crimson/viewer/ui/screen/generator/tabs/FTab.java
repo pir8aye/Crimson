@@ -40,7 +40,10 @@ public class FTab extends JPanel {
 	public JCheckBox chckbxKeylogger;
 	private JLabel lblTotal;
 
-	public FTab() {
+	private JLabel outputSize;
+
+	public FTab(JLabel outputSize) {
+		this.outputSize = outputSize;
 		init();
 		try {
 			win_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-win-size"));
@@ -49,12 +52,12 @@ public class FTab extends JPanel {
 			sol_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-sol-size"));
 			bsd_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-bsd-size"));
 			jnativehook_size = Long.parseLong(CUtil.Misc.getManifestAttr("jnativehook-size"));
+			client_size = CUtil.Files.getResourceSize("/com/subterranean_security/crimson/server/res/bin/client.jar")
+					+ Long.parseLong(CUtil.Misc.getManifestAttr("client-lib-size"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		client_size = CUtil.Files.getResourceSize("/com/subterranean_security/crimson/server/res/bin/client.jar");
 
 		refresh();
 	}
@@ -104,6 +107,7 @@ public class FTab extends JPanel {
 		}
 
 		lblTotal.setText("Output size: " + CUtil.Misc.familiarize(total, CUtil.Misc.BYTES));
+		outputSize.setText("Approximate output size: " + CUtil.Misc.familiarize(total, CUtil.Misc.BYTES));
 
 	}
 

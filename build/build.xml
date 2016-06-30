@@ -23,6 +23,9 @@
 		<arg value="Q" />
 	</exec>
 
+	<exec executable="scripts/resolve-lib-size.sh" outputproperty="client-lib.size">
+	</exec>
+
 	<target name="clean">
 
 		<delete dir="${bin.dir}" />
@@ -218,6 +221,7 @@
 				<attribute name="jni-osx-size" value="${jni-osx.size}" />
 				<attribute name="jni-bsd-size" value="${jni-bsd.size}" />
 				<attribute name="jni-sol-size" value="${jni-sol.size}" />
+				<attribute name="client-lib-size" value="${client-lib.size}" />
 			</manifest>
 		</jar>
 

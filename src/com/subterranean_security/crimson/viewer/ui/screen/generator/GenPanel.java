@@ -89,6 +89,7 @@ public class GenPanel extends JPanel {
 	private JCheckBox cbx_waiver;
 	private JTextField fld_group_name;
 	private JTextArea txt_output_desc;
+	private JLabel lblApproximateOutputSize = new JLabel();
 
 	private static final String jar = "Runnable Java Archive (.jar)";
 	private static final String exe = "Windows Portable Executable (.exe)";
@@ -284,7 +285,7 @@ public class GenPanel extends JPanel {
 		panel_16.add(textField, BorderLayout.EAST);
 		textField.setColumns(15);
 
-		ftab = new FTab();
+		ftab = new FTab(lblApproximateOutputSize);
 		tabbedPane.addTab(null, ftab);
 		tabbedPane.setTabComponentAt(1, new GenTabComponent("plugin", "Features"));
 
@@ -659,7 +660,6 @@ public class GenPanel extends JPanel {
 		lblFile.setBounds(12, 20, 49, 15);
 		pl_output.add(lblFile);
 
-		JLabel lblApproximateOutputSize = new JLabel("Approximate Output Size:");
 		lblApproximateOutputSize.setHorizontalAlignment(SwingConstants.CENTER);
 		lblApproximateOutputSize.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		lblApproximateOutputSize.setFont(new Font("Dialog", Font.BOLD, 10));
