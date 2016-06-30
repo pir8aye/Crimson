@@ -244,4 +244,9 @@ public class FTab extends JPanel {
 
 	}
 
+	public boolean testValues() {
+		return (chckbxWindows.isSelected() || chckbxLinux.isSelected() || chckbxOsX.isSelected()
+				|| chckbxBsd.isSelected() || chckbxSolaris.isSelected());
+	}
+
 }

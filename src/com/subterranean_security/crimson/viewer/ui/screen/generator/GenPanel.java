@@ -800,28 +800,33 @@ public class GenPanel extends JPanel {
 			return false;
 		}
 
+		if (!ftab.testValues()) {
+			lbl_status.setBad("No compatible platforms");
+			return false;
+		}
+
 		// test paths
-		if (!CUtil.Validation.path(config.getPathWin())) {
+		if (config.hasPathWin() && !CUtil.Validation.path(config.getPathWin())) {
 			lbl_status.setBad("Invalid Windows install path");
 			return false;
 		}
 
-		if (!CUtil.Validation.path(config.getPathLin())) {
+		if (config.hasPathLin() && !CUtil.Validation.path(config.getPathLin())) {
 			lbl_status.setBad("Invalid Linux install path");
 			return false;
 		}
 
-		if (!CUtil.Validation.path(config.getPathOsx())) {
+		if (config.hasPathOsx() && !CUtil.Validation.path(config.getPathOsx())) {
 			lbl_status.setBad("Invalid OSX install path");
 			return false;
 		}
 
-		if (!CUtil.Validation.path(config.getPathSol())) {
+		if (config.hasPathSol() && !CUtil.Validation.path(config.getPathSol())) {
 			lbl_status.setBad("Invalid Solaris install path");
 			return false;
 		}
 
-		if (!CUtil.Validation.path(config.getPathBsd())) {
+		if (config.hasPathBsd() && !CUtil.Validation.path(config.getPathBsd())) {
 			lbl_status.setBad("Invalid BSD install path");
 			return false;
 		}
