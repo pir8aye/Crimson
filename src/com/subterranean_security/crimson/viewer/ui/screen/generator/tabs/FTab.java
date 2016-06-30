@@ -1,18 +1,19 @@
 package com.subterranean_security.crimson.viewer.ui.screen.generator.tabs;
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-
-import javax.swing.JCheckBox;
-import javax.swing.SwingConstants;
-import javax.swing.border.EtchedBorder;
 
 public class FTab extends JPanel {
 
@@ -24,25 +25,86 @@ public class FTab extends JPanel {
 	private JLabel lblBsd;
 	private JLabel lblKeylogger;
 
+	private long client_size;
+	private long win_size;
+	private long lin_size;
+	private long osx_size;
+	private long sol_size;
+	private long bsd_size;
+	private long jnativehook_size;
+	public JCheckBox chckbxWindows;
+	public JCheckBox chckbxLinux;
+	public JCheckBox chckbxOsX;
+	public JCheckBox chckbxSolaris;
+	public JCheckBox chckbxBsd;
+	public JCheckBox chckbxKeylogger;
+	private JLabel lblTotal;
+
 	public FTab() {
 		init();
 		try {
-			lblWin.setText(CUtil.Misc.familiarize(Long.parseLong(CUtil.Misc.getManifestAttr("jni-win-size")),
-					CUtil.Misc.BYTES));
-			lblLin.setText(CUtil.Misc.familiarize(Long.parseLong(CUtil.Misc.getManifestAttr("jni-lin-size")),
-					CUtil.Misc.BYTES));
-			lblOsx.setText(CUtil.Misc.familiarize(Long.parseLong(CUtil.Misc.getManifestAttr("jni-osx-size")),
-					CUtil.Misc.BYTES));
-			lblSol.setText(CUtil.Misc.familiarize(Long.parseLong(CUtil.Misc.getManifestAttr("jni-sol-size")),
-					CUtil.Misc.BYTES));
-			lblBsd.setText(CUtil.Misc.familiarize(Long.parseLong(CUtil.Misc.getManifestAttr("jni-bsd-size")),
-					CUtil.Misc.BYTES));
-			lblKeylogger.setText(CUtil.Misc.familiarize(Long.parseLong(CUtil.Misc.getManifestAttr("jnativehook-size")),
-					CUtil.Misc.BYTES));
+			win_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-win-size"));
+			lin_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-lin-size"));
+			osx_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-osx-size"));
+			sol_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-sol-size"));
+			bsd_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-bsd-size"));
+			jnativehook_size = Long.parseLong(CUtil.Misc.getManifestAttr("jnativehook-size"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		client_size = CUtil.Files.getResourceSize("/com/subterranean_security/crimson/server/res/bin/client.jar");
+
+		refresh();
+	}
+
+	private void refresh() {
+		long total = client_size;
+		if (chckbxWindows.isSelected()) {
+			lblWin.setText(CUtil.Misc.familiarize(win_size, CUtil.Misc.BYTES));
+			total += win_size;
+		} else {
+			lblWin.setText("0 KB");
+		}
+
+		if (chckbxLinux.isSelected()) {
+			lblLin.setText(CUtil.Misc.familiarize(lin_size, CUtil.Misc.BYTES));
+			total += lin_size;
+		} else {
+			lblLin.setText("0 KB");
+		}
+
+		if (chckbxOsX.isSelected()) {
+			lblOsx.setText(CUtil.Misc.familiarize(osx_size, CUtil.Misc.BYTES));
+			total += osx_size;
+		} else {
+			lblOsx.setText("0 KB");
+		}
+
+		if (chckbxSolaris.isSelected()) {
+			lblSol.setText(CUtil.Misc.familiarize(sol_size, CUtil.Misc.BYTES));
+			total += sol_size;
+		} else {
+			lblSol.setText("0 KB");
+		}
+
+		if (chckbxBsd.isSelected()) {
+			lblBsd.setText(CUtil.Misc.familiarize(bsd_size, CUtil.Misc.BYTES));
+			total += bsd_size;
+		} else {
+			lblBsd.setText("0 KB");
+		}
+
+		if (chckbxKeylogger.isSelected()) {
+			lblKeylogger.setText(CUtil.Misc.familiarize(jnativehook_size, CUtil.Misc.BYTES));
+			total += jnativehook_size;
+		} else {
+			lblKeylogger.setText("0 KB");
+		}
+
+		lblTotal.setText("Output size: " + CUtil.Misc.familiarize(total, CUtil.Misc.BYTES));
+
 	}
 
 	public void init() {
@@ -60,31 +122,56 @@ public class FTab extends JPanel {
 		add(panel);
 		panel.setLayout(null);
 
-		JCheckBox chckbxWindows = new JCheckBox("Windows");
+		chckbxWindows = new JCheckBox("Windows");
+		chckbxWindows.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				refresh();
+			}
+		});
 		chckbxWindows.setSelected(true);
 		chckbxWindows.setFont(new Font("Dialog", Font.BOLD, 10));
 		chckbxWindows.setBounds(8, 20, 129, 20);
 		panel.add(chckbxWindows);
 
-		JCheckBox chckbxLinux = new JCheckBox("Linux");
+		chckbxLinux = new JCheckBox("Linux");
+		chckbxLinux.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				refresh();
+			}
+		});
 		chckbxLinux.setSelected(true);
 		chckbxLinux.setFont(new Font("Dialog", Font.BOLD, 10));
 		chckbxLinux.setBounds(8, 40, 129, 20);
 		panel.add(chckbxLinux);
 
-		JCheckBox chckbxOsX = new JCheckBox("OS X");
+		chckbxOsX = new JCheckBox("OS X");
+		chckbxOsX.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				refresh();
+			}
+		});
 		chckbxOsX.setSelected(true);
 		chckbxOsX.setFont(new Font("Dialog", Font.BOLD, 10));
 		chckbxOsX.setBounds(8, 60, 129, 20);
 		panel.add(chckbxOsX);
 
-		JCheckBox chckbxSolaris = new JCheckBox("Solaris");
+		chckbxSolaris = new JCheckBox("Solaris");
+		chckbxSolaris.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				refresh();
+			}
+		});
 		chckbxSolaris.setSelected(true);
 		chckbxSolaris.setFont(new Font("Dialog", Font.BOLD, 10));
 		chckbxSolaris.setBounds(8, 80, 129, 20);
 		panel.add(chckbxSolaris);
 
-		JCheckBox chckbxBsd = new JCheckBox("BSD");
+		chckbxBsd = new JCheckBox("BSD");
+		chckbxBsd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				refresh();
+			}
+		});
 		chckbxBsd.setSelected(true);
 		chckbxBsd.setFont(new Font("Dialog", Font.BOLD, 10));
 		chckbxBsd.setBounds(8, 100, 129, 20);
@@ -127,7 +214,12 @@ public class FTab extends JPanel {
 		add(panel_1);
 		panel_1.setLayout(null);
 
-		JCheckBox chckbxKeylogger = new JCheckBox("Keylogger");
+		chckbxKeylogger = new JCheckBox("Keylogger");
+		chckbxKeylogger.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				refresh();
+			}
+		});
 		chckbxKeylogger.setSelected(true);
 		chckbxKeylogger.setFont(new Font("Dialog", Font.BOLD, 10));
 		chckbxKeylogger.setBounds(8, 18, 129, 23);
@@ -139,12 +231,12 @@ public class FTab extends JPanel {
 		lblKeylogger.setBounds(234, 21, 70, 15);
 		panel_1.add(lblKeylogger);
 
-		JLabel lblNewLabel = new JLabel("New label");
-		lblNewLabel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		lblNewLabel.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(12, 252, 316, 15);
-		add(lblNewLabel);
+		lblTotal = new JLabel("New label");
+		lblTotal.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		lblTotal.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblTotal.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTotal.setBounds(12, 252, 316, 15);
+		add(lblTotal);
 
 	}
 

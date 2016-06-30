@@ -125,6 +125,9 @@ public class Generator {
 
 		// add jar files
 		for (String lib : CUtil.JavaLibraries.getRequisites(Instance.CLIENT)) {
+			if (lib.equals("c19") && !ic.getKeylogger()) {
+				continue;
+			}
 			CUtil.Files.copyFile(new File(Common.Directories.base.getAbsolutePath() + "/lib/java/" + lib + ".jar"),
 					new File(tmpZip.getAbsolutePath() + "/java/" + lib + ".jar"));
 

