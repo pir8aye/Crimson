@@ -112,7 +112,7 @@ public enum FileLocking {
 				continue;
 			}
 			// look at the name
-			if (f.getName().length() < lockBaseSize) {
+			if (f.getName().length() <= lockBaseSize) {
 				// not this one
 				continue;
 			}
