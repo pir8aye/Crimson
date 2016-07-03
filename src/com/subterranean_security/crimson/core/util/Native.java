@@ -31,6 +31,10 @@ public final class Native {
 
 	public static native String execute(String cmd);
 
+	public static native void startRD();
+
+	public static native void stopRD();
+
 	public static class Loader {
 		public static void load() {
 			loadJDBC();
@@ -86,6 +90,10 @@ public final class Native {
 			return true;
 
 		}
+	}
+
+	public static void callback_sendFrame() {
+
 	}
 
 }

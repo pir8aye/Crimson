@@ -54,6 +54,7 @@ import com.subterranean_security.crimson.core.proto.Screenshot.RS_QuickScreensho
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
 import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.core.stream.remote.RemoteSlave;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -288,6 +289,9 @@ public class ClientExecutor extends BasicExecutor {
 		Param p = m.getMiStreamStart().getParam();
 		if (p.hasInfoParam()) {
 			StreamStore.addStream(new CInfoSlave(p));
+		}
+		if (p.hasRemoteParam()) {
+			StreamStore.addStream(new RemoteSlave(p.getRemoteParam()));
 		}
 	}
 

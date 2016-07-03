@@ -71,6 +71,22 @@ JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_
 JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Native_execute
   (JNIEnv *, jclass, jstring);
 
+/*
+ * Class:     com_subterranean_security_crimson_core_util_Native
+ * Method:    startRD
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_startRD
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_subterranean_security_crimson_core_util_Native
+ * Method:    stopRD
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_stopRD
+  (JNIEnv *, jclass);
+
 #ifdef __cplusplus
 }
 #endif

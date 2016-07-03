@@ -30,6 +30,8 @@ import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.StateType;
+import com.subterranean_security.crimson.core.ui.remote.RDFrame;
+import com.subterranean_security.crimson.core.ui.remote.RDPanel.Type;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -42,6 +44,7 @@ public enum ContextMenu {
 
 	private static JMenuItem control;
 	private static JMenuItem screenshot;
+	private static JMenuItem remote;
 	private static JMenuItem showInGraph;
 	private static JMenuItem showInList;
 	private static JMenuItem showInHistory;
@@ -142,6 +145,19 @@ public enum ContextMenu {
 			}
 		});
 		quick.add(screenshot);
+
+		remote = new JMenuItem("Remote Desktop");
+		remote.setIcon(UIUtil.getIcon("icons16/general/monitor_wallpaper.png"));
+		remote.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				RDFrame rdf = new RDFrame(Type.INTERACT, selected.getCvid());
+				rdf.setVisible(true);
+
+			}
+		});
+		quick.add(remote);
 
 		JMenu state = new JMenu("Change State");
 		state.setIcon(UIUtil.getIcon("icons16/general/power_surge.png"));

@@ -11,6 +11,20 @@ message MI_StreamStop {
 
 message EV_StreamData {
 	required int32 streamID = 1;
+	
+	//remote
+	optional EventData eventData = 2;
+	optional ScreenData screenData = 3;
+}
+
+message EventData {
+	optional int32 keyPressed = 1;
+	optional int32 keyReleased = 2;
+
+}
+
+message ScreenData {
+	optional bytes data = 1;
 }
 
 message Param {
@@ -21,6 +35,7 @@ message Param {
 	
 	optional InfoParam info_param = 5;
 	optional SubscriberParam subscriber_param = 6;
+	optional RemoteParam remote_param = 7;
 }
 
 message InfoParam {
@@ -31,6 +46,9 @@ message InfoParam {
 	optional bool ram_usage = 5;
 	optional bool crimson_ram_usage = 6;
 	optional bool crimson_cpu_usage = 7;
+}
+
+message RemoteParam {
 }
 
 message SubscriberParam {
