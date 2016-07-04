@@ -1,5 +1,6 @@
 #include "lapis.h"
 #include "dxgi/DesktopDuplication.h"
+#include "dxgi/JNIManager.h"
 
 #pragma comment(lib, "wbemuuid.lib")
 
@@ -60,13 +61,7 @@ JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Nati
 }
 
 JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_startRD(JNIEnv *env, jclass jcls) {
-	// setup calls to jvm
-	nativeCls = env->FindClass("com/subterranean_security/crimson/core/util/Native");
-	if(nativeCls == nullptr) {
-		std::cout << "Failed to find Native class" << std::endl;
-		return;
-	}
-	sendFrameMethod = env->GetStaticMethodID(nativeCls, "callback_sendFrame", "()V");
+	initJNIManager(env);
 
 	//start RD
 	startCapture();

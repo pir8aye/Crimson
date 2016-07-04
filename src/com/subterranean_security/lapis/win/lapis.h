@@ -12,9 +12,6 @@
 #include <regex>
 #include <string>
 
-jclass nativeCls;
-jmethodID sendFrameMethod;
-
 void sendFrame();
 
 #endif

@@ -6,6 +6,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved
 
 #include <limits.h>
+#include <iostream>
 
 #include "DisplayManager.h"
 #include "DuplicationManager.h"

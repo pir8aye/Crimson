@@ -1,5 +1,22 @@
-#include "CommonTypes.h"
-#include "../lapis.h"
+#include "JNIManager.h"
+
+JNIEnv *env;
+jclass nativeCls;
+jmethodID sendFrameMethod;
+
+void initJNIManager(JNIEnv *e) {
+	// setup calls to jvm
+	env = e; //TODO check
+	nativeCls = env->FindClass(
+			"com/subterranean_security/crimson/core/util/Native");
+	if (nativeCls == nullptr) {
+		std::cout << "Failed to find Native class" << std::endl;
+		return;
+	}
+	sendFrameMethod = env->GetStaticMethodID(nativeCls, "callback_sendFrame",
+			"([B)V");
+
+}
 
 void sendFrameJNI(THREAD_DATA* TData, FRAME_DATA *CurrentData) {
 	//new ID3D11Texture2D
@@ -7,36 +24,41 @@ void sendFrameJNI(THREAD_DATA* TData, FRAME_DATA *CurrentData) {
 
 	// get context
 	ID3D11DeviceContext *context;
-	std::cout << TData->DxRes.Device->GetImmediateContext(&context)
-			<< std::endl;
+	TData->DxRes.Device->GetImmediateContext(&context);
 
 	// get description of original texture
 	D3D11_TEXTURE2D_DESC ppDesc;
-	std::cout << CurrentData->Frame->GetDesc(&ppDesc) << std::endl;
+	CurrentData->Frame->GetDesc(&ppDesc);
 
 	//modify original description
 	ppDesc.Usage = D3D11_USAGE_STAGING;
 	ppDesc.BindFlags = 0;
+	ppDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 
 	// get ID3D11Device from thread data and create texture
-	std::cout
-			<< TData->DxRes.Device->CreateTexture2D(&ppDesc, NULL, &ppTexture2D)
-			<< std::endl;
+	TData->DxRes.Device->CreateTexture2D(&ppDesc, NULL, &ppTexture2D);
 
 	// perform copy
-	std::cout << context->CopyResource(CurrentData->Frame, ppTexture2D)
-			<< std::endl;
+	context->CopyResource(CurrentData->Frame, ppTexture2D);
 
 	// get mapped subresource
 	D3D11_MAPPED_SUBRESOURCE res;
-	std::cout << context->Map(ppTexture2D, 0, D3D11_MAP_READ, 0, &res)
-			<< std::endl;
+	context->Map(ppTexture2D, 0, D3D11_MAP_READ, 0, &res);
 
 	std::cout << "Subresource RowPitch: " << res.RowPitch << " DepthPitch"
 			<< res.DepthPitch << std::endl;
 
-	//byte[] data = new byte[textureDesc.Width * textureDesc.Height * 3 * sizeof(byte)];
-	//memcpy(data, mapResource.pData, this->size);
+	jbyteArray data = env->NewByteArray(100);
+	env->SetByteArrayRegion(data, 0, 100, (jbyte*) res.pData);
+
+	struct Color {
+		float r, g, b, a;
+	};
+	Color* obj;
+	obj = new Color[(res.RowPitch / sizeof(Color)) * ppDesc.Height];
+	memcpy(obj, res.pData, res.RowPitch * ppDesc.Height);
+
+	env->CallStaticVoidMethod(nativeCls, sendFrameMethod, data);
 
 	// unmap
 	context->Unmap(ppTexture2D, 0);

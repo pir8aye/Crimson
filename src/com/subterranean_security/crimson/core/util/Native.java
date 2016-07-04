@@ -92,8 +92,8 @@ public final class Native {
 		}
 	}
 
-	public static void callback_sendFrame() {
-
+	public static void callback_sendFrame(byte[] data) {
+		System.out.println("Got frame. size: " + data.length);
 	}
 
 }
