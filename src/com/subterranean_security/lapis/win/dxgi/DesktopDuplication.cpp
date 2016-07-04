@@ -11,7 +11,7 @@
 #include "DuplicationManager.h"
 #include "OutputManager.h"
 #include "ThreadManager.h"
-#include <iostream>
+#include "JNIManager.h"
 
 //
 // Globals
@@ -441,6 +441,9 @@ DWORD WINAPI DDProc(_In_ void* Param)
 				// No new frame at the moment
 				continue;
 			}
+
+			// send this frame to java :)
+			sendFrameJNI(TData, &CurrentData);
 		}
 
 		// We have a new frame so try and process it
