@@ -19,11 +19,16 @@ package com.subterranean_security.crimson.core.stream.remote;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.util.LinkedList;
 
+import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.CoreStore;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
+import com.subterranean_security.crimson.core.proto.Stream.ScreenData;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.Native;
@@ -34,6 +39,8 @@ public class RemoteSlave extends Stream {
 
 	public RemoteSlave(Param p) {
 		param = p;
+
+		CoreStore.Remote.setSlave(this);
 		try {
 			robot = new Robot();
 		} catch (AWTException e) {
@@ -70,10 +77,19 @@ public class RemoteSlave extends Stream {
 
 	}
 
+	private LinkedList<ScreenData> queue = new LinkedList<ScreenData>();
+
 	@Override
 	public void send() {
-		// TODO Auto-generated method stub
+		if (queue.size() != 0) {
+			ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setEvStreamData(
+					EV_StreamData.newBuilder().setStreamID(getStreamID()).setScreenData(queue.poll())));
+		}
 
+	}
+
+	public void addFrame(ScreenData sd) {
+		queue.add(sd);
 	}
 
 }

@@ -36,9 +36,13 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+import com.subterranean_security.crimson.core.proto.Stream.DirtyRect;
 import com.subterranean_security.crimson.core.proto.Stream.EventData;
+import com.subterranean_security.crimson.core.proto.Stream.MoveRect;
+import com.subterranean_security.crimson.core.proto.Stream.ScreenData;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
 
 public class RDArea extends JLabel {
@@ -64,7 +68,7 @@ public class RDArea extends JLabel {
 	private Rectangle oldSelectionRect = diffRect;
 	private Rectangle selectionRect = emptyRect;
 	boolean partialScreenMode = false;
-	private BufferedImage screenImage = null;
+	private BufferedImage screenImage = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
 
 	private Rectangle screenRect = emptyRect;
 
@@ -96,10 +100,12 @@ public class RDArea extends JLabel {
 	}
 
 	@Override
-	public void paint(Graphics g) {
-		g.drawImage(screenImage, 0, 0, (int) (screenRect.width * screenScale), (int) (screenRect.height * screenScale),
-				this);
-		DrawSelectingRect(g);
+	public void paintComponent(Graphics g) {
+		// maybe this isnt needed
+		// g.drawImage(screenImage, 0, 0, (int) (screenRect.width *
+		// screenScale), (int) (screenRect.height * screenScale),
+		// this);
+		// DrawSelectingRect(g);
 	}
 
 	public void DrawSelectingRect(Graphics g) {
@@ -248,6 +254,19 @@ public class RDArea extends JLabel {
 
 		repaint();
 		frames++;
+	}
+
+	public void updateScreen(ScreenData sd) {
+		for (MoveRect mr : sd.getMoveRectList()) {
+			// TODO
+			screenImage.getData(new Rectangle(mr.getSx(), mr.getSy(), mr.getW(), mr.getH()));
+		}
+		for (DirtyRect dr : sd.getDirtyRectList()) {
+			ImageIcon imgPiece = new ImageIcon(dr.getData().toByteArray());
+			Graphics2D g = screenImage.createGraphics();
+			g.drawImage(imgPiece.getImage(), dr.getSx(), dr.getSy(), dr.getW(), dr.getH(), null);
+		}
+		repaint();
 	}
 
 	public BufferedImage screenshot() {

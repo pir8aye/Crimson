@@ -68,6 +68,7 @@ public class RemoteMaster extends Stream {
 	@Override
 	public void received(Message m) {
 		// update rda
+		rda.updateScreen(m.getEvStreamData().getScreenData());
 
 	}
 

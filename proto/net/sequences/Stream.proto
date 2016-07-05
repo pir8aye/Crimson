@@ -24,7 +24,33 @@ message EventData {
 }
 
 message ScreenData {
-	optional bytes data = 1;
+	repeated MoveRect move_rect = 1;
+	repeated DirtyRect dirty_rect = 2;
+}
+
+message MoveRect {
+	//source point
+	required int32 sx = 1;
+	required int32 sy = 2;
+	
+	//dest point
+	required int32 dx = 3;
+	required int32 dy = 4;
+	
+	//size
+	required int32 w = 5;
+	required int32 h = 6;
+}
+
+message DirtyRect {
+	required int32 sx = 1;
+	required int32 sy = 2;
+	
+	//size
+	required int32 w = 3;
+	required int32 h = 4;
+	
+	required bytes data = 5;
 }
 
 message Param {

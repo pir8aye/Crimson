@@ -61,7 +61,6 @@ JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Nati
 }
 
 JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_startRD(JNIEnv *env, jclass jcls) {
-	initJNIManager(env);
 
 	//start RD
 	startCapture();

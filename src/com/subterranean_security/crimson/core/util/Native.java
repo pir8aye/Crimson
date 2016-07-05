@@ -5,8 +5,15 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.protobuf.ByteString;
+import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.CoreStore;
 import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Stream.DirtyRect;
+import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
+import com.subterranean_security.crimson.core.proto.Stream.ScreenData;
 
 public final class Native {
 
@@ -92,8 +99,14 @@ public final class Native {
 		}
 	}
 
-	public static void callback_sendFrame(byte[] data) {
-		System.out.println("Got frame. size: " + data.length);
+	public static void callback_remote_moveRect(int sx, int sy, int dx, int dy, int w, int h) {
 	}
 
+	public static void callback_remote_dirtyRect(int sx, int sy, int w, int h, byte[] data) {
+		// debug send
+		CoreStore.Remote.getSlave()
+				.addFrame(ScreenData.newBuilder().addDirtyRect(
+						DirtyRect.newBuilder().setSx(sx).setSy(sy).setW(w).setH(h).setData(ByteString.copyFrom(data)))
+						.build());
+	}
 }
