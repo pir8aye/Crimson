@@ -72,6 +72,54 @@ public class RDPanel extends JPanel {
 		JMenuBar menuBar = new JMenuBar();
 		add(menuBar, BorderLayout.NORTH);
 
+		JPanel toggle = new JPanel();
+		toggle.setMaximumSize(new Dimension(26, 30));
+		toggle.setPreferredSize(new Dimension(26, 30));
+		toggle.setLayout(new BorderLayout());
+		menuBar.add(toggle);
+
+		barToggle = new JProgressBar();
+		barToggle.setPreferredSize(new Dimension(148, 4));
+		toggle.add(barToggle, BorderLayout.SOUTH);
+
+		JButton btnToggle = new JButton(UIUtil.getIcon("icons16/general/map_go.png"));
+		btnToggle.setToolTipText("Start");
+		btnToggle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				barToggle.setIndeterminate(true);
+				btnToggle.setEnabled(false);
+				new SwingWorker<Void, Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						if (running) {
+							running = false;
+							btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_go.png"));
+							btnToggle.setToolTipText("Start");
+							StreamStore.removeStream(stream.getStreamID());
+						} else {
+							running = true;
+							btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
+							btnToggle.setToolTipText("Stop");
+							stream = new RemoteMaster(RemoteParam.newBuilder().build(), cvid, rdArea);
+
+							stream.start();
+							rdArea.start(stream);
+						}
+
+						return null;
+					}
+
+					protected void done() {
+						barToggle.setIndeterminate(false);
+						btnToggle.setEnabled(true);
+					};
+				}.execute();
+			}
+		});
+		btnToggle.setMargin(new Insets(2, 2, 2, 2));
+		toggle.add(btnToggle, BorderLayout.CENTER);
+
 		JPanel screenshot = new JPanel();
 		screenshot.setMaximumSize(new Dimension(26, 30));
 		screenshot.setPreferredSize(new Dimension(26, 30));
@@ -112,49 +160,6 @@ public class RDPanel extends JPanel {
 		barScreenshot.setPreferredSize(new Dimension(148, 4));
 		screenshot.add(barScreenshot, BorderLayout.SOUTH);
 
-		JPanel toggle = new JPanel();
-		toggle.setMaximumSize(new Dimension(26, 30));
-		toggle.setPreferredSize(new Dimension(26, 30));
-		toggle.setLayout(new BorderLayout());
-		menuBar.add(toggle);
-
-		barToggle = new JProgressBar();
-		barToggle.setPreferredSize(new Dimension(148, 4));
-		toggle.add(barToggle, BorderLayout.SOUTH);
-
-		JButton btnToggle = new JButton("G");
-		btnToggle.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				barToggle.setIndeterminate(true);
-				btnToggle.setEnabled(false);
-				new SwingWorker<Void, Void>() {
-
-					@Override
-					protected Void doInBackground() throws Exception {
-						if (running) {
-							running = false;
-							StreamStore.removeStream(stream.getStreamID());
-						} else {
-							running = true;
-							stream = new RemoteMaster(RemoteParam.newBuilder().build(), cvid, rdArea);
-
-							stream.start();
-							rdArea.start(stream);
-						}
-
-						return null;
-					}
-
-					protected void done() {
-						barToggle.setIndeterminate(false);
-						btnToggle.setEnabled(true);
-					};
-				}.execute();
-			}
-		});
-		btnToggle.setMargin(new Insets(2, 2, 2, 2));
-		toggle.add(btnToggle, BorderLayout.CENTER);
-
 		JPanel keyToggle = new JPanel();
 		keyToggle.setMaximumSize(new Dimension(26, 30));
 		keyToggle.setPreferredSize(new Dimension(26, 30));
@@ -165,7 +170,7 @@ public class RDPanel extends JPanel {
 		barKeyToggle.setPreferredSize(new Dimension(148, 4));
 		keyToggle.add(barKeyToggle, BorderLayout.SOUTH);
 
-		JButton btnKeyToggle = new JButton(UIUtil.getIcon("icons16/general/keyboard.png"));
+		JButton btnKeyToggle = new JButton(UIUtil.getIcon("icons16/general/keyboard_x.png"));
 		btnKeyToggle.addActionListener(new ActionListener() {
 			private boolean installed = false;
 
@@ -196,7 +201,7 @@ public class RDPanel extends JPanel {
 		barMouseToggle.setPreferredSize(new Dimension(148, 4));
 		mouseToggle.add(barMouseToggle, BorderLayout.SOUTH);
 
-		JButton btnMouseToggle = new JButton(UIUtil.getIcon("icons16/general/mouse.png"));
+		JButton btnMouseToggle = new JButton(UIUtil.getIcon("icons16/general/mouse_x.png"));
 		btnMouseToggle.addActionListener(new ActionListener() {
 			private boolean installed = false;
 
