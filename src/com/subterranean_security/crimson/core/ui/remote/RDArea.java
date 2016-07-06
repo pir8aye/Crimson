@@ -35,6 +35,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -262,9 +263,18 @@ public class RDArea extends JLabel {
 			screenImage.getData(new Rectangle(mr.getSx(), mr.getSy(), mr.getW(), mr.getH()));
 		}
 		for (DirtyRect dr : sd.getDirtyRectList()) {
-			ImageIcon imgPiece = new ImageIcon(dr.getData().toByteArray());
-			Graphics2D g = screenImage.createGraphics();
-			g.drawImage(imgPiece.getImage(), dr.getSx(), dr.getSy(), dr.getW(), dr.getH(), null);
+			List<Integer> rgb = dr.getRGBAList();
+			// ImageIcon imgPiece = new ImageIcon();
+			// Graphics2D g = screenImage.createGraphics();
+			// g.drawImage(imgPiece.getImage(), dr.getSx(), dr.getSy(),
+			// dr.getW(), dr.getH(), null);
+
+			for (int j = dr.getSy(); j < dr.getSy() + dr.getH(); j++) {
+				for (int i = dr.getSx(); i < dr.getSx() + dr.getW(); i++) {
+					screenImage.setRGB(i, j, rgb.remove(0));
+				}
+			}
+
 		}
 		repaint();
 	}

@@ -50,7 +50,7 @@ message DirtyRect {
 	required int32 w = 3;
 	required int32 h = 4;
 	
-	required bytes data = 5;
+	repeated int32 RGBA = 5;
 }
 
 message Param {

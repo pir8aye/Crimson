@@ -291,7 +291,7 @@ public class ClientExecutor extends BasicExecutor {
 			StreamStore.addStream(new CInfoSlave(p));
 		}
 		if (p.hasRemoteParam()) {
-			StreamStore.addStream(new RemoteSlave(p.getRemoteParam()));
+			StreamStore.addStream(new RemoteSlave(p));
 		}
 	}
 

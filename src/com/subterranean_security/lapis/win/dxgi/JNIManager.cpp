@@ -8,22 +8,20 @@ jclass nativeCls;
 jmethodID callback_remote_moveRect;
 jmethodID callback_remote_dirtyRect;
 
-void initJNIManager() {
-	//TODO debug
-	//create jvm
-	JavaVMInitArgs vm_args;                        // Initialization arguments
-	JavaVMOption* options = new JavaVMOption[1];   // JVM invocation options
-	options[0].optionString = "-Djava.class.path=."; // where to find java .class
-	vm_args.version = JNI_VERSION_1_6;             // minimum Java version
-	vm_args.nOptions = 1;                          // number of options
-	vm_args.options = options;
-	vm_args.ignoreUnrecognized = false; // invalid options make the JVM init fail
-	//=============== load and initialize Java VM and JNI interface =============
-	jint rc = JNI_CreateJavaVM(&jvm, (void**) &env, &vm_args);
-	delete options;
+void initJNIManager(JNIEnv *e) {
+	std::cout << "initializing JNIManager" << std::endl;
+	e->GetJavaVM(&jvm);
+}
 
-	//jvm->AttachCurrentThread((void**) &env, &args);
+void initEnv() {
+	std::cout << "Initializing JNIEnv" << std::endl;
+	JavaVMAttachArgs args;
+	args.version = JNI_VERSION_1_8; // choose your JNI version
+	args.name = NULL; // you might want to give the java thread a name
+	args.group = NULL; // you might want to assign the java thread to a ThreadGroup
+	jvm->AttachCurrentThread((void**) &env, &args);
 
+	std::cout << "Locating Java methods" << std::endl;
 	nativeCls = env->FindClass(
 			"com/subterranean_security/crimson/core/util/Native");
 	if (nativeCls == nullptr) {
@@ -34,42 +32,47 @@ void initJNIManager() {
 			"callback_remote_moveRect", "(IIIIII)V");
 	callback_remote_dirtyRect = env->GetStaticMethodID(nativeCls,
 			"callback_remote_dirtyRect", "(IIII[B)V");
+	std::cout << "Initialized JNIEnv" << std::endl;
 
 }
 
 void sendFrameJNI(THREAD_DATA* TData, FRAME_DATA *CurrentData) {
 	if (!env) {
-		initJNIManager();
+		initEnv();
 	}
 
 	if (!CurrentData->FrameInfo.TotalMetadataBufferSize) {
 		std::cout << "No update needed" << std::endl;
 		return;
+	} else {
+		SYSTEMTIME st;
+		GetSystemTime(&st);
+		std::cout << "[" << st.wMilliseconds << "] ";
 	}
 
-	//new ID3D11Texture2D
+//new ID3D11Texture2D
 	ID3D11Texture2D *ppTexture2D;
 
-	// get context
+// get context
 	ID3D11DeviceContext *context;
 	TData->DxRes.Device->GetImmediateContext(&context);
 
-	// get description of original texture
+// get description of original texture
 	D3D11_TEXTURE2D_DESC ppDesc;
 	CurrentData->Frame->GetDesc(&ppDesc);
 
-	//modify original description
+//modify original description
 	ppDesc.Usage = D3D11_USAGE_STAGING;
 	ppDesc.BindFlags = 0;
 	ppDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 
-	// get ID3D11Device from thread data and create texture
+// get ID3D11Device from thread data and create texture
 	TData->DxRes.Device->CreateTexture2D(&ppDesc, NULL, &ppTexture2D);
 
-	// perform copy
+// perform copy
 	context->CopyResource(CurrentData->Frame, ppTexture2D);
 
-	// get mapped subresource
+// get mapped subresource
 	D3D11_MAPPED_SUBRESOURCE res;
 	context->Map(ppTexture2D, 0, D3D11_MAP_READ, 0, &res);
 
@@ -92,19 +95,15 @@ void sendFrameJNI(THREAD_DATA* TData, FRAME_DATA *CurrentData) {
 		RECT* rect = reinterpret_cast<RECT*>(CurrentData->MetaData
 				+ (CurrentData->MoveCount * sizeof(DXGI_OUTDUPL_MOVE_RECT)));
 
-		std::cout << "Processing dirty rect with coordinates: left: "
-				<< rect->left << " right: " << rect->right << " top: "
-				<< rect->top << " bottom: " << rect->bottom << std::endl;
+		std::cout << "Processing dirty rect: [" << rect->left << ", "
+				<< rect->right << ", " << rect->top << ", " << rect->bottom
+				<< "]" << std::endl;
 
-		UINT dataSize = 128;
-		// UINT dataSize = 4 * (rect->right - rect->left) * (rect->bottom - rect->top)
-		std::cout << "Creating java array with size: " << dataSize << std::endl;
-		jbyteArray data = env->NewByteArray(dataSize);
+		UINT dataSize = (rect->right - rect->left) * (rect->bottom - rect->top)
+		jintArray data = env->NewIntArray(dataSize);
 
-		std::cout << "Setting byte region" << std::endl;
-		env->SetByteArrayRegion(data, 0, dataSize, (jbyte*) res.pData);
+		env->SetIntArrayRegion(data, 0, dataSize, (jint*) res.pData);
 
-		std::cout << "Calling Java method" << std::endl;
 		env->CallStaticVoidMethod(nativeCls, callback_remote_dirtyRect,
 				rect->left, rect->top, rect->right - rect->left,
 				rect->top - rect->bottom, data);
@@ -117,6 +116,6 @@ void sendFrameJNI(THREAD_DATA* TData, FRAME_DATA *CurrentData) {
 //	obj = new Color[(res.RowPitch / sizeof(Color)) * ppDesc.Height];
 //	memcpy(obj, res.pData, res.RowPitch * ppDesc.Height);
 
-	// unmap
+// unmap
 	context->Unmap(ppTexture2D, 0);
 }

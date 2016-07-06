@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.stream.remote;
 
-import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.subterranean_security.crimson.core.Common;
@@ -28,6 +27,7 @@ import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.ui.remote.RDArea;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
 public class RemoteMaster extends Stream {
@@ -56,8 +56,8 @@ public class RemoteMaster extends Stream {
 	public RemoteMaster(RemoteParam rp, int cid, RDArea rda) {
 		this.rda = rda;
 		this.cid = cid;
-		param = Param.newBuilder().setRemoteParam(rp).setStreamID(new Random().nextInt()).setCID(cid)
-				.setVID(Common.cvid).build();
+		param = Param.newBuilder().setRemoteParam(rp).setStreamID(IDGen.getStreamid()).setCID(cid).setVID(Common.cvid)
+				.build();
 		eventThread.start();
 	}
 

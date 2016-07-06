@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
@@ -46,7 +47,9 @@ public class ViewerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-					if (m.hasEvProfileDelta()) {
+					if (m.hasEvStreamData()) {
+						StreamStore.getStream(m.getEvStreamData().getStreamID()).received(m);
+					} else if (m.hasEvProfileDelta()) {
 						ViewerStore.Profiles.update(m.getEvProfileDelta());
 					} else if (m.hasEvServerProfileDelta()) {
 						ViewerStore.Profiles.update(m.getEvServerProfileDelta());

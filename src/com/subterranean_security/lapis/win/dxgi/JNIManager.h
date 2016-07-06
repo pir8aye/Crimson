@@ -4,7 +4,8 @@
 #include "CommonTypes.h"
 #include "../lapis.h"
 
-void initJNIManager(JNIEnv *env);
+void initJNIManager(JNIEnv *e);
+void initEnv();
 void sendFrameJNI(THREAD_DATA* TData, FRAME_DATA *CurrentData);
 
 #endif

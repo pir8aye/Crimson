@@ -100,7 +100,15 @@ public class ServerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-					if (m.hasEvProfileDelta()) {
+					if (m.hasRid() && m.getRid() != 0) {
+						// route
+						log.debug("Routing message to CVID: {}", m.getRid());
+						try {
+							ServerStore.Connections.getConnection(m.getRid()).handle.write(m);
+						} catch (NullPointerException e) {
+							log.debug("Could not forward message to CVID: {}", m.getRid());
+						}
+					} else if (m.hasEvProfileDelta()) {
 						ev_profileDelta(m.getEvProfileDelta());
 					} else if (m.hasEvKevent()) {
 						ev_kevent(m);

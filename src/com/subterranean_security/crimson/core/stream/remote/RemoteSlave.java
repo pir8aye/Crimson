@@ -27,10 +27,8 @@ import com.subterranean_security.crimson.core.CoreStore;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
-import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
 import com.subterranean_security.crimson.core.proto.Stream.ScreenData;
 import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.Native;
 
 public class RemoteSlave extends Stream {
@@ -50,10 +48,6 @@ public class RemoteSlave extends Stream {
 		start();
 	}
 
-	public RemoteSlave(RemoteParam ip) {
-		this(Param.newBuilder().setRemoteParam(ip).setStreamID(IDGen.getStreamid()).setVID(Common.cvid).build());
-	}
-
 	@Override
 	public void received(Message m) {
 		if (m.getEvStreamData().getEventData().hasKeyPressed()) {
@@ -66,8 +60,7 @@ public class RemoteSlave extends Stream {
 	@Override
 	public void start() {
 		Native.startRD();
-		// timer.schedule(sendTask, 0, param.hasPeriod() ? param.getPeriod() :
-		// 1000);
+		timer.schedule(sendTask, 0, param.hasPeriod() ? param.getPeriod() : 50);
 
 	}
 
@@ -82,8 +75,9 @@ public class RemoteSlave extends Stream {
 	@Override
 	public void send() {
 		if (queue.size() != 0) {
-			ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setEvStreamData(
-					EV_StreamData.newBuilder().setStreamID(getStreamID()).setScreenData(queue.poll())));
+			ClientStore.Connections.route(
+					Message.newBuilder().setUrgent(true).setSid(Common.cvid).setRid(param.getVID()).setEvStreamData(
+							EV_StreamData.newBuilder().setStreamID(getStreamID()).setScreenData(queue.poll())));
 		}
 
 	}
