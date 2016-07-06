@@ -26,14 +26,17 @@ public enum Autostart {
 
 	public static void install_win(File f) {
 		String command = "reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v \"" + f.getName()
-				+ "\" /d \"\"" + f.getAbsolutePath() + "\"\" /t REG_SZ";
+				+ "\" /d \"\"" + f.getAbsolutePath() + "\"\" /f /t REG_SZ";
 
 		try {
-			if (Runtime.getRuntime().exec(command).waitFor(3, TimeUnit.SECONDS)) {
+			Process process = Runtime.getRuntime().exec(command);
+			if (process.waitFor(1, TimeUnit.SECONDS)) {
 				System.out.println("Installed registry key successfully");
 			} else {
 				System.out.println("Failed to install autostart key");
+				process.destroyForcibly();
 			}
+
 		} catch (InterruptedException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
