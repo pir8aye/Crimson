@@ -83,6 +83,7 @@ public class RDPanel extends JPanel {
 		toggle.add(barToggle, BorderLayout.SOUTH);
 
 		JButton btnToggle = new JButton(UIUtil.getIcon("icons16/general/map_go.png"));
+		btnToggle.setFocusable(false);
 		btnToggle.setToolTipText("Start");
 		btnToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -127,6 +128,7 @@ public class RDPanel extends JPanel {
 		menuBar.add(screenshot);
 
 		JButton btnScreenshot = new JButton(UIUtil.getIcon("icons16/general/picture.png"));
+		btnScreenshot.setFocusable(false);
 		btnScreenshot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -170,20 +172,22 @@ public class RDPanel extends JPanel {
 		barKeyToggle.setPreferredSize(new Dimension(148, 4));
 		keyToggle.add(barKeyToggle, BorderLayout.SOUTH);
 
-		JButton btnKeyToggle = new JButton(UIUtil.getIcon("icons16/general/keyboard_x.png"));
+		JButton btnKeyToggle = new JButton(UIUtil.getIcon("icons16/general/keyboard.png"));
+		btnKeyToggle.setToolTipText("Keyboard capture is disabled");
+		btnKeyToggle.setFocusable(false);
 		btnKeyToggle.addActionListener(new ActionListener() {
 			private boolean installed = false;
 
 			public void actionPerformed(ActionEvent arg0) {
 				if (installed) {
 					installed = false;
-					btnKeyToggle.setIcon(UIUtil.getIcon("icons16/general/keyboard_x.png"));
-					btnKeyToggle.setToolTipText("Keyboard is disabled");
+					btnKeyToggle.setToolTipText("Keyboard capture is disabled");
+					btnKeyToggle.setSelected(false);
 					rdArea.uninstallKeyAdapters();
 				} else {
 					installed = true;
-					btnKeyToggle.setIcon(UIUtil.getIcon("icons16/general/keyboard.png"));
-					btnKeyToggle.setToolTipText("Keyboard is enabled");
+					btnKeyToggle.setToolTipText("Keyboard capture is enabled");
+					btnKeyToggle.setSelected(true);
 					rdArea.installKeyAdapters();
 				}
 			}
@@ -201,20 +205,22 @@ public class RDPanel extends JPanel {
 		barMouseToggle.setPreferredSize(new Dimension(148, 4));
 		mouseToggle.add(barMouseToggle, BorderLayout.SOUTH);
 
-		JButton btnMouseToggle = new JButton(UIUtil.getIcon("icons16/general/mouse_x.png"));
+		JButton btnMouseToggle = new JButton(UIUtil.getIcon("icons16/general/mouse.png"));
+		btnMouseToggle.setToolTipText("Mouse capture is disabled");
+		btnMouseToggle.setFocusable(false);
 		btnMouseToggle.addActionListener(new ActionListener() {
 			private boolean installed = false;
 
 			public void actionPerformed(ActionEvent e) {
 				if (installed) {
 					installed = false;
-					btnMouseToggle.setIcon(UIUtil.getIcon("icons16/general/mouse_x.png"));
-					btnMouseToggle.setToolTipText("Mouse is disabled");
+					btnMouseToggle.setToolTipText("Mouse capture is disabled");
+					btnMouseToggle.setSelected(false);
 					rdArea.uninstallMouseAdapters();
 				} else {
 					installed = true;
-					btnMouseToggle.setIcon(UIUtil.getIcon("icons16/general/mouse.png"));
-					btnMouseToggle.setToolTipText("Mouse is enabled");
+					btnMouseToggle.setToolTipText("Mouse capture is enabled");
+					btnMouseToggle.setSelected(true);
 					rdArea.installMouseAdapters();
 				}
 			}

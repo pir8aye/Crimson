@@ -31,7 +31,7 @@ void initEnv() {
 	callback_remote_moveRect = env->GetStaticMethodID(nativeCls,
 			"callback_remote_moveRect", "(IIIIII)V");
 	callback_remote_dirtyRect = env->GetStaticMethodID(nativeCls,
-			"callback_remote_dirtyRect", "(IIII[B)V");
+			"callback_remote_dirtyRect", "(IIII[I)V");
 	std::cout << "Initialized JNIEnv" << std::endl;
 
 }
@@ -95,18 +95,14 @@ void sendFrameJNI(THREAD_DATA* TData, FRAME_DATA *CurrentData) {
 		RECT* rect = reinterpret_cast<RECT*>(CurrentData->MetaData
 				+ (CurrentData->MoveCount * sizeof(DXGI_OUTDUPL_MOVE_RECT)));
 
-		std::cout << "Processing dirty rect: [" << rect->left << ", "
-				<< rect->right << ", " << rect->top << ", " << rect->bottom
-				<< "]" << std::endl;
-
-		UINT dataSize = (rect->right - rect->left) * (rect->bottom - rect->top)
+		UINT dataSize = (rect->right - rect->left) * (rect->bottom - rect->top);
 		jintArray data = env->NewIntArray(dataSize);
 
 		env->SetIntArrayRegion(data, 0, dataSize, (jint*) res.pData);
 
 		env->CallStaticVoidMethod(nativeCls, callback_remote_dirtyRect,
 				rect->left, rect->top, rect->right - rect->left,
-				rect->top - rect->bottom, data);
+				rect->bottom - rect->top, data);
 	}
 
 //	struct Color {

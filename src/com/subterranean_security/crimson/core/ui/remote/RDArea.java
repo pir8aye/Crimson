@@ -37,7 +37,6 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import com.subterranean_security.crimson.core.proto.Stream.DirtyRect;
@@ -45,6 +44,7 @@ import com.subterranean_security.crimson.core.proto.Stream.EventData;
 import com.subterranean_security.crimson.core.proto.Stream.MoveRect;
 import com.subterranean_security.crimson.core.proto.Stream.ScreenData;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class RDArea extends JLabel {
 
@@ -69,7 +69,7 @@ public class RDArea extends JLabel {
 	private Rectangle oldSelectionRect = diffRect;
 	private Rectangle selectionRect = emptyRect;
 	boolean partialScreenMode = false;
-	private BufferedImage screenImage = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+	private BufferedImage screenImage = new BufferedImage(500, 500, BufferedImage.TYPE_INT_RGB);
 
 	private Rectangle screenRect = emptyRect;
 
@@ -86,7 +86,6 @@ public class RDArea extends JLabel {
 	public byte frames = 0;
 
 	public RDArea() {
-		setFocusable(true);
 		initAdapters();
 	};
 
@@ -103,9 +102,7 @@ public class RDArea extends JLabel {
 	@Override
 	public void paintComponent(Graphics g) {
 		// maybe this isnt needed
-		// g.drawImage(screenImage, 0, 0, (int) (screenRect.width *
-		// screenScale), (int) (screenRect.height * screenScale),
-		// this);
+		g.drawImage(screenImage, 0, 0, this.getWidth(), this.getHeight(), this);
 		// DrawSelectingRect(g);
 	}
 
@@ -258,6 +255,7 @@ public class RDArea extends JLabel {
 	}
 
 	public void updateScreen(ScreenData sd) {
+		System.out.println("ScreenUpdate: dirty regions: " + sd.getDirtyRectCount());
 		for (MoveRect mr : sd.getMoveRectList()) {
 			// TODO
 			screenImage.getData(new Rectangle(mr.getSx(), mr.getSy(), mr.getW(), mr.getH()));
@@ -269,19 +267,22 @@ public class RDArea extends JLabel {
 			// g.drawImage(imgPiece.getImage(), dr.getSx(), dr.getSy(),
 			// dr.getW(), dr.getH(), null);
 
+			System.out.println("Dirty region: dr.getSx(): " + dr.getSx() + " dr.getSy(): " + dr.getSy() + " dr.getW(): "
+					+ dr.getW() + " dr.getH(): " + dr.getH());
 			for (int j = dr.getSy(); j < dr.getSy() + dr.getH(); j++) {
 				for (int i = dr.getSx(); i < dr.getSx() + dr.getW(); i++) {
+					System.out.println("Updating pixel: x: " + i + " y: " + j + " rgb: " + rgb.get(0));
 					screenImage.setRGB(i, j, rgb.remove(0));
 				}
 			}
+			repaint(dr.getSx(), dr.getSy(), dr.getW(), dr.getH());
 
 		}
-		repaint();
+
 	}
 
 	public BufferedImage screenshot() {
-		// TODO!
-		return screenImage;
+		return UIUtil.deepCopy(screenImage);
 	}
 
 	private KeyAdapter ka;

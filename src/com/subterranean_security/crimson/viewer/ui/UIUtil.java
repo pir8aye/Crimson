@@ -20,6 +20,9 @@ package com.subterranean_security.crimson.viewer.ui;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
@@ -98,6 +101,12 @@ public enum UIUtil {
 		}
 		CUtil.Misc.clearChar(password);
 		return hash;
+	}
+
+	public static BufferedImage deepCopy(BufferedImage bi) {
+		ColorModel cm = bi.getColorModel();
+		WritableRaster raster = bi.copyData(null);
+		return new BufferedImage(cm, raster, cm.isAlphaPremultiplied(), null);
 	}
 
 }
