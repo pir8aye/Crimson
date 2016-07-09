@@ -36,6 +36,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
+import com.subterranean_security.crimson.core.proto.Stream.RemoteParam.RMethod;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -102,7 +103,8 @@ public class RDPanel extends JPanel {
 							running = true;
 							btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
 							btnToggle.setToolTipText("Stop");
-							stream = new RemoteMaster(RemoteParam.newBuilder().build(), cvid, rdArea);
+							stream = new RemoteMaster(RemoteParam.newBuilder().setRmethod(RMethod.POLL).build(), cvid,
+									rdArea);
 							StreamStore.addStream(stream);
 							stream.start();
 							rdArea.start(stream);

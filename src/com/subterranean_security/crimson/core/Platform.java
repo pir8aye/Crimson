@@ -18,6 +18,8 @@
 
 package com.subterranean_security.crimson.core;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Native;
 
@@ -258,6 +261,17 @@ public enum Platform {
 		return System.getProperty("os.arch");
 	}
 
+	public static GraphicsDisplay[] getDisplays() {
+		GraphicsDevice[] dev = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+		GraphicsDisplay[] disp = new GraphicsDisplay[dev.length];
+		for (int i = 0; i < dev.length; i++) {
+			disp[i] = GraphicsDisplay.newBuilder().setId(dev[i].getIDstring())
+					.setWidth(dev[i].getDefaultConfiguration().getBounds().width)
+					.setHeight(dev[i].getDefaultConfiguration().getBounds().height).build();
+		}
+		return disp;
+	}
+
 	public static enum Advanced {
 		;
 
@@ -378,6 +392,9 @@ public enum Platform {
 			info.setJavaArch(getJavaArch());
 			info.setCpuModel(getCPUModel());
 			info.setExtIp(getExtIp());
+			for (GraphicsDisplay gd : getDisplays()) {
+				info.addDisplays(gd);
+			}
 
 			return info.build();
 		}

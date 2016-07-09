@@ -75,6 +75,14 @@ message InfoParam {
 }
 
 message RemoteParam {
+	enum RMethod {
+		POLL = 1;
+		POLL_DELTA = 2;
+		NATIVE = 3;
+	}
+	required RMethod rmethod = 1;
+	required string monitor = 2;
+
 }
 
 message SubscriberParam {

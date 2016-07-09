@@ -271,8 +271,9 @@ public class RDArea extends JLabel {
 					+ dr.getW() + " dr.getH(): " + dr.getH());
 			for (int j = dr.getSy(); j < dr.getSy() + dr.getH(); j++) {
 				for (int i = dr.getSx(); i < dr.getSx() + dr.getW(); i++) {
-					System.out.println("Updating pixel: x: " + i + " y: " + j + " rgb: " + rgb.get(0));
-					screenImage.setRGB(i, j, rgb.remove(0));
+					int r = i + j * dr.getH();
+					System.out.println("Updating pixel: x: " + i + " y: " + j + " rgb: " + rgb.get(r));
+					screenImage.setRGB(i, j, rgb.get(r));
 				}
 			}
 			repaint(dr.getSx(), dr.getSy(), dr.getW(), dr.getH());

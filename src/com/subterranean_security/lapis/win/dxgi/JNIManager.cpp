@@ -42,12 +42,7 @@ void sendFrameJNI(THREAD_DATA* TData, FRAME_DATA *CurrentData) {
 	}
 
 	if (!CurrentData->FrameInfo.TotalMetadataBufferSize) {
-		std::cout << "No update needed" << std::endl;
 		return;
-	} else {
-		SYSTEMTIME st;
-		GetSystemTime(&st);
-		std::cout << "[" << st.wMilliseconds << "] ";
 	}
 
 //new ID3D11Texture2D
@@ -74,7 +69,10 @@ void sendFrameJNI(THREAD_DATA* TData, FRAME_DATA *CurrentData) {
 
 // get mapped subresource
 	D3D11_MAPPED_SUBRESOURCE res;
-	context->Map(ppTexture2D, 0, D3D11_MAP_READ, 0, &res);
+	HRESULT hr = context->Map(ppTexture2D, 0, D3D11_MAP_READ, 0, &res);
+	if (!SUCCEEDED(hr)) {
+		std::cout << "MAP FAILED :(" << std::endl;
+	}
 
 	if (CurrentData->MoveCount) {
 		std::cout << "Processing moves" << std::endl;
@@ -98,11 +96,19 @@ void sendFrameJNI(THREAD_DATA* TData, FRAME_DATA *CurrentData) {
 		UINT dataSize = (rect->right - rect->left) * (rect->bottom - rect->top);
 		jintArray data = env->NewIntArray(dataSize);
 
+		int *rand = static_cast<int*>(res.pData);
+		int sum = 0;
+		for (int i = 0; i < dataSize; i++) {
+			sum += rand[i];
+		}
+		std::cout << "sum: " << sum << std::endl;
+
 		env->SetIntArrayRegion(data, 0, dataSize, (jint*) res.pData);
 
 		env->CallStaticVoidMethod(nativeCls, callback_remote_dirtyRect,
 				rect->left, rect->top, rect->right - rect->left,
 				rect->bottom - rect->top, data);
+
 	}
 
 //	struct Color {

@@ -23,6 +23,7 @@ public final class CoreStore {
 		public static RemoteSlave getSlave() {
 			return slave;
 		}
+
 	}
 
 }

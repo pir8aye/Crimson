@@ -106,7 +106,7 @@ public final class Native {
 		for (int i : data) {
 			dr.addRGBA(i);
 		}
-		CoreStore.Remote.getSlave().addFrame(ScreenData.newBuilder()
-				.addDirtyRect(DirtyRect.newBuilder().setSx(sx).setSy(sy).setW(w).setH(h)).build());
+		CoreStore.Remote.getSlave()
+				.addFrame(ScreenData.newBuilder().addDirtyRect(dr.setSx(sx).setSy(sy).setW(w).setH(h)).build());
 	}
 }

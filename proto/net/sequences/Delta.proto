@@ -34,6 +34,7 @@ message EV_ProfileDelta {
 	optional string user_home = 28;
 	optional string active_window = 29;
 	optional string virtualization = 30;
+	repeated GraphicsDisplay displays = 50;
 	
 	// RAM attributes
 	optional int64 system_ram_capacity = 31;

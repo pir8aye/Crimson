@@ -443,8 +443,6 @@ DWORD WINAPI DDProc(_In_ void* Param)
 				continue;
 			}
 
-			// send this frame to java :)
-			sendFrameJNI(TData, &CurrentData);
 		}
 
 		// We have a new frame so try and process it
@@ -484,6 +482,9 @@ DWORD WINAPI DDProc(_In_ void* Param)
 			KeyMutex->ReleaseSync(1);
 			break;
 		}
+
+		// send this frame to java :)
+		sendFrameJNI(TData, &CurrentData);
 
 		// Release acquired keyed mutex
 		hr = KeyMutex->ReleaseSync(1);
