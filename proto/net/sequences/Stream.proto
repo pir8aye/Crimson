@@ -20,6 +20,11 @@ message EV_StreamData {
 message EventData {
 	optional int32 keyPressed = 1;
 	optional int32 keyReleased = 2;
+	optional int32 mousePressed = 3;
+	optional int32 mouseReleased = 4;
+	
+	optional int32 mouseMovedX = 5;
+	optional int32 mouseMovedY = 6;
 
 }
 

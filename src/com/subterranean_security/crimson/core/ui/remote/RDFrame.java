@@ -13,6 +13,7 @@ public class RDFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private RDPanel rdp;
 
 	public RDFrame(RDPanel.Type type, int cvid) {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -25,7 +26,16 @@ public class RDFrame extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
-		contentPane.add(new RDPanel(type, cvid), BorderLayout.CENTER);
+		rdp = new RDPanel(type, cvid);
+		contentPane.add(rdp, BorderLayout.CENTER);
+	}
+
+	@Override
+	public void dispose() {
+		if (rdp.isRunning()) {
+			rdp.stop();
+		}
+		super.dispose();
 	}
 
 }

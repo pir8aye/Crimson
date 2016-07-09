@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
 import com.subterranean_security.crimson.core.proto.Misc.NetworkInterface;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.keylogger.Log;
@@ -69,6 +70,7 @@ public class ClientProfile implements Serializable {
 	private Attribute activeWindow;
 	private Attribute virtualization;
 	private Attribute messageLatency;
+	private GraphicsDisplay[] displays;
 
 	// RAM attributes
 	private Attribute systemRamCapacity;
@@ -299,6 +301,14 @@ public class ClientProfile implements Serializable {
 
 	public void setMessageLatency(String messageLatency) {
 		this.messageLatency.set(messageLatency);
+	}
+
+	public GraphicsDisplay[] getDisplays() {
+		return displays;
+	}
+
+	public void setDisplays(GraphicsDisplay[] displays) {
+		this.displays = displays;
 	}
 
 	public String getSystemRamCapacity() {
@@ -796,6 +806,7 @@ public class ClientProfile implements Serializable {
 		if (c.hasHostname()) {
 			setHostname(c.getHostname());
 		}
+
 		if (c.hasExtIp()) {
 			setExtIp(c.getExtIp());
 			// TODO resolve only if viewer location resolution is enabled
@@ -817,6 +828,15 @@ public class ClientProfile implements Serializable {
 			setFqdn(c.getFqdn());
 		}
 		// network interfaces
+
+		// displays
+		GraphicsDisplay[] gds = new GraphicsDisplay[c.getDisplaysCount()];
+		for (int i = 0; i < gds.length; i++) {
+			gds[i] = c.getDisplays(i);
+		}
+		if (gds.length != 0) {
+			setDisplays(gds);
+		}
 
 		log.debug("Profile amalgamated in {} ms", new Date().getTime() - start.getTime());
 	}

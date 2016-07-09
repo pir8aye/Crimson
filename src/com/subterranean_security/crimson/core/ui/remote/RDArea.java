@@ -69,7 +69,7 @@ public class RDArea extends JLabel {
 	private Rectangle oldSelectionRect = diffRect;
 	private Rectangle selectionRect = emptyRect;
 	boolean partialScreenMode = false;
-	private BufferedImage screenImage = new BufferedImage(500, 500, BufferedImage.TYPE_INT_RGB);
+	private BufferedImage screenImage = new BufferedImage(1918, 1024, BufferedImage.TYPE_INT_RGB);
 
 	private Rectangle screenRect = emptyRect;
 
@@ -255,7 +255,6 @@ public class RDArea extends JLabel {
 	}
 
 	public void updateScreen(ScreenData sd) {
-		System.out.println("ScreenUpdate: dirty regions: " + sd.getDirtyRectCount());
 		for (MoveRect mr : sd.getMoveRectList()) {
 			// TODO
 			screenImage.getData(new Rectangle(mr.getSx(), mr.getSy(), mr.getW(), mr.getH()));
@@ -267,13 +266,14 @@ public class RDArea extends JLabel {
 			// g.drawImage(imgPiece.getImage(), dr.getSx(), dr.getSy(),
 			// dr.getW(), dr.getH(), null);
 
-			System.out.println("Dirty region: dr.getSx(): " + dr.getSx() + " dr.getSy(): " + dr.getSy() + " dr.getW(): "
-					+ dr.getW() + " dr.getH(): " + dr.getH());
+			// System.out.println("Dirty region: dr.getSx(): " + dr.getSx() + "
+			// dr.getSy(): " + dr.getSy() + " dr.getW(): "
+			// + dr.getW() + " dr.getH(): " + dr.getH());
+			int r = 0;
 			for (int j = dr.getSy(); j < dr.getSy() + dr.getH(); j++) {
 				for (int i = dr.getSx(); i < dr.getSx() + dr.getW(); i++) {
-					int r = i + j * dr.getH();
-					System.out.println("Updating pixel: x: " + i + " y: " + j + " rgb: " + rgb.get(r));
-					screenImage.setRGB(i, j, rgb.get(r));
+
+					screenImage.setRGB(i, j, rgb.get(r++));
 				}
 			}
 			repaint(dr.getSx(), dr.getSy(), dr.getW(), dr.getH());
@@ -314,7 +314,7 @@ public class RDArea extends JLabel {
 		mma = new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				stream.sendEvent(EventData.newBuilder().build());
+				stream.sendEvent(EventData.newBuilder().setMouseMovedX(e.getX()).setMouseMovedY(e.getY()).build());
 			}
 
 			@Override
@@ -335,14 +335,15 @@ public class RDArea extends JLabel {
 					destx = srcx = e.getX();
 					desty = srcy = e.getY();
 				} else {
-					stream.sendEvent(EventData.newBuilder().build());
+					stream.sendEvent(EventData.newBuilder().setMousePressed(e.getButton()).setMouseMovedX(e.getX())
+							.setMouseMovedY(e.getY()).build());
 				}
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				doneSelecting();
-				stream.sendEvent(EventData.newBuilder().build());
+				stream.sendEvent(EventData.newBuilder().setMouseReleased(e.getButton()).build());
 			}
 		};
 	}

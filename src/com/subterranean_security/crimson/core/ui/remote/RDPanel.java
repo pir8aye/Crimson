@@ -34,13 +34,15 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
+import javax.swing.border.EtchedBorder;
 
+import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam.RMethod;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import javax.swing.border.EtchedBorder;
 
 public class RDPanel extends JPanel {
 
@@ -52,12 +54,15 @@ public class RDPanel extends JPanel {
 	private boolean running;
 	private int cvid;
 
+	private GraphicsDisplay[] displays;
+
 	public enum Type {
 		VIEW_ONLY, INTERACT;
 	}
 
 	public RDPanel(Type type, int cvid) {
 		this.cvid = cvid;
+		displays = ViewerStore.Profiles.getClient(cvid).getDisplays();
 		init();
 
 	}
@@ -66,6 +71,8 @@ public class RDPanel extends JPanel {
 	private JProgressBar barToggle;
 	private JProgressBar barKeyToggle;
 	private JProgressBar barMouseToggle;
+
+	private JButton btnToggle;
 
 	public void init() {
 		setLayout(new BorderLayout(0, 0));
@@ -83,7 +90,7 @@ public class RDPanel extends JPanel {
 		barToggle.setPreferredSize(new Dimension(148, 4));
 		toggle.add(barToggle, BorderLayout.SOUTH);
 
-		JButton btnToggle = new JButton(UIUtil.getIcon("icons16/general/map_go.png"));
+		btnToggle = new JButton(UIUtil.getIcon("icons16/general/map_go.png"));
 		btnToggle.setFocusable(false);
 		btnToggle.setToolTipText("Start");
 		btnToggle.addActionListener(new ActionListener() {
@@ -95,16 +102,13 @@ public class RDPanel extends JPanel {
 					@Override
 					protected Void doInBackground() throws Exception {
 						if (running) {
-							running = false;
-							btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_go.png"));
-							btnToggle.setToolTipText("Start");
-							StreamStore.removeStream(stream.getStreamID());
+							stop();
 						} else {
 							running = true;
 							btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
 							btnToggle.setToolTipText("Stop");
-							stream = new RemoteMaster(RemoteParam.newBuilder().setRmethod(RMethod.POLL).build(), cvid,
-									rdArea);
+							stream = new RemoteMaster(RemoteParam.newBuilder().setRmethod(RMethod.POLL_DELTA)
+									.setMonitor(displays[0].getId()).build(), cvid, rdArea);
 							StreamStore.addStream(stream);
 							stream.start();
 							rdArea.start(stream);
@@ -239,6 +243,17 @@ public class RDPanel extends JPanel {
 		rdArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		add(rdArea, BorderLayout.CENTER);
 
+	}
+
+	public boolean isRunning() {
+		return running;
+	}
+
+	public void stop() {
+		running = false;
+		btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_go.png"));
+		btnToggle.setToolTipText("Start");
+		StreamStore.removeStream(stream.getStreamID());
 	}
 
 }

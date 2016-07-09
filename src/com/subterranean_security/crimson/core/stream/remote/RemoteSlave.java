@@ -23,6 +23,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
+import java.util.Date;
 import java.util.LinkedList;
 
 import com.subterranean_security.crimson.client.ClientStore;
@@ -31,12 +32,16 @@ import com.subterranean_security.crimson.core.CoreStore;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.DirtyRect;
 import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
+import com.subterranean_security.crimson.core.proto.Stream.EventData;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.proto.Stream.RemoteParam.RMethod;
 import com.subterranean_security.crimson.core.proto.Stream.ScreenData;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.util.Native;
 
 public class RemoteSlave extends Stream {
+
+	private static final int blockSize = 16;
 
 	private Robot robot;
 	private Thread poller = new Thread(new Runnable() {
@@ -44,10 +49,12 @@ public class RemoteSlave extends Stream {
 
 		public void run() {
 			while (!Thread.interrupted()) {
+				Date d1 = new Date();
 				BufferedImage image = robot.createScreenCapture(screenRect);
+				Date d2 = new Date();
 
 				ScreenData.Builder data = ScreenData.newBuilder();
-				if (last == null) {
+				if (last == null || param.getRemoteParam().getRmethod() == RMethod.POLL) {
 					DirtyRect.Builder dr = DirtyRect.newBuilder().setSx(0).setSy(0).setH(image.getHeight())
 							.setW(image.getWidth());
 					for (int j = 0; j < image.getHeight(); j++) {
@@ -62,20 +69,16 @@ public class RemoteSlave extends Stream {
 					boolean[][] toggleMatrix = new boolean[image.getHeight()][image.getWidth()];
 					for (int j = 0; j < image.getHeight(); j++) {
 						for (int i = 0; i < image.getWidth(); i++) {
-							if (!toggleMatrix[i][j] && image.getRGB(i, j) != last.getRGB(i, j)) {
+							if (!toggleMatrix[j][i] && image.getRGB(i, j) != last.getRGB(i, j)) {
 
-								int w = 1;
-								int h = 1;
-
-								while (expandRect(image, toggleMatrix, h, w, i, j)) {
-									w++;
-									h++;
-								}
+								int w = (i + blockSize > image.getWidth()) ? image.getWidth() - i : blockSize;
+								int h = (j + blockSize > image.getHeight()) ? image.getHeight() - j : blockSize;
 
 								DirtyRect.Builder dr = DirtyRect.newBuilder().setSx(i).setSy(j).setW(w).setH(h);
 
 								for (int jh = 0; jh < h; jh++) {
 									for (int iw = 0; iw < w; iw++) {
+										toggleMatrix[j + jh][i + iw] = true;
 										dr.addRGBA(image.getRGB(i + iw, j + jh));
 									}
 
@@ -87,6 +90,9 @@ public class RemoteSlave extends Stream {
 						}
 					}
 				}
+				Date d3 = new Date();
+				System.out.println("Screenshot taken in: " + (d2.getTime() - d1.getTime()) + " ms. Processed in: "
+						+ (d3.getTime() - d2.getTime()) + " ms");
 
 				last = image;
 				uQueue.add(data.build());
@@ -94,41 +100,10 @@ public class RemoteSlave extends Stream {
 				try {
 					Thread.sleep(param.getPeriod());
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					return;
 				}
 			}
 
-		}
-
-		private boolean expandRect(BufferedImage image, boolean[][] toggleMatrix, int h, int w, int i, int j) {
-			try {
-				for (int k = 0; k <= h; k++) {
-					int ni = i + w + 1;
-					int nj = j + k;
-					if (image.getRGB(ni, nj) != last.getRGB(ni, nj)) {
-						toggleMatrix[ni][nj] = true;
-						continue;
-					} else {
-						return false;
-					}
-
-				}
-				for (int k = 0; k <= w; k++) {
-					int ni = i + k;
-					int nj = j + w + 1;
-					if (image.getRGB(ni, nj) != last.getRGB(ni, nj)) {
-						toggleMatrix[ni][nj] = true;
-						continue;
-					} else {
-						return false;
-					}
-
-				}
-			} catch (ArrayIndexOutOfBoundsException e) {
-				return false;
-			}
-			return true;
 		}
 	});
 
@@ -143,7 +118,9 @@ public class RemoteSlave extends Stream {
 			for (GraphicsDevice gd : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
 				if (gd.getIDstring().equals(param.getRemoteParam().getMonitor())) {
 					screenRect = gd.getDefaultConfiguration().getBounds();
-					robot = new Robot();
+					robot = new Robot(gd);
+					System.out.println(
+							"Initialized robot on screen: " + screenRect.getWidth() + "X" + screenRect.getHeight());
 					break;
 				}
 			}
@@ -157,11 +134,18 @@ public class RemoteSlave extends Stream {
 
 	@Override
 	public void received(Message m) {
-
-		if (m.getEvStreamData().getEventData().hasKeyPressed()) {
+		EventData ev = m.getEvStreamData().getEventData();
+		if (ev.hasMouseMovedX()) {
+			robot.mouseMove(ev.getMouseMovedX(), ev.getMouseMovedY());
+		} else if (ev.hasKeyPressed()) {
 			robot.keyPress(m.getEvStreamData().getEventData().getKeyPressed());
-		} else if (m.getEvStreamData().getEventData().hasKeyReleased()) {
+		} else if (ev.hasKeyReleased()) {
 			robot.keyRelease(m.getEvStreamData().getEventData().getKeyReleased());
+		} else if (ev.hasMouseReleased()) {
+			robot.mouseRelease(ev.getMouseReleased());
+		} else if (ev.hasMousePressed()) {
+			robot.mouseMove(ev.getMouseMovedX(), ev.getMouseMovedY());
+			robot.mousePress(ev.getMousePressed());
 		}
 	}
 
@@ -172,6 +156,7 @@ public class RemoteSlave extends Stream {
 			Native.startRD();
 			break;
 		case POLL:
+		case POLL_DELTA:
 			poller.start();
 			break;
 		default:
@@ -179,7 +164,7 @@ public class RemoteSlave extends Stream {
 
 		}
 
-		timer.schedule(sendTask, 0, param.hasPeriod() ? param.getPeriod() : 50);
+		timer.schedule(sendTask, 0, 50);
 
 	}
 
@@ -192,6 +177,7 @@ public class RemoteSlave extends Stream {
 			// TODO
 			break;
 		case POLL:
+		case POLL_DELTA:
 			poller.interrupt();
 			break;
 		default:
