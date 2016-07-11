@@ -1086,6 +1086,8 @@ public enum CUtil {
 
 	public static class Logging {
 
+		private static final boolean netlevel = true;
+
 		public static void configure() {
 			File config = new File(Common.Directories.varLog.getAbsolutePath() + "/logback-"
 					+ Common.instance.toString().toLowerCase() + ".xml");
@@ -1096,6 +1098,8 @@ public enum CUtil {
 						: LogLevel.INFO.toString().toLowerCase());
 				CUtil.Files.substitute(config, "%LOGDIR%", config.getParent().replaceAll("\\\\", "/"));
 				CUtil.Files.substitute(config, "%INSTANCE%", Common.instance.toString().toLowerCase());
+				CUtil.Files.substitute(config, "%NETLEVEL%",
+						netlevel ? LogLevel.DEBUG.toString().toLowerCase() : LogLevel.ERROR.toString().toLowerCase());
 
 			}
 

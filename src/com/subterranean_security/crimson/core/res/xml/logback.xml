@@ -63,7 +63,7 @@
 	</logger>
 
 	<logger name="com.subterranean_security.crimson.client.net.ClientHandler"
-		level="error" additivity="false">
+		level="%NETLEVEL%" additivity="false">
 		<appender-ref ref="NETWORK" />
 	</logger>
 
@@ -80,7 +80,7 @@
 	</logger>
 
 	<logger name="com.subterranean_security.crimson.server.net.ServerHandler"
-		level="error" additivity="false">
+		level="%NETLEVEL%" additivity="false">
 		<appender-ref ref="NETWORK" />
 	</logger>
 
@@ -97,7 +97,7 @@
 	</logger>
 
 	<logger name="com.subterranean_security.crimson.viewer.net.ViewerHandler"
-		level="error" additivity="false">
+		level="%NETLEVEL%" additivity="false">
 		<appender-ref ref="NETWORK" />
 	</logger>
 

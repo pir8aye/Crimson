@@ -66,7 +66,9 @@ public class ClientHandler extends BasicHandler {
 	@Override
 	protected void channelRead0(ChannelHandlerContext arg0, Message msg) throws Exception {
 
-		log.debug("RECEIVE \n{}", msg.toString());
+		if (log.isDebugEnabled()) {
+			log.debug("RECEIVE \n{}", msg.toString());
+		}
 
 		if (msg.hasUrgent()) {
 			connector.uq.add(msg);
