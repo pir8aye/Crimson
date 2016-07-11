@@ -92,6 +92,7 @@ public class HostList extends JPanel {
 	}
 
 	public void addOrUpdate(ClientProfile cp) {
+		cp.loadOsIcon();
 		for (int i = 0; i < tm.getClientList().size(); i++) {
 			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
 				tm.fireTableRowsUpdated(i, i);
@@ -133,7 +134,7 @@ class TM extends AbstractTableModel {
 			MainFrame.main.np.addNote("info", "Host limitation (1) has been reached");
 			return;
 		}
-		cp.loadOsIcon();
+
 		clients.add(cp);
 		fireTableRowsInserted(clients.size() - 1, clients.size() - 1);
 	}
