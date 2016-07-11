@@ -35,9 +35,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
-import com.subterranean_security.crimson.core.proto.Stream.RemoteParam.RMethod;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.cv.ui.remote.ep.Settings;
@@ -57,8 +55,6 @@ public class RDPanel extends JPanel {
 	private boolean running;
 	public int cvid;
 
-	private GraphicsDisplay[] displays;
-
 	private Settings settings;
 
 	public enum Type {
@@ -67,8 +63,7 @@ public class RDPanel extends JPanel {
 
 	public RDPanel(Type type, int cvid) {
 		this.cvid = cvid;
-		displays = ViewerStore.Profiles.getClient(cvid).getDisplays();
-		settings = new Settings(displays, this);
+		settings = new Settings(ViewerStore.Profiles.getClient(cvid).getDisplays(), this);
 		init();
 
 	}
@@ -115,8 +110,8 @@ public class RDPanel extends JPanel {
 							running = true;
 							btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
 							btnToggle.setToolTipText("Stop");
-							stream = new RemoteMaster(RemoteParam.newBuilder().setRmethod(RMethod.POLL_DELTA)
-									.setMonitor(displays[0].getId()).build(), cvid, rdArea);
+							stream = new RemoteMaster(RemoteParam.newBuilder().setRmethod(settings.getMethod())
+									.setMonitor(settings.getMonitor()).build(), cvid, rdArea);
 							StreamStore.addStream(stream);
 							stream.start();
 							rdArea.setStream(stream);
