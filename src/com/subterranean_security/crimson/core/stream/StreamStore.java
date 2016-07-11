@@ -41,9 +41,14 @@ public enum StreamStore {
 
 	public static void removeStream(int id) {
 		try {
-			streams.remove(id).stop();
+			streams.get(id).stop();
+			Thread.sleep(200);
+			streams.remove(id);
 		} catch (NullPointerException e) {
 			// that stream doesnt exist
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

@@ -30,8 +30,8 @@ import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.StateType;
-import com.subterranean_security.crimson.core.ui.remote.RDFrame;
-import com.subterranean_security.crimson.core.ui.remote.RDPanel.Type;
+import com.subterranean_security.crimson.cv.ui.remote.RDFrame;
+import com.subterranean_security.crimson.cv.ui.remote.RDPanel.Type;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;

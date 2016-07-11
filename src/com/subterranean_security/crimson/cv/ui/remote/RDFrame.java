@@ -1,4 +1,4 @@
-package com.subterranean_security.crimson.core.ui.remote;
+package com.subterranean_security.crimson.cv.ui.remote;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

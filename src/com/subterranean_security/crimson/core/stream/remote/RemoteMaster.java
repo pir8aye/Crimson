@@ -26,8 +26,8 @@ import com.subterranean_security.crimson.core.proto.Stream.EventData;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
 import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.ui.remote.RDArea;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.cv.ui.remote.RDArea;
 import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
 public class RemoteMaster extends Stream {

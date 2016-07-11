@@ -16,7 +16,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.ui.remote;
+package com.subterranean_security.crimson.cv.ui.remote;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -69,7 +69,7 @@ public class RDArea extends JLabel {
 	private Rectangle oldSelectionRect = diffRect;
 	private Rectangle selectionRect = emptyRect;
 	boolean partialScreenMode = false;
-	private BufferedImage screenImage = new BufferedImage(1918, 1024, BufferedImage.TYPE_INT_RGB);
+	public BufferedImage screenImage = new BufferedImage(1918, 1024, BufferedImage.TYPE_INT_RGB);
 
 	private Rectangle screenRect = emptyRect;
 
@@ -78,8 +78,6 @@ public class RDArea extends JLabel {
 	// mouse coordinates for selection
 	public int srcx, srcy, destx, desty;
 
-	public boolean running = false;
-	public boolean viewOnly = false;
 	public boolean pause = false;
 	public boolean hold = false;
 
@@ -89,19 +87,38 @@ public class RDArea extends JLabel {
 		initAdapters();
 	};
 
-	public void start(RemoteMaster stream) {
-		this.stream = stream;
-		running = true;
+	/*
+	 * Used to preserve aspect ratio
+	 */
+	@Override
+	public Dimension getPreferredSize() {
+
+		Dimension d = this.getParent().getSize();
+
+		double nw = screenImage.getWidth();
+		double nh = screenImage.getHeight();
+
+		double ratio = nw / nh;
+
+		if (nw > d.getWidth()) {
+			nw = d.getWidth();
+			nh = nw / ratio;
+		}
+		if (nh > d.getHeight()) {
+			nh = d.getHeight();
+			nw = nh * ratio;
+		}
+
+		return new Dimension((int) nw, (int) nh);
 	}
 
-	public void stop() {
-		this.stream = null;
-		running = false;
+	public void setStream(RemoteMaster stream) {
+		this.stream = stream;
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
-		// maybe this isnt needed
+
 		g.drawImage(screenImage, 0, 0, this.getWidth(), this.getHeight(), this);
 		// DrawSelectingRect(g);
 	}

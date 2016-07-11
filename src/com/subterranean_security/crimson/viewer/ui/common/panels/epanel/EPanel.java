@@ -35,6 +35,8 @@ public class EPanel extends SLPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	private SLSide orientation;
+
 	private EPanel thisNP;
 
 	private SLConfig pos1;
@@ -51,14 +53,30 @@ public class EPanel extends SLPanel {
 	private int transitionTime = 900;
 
 	public EPanel(JPanel main) {
-		thisNP = this;
+		this(main, SLSide.BOTTOM);
+	}
+
+	public EPanel(JPanel main, SLSide o) {
+		this.thisNP = this;
+		this.orientation = o;
 
 		movingBar = new MovingPanel(note);
 		movingMain = new MovingPanel(main);
 		movingMain.setAction(actionUP);
 
-		pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f).place(0, 0, movingMain);
-		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(40).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+		switch (orientation) {
+		case BOTTOM:
+			pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f).place(0, 0, movingMain);
+			pos2 = new SLConfig(this).gap(0, 0).row(6f).row(40).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+			break;
+		case TOP:
+			pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f).place(0, 0, movingMain);
+			pos2 = new SLConfig(this).gap(0, 0).row(40).row(6f).col(1f).place(0, 0, movingBar).place(1, 0, movingMain);
+			break;
+		default:
+			break;
+
+		}
 
 		this.setTweenManager(SLAnimator.createTweenManager());
 		this.initialize(pos1);
@@ -75,13 +93,39 @@ public class EPanel extends SLPanel {
 
 	public void raise(JPanel panel, int height) {
 
-		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+		switch (orientation) {
+		case BOTTOM:
+			pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0,
+					movingBar);
+			break;
+		case TOP:
+			pos2 = new SLConfig(this).gap(0, 0).row(height).row(6f).col(1f).place(0, 0, movingBar).place(1, 0,
+					movingMain);
+			break;
+		default:
+			break;
+
+		}
+
 		raise(panel);
 
 	}
 
 	public void raise(JPanel panel, float height) {
-		pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+		switch (orientation) {
+		case BOTTOM:
+			pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0,
+					movingBar);
+			break;
+		case TOP:
+			pos2 = new SLConfig(this).gap(0, 0).row(height).row(6f).col(1f).place(0, 0, movingBar).place(1, 0,
+					movingMain);
+			break;
+		default:
+			break;
+
+		}
+
 		raise(panel);
 	}
 
@@ -149,7 +193,7 @@ public class EPanel extends SLPanel {
 		@Override
 		public void run() {
 			thisNP.createTransition().push(new SLKeyframe(pos2, transitionTime / 1000f)
-					.setStartSide(SLSide.BOTTOM, movingBar).setCallback(new SLKeyframe.Callback() {
+					.setStartSide(orientation, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							movingMain.setAction(actionDN);
@@ -163,7 +207,7 @@ public class EPanel extends SLPanel {
 		@Override
 		public void run() {
 			thisNP.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
-					.setEndSide(SLSide.BOTTOM, movingBar).setCallback(new SLKeyframe.Callback() {
+					.setEndSide(orientation, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							movingMain.setAction(actionUP);

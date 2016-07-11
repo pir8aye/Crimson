@@ -15,11 +15,11 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.ui.remote;
+package com.subterranean_security.crimson.cv.ui.remote;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,9 +27,8 @@ import java.io.File;
 import java.util.Date;
 
 import javax.imageio.ImageIO;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -41,20 +40,26 @@ import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam.RMethod;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
+import com.subterranean_security.crimson.cv.ui.remote.ep.Settings;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+
+import aurelienribon.slidinglayout.SLSide;
 
 public class RDPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private RemoteMaster stream;
+	public RemoteMaster stream;
 
-	private RDArea rdArea = new RDArea();
+	public RDArea rdArea = new RDArea();
 	private boolean running;
-	private int cvid;
+	public int cvid;
 
 	private GraphicsDisplay[] displays;
+
+	private Settings settings;
 
 	public enum Type {
 		VIEW_ONLY, INTERACT;
@@ -63,6 +68,7 @@ public class RDPanel extends JPanel {
 	public RDPanel(Type type, int cvid) {
 		this.cvid = cvid;
 		displays = ViewerStore.Profiles.getClient(cvid).getDisplays();
+		settings = new Settings(displays, this);
 		init();
 
 	}
@@ -73,6 +79,8 @@ public class RDPanel extends JPanel {
 	private JProgressBar barMouseToggle;
 
 	private JButton btnToggle;
+
+	private EPanel ep;
 
 	public void init() {
 		setLayout(new BorderLayout(0, 0));
@@ -111,7 +119,7 @@ public class RDPanel extends JPanel {
 									.setMonitor(displays[0].getId()).build(), cvid, rdArea);
 							StreamStore.addStream(stream);
 							stream.start();
-							rdArea.start(stream);
+							rdArea.setStream(stream);
 						}
 
 						return null;
@@ -133,7 +141,7 @@ public class RDPanel extends JPanel {
 		screenshot.setLayout(new BorderLayout());
 		menuBar.add(screenshot);
 
-		JButton btnScreenshot = new JButton(UIUtil.getIcon("icons16/general/picture.png"));
+		JButton btnScreenshot = new JButton(UIUtil.getIcon("icons16/general/camera.png"));
 		btnScreenshot.setFocusable(false);
 		btnScreenshot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -234,14 +242,41 @@ public class RDPanel extends JPanel {
 		btnMouseToggle.setMargin(new Insets(2, 2, 2, 2));
 		mouseToggle.add(btnMouseToggle);
 
-		JComboBox comboBox = new JComboBox();
-		comboBox.setFont(new Font("Dialog", Font.BOLD, 10));
-		comboBox.setModel(new DefaultComboBoxModel(new String[] { "MONITOR 1" }));
-		menuBar.add(comboBox);
+		menuBar.add(Box.createHorizontalGlue());
+
+		JPanel panel = new JPanel();
+		panel.setMaximumSize(new Dimension(26, 30));
+		menuBar.add(panel);
+		panel.setLayout(new BorderLayout(0, 0));
+
+		JButton btnSettingsToggle = new JButton(UIUtil.getIcon("icons16/general/cog.png"));
+		btnSettingsToggle.setFocusable(false);
+		btnSettingsToggle.addActionListener(new ActionListener() {
+			private boolean raised = false;
+
+			public void actionPerformed(ActionEvent arg0) {
+				if (raised) {
+					raised = false;
+					ep.drop();
+				} else {
+					raised = true;
+					ep.raise(settings, 70);
+				}
+
+			}
+		});
+		btnSettingsToggle.setPreferredSize(new Dimension(26, 30));
+		panel.add(btnSettingsToggle, BorderLayout.NORTH);
+
+		JPanel jp = new JPanel();
+		jp.setLayout(new GridBagLayout());
+
+		ep = new EPanel(jp, SLSide.TOP);
+		add(ep, BorderLayout.CENTER);
 
 		rdArea = new RDArea();
 		rdArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		add(rdArea, BorderLayout.CENTER);
+		jp.add(rdArea);
 
 	}
 
@@ -255,5 +290,4 @@ public class RDPanel extends JPanel {
 		btnToggle.setToolTipText("Start");
 		StreamStore.removeStream(stream.getStreamID());
 	}
-
 }
