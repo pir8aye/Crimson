@@ -118,7 +118,7 @@ public class CreateGroup extends JPanel {
 						Outcome outcome = ViewerCommands
 								.createAuthMethod(AuthMethod.newBuilder().setId(IDGen.getAuthMethodID())
 										.setCreation(new Date().getTime()).addOwner(ViewerStore.Profiles.vp.getUser())
-										.setType(AuthType.GROUP).setGroupName(textField.getText())
+										.setType(AuthType.GROUP).setName(textField.getText())
 										.setGroupSeedPrefix(key_prefix.getText() + CUtil.Misc.randString(32)).build());
 						if (outcome.getResult()) {
 							sl.setGood("Group created successfully");
@@ -220,7 +220,14 @@ public class CreateGroup extends JPanel {
 
 	private boolean testValues() {
 		if (!CUtil.Validation.groupname(textField.getText())) {
+			sl.setBad("Invalid group name");
 			return false;
+		}
+		for (AuthMethod am : ViewerStore.Profiles.server.authMethods) {
+			if (am.getName().equals(textField.getText())) {
+				sl.setBad("Group name in use");
+				return false;
+			}
 		}
 		return true;
 	}

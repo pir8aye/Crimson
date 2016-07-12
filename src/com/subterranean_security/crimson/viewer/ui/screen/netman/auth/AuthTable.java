@@ -137,6 +137,8 @@ class TM extends AbstractTableModel {
 			return ViewerStore.Profiles.server.authMethods.get(rowIndex).getId();
 		case "Authentication Type":
 			return ViewerStore.Profiles.server.authMethods.get(rowIndex).getType();
+		case "Name":
+			return ViewerStore.Profiles.server.authMethods.get(rowIndex).getName();
 		case "Creation Date":
 			return new Date(ViewerStore.Profiles.server.authMethods.get(rowIndex).getCreation()).toString();
 

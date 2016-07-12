@@ -76,13 +76,23 @@ public class GenDialog extends JDialog {
 							MainFrame.main.panel.console.addLine("Generating target on server...", LineType.GREEN);
 							dispose();
 
-							if (config.getAuthType() == AuthType.GROUP) {
+							if (config.getAuthType() == AuthType.GROUP
+									&& ((String) gp.atab.groupSelectionBox.getSelectedItem()).equals("Create Group")) {
 								if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
 										.setId(IDGen.getAuthMethodID()).setCreation(new Date().getTime())
-										.setType(AuthType.GROUP).setGroupName(config.getGroupName())
+										.setType(AuthType.GROUP).setName(config.getGroupName())
 										.setGroupSeedPrefix(gp.getGroupPrefix()).build()).getResult()) {
 									MainFrame.main.panel.console.addLine("Failed to create authentication group",
 											LineType.ORANGE);
+									return;
+								}
+							} else if (config.getAuthType() == AuthType.PASSWORD
+									&& !gp.atab.chckbxDontInstallPassword.isSelected()) {
+								if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
+										.setId(IDGen.getAuthMethodID()).setCreation(new Date().getTime())
+										.setType(AuthType.PASSWORD).setName(gp.atab.fld_password_name.getText())
+										.setPassword(gp.atab.getPassword()).build()).getResult()) {
+									MainFrame.main.panel.console.addLine("Failed to create password", LineType.ORANGE);
 									return;
 								}
 							}

@@ -139,7 +139,7 @@ public final class Server {
 		log.debug("Generating debug installer");
 
 		ServerStore.Authentication.create(AuthMethod.newBuilder().setCreation(new Date().getTime())
-				.setType(AuthType.GROUP).setId(0).setGroupName("TESTGROUP").setGroupSeedPrefix("gfdgdf").build());
+				.setType(AuthType.GROUP).setId(0).setName("TESTGROUP").setGroupSeedPrefix("gfdgdf").build());
 
 		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.GROUP)
 				.setGroupName("TESTGROUP")

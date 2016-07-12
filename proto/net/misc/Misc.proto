@@ -28,13 +28,13 @@ message AuthMethod {
 	required int32 id = 1;
 	required int64 creation = 2;
 	required AuthType type = 3;
+	required string name = 7;
 	
 	repeated string owner = 4;
 	repeated string member = 5;
 	
 	// if group auth
 	optional int32 group = 6;
-	optional string group_name = 7;
 	optional string group_seed_prefix = 8;
 	
 	// if password auth

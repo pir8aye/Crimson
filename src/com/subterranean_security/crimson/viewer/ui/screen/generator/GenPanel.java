@@ -18,26 +18,19 @@
 package com.subterranean_security.crimson.viewer.ui.screen.generator;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.io.File;
-import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -66,12 +59,10 @@ import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.components.EntropyHarvester;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.ATab;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.FTab;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.NTab;
 
@@ -82,12 +73,13 @@ public class GenPanel extends JPanel {
 	private JPanel otab;
 	private NTab ntab;
 	private FTab ftab;
+	public ATab atab;
 	private JPanel etab;
 	private JPanel optab;
 	public JTextField fld_ctime;
 	private StatusLabel lbl_status;
 	private JCheckBox cbx_waiver;
-	private JTextField fld_group_name;
+
 	private JTextArea txt_output_desc;
 	private JLabel lblApproximateOutputSize = new JLabel();
 
@@ -97,18 +89,11 @@ public class GenPanel extends JPanel {
 	private static final String sh = "Shell Script (.sh)";
 	private JSpinner fld_delay;
 
-	private String group_text = "Group authentication is the most secure mechanism. A \"group key\" is embedded in the client and only servers that posses this key may authenticate with the client and vice versa.";
-	private String pass_text = "A simple password is used to authenticate the client. This is less secure than group authentication";
-	private String none_text = "The client will request to skip authentication entirely.";
-
 	private String[] ipath_win = new String[] { "C:/Users/%USERNAME%/Documents/Crimson" };
 	private String[] ipath_lin = new String[] { "/home/%USERNAME%/.crimson" };
 	private String[] ipath_osx = new String[] { "/home/%USERNAME%/.crimson" };
 	private String[] ipath_sol = new String[] { "/home/%USERNAME%/.crimson" };
 	private String[] ipath_bsd = new String[] { "/home/%USERNAME%/.crimson" };
-
-	private Timer timer = new Timer();
-	private GroupTimer gt = new GroupTimer();
 
 	public GenPanel() {
 		init();
@@ -120,7 +105,7 @@ public class GenPanel extends JPanel {
 			fld_path.setText("C:/Users/dev/Desktop/client.jar");
 			cbx_waiver.setSelected(true);
 		}
-		timer.schedule(gt, 0, 750);
+
 	}
 
 	public void init() {
@@ -426,154 +411,8 @@ public class GenPanel extends JPanel {
 		tabbedPane.setTabComponentAt(3, new GenTabComponent("computer", "Network"));
 		ntab.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-		JPanel atab = new JPanel();
+		atab = new ATab();
 		tabbedPane.addTab(null, atab);
-		atab.setLayout(new BorderLayout(0, 0));
-
-		JPanel panel_8 = new JPanel();
-		panel_8.setBorder(
-				new TitledBorder(null, "Authentication Type", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		atab.add(panel_8, BorderLayout.NORTH);
-		panel_8.setLayout(new BorderLayout(0, 0));
-
-		JTextArea txtrGroupAuthenticationIs = new JTextArea();
-		txtrGroupAuthenticationIs.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		txtrGroupAuthenticationIs.setFont(new Font("Dialog", Font.PLAIN, 10));
-		txtrGroupAuthenticationIs.setOpaque(false);
-		txtrGroupAuthenticationIs.setWrapStyleWord(true);
-		txtrGroupAuthenticationIs.setLineWrap(true);
-		txtrGroupAuthenticationIs.setText(group_text);
-		panel_8.add(txtrGroupAuthenticationIs, BorderLayout.CENTER);
-
-		JPanel panel_10 = new JPanel();
-		panel_8.add(panel_10, BorderLayout.WEST);
-
-		JPanel panel_9 = new JPanel();
-		atab.add(panel_9, BorderLayout.CENTER);
-		panel_9.setLayout(new CardLayout(0, 0));
-
-		authType = new JComboBox<ImageIcon>();
-		authType.setRenderer(new AuthComboBoxRenderer());
-		authType.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				switch (((ImageIcon) authType.getSelectedItem()).getDescription()) {
-				case "Group": {
-					txtrGroupAuthenticationIs.setText(group_text);
-					((CardLayout) panel_9.getLayout()).show(panel_9, "group");
-					break;
-				}
-				case "Password": {
-					txtrGroupAuthenticationIs.setText(pass_text);
-					((CardLayout) panel_9.getLayout()).show(panel_9, "Password");
-					break;
-				}
-				case "None": {
-					txtrGroupAuthenticationIs.setText(none_text);
-					((CardLayout) panel_9.getLayout()).show(panel_9, "None");
-					break;
-				}
-				}
-			}
-		});
-
-		ImageIcon group = UIUtil.getIcon("icons16/general/group.png");
-		group.setDescription("Group");
-		ImageIcon password = UIUtil.getIcon("icons16/general/textfield_password.png");
-		password.setDescription("Password");
-		ImageIcon na = UIUtil.getIcon("icons16/general/radioactivity.png");
-		na.setDescription("None");
-		authType.setModel(new DefaultComboBoxModel(new ImageIcon[] { group, password, na }));
-		panel_10.add(authType);
-
-		JPanel authpanel_group = new JPanel();
-		panel_9.add(authpanel_group, "group");
-		authpanel_group.setLayout(new BorderLayout(0, 0));
-
-		JPanel panel_11 = new JPanel();
-		panel_11.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		authpanel_group.add(panel_11, BorderLayout.NORTH);
-		panel_11.setLayout(new BorderLayout(0, 0));
-
-		JLabel lblGroupKeyPrefix = new JLabel("Group Key Prefix:");
-		lblGroupKeyPrefix.setFont(new Font("Dialog", Font.BOLD, 11));
-		panel_11.add(lblGroupKeyPrefix, BorderLayout.WEST);
-
-		key_prefix = new JLabel("4 5 9 2 0 1 5 3 8 3 1 3 4 2 5 5");
-		key_prefix.setFont(new Font("Dialog", Font.BOLD, 11));
-		key_prefix.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_11.add(key_prefix, BorderLayout.CENTER);
-
-		JPanel panel_12 = new JPanel();
-		authpanel_group.add(panel_12);
-		panel_12.setLayout(new BorderLayout(0, 0));
-
-		JPanel panel_13 = new JPanel();
-		panel_13.setBorder(new TitledBorder(null, "Settings", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_12.add(panel_13, BorderLayout.NORTH);
-		panel_13.setLayout(new BorderLayout(0, 0));
-
-		JLabel lblGroupName = new JLabel("  Group Name:");
-		lblGroupName.setFont(new Font("Dialog", Font.BOLD, 10));
-		panel_13.add(lblGroupName, BorderLayout.WEST);
-
-		JPanel panel_14 = new JPanel();
-		panel_13.add(panel_14, BorderLayout.EAST);
-
-		fld_group_name = new JTextField();
-		fld_group_name.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				lbl_status.setInfo("A simple identifier for clients installed by this installer");
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				lbl_status.setDefault();
-			}
-		});
-		fld_group_name.setBounds(130, 20, 117, 19);
-		panel_14.add(fld_group_name);
-		fld_group_name.setColumns(10);
-
-		JButton btnRandom_1 = new JButton("Randomize");
-		btnRandom_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				fld_group_name.setText("Grp-" + CUtil.Misc.randString(5));
-			}
-		});
-		btnRandom_1.setMargin(new Insets(2, 2, 2, 2));
-		btnRandom_1.setFont(new Font("Dialog", Font.BOLD, 9));
-		btnRandom_1.setBounds(259, 20, 70, 19);
-		panel_14.add(btnRandom_1);
-
-		EntropyHarvester eh = new EntropyHarvester();
-		eh.hpanel.addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent e) {
-
-				gt.mix(e.getPoint());
-			}
-		});
-		panel_12.add(eh, BorderLayout.CENTER);
-
-		JPanel authpanel_password = new JPanel();
-		authpanel_password.setBorder(
-				new TitledBorder(null, "Password Authentication", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_9.add(authpanel_password, "Password");
-
-		JPanel authpanel_none = new JPanel();
-		panel_9.add(authpanel_none, "None");
-
-		JLabel lblNewLabel = new JLabel("Warning: Authentication mode is set to NONE");
-		authpanel_none.add(lblNewLabel);
-
-		JLabel lblThisClientWill = new JLabel("This client will be able to authenticate with any server!");
-		lblThisClientWill.setFont(new Font("Dialog", Font.BOLD, 10));
-		authpanel_none.add(lblThisClientWill);
-
-		JLabel lblSslEncryptionWill = new JLabel("SSL encryption will still be used");
-		lblSslEncryptionWill.setFont(new Font("Dialog", Font.BOLD, 10));
-		authpanel_none.add(lblSslEncryptionWill);
 		tabbedPane.setTabComponentAt(4, new GenTabComponent("lock", "Auth"));
 
 		otab = new JPanel();
@@ -684,9 +523,9 @@ public class GenPanel extends JPanel {
 	private JComboBox<String> fld_install_bsd;
 	private JComboBox<String> fld_install_solaris;
 	private JComboBox<String> type_comboBox;
-	private JLabel key_prefix;
+
 	private JTextField textField;
-	private JComboBox<ImageIcon> authType;
+
 	private JLabel lblWindows;
 	private JLabel lblSolaris;
 	private JLabel lblLinux;
@@ -705,13 +544,11 @@ public class GenPanel extends JPanel {
 	}
 
 	public String getGroupPrefix() {
-		try {
-			return Crypto.hash("SHA-256", key_prefix.getText().toCharArray());
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return atab.getGroupPrefix();
+	}
+
+	public void cancelTimer() {
+		atab.cancelTimer();
 	}
 
 	public ClientConfig getValues() {
@@ -733,14 +570,21 @@ public class GenPanel extends JPanel {
 
 		ic.setImsg(fld_install_message.getText());
 
-		switch (((ImageIcon) authType.getSelectedItem()).getDescription()) {
+		switch (((ImageIcon) atab.authType.getSelectedItem()).getDescription()) {
 		case "Group": {
 			ic.setAuthType(AuthType.GROUP);
-			ic.setGroupName(fld_group_name.getText());
+			String group = (String) atab.groupSelectionBox.getSelectedItem();
+			if (group.equals("Create Group")) {
+				ic.setGroupName(atab.fld_group_name.getText());
+			} else {
+				ic.setGroupName(group);
+			}
+
 			break;
 		}
 		case "Password": {
 			ic.setAuthType(AuthType.PASSWORD);
+			ic.setPassword(atab.getPassword());
 			break;
 		}
 		case "None": {
@@ -903,58 +747,4 @@ public class GenPanel extends JPanel {
 
 	}
 
-	private void refreshAuth() {
-		String c = (String) authType.getSelectedItem();
-
-	}
-
-	class GroupTimer extends TimerTask {
-
-		private Random rand = new Random();
-		private String last = "" + new Date().getTime();
-
-		private int upper = 20;
-		private int lower = 10;
-
-		@Override
-		public void run() {
-			hash();
-			display(50);
-		}
-
-		private void hash() {
-			last = Crypto.hashSign(last, CUtil.Misc.randString(rand.nextInt(upper - lower + 1) + lower))
-					.replaceAll("\\+|/", CUtil.Misc.randString(1));
-		}
-
-		private void display(int delay) {
-			String data = last;
-			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < 16; i++) {
-				sb.append(' ');
-				sb.append(data.charAt(i));
-			}
-			key_prefix.setText("");
-			try {
-				Thread.sleep(delay);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			key_prefix.setText(sb.toString().substring(1).toUpperCase());
-		}
-
-		public void mix(Point p) {
-			last += p.x + p.y;
-			hash();
-			display(0);
-		}
-
-	}
-
-	public void cancelTimer() {
-		timer.cancel();
-		timer = null;
-
-	}
 }

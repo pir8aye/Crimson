@@ -215,7 +215,7 @@ public enum ServerStore {
 		public static AuthMethod getGroupMethod(String groupname) {
 			for (int i = 0; i < methods.size(); i++) {
 				AuthMethod m = methods.get(i);
-				if (m.hasGroupName() && m.getGroupName().equals(groupname)) {
+				if (m.getName().equals(groupname)) {
 					return m;
 				}
 			}
@@ -242,10 +242,9 @@ public enum ServerStore {
 				}
 			}
 
-			if (am.hasGroupName()) {
-				am = AuthMethod.newBuilder().mergeFrom(am)
-						.setGroup(Databases.system
-								.store(Crypto.generateGroup(am.getGroupName(), am.getGroupSeedPrefix().getBytes())))
+			if (am.getType() == AuthType.GROUP) {
+				am = AuthMethod.newBuilder().mergeFrom(am).setGroup(
+						Databases.system.store(Crypto.generateGroup(am.getName(), am.getGroupSeedPrefix().getBytes())))
 						.build();
 			}
 			methods.add(am);
@@ -273,7 +272,11 @@ public enum ServerStore {
 		}
 
 		public static boolean tryPassword(String s) {
-
+			for (int i = 0; i < methods.size(); i++) {
+				if (s.equals(methods.get(i).getPassword())) {
+					return true;
+				}
+			}
 			return false;
 		}
 	}

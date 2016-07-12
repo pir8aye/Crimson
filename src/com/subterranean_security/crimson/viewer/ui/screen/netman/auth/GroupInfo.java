@@ -48,7 +48,7 @@ public class GroupInfo extends JPanel {
 		DataViewer dv = new DataViewer();
 		dv.addRow(new String[] { "Authentication Type", "GROUP" });
 		dv.addRow(new String[] { "ID", "" + am.getId() });
-		dv.addRow(new String[] { "Name", am.getGroupName() });
+		dv.addRow(new String[] { "Name", am.getName() });
 		dv.addRow(new String[] { "Key", am.getGroupSeedPrefix() });
 		dv.addRow(new String[] { "Creation Date", new Date(am.getCreation()).toString() });
 
