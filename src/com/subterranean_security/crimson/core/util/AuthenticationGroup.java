@@ -7,6 +7,18 @@ import java.security.PublicKey;
 import javax.security.auth.DestroyFailedException;
 import javax.security.auth.Destroyable;
 
+/**
+ * 
+ * The group key-pair authentication mechanism is the strongest out of the
+ * supported authentication schemes, utilizing DSA keys to verify client and
+ * server identities. Upon installer generation, the public key is embedded in
+ * the installer.<br>
+ * <br>
+ * <div align="center"><img src="../../../../../files/client_auth.png" /></div>
+ * 
+ * @author Tyler Cook
+ *
+ */
 public class AuthenticationGroup implements Serializable, Destroyable {
 
 	private static final long serialVersionUID = 1L;
