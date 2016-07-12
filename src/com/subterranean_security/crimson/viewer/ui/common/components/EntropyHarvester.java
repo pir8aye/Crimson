@@ -31,6 +31,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.border.MatteBorder;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.BevelBorder;
 
 public class EntropyHarvester extends JPanel {
 
@@ -80,7 +83,7 @@ public class EntropyHarvester extends JPanel {
 				hpanel.repaint();
 			}
 		});
-		hpanel.setBorder(new LineBorder(new Color(0, 0, 0)));
+		hpanel.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		JPanel main = new JPanel();
 		main.setLayout(new BorderLayout(0, 0));
 		main.add(hpanel);
