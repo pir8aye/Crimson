@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import javax.security.auth.DestroyFailedException;
 import javax.xml.stream.XMLStreamException;
 
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ import com.subterranean_security.crimson.core.proto.Log.RS_Logs;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Misc.Group;
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.SMSG.RS_CloudUser;
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
@@ -66,6 +67,7 @@ import com.subterranean_security.crimson.core.proto.Users.RS_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_EditUser;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
+import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -304,7 +306,7 @@ public class ServerExecutor extends BasicExecutor {
 		switch (auth.getType()) {
 
 		case GROUP:
-			final Group group = ServerStore.Authentication.getGroup(auth.getGroupName()).getGroup();
+			final AuthenticationGroup group = ServerStore.Authentication.getGroup(auth.getGroupName());
 			if (group == null) {
 				log.debug("Authentication failed: Invalid Group: {}", auth.getGroupName());
 				receptor.setState(ConnectionState.CONNECTED);
@@ -320,7 +322,12 @@ public class ServerExecutor extends BasicExecutor {
 				public void run() {
 					try {
 						RS_GroupChallenge rs = receptor.cq.take(id, 7, TimeUnit.SECONDS).getRsGroupChallenge();
-						boolean flag = rs.getResult().equals(Crypto.sign(magic, group.getKey()));
+						boolean flag = rs.getResult().equals(Crypto.hashSign(magic, group.getGroupKey()));
+						try {
+							group.destroy();
+						} catch (DestroyFailedException e) {
+						}
+
 						if (flag) {
 							receptor.setState(ConnectionState.AUTH_STAGE2);
 						} else {
@@ -399,10 +406,10 @@ public class ServerExecutor extends BasicExecutor {
 			return;
 		}
 		RQ_GroupChallenge rq = m.getRqGroupChallenge();
-		Group group = ServerStore.Authentication.getGroup(rq.getGroupName()).getGroup();
+		AuthenticationGroup group = ServerStore.Authentication.getGroup(rq.getGroupName());
 
-		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder().setResult(Crypto.sign(rq.getMagic(), group.getKey()))
-				.build();
+		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder()
+				.setResult(Crypto.signGroupChallenge(rq.getMagic(), group.getPrivateKey())).build();
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
 		try {
 			Thread.sleep(100);
@@ -684,8 +691,8 @@ public class ServerExecutor extends BasicExecutor {
 			b.setViewerPermissions(rqad.getPermissions());
 		}
 
-		if (rqad.hasPassword() && ServerStore.Databases.system.validLogin(rqad.getUser(), Crypto
-				.hashPass(m.getRqEditUser().getOldPassword(), ServerStore.Databases.system.getSalt(rqad.getUser())))) {
+		if (rqad.hasPassword() && ServerStore.Databases.system.validLogin(rqad.getUser(), Crypto.hashCrimsonPassword(
+				m.getRqEditUser().getOldPassword(), ServerStore.Databases.system.getSalt(rqad.getUser())))) {
 			ServerStore.Databases.system.changePassword(rqad.getUser(), rqad.getPassword());
 
 		}
@@ -715,10 +722,10 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void rq_create_auth_method(Message m) {
 		log.debug("Creating new auth method");
-		ServerStore.Authentication.create(m.getRqCreateAuthMethod().getAuthMethod());
+		Outcome outcome = ServerStore.Authentication.create(m.getRqCreateAuthMethod().getAuthMethod());
 
-		receptor.handle.write(
-				Message.newBuilder().setRsCreateAuthMethod(RS_CreateAuthMethod.newBuilder().setResult(true)).build());
+		receptor.handle.write(Message.newBuilder().setId(m.getId())
+				.setRsCreateAuthMethod(RS_CreateAuthMethod.newBuilder().setOutcome(outcome)).build());
 
 	}
 

@@ -87,8 +87,8 @@ public enum ViewerCommands {
 				return false;
 			} else if (lcrq.hasRqLoginChallenge()) {
 				RQ_LoginChallenge challenge = lcrq.getRqLoginChallenge();
-				String result = challenge.getCloud() ? Crypto.hashOCPass(pass, challenge.getSalt())
-						: Crypto.hashPass(pass, challenge.getSalt());
+				String result = challenge.getCloud() ? Crypto.hashOpencartPassword(pass, challenge.getSalt())
+						: Crypto.hashCrimsonPassword(pass, challenge.getSalt());
 				ViewerRouter.route(Message.newBuilder().setId(id)
 						.setRsLoginChallenge(RS_LoginChallenge.newBuilder().setResult(result)).build());
 			} else if (lcrq.hasRsLogin()) {
@@ -229,9 +229,9 @@ public enum ViewerCommands {
 					Message.newBuilder().setRqCreateAuthMethod(RQ_CreateAuthMethod.newBuilder().setAuthMethod(at)), 3);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
-			} else if (!m.getRsCreateAuthMethod().getResult()) {
-				outcome.setResult(false).setComment(
-						m.getRsCreateAuthMethod().hasComment() ? m.getRsCreateAuthMethod().getComment() : "no comment");
+			} else if (!m.getRsCreateAuthMethod().getOutcome().getResult()) {
+				outcome.setResult(false).setComment(m.getRsCreateAuthMethod().getOutcome().hasComment()
+						? m.getRsCreateAuthMethod().getOutcome().getComment() : "no comment");
 
 			} else {
 				outcome.setResult(true);

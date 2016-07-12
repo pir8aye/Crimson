@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
+import javax.security.auth.DestroyFailedException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +50,12 @@ import com.subterranean_security.crimson.core.proto.Log.LogFile;
 import com.subterranean_security.crimson.core.proto.Log.LogType;
 import com.subterranean_security.crimson.core.proto.Log.RS_Logs;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.proto.Screenshot.RS_QuickScreenshot;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteSlave;
+import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -97,7 +98,7 @@ public class ClientExecutor extends BasicExecutor {
 						return;
 					}
 					if (m.hasRqGroupChallenge()) {
-						challenge_rq(m);
+						rq_group_challenge(m);
 					} else if (m.hasMiChallengeresult()) {
 						challengeResult_1w(m);
 					} else if (m.hasRqFileListing()) {
@@ -165,12 +166,19 @@ public class ClientExecutor extends BasicExecutor {
 
 	}
 
-	private void challenge_rq(Message m) {
+	private void rq_group_challenge(Message m) {
 		if (connector.getState() != ConnectionState.AUTH_STAGE1) {
 			return;
 		}
 
-		String result = Crypto.sign(m.getRqGroupChallenge().getMagic(), Client.ic.getGroup().getKey());
+		AuthenticationGroup group = Client.getGroup();
+		final byte[] groupKey = group.getGroupKey();
+		try {
+			group.destroy();
+		} catch (DestroyFailedException e1) {
+		}
+
+		String result = Crypto.hashSign(m.getRqGroupChallenge().getMagic(), groupKey);
 		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder().setResult(result).build();
 		connector.handle.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
 	}
@@ -187,8 +195,12 @@ public class ClientExecutor extends BasicExecutor {
 			connector.setState(ConnectionState.AUTH_STAGE2);
 		}
 
-		Group group = Client.ic.getGroup();
-		final String key = group.getKey();
+		AuthenticationGroup group = Client.getGroup();
+		final byte[] groupKey = group.getGroupKey();
+		try {
+			group.destroy();
+		} catch (DestroyFailedException e1) {
+		}
 
 		// Send authentication challenge
 		final int id = IDGen.get();
@@ -203,7 +215,7 @@ public class ClientExecutor extends BasicExecutor {
 				try {
 					Message rs = connector.cq.take(id, 7, TimeUnit.SECONDS);
 					if (rs != null) {
-						if (!rs.getRsGroupChallenge().getResult().equals(Crypto.sign(magic, key))) {
+						if (!Crypto.verifyGroupChallenge(magic, groupKey, rs.getRsGroupChallenge().getResult())) {
 							log.info("Server challenge failed");
 							flag = false;
 						}

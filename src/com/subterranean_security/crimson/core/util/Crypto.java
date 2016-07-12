@@ -24,24 +24,30 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 
-public enum Crypto {
-	;
+public final class Crypto {
 
-	private static byte[] hash(String type, byte[] target) throws NoSuchAlgorithmException {
-		MessageDigest digest;
-
-		digest = MessageDigest.getInstance(type);
-		digest.update(target);
-		return digest.digest();
-
+	private Crypto() {
 	}
 
 	public static String hash(String type, char[] target) throws NoSuchAlgorithmException {
@@ -62,6 +68,15 @@ public enum Crypto {
 
 	}
 
+	private static byte[] hash(String type, byte[] target) throws NoSuchAlgorithmException {
+		MessageDigest digest;
+
+		digest = MessageDigest.getInstance(type);
+		digest.update(target);
+		return digest.digest();
+
+	}
+
 	private static String hash(String type, String target) throws NoSuchAlgorithmException {
 
 		byte messageDigest[] = hash(type, target.getBytes());
@@ -74,7 +89,11 @@ public enum Crypto {
 
 	}
 
-	public static String hashPass(char[] pass, String salt) {
+	public static String hashCrimsonPassword(String pass, String salt) {
+		return hashCrimsonPassword(pass.toCharArray(), salt);
+	}
+
+	public static String hashCrimsonPassword(char[] pass, String salt) {
 		byte[] hash = (new String(pass) + salt).getBytes(StandardCharsets.UTF_16);
 		try {
 			for (int i = 0; i < 999; i++) {
@@ -87,7 +106,7 @@ public enum Crypto {
 		return new String(B64.encode(hash));
 	}
 
-	public static String hashOCPass(String pass, String salt) {
+	public static String hashOpencartPassword(String pass, String salt) {
 		try {
 			return hash("SHA-1", salt + hash("SHA-1", salt + hash("SHA-1", pass)));
 		} catch (NoSuchAlgorithmException e) {
@@ -97,19 +116,11 @@ public enum Crypto {
 		return null;
 	}
 
-	public static String hashPass(String pass, String salt) {
-		return hashPass(pass.toCharArray(), salt);
-	}
-
-	public static String hashPass(char[] pass) {
-		return hashPass(pass, "");
-	}
-
 	public static String genSalt() {
 		return CUtil.Misc.randString(8);
 	}
 
-	public static String sign(String magic, String key) {
+	public static String hashSign(String magic, String key) {
 		try {
 
 			return new String(B64.encode(hash("SHA-256", (magic + key).getBytes())));
@@ -118,6 +129,96 @@ public enum Crypto {
 			e.printStackTrace();
 		}
 		return CUtil.Misc.randString(8);
+	}
+
+	public static String hashSign(String magic, byte[] key) {
+		return hashSign(magic, new String(key));
+	}
+
+	public static String signGroupChallenge(String magic, byte[] key) {
+		try {
+			PrivateKey pkey = KeyFactory.getInstance("DSA").generatePrivate(new PKCS8EncodedKeySpec(key));
+			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
+			dsa.initSign(pkey);
+			dsa.update(magic.getBytes());
+			return new String(B64.encode(dsa.sign()));
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SignatureException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static boolean verifyGroupChallenge(String magic, byte[] key, String signature) {
+		try {
+			PublicKey pkey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(key));
+			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
+			dsa.initVerify(pkey);
+			dsa.update(magic.getBytes());
+			return dsa.verify(B64.decode(signature));
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SignatureException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private static final int seedSuffixLength = 128;
+
+	public static AuthenticationGroup generateGroup(String name, byte[] seedPrefix) {
+
+		try {
+			KeyPairGenerator generator = KeyPairGenerator.getInstance("DSA", "SUN");
+			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+
+			byte[] seed = new byte[seedPrefix.length + seedSuffixLength];
+			for (int i = 0; i < seedPrefix.length; i++) {
+				seed[i] = seedPrefix[i];
+			}
+			byte[] seedSuffix = SecureRandom.getSeed(seedSuffixLength);
+			for (int i = 0; i < seedSuffix.length; i++) {
+				seed[seedPrefix.length + i] = seedSuffix[i];
+			}
+			CUtil.Misc.clearByte(seedSuffix);
+			CUtil.Misc.clearByte(seedPrefix);
+			random.setSeed(seed);
+
+			generator.initialize(1024, random);
+
+			KeyPair pair = generator.generateKeyPair();
+			return new AuthenticationGroup(name, pair.getPrivate(), pair.getPublic());
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static Outcome exportGroup(AuthMethod am, File output) {

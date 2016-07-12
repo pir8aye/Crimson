@@ -30,6 +30,9 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
+import com.subterranean_security.crimson.core.proto.Misc.AuthType;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
@@ -72,6 +75,17 @@ public class GenDialog extends JDialog {
 						if (gp.testValues(config)) {
 							MainFrame.main.panel.console.addLine("Generating target on server...", LineType.GREEN);
 							dispose();
+
+							if (config.getAuthType() == AuthType.GROUP) {
+								if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
+										.setId(IDGen.getAuthMethodID()).setCreation(new Date().getTime())
+										.setType(AuthType.GROUP).setGroupName(config.getGroupName())
+										.setGroupSeedPrefix(gp.getGroupPrefix()).build()).getResult()) {
+									MainFrame.main.panel.console.addLine("Failed to create authentication group",
+											LineType.ORANGE);
+									return;
+								}
+							}
 							ViewerCommands.generate(config, out, creation);
 
 						} else {

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -33,6 +34,7 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.ServerDB;
@@ -136,7 +138,11 @@ public final class Server {
 	private static void generateDebugInstaller() {
 		log.debug("Generating debug installer");
 
-		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.NO_AUTH)
+		ServerStore.Authentication.create(AuthMethod.newBuilder().setCreation(new Date().getTime())
+				.setType(AuthType.GROUP).setId(0).setGroupName("TESTGROUP").setGroupSeedPrefix("gfdgdf").build());
+
+		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.GROUP)
+				.setGroupName("TESTGROUP")
 				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
 				.setPathWin("C:\\Users\\dev\\Documents\\Crimson").setPathBsd("/").setPathLin("/home/dev/cr")
 				.setPathOsx("/").setPathSol("/").setReconnectPeriod(3000).setBuildNumber(Common.build)

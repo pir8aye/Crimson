@@ -45,7 +45,8 @@ message ClientConfig {
 	optional string viewer_user = 18;
 	
 	required AuthType authType = 19;
-	optional Group group = 20;
+	
+	optional string group_name = 20;
 	optional string password = 21;
 
 	//for parser only

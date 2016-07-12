@@ -36,8 +36,7 @@ message RQ_CreateAuthMethod {
 }
 
 message RS_CreateAuthMethod {
-	required bool result = 1;
-	optional string comment = 2;
+	required Outcome outcome = 1;
 }
 
 message RQ_RemoveAuthMethod {

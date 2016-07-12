@@ -48,13 +48,13 @@ public class GroupInfo extends JPanel {
 		DataViewer dv = new DataViewer();
 		dv.addRow(new String[] { "Authentication Type", "GROUP" });
 		dv.addRow(new String[] { "ID", "" + am.getId() });
-		dv.addRow(new String[] { "Name", am.getGroup().getName() });
-		dv.addRow(new String[] { "Key", am.getGroup().getKey() });
+		dv.addRow(new String[] { "Name", am.getGroupName() });
+		dv.addRow(new String[] { "Key", am.getGroupSeedPrefix() });
 		dv.addRow(new String[] { "Creation Date", new Date(am.getCreation()).toString() });
 
 		panel_2.add(dv, BorderLayout.CENTER);
 
-		JLabel lblGroupKeyfbddefca = new JLabel("Group Key: " + am.getGroup().getKey());
+		JLabel lblGroupKeyfbddefca = new JLabel("Group Key: " + am.getGroupSeedPrefix());
 		lblGroupKeyfbddefca.setFont(new Font("Dialog", Font.BOLD, 9));
 		add(lblGroupKeyfbddefca, BorderLayout.NORTH);
 

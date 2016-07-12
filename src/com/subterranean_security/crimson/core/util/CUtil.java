@@ -788,6 +788,12 @@ public enum CUtil {
 			}
 		}
 
+		public static void clearByte(byte[] a) {
+			for (int i = 0; i < a.length; i++) {
+				a[i] = (byte) rand.nextInt();
+			}
+		}
+
 		public static byte[] toBytes(char[] chars) {
 			CharBuffer charBuffer = CharBuffer.wrap(chars);
 			ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);

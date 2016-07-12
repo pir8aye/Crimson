@@ -45,7 +45,6 @@ import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
-import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -111,18 +110,16 @@ public class CreateGroup extends JPanel {
 		btnCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
+				// TODO swingworker
 				new Thread(new Runnable() {
 					public void run() {
 						sl.setInfo("Creating group");
 						timer.cancel();
 						Outcome outcome = ViewerCommands
-								.createAuthMethod(
-										AuthMethod.newBuilder().setId(IDGen.getAuthMethodID())
-												.setCreation(new Date().getTime())
-												.addOwner(ViewerStore.Profiles.vp.getUser()).setType(AuthType.GROUP)
-												.setGroup(Group.newBuilder().setName(textField.getText())
-														.setKey(key_prefix.getText() + CUtil.Misc.randString(32)))
-												.build());
+								.createAuthMethod(AuthMethod.newBuilder().setId(IDGen.getAuthMethodID())
+										.setCreation(new Date().getTime()).addOwner(ViewerStore.Profiles.vp.getUser())
+										.setType(AuthType.GROUP).setGroupName(textField.getText())
+										.setGroupSeedPrefix(key_prefix.getText() + CUtil.Misc.randString(32)).build());
 						if (outcome.getResult()) {
 							sl.setGood("Group created successfully");
 							try {
@@ -243,8 +240,8 @@ public class CreateGroup extends JPanel {
 		}
 
 		private void hash() {
-			last = Crypto.sign(last, CUtil.Misc.randString(rand.nextInt(upper - lower + 1) + lower)).replaceAll("\\+|/",
-					CUtil.Misc.randString(1));
+			last = Crypto.hashSign(last, CUtil.Misc.randString(rand.nextInt(upper - lower + 1) + lower))
+					.replaceAll("\\+|/", CUtil.Misc.randString(1));
 		}
 
 		private void display(int delay) {

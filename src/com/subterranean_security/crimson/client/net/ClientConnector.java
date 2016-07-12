@@ -19,6 +19,8 @@ package com.subterranean_security.crimson.client.net;
 
 import java.net.ConnectException;
 
+import javax.security.auth.DestroyFailedException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +32,7 @@ import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
-import com.subterranean_security.crimson.core.proto.Misc.Group;
+import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.IDGen;
 
 import io.netty.bootstrap.Bootstrap;
@@ -75,8 +77,12 @@ public class ClientConnector extends BasicConnector {
 
 		switch (authType) {
 		case GROUP:
-			Group group = Client.ic.getGroup();
+			AuthenticationGroup group = Client.getGroup();
 			auth.setGroupName(group.getName());
+			try {
+				group.destroy();
+			} catch (DestroyFailedException e) {
+			}
 			setState(ConnectionState.AUTH_STAGE1);
 			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
 			break;

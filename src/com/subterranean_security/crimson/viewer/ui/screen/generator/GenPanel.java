@@ -32,6 +32,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.File;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -63,7 +64,6 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
-import com.subterranean_security.crimson.core.proto.Misc.Group;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
@@ -704,6 +704,16 @@ public class GenPanel extends JPanel {
 
 	}
 
+	public String getGroupPrefix() {
+		try {
+			return Crypto.hash("SHA-256", key_prefix.getText().toCharArray());
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public ClientConfig getValues() {
 
 		if (!cbx_waiver.isSelected()) {
@@ -726,7 +736,7 @@ public class GenPanel extends JPanel {
 		switch (((ImageIcon) authType.getSelectedItem()).getDescription()) {
 		case "Group": {
 			ic.setAuthType(AuthType.GROUP);
-			ic.setGroup(Group.newBuilder().setName(fld_group_name.getText()).setKey(CUtil.Misc.randString(64)).build());
+			ic.setGroupName(fld_group_name.getText());
 			break;
 		}
 		case "Password": {
@@ -913,8 +923,8 @@ public class GenPanel extends JPanel {
 		}
 
 		private void hash() {
-			last = Crypto.sign(last, CUtil.Misc.randString(rand.nextInt(upper - lower + 1) + lower)).replaceAll("\\+|/",
-					CUtil.Misc.randString(1));
+			last = Crypto.hashSign(last, CUtil.Misc.randString(rand.nextInt(upper - lower + 1) + lower))
+					.replaceAll("\\+|/", CUtil.Misc.randString(1));
 		}
 
 		private void display(int delay) {

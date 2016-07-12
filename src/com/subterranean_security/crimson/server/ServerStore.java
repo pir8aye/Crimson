@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,11 +34,13 @@ import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
-import com.subterranean_security.crimson.core.proto.Misc.Group;
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.storage.MemList;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
+import com.subterranean_security.crimson.core.util.AuthenticationGroup;
+import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.Listener;
@@ -209,10 +212,10 @@ public enum ServerStore {
 
 		}
 
-		public static AuthMethod getGroup(String groupname) {
+		public static AuthMethod getGroupMethod(String groupname) {
 			for (int i = 0; i < methods.size(); i++) {
 				AuthMethod m = methods.get(i);
-				if (m.hasGroup() && m.getGroup().getName().equals(groupname)) {
+				if (m.hasGroupName() && m.getGroupName().equals(groupname)) {
 					return m;
 				}
 			}
@@ -220,22 +223,44 @@ public enum ServerStore {
 			return null;
 		}
 
-		public static void create(Group g, String owner) {
-			create(AuthMethod.newBuilder().setType(AuthType.GROUP).setId(IDGen.getAuthMethodID())
-					.setCreation(new Date().getTime()).setGroup(g).addOwner(owner).build());
+		public static AuthenticationGroup getGroup(String name) {
+			try {
+				return (AuthenticationGroup) Databases.system.get(getGroupMethod(name).getGroup());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
 		}
 
-		public static void create(AuthMethod am) {
+		public static Outcome create(AuthMethod am) {
+			Outcome.Builder outcome = Outcome.newBuilder();
 			for (int i = 0; i < methods.size(); i++) {
 				if (methods.get(i).getId() == am.getId()) {
 					methods.remove(i);
 					break;
 				}
 			}
+
+			if (am.hasGroupName()) {
+				am = AuthMethod.newBuilder().mergeFrom(am)
+						.setGroup(Databases.system
+								.store(Crypto.generateGroup(am.getGroupName(), am.getGroupSeedPrefix().getBytes())))
+						.build();
+			}
 			methods.add(am);
-			Message update = Message.newBuilder().setUrgent(true)
-					.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addAuthMethod(am)).build();
-			ServerStore.Connections.sendToAll(Instance.VIEWER, update);
+
+			try {
+				Databases.system.flushHeap();
+			} catch (SQLException e) {
+				outcome.setComment("Failed to flush heap!");
+			}
+			System.gc();
+
+			// update viewers
+			ServerStore.Connections.sendToAll(Instance.VIEWER, Message.newBuilder().setUrgent(true)
+					.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addAuthMethod(am)).build());
+			return outcome.setResult(true).build();
 		}
 
 		public static void remove(int id) {

@@ -115,7 +115,7 @@ public class ServerDB extends Database {
 
 	public boolean changePassword(String user, String password) {
 		String salt = Crypto.genSalt();
-		String hash = Crypto.hashPass(password, salt);
+		String hash = Crypto.hashCrimsonPassword(password, salt);
 
 		try {
 			PreparedStatement stmt = db.prepareStatement("UPDATE users SET Salt=?,Hash=? WHERE Username=?;");
@@ -160,7 +160,7 @@ public class ServerDB extends Database {
 		}
 
 		String salt = Crypto.genSalt();
-		String hash = Crypto.hashPass(password, salt);
+		String hash = Crypto.hashCrimsonPassword(password, salt);
 		String UID = CUtil.Misc.randString(4);
 
 		try {
@@ -179,7 +179,7 @@ public class ServerDB extends Database {
 
 		try {
 			ClientDB udb = new ClientDB(new File(dfile.getParent() + File.separator + UID + ".db"));
-			udb.master = Crypto.hashPass(password.toCharArray(), salt);
+			udb.master = Crypto.hashCrimsonPassword(password.toCharArray(), salt);
 			udb.close();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
