@@ -27,6 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.util.Crypto;
@@ -87,8 +88,11 @@ public class AuthPanel extends JPanel {
 						btnImport.setEnabled(false);
 						JFileChooser jfc = new JFileChooser();
 						jfc.setDialogTitle("Select group to import");
+						jfc.addChoosableFileFilter(new FileNameExtensionFilter("Crimson Group File", "cg"));
+						jfc.setAcceptAllFileFilterUsed(false);
+						jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-						if (jfc.showDialog(null, "Import") == JFileChooser.APPROVE_OPTION) {
+						if (jfc.showDialog(UIStore.netMan, "Import") == JFileChooser.APPROVE_OPTION) {
 							File file = jfc.getSelectedFile();
 							AuthMethod am = Crypto.importGroup(file);
 							ViewerCommands.createAuthMethod(am);
@@ -113,9 +117,15 @@ public class AuthPanel extends JPanel {
 						btnExport.setEnabled(false);
 						JFileChooser jfc = new JFileChooser();
 						jfc.setDialogTitle("Export selected group to file");
+						jfc.addChoosableFileFilter(new FileNameExtensionFilter("Crimson Group File", "cg"));
+						jfc.setAcceptAllFileFilterUsed(false);
+						jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-						if (jfc.showDialog(null, "Export") == JFileChooser.APPROVE_OPTION) {
+						if (jfc.showDialog(UIStore.netMan, "Export") == JFileChooser.APPROVE_OPTION) {
 							File file = jfc.getSelectedFile();
+							if (!file.getAbsolutePath().endsWith(".cg")) {
+								file = new File(file.getAbsolutePath() + ".cg");
+							}
 							Crypto.exportGroup(authTable.getSelected(), file);
 						}
 						btnExport.setEnabled(true);
