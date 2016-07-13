@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
+import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
@@ -51,6 +52,13 @@ public enum ClientStore {
 
 		public static ClientConnector get(int cvid) {
 			return connections.get(cvid);
+		}
+
+		public static ConnectionState getServerConnectionState() {
+			if (connections.containsKey(0)) {
+				return connections.get(0).getState();
+			}
+			return ConnectionState.NOT_CONNECTED;
 		}
 
 		public static void setTargets(List<NetworkTarget> t) {
