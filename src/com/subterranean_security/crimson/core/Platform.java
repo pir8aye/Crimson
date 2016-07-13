@@ -18,8 +18,10 @@
 
 package com.subterranean_security.crimson.core;
 
+import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,6 +29,9 @@ import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import org.hyperic.sigar.Cpu;
 import org.hyperic.sigar.CpuInfo;
@@ -41,8 +46,10 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
+import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Native;
+import com.subterranean_security.crimson.core.util.ObjectTransfer;
 
 public enum Platform {
 	;
@@ -272,6 +279,24 @@ public enum Platform {
 		return disp;
 	}
 
+	public static ImageIcon getUserAvatar() {
+		if (osFamily == OSFAMILY.WIN) {
+			try {
+				BufferedImage avatar = ImageIO
+						.read(new File("C:/Users/" + getUsername() + "/AppData/Local/Temp/" + getUsername() + ".bmp"));
+				BufferedImage resized = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
+				Graphics g = resized.createGraphics();
+				g.drawImage(avatar, 0, 0, 16, 16, null);
+				g.dispose();
+				return new ImageIcon(resized);
+			} catch (IOException e) {
+				log.warn("Failed to get user avatar: " + e.getMessage());
+			}
+		}
+		return null;
+
+	}
+
 	public static enum Advanced {
 		;
 
@@ -384,6 +409,7 @@ public enum Platform {
 			info.setOsName(osName);
 			info.setOsFamily(osFamily.toName());
 			info.setUserName(getUsername());
+			info.setUserAvatar(new String(B64.encode(ObjectTransfer.Default.serialize(getUserAvatar()))));
 			info.setHostname(getHostname());
 			info.setUserHome(getUserHome());
 			info.setLanguage(getLanguage());

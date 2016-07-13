@@ -92,7 +92,7 @@ public class HostList extends JPanel {
 	}
 
 	public void addOrUpdate(ClientProfile cp) {
-		cp.loadOsIcon();
+		cp.loadIcons();
 		for (int i = 0; i < tm.getClientList().size(); i++) {
 			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
 				tm.fireTableRowsUpdated(i, i);

@@ -30,6 +30,7 @@ message EV_ProfileDelta {
 	optional string timezone = 24;
 	optional string language = 25;
 	optional string user_name = 26;
+	optional string user_avatar = 260;
 	optional string user_status = 27;
 	optional string user_home = 28;
 	optional string active_window = 29;
