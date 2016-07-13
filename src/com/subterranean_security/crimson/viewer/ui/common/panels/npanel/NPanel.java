@@ -17,10 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.common.panels.npanel;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 
@@ -60,7 +61,7 @@ public class NPanel extends SLPanel {
 
 	}
 
-	private Queue<Object[]> noteQ = new ConcurrentLinkedQueue<Object[]>();
+	private ArrayBlockingQueue<Object[]> noteQ = new ArrayBlockingQueue<Object[]>(3);
 
 	public void addNote(String type, String s) {
 
@@ -75,25 +76,43 @@ public class NPanel extends SLPanel {
 
 	public void addNote(String type, String text, String subtext, Runnable r) {
 
+		// ignore if queue is full
 		noteQ.offer(new Object[] { type, text, subtext, r });
-		synchronized (noteQ) {
-			noteQ.notifyAll();
-		}
 
 	}
 
+	Runnable run = new Runnable() {
+		public void run() {
+			movingMain.runAction();
+		}
+	};
+
 	Thread nThread = new Thread(new Runnable() {
 		public void run() {
-			waitForNote();
 			while (!Thread.interrupted()) {
 
-				Object[] o = noteQ.poll();
+				Object[] o = null;
+				try {
+					o = noteQ.take();
+				} catch (InterruptedException e1) {
+					return;
+				}
+
 				if (o == null) {
 					return;
 				}
 				note.set((String) o[0], (String) o[1], (String) o[2], (Runnable) o[3]);
 				// move the note panel up
 				movingMain.runAction();
+				try {
+					SwingUtilities.invokeAndWait(run);
+				} catch (InvocationTargetException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
 				try {
 					Thread.sleep(5000);
@@ -102,33 +121,28 @@ public class NPanel extends SLPanel {
 
 				} finally {
 					// move the note back down
-					movingMain.runAction();
+					try {
+						SwingUtilities.invokeAndWait(run);
+					} catch (InvocationTargetException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 
 				}
 
 				try {
 					Thread.sleep(900);
 				} catch (InterruptedException e) {
-
-				}
-				if (noteQ.size() == 0) {
-					waitForNote();
+					return;
 				}
 
 			}
 
 		}
 
-		private void waitForNote() {
-			synchronized (noteQ) {
-				try {
-					noteQ.wait();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
 	});
 
 	private final Runnable actionUP = new Runnable() {

@@ -42,7 +42,7 @@ public class Notification extends JPanel {
 		text.setOpaque(true);
 		panel.add(text, BorderLayout.CENTER);
 
-		text.setFont(new Font("DejaVu Sans", Font.BOLD, 11));
+		text.setFont(new Font("Dialog", Font.BOLD, 10));
 
 		subtext = new JLabel(" ");
 		subtext.setFocusable(false);
