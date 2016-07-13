@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.core.storage;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.util.CUtil;
 
@@ -34,9 +35,23 @@ public class ClientDB extends Database {
 		}
 		init(dfile);
 		if (isFirstRun()) {
-			Defaults.hardReset(this);
+			this.hardReset();
 		}
 
+	}
+
+	@Override
+	public void softReset() {
+
+		this.storeObject("login-times", new ArrayList<Long>());
+		this.storeObject("login-ips", new ArrayList<String>());
+		super.softReset();
+	}
+
+	@Override
+	public void hardReset() {
+		this.softReset();
+		super.hardReset();
 	}
 
 }

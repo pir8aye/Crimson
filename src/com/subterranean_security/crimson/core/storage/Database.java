@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.sql.rowset.serial.SerialException;
@@ -31,6 +32,8 @@ import javax.sql.rowset.serial.SerialException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.ObjectTransfer;
 
@@ -415,5 +418,19 @@ public abstract class Database extends Thread implements AutoCloseable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void softReset() {
+		this.storeObject("error_reporting", true);
+		this.storeObject("reports.sent", 0);
+		this.storeObject("language", "en");
+	}
+
+	public void hardReset() {
+		this.softReset();
+		this.storeObject("cvid", 0);
+		this.storeObject("reports.buffer", new ArrayList<MI_Report>());
+		this.storeObject("crimson.version", Common.version);
+		this.storeObject("crimson.build_number", Common.build);
 	}
 }

@@ -21,16 +21,20 @@ import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.ServerStore;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
 public class ServerDB extends Database {
@@ -45,7 +49,7 @@ public class ServerDB extends Database {
 		}
 		init(dfile);
 		if (isFirstRun()) {
-			Defaults.hardReset(this);
+			this.hardReset();
 		}
 
 	}
@@ -204,6 +208,24 @@ public class ServerDB extends Database {
 		}
 
 		return true;
+	}
+
+	@Override
+	public void softReset() {
+
+		this.storeObject("auth.methods", new MemList<AuthMethod>());
+		this.storeObject("listeners", new ArrayList<ListenerConfig>());
+		this.storeObject("profiles.clients", new MemMap<Integer, ClientProfile>());
+		this.storeObject("profiles.viewers", new MemMap<Integer, ViewerProfile>());
+		this.storeObject("profiles.idcount", 0);
+		super.softReset();
+	}
+
+	@Override
+	public void hardReset() {
+		this.softReset();
+		super.hardReset();
+
 	}
 
 }

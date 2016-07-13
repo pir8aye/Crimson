@@ -18,8 +18,11 @@
 package com.subterranean_security.crimson.core.storage;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ServerProfile;
 
 public class LViewerDB extends Database {
 	public LViewerDB(File dfile) throws Exception {
@@ -31,8 +34,31 @@ public class LViewerDB extends Database {
 		}
 		init(dfile);
 		if (isFirstRun()) {
-			Defaults.hardReset(this);
+			this.hardReset();
 		}
 
+	}
+
+	@Override
+	public void softReset() {
+
+		this.storeObject("close_on_tray", false);
+		this.storeObject("show_eula", true);
+		this.storeObject("show_helps", true);
+		this.storeObject("show_detail", true);
+		this.storeObject("view.last", "list");
+		this.storeObject("hostlist.headers", new Headers[] { Headers.COUNTRY, Headers.OS_NAME, Headers.USERNAME,
+				Headers.HOSTNAME, Headers.LANGUAGE });
+		this.storeObject("login.recents", new ArrayList<String>());
+		this.storeObject("profiles.clients", new MemList<ClientProfile>());
+		super.softReset();
+	}
+
+	@Override
+	public void hardReset() {
+		this.softReset();
+		this.storeObject("viewer.profile", new ClientProfile());
+		this.storeObject("server.profile", new ServerProfile());
+		super.hardReset();
 	}
 }
