@@ -1,6 +1,7 @@
 package com.subterranean_security.crimson.viewer.ui.common.components;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
@@ -54,6 +55,10 @@ public class ProgressLabel extends JPanel {
 	public void stopLoading() {
 		progressBar.setVisible(false);
 		progressBar.setIndeterminate(false);
+	}
+
+	public void setLabelForeground(Color fg) {
+		label.setForeground(fg);
 	}
 
 }

@@ -38,6 +38,7 @@ import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
@@ -895,15 +896,29 @@ public enum CUtil {
 			case SOL:
 				break;
 			case WIN:
-				String output = Native.execute("ping /n 1 " + host);
+				String output = Native.execute("ping /n 1 /w 1 " + host);
 				double d = 0;
-				d = Double.parseDouble(output.split("Average = ")[1].replaceAll("ms", ""));
+				try {
+					d = Double.parseDouble(output.split("Average = ")[1].replaceAll("ms", ""));
+				} catch (Exception e) {
+					// nope
+				}
 				return d;
 			default:
 				break;
 
 			}
 			return 0.0;
+		}
+
+		public static boolean testPortVisibility(String host, int port) {
+			try (Socket sock = new Socket(host, port)) {
+				return sock.isConnected();
+			} catch (UnknownHostException e) {
+				return false;
+			} catch (IOException e) {
+				return false;
+			}
 		}
 
 	}

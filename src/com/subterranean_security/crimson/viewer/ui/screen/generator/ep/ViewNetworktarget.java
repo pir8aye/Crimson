@@ -1,10 +1,9 @@
 package com.subterranean_security.crimson.viewer.ui.screen.generator.ep;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +24,7 @@ import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.ProgressLabel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 
+//TODO move colors
 public class ViewNetworktarget extends JPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -62,26 +62,26 @@ public class ViewNetworktarget extends JPanel {
 		jp.add(panel);
 		panel.setLayout(null);
 
-		JLabel lblPing = new JLabel("Ping:");
+		JLabel lblPing = new JLabel("Average Ping:");
 		lblPing.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblPing.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblPing.setBounds(23, 2, 28, 13);
+		lblPing.setBounds(10, 2, 97, 15);
 		panel.add(lblPing);
 
 		lblPing_1 = new ProgressLabel();
-		lblPing_1.setBounds(56, 2, 45, 15);
+		lblPing_1.setBounds(113, 2, 55, 15);
 		lblPing_1.startLoading();
 
 		panel.add(lblPing_1);
 
-		JLabel lblTargetVisibility = new JLabel("Status:");
+		JLabel lblTargetVisibility = new JLabel("Service Visibility:");
 		lblTargetVisibility.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblTargetVisibility.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblTargetVisibility.setBounds(10, 22, 41, 13);
+		lblTargetVisibility.setBounds(10, 20, 97, 15);
 		panel.add(lblTargetVisibility);
 
 		lblVisibility = new ProgressLabel();
-		lblVisibility.setBounds(56, 22, 45, 15);
+		lblVisibility.setBounds(113, 20, 55, 15);
 		lblVisibility.startLoading();
 		panel.add(lblVisibility);
 
@@ -97,12 +97,13 @@ public class ViewNetworktarget extends JPanel {
 		lblServer.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblServer.setBounds(12, 11, 57, 15);
 
-		lblServerAddress = new JLabel(server);
+		lblServerAddress = new JLabel("<html><font color=#00ADAD>" + server + "</font>");
 		panel_2.add(lblServerAddress, BorderLayout.CENTER);
 		lblServerAddress.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblServerAddress.setBounds(81, 11, 330, 15);
 
 		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panel_1.setLayout(new BorderLayout(0, 0));
 		panel_1.add(Box.createHorizontalStrut(5), BorderLayout.WEST);
 		panel_1.add(Box.createHorizontalStrut(5), BorderLayout.EAST);
@@ -134,7 +135,6 @@ public class ViewNetworktarget extends JPanel {
 		new SwingWorker<String, Void>() {
 			@Override
 			protected String doInBackground() throws Exception {
-				Thread.sleep(100);
 				return InetAddress.getByName(server).getHostAddress();
 			}
 
@@ -159,8 +159,8 @@ public class ViewNetworktarget extends JPanel {
 			protected String doInBackground() throws Exception {
 				Thread.sleep(1000);
 				double ping = CUtil.Network.ping(server);
-				if (ping == 0) {
-					return "failed";
+				if (ping == 0 && !lblServerAddress.getText().contains("127.0.0.1")) {
+					return "error";
 				} else {
 					return "" + ping + "ms";
 				}
@@ -173,7 +173,8 @@ public class ViewNetworktarget extends JPanel {
 					lblPing_1.setText(ping);
 					loadVisibility();
 				} catch (InterruptedException | ExecutionException e) {
-					lblPing_1.setText("no response");
+					lblPing_1.setText("error");
+					lblPing_1.setLabelForeground(new Color(255, 191, 0));
 				}
 			};
 		}.execute();
@@ -182,12 +183,11 @@ public class ViewNetworktarget extends JPanel {
 
 	private void loadVisibility() {
 
-		// ping server
+		// connect to server
 		new SwingWorker<String, Void>() {
 			@Override
 			protected String doInBackground() throws Exception {
-				Thread.sleep(2000);
-				return null;
+				return CUtil.Network.testPortVisibility(server, port) ? "Visible" : "Not Visible";
 			}
 
 			protected void done() {
@@ -195,8 +195,12 @@ public class ViewNetworktarget extends JPanel {
 				try {
 					String status = get();
 					lblVisibility.setText(status);
+					lblVisibility.setLabelForeground(
+							status.equals("Visible") ? new Color(0, 215, 123) : new Color(255, 191, 0));
+
 				} catch (InterruptedException | ExecutionException e) {
-					lblVisibility.setText("(failed to query visibility)");
+					lblVisibility.setText("error");
+					lblVisibility.setLabelForeground(new Color(255, 191, 0));
 				}
 			};
 		}.execute();

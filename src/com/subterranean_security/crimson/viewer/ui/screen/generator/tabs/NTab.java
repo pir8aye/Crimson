@@ -66,6 +66,7 @@ public class NTab extends JPanel {
 		menuBar.add(btnAdd_1);
 
 		btnRemove = new JButton(UIUtil.getIcon("icons16/general/server_delete.png"));
+		btnRemove.setToolTipText("Remove network target");
 		btnRemove.setMargin(new Insets(2, 2, 2, 2));
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -76,6 +77,7 @@ public class NTab extends JPanel {
 		menuBar.add(btnRemove);
 
 		btnTest = new JButton(UIUtil.getIcon("icons16/general/server_chart.png"));
+		btnTest.setToolTipText("Test network target");
 		btnTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				NetworkTarget nt = table.getSelected();
