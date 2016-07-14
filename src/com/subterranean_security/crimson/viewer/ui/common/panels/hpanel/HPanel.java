@@ -55,6 +55,8 @@ public class HPanel extends SLPanel {
 	private JButton btnUp;
 
 	private static int transitionTime = 900;
+	
+	private static int nMenuHeight = 30;
 
 	private boolean moving = false;
 
@@ -66,7 +68,7 @@ public class HPanel extends SLPanel {
 		movingMain = new MovingPanel(main);
 		movingMain.setAction(actionUP);
 
-		pos1 = new SLConfig(this).gap(0, 0).row(8f).row(1f).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
+		pos1 = new SLConfig(this).gap(0, 0).row(8f).row(nMenuHeight).col(1f).place(0, 0, movingMain).place(1, 0, movingBar);
 
 		this.setTweenManager(SLAnimator.createTweenManager());
 		this.initialize(pos1);
@@ -74,7 +76,7 @@ public class HPanel extends SLPanel {
 	}
 
 	public void setHMenuHeight(int h) {
-		pos2 = new SLConfig(this).gap(0, 0).row(8f).row(1f).row(h).col(1f).place(0, 0, movingMain)
+		pos2 = new SLConfig(this).gap(0, 0).row(8f).row(nMenuHeight).row(h).col(1f).place(0, 0, movingMain)
 				.place(1, 0, movingBar).place(2, 0, movingHMenu);
 	}
 
