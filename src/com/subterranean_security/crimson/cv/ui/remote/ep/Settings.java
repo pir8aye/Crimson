@@ -80,7 +80,7 @@ public class Settings extends JPanel {
 	}
 
 	public String getMonitor() {
-		return displays[methodBox.getSelectedIndex()].getId();
+		return displays[monitorBox.getSelectedIndex()].getId();
 	}
 
 	private void resetStream() {

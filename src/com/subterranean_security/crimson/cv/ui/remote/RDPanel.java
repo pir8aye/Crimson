@@ -77,10 +77,15 @@ public class RDPanel extends JPanel {
 
 	private EPanel ep;
 
+	private JButton btnMouseToggle;
+
+	private JButton btnKeyToggle;
+
 	public void init() {
 		setLayout(new BorderLayout(0, 0));
 
 		JMenuBar menuBar = new JMenuBar();
+		menuBar.setBackground(this.getBackground());
 		add(menuBar, BorderLayout.NORTH);
 
 		JPanel toggle = new JPanel();
@@ -100,6 +105,8 @@ public class RDPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				barToggle.setIndeterminate(true);
 				btnToggle.setEnabled(false);
+				btnKeyToggle.setEnabled(false);
+				btnMouseToggle.setEnabled(false);
 				new SwingWorker<Void, Void>() {
 
 					@Override
@@ -123,6 +130,8 @@ public class RDPanel extends JPanel {
 					protected void done() {
 						barToggle.setIndeterminate(false);
 						btnToggle.setEnabled(true);
+						btnKeyToggle.setEnabled(running);
+						btnMouseToggle.setEnabled(running);
 					};
 				}.execute();
 			}
@@ -181,7 +190,8 @@ public class RDPanel extends JPanel {
 		barKeyToggle.setPreferredSize(new Dimension(148, 4));
 		keyToggle.add(barKeyToggle, BorderLayout.SOUTH);
 
-		JButton btnKeyToggle = new JButton(UIUtil.getIcon("icons16/general/keyboard.png"));
+		btnKeyToggle = new JButton(UIUtil.getIcon("icons16/general/keyboard.png"));
+		btnKeyToggle.setEnabled(false);
 		btnKeyToggle.setToolTipText("Keyboard capture is disabled");
 		btnKeyToggle.setFocusable(false);
 		btnKeyToggle.addActionListener(new ActionListener() {
@@ -214,7 +224,8 @@ public class RDPanel extends JPanel {
 		barMouseToggle.setPreferredSize(new Dimension(148, 4));
 		mouseToggle.add(barMouseToggle, BorderLayout.SOUTH);
 
-		JButton btnMouseToggle = new JButton(UIUtil.getIcon("icons16/general/mouse.png"));
+		btnMouseToggle = new JButton(UIUtil.getIcon("icons16/general/mouse.png"));
+		btnMouseToggle.setEnabled(false);
 		btnMouseToggle.setToolTipText("Mouse capture is disabled");
 		btnMouseToggle.setFocusable(false);
 		btnMouseToggle.addActionListener(new ActionListener() {
@@ -245,6 +256,7 @@ public class RDPanel extends JPanel {
 		panel.setLayout(new BorderLayout(0, 0));
 
 		JButton btnSettingsToggle = new JButton(UIUtil.getIcon("icons16/general/cog.png"));
+		btnSettingsToggle.setToolTipText("Settings");
 		btnSettingsToggle.setFocusable(false);
 		btnSettingsToggle.addActionListener(new ActionListener() {
 			private boolean raised = false;
