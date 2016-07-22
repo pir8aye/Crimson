@@ -182,9 +182,9 @@ public class EULADialog extends JDialog {
 			okButton = new JButton("Accept");
 			okButton.setEnabled(false);
 			okButton.setMnemonic('A');
-			okButton.addMouseListener(new MouseAdapter() {
+			okButton.addActionListener(new ActionListener() {
 				@Override
-				public void mouseClicked(MouseEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					if (!okButton.isEnabled()) {
 						return;
 					}
