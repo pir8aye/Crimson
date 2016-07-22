@@ -429,7 +429,7 @@ public class ServerExecutor extends BasicExecutor {
 		EV_ViewerProfileDelta.Builder vid = EV_ViewerProfileDelta.newBuilder();
 
 		RS_CloudUser cloud = null;
-		if (ServerState.isCloudMode()) {
+		if (ServerState.isCloudMode() && vp == null) {
 			cloud = Services.getCloudUser(user);
 			if (vp == null) {
 				// create ViewerProfile

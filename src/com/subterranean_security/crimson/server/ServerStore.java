@@ -336,7 +336,6 @@ public enum ServerStore {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			log.error("Profile not found for user: {}", user);
 			return null;
 		}
 
