@@ -265,7 +265,7 @@ public class LoginPanel extends JPanel {
 		fld_user = new JTextField();
 		fld_user.setFont(new Font("Dialog", Font.PLAIN, 10));
 		fld_user_border = fld_user.getBorder();
-		fld_user.setDocument(new FieldLimiter(20));
+		fld_user.setDocument(new FieldLimiter(60));
 		fld_user.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -297,7 +297,7 @@ public class LoginPanel extends JPanel {
 				lbl_status.setDefault();
 			}
 		});
-		fld_pass.setDocument(new FieldLimiter(32));
+		fld_pass.setDocument(new FieldLimiter(64));
 		fld_pass.setHorizontalAlignment(SwingConstants.CENTER);
 		fld_pass.setBounds(228, 28, 140, 19);
 		fld_pass.setMaximumSize(new Dimension(100, 19));

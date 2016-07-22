@@ -968,7 +968,7 @@ public enum CUtil {
 				.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
 
 		public static boolean username(String user) {
-			if (user.length() < 4 || user.length() > 20) {
+			if (user.length() < 4 || user.length() > 60) {
 				return false;
 			}
 
@@ -982,7 +982,7 @@ public enum CUtil {
 		public static boolean password(JPasswordField field) {
 			char[] password = field.getPassword();
 			boolean outcome = true;
-			if (password.length < 4 || password.length > 32) {
+			if (password.length < 4 || password.length > 64) {
 				outcome = false;
 			}
 			CUtil.Misc.clearChar(password);
