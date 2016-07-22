@@ -344,7 +344,13 @@ public enum Platform {
 		public static String getCPUModel() {
 			String model = cpuInfo[0].getVendor();
 			model += " " + cpuInfo[0].getModel().replaceAll("\\(.+?\\)", "");
-			return model.substring(0, model.indexOf("CPU @")).trim();
+
+			try {
+				model = model.substring(0, model.indexOf("CPU @")).trim();
+			} catch (Exception e) {
+				// ignore
+			}
+			return model;
 		}
 
 		public static int[] getCPUSpeed() {
