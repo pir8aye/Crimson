@@ -32,6 +32,8 @@ import javax.swing.tree.DefaultTreeModel;
 import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
+import java.awt.Font;
+import java.awt.Dimension;
 
 public class SettingsPanel extends JPanel {
 
@@ -45,6 +47,7 @@ public class SettingsPanel extends JPanel {
 		setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
+		panel.setPreferredSize(new Dimension(150, 10));
 		panel.setBackground(Color.WHITE);
 		add(panel, BorderLayout.WEST);
 		panel.setLayout(new BorderLayout(0, 0));
@@ -53,16 +56,9 @@ public class SettingsPanel extends JPanel {
 		tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Settings") {
 			{
 				DefaultMutableTreeNode node_1;
-				DefaultMutableTreeNode node_2;
-				DefaultMutableTreeNode node_3;
 				node_1 = new DefaultMutableTreeNode("Local");
 				node_1.add(new DefaultMutableTreeNode("General"));
-				node_2 = new DefaultMutableTreeNode("Views");
-				node_3 = new DefaultMutableTreeNode("Host List");
-				node_3.add(new DefaultMutableTreeNode("Headers"));
-				node_2.add(node_3);
-				node_2.add(new DefaultMutableTreeNode("Host Graph"));
-				node_1.add(node_2);
+				node_1.add(new DefaultMutableTreeNode("Host List Headers"));
 				add(node_1);
 				node_1 = new DefaultMutableTreeNode("Server");
 				node_1.add(new DefaultMutableTreeNode("General"));
@@ -75,8 +71,12 @@ public class SettingsPanel extends JPanel {
 		cards = new JPanel();
 		add(cards, BorderLayout.CENTER);
 		cards.setLayout(new CardLayout(0, 0));
+		lg.neverShowLicense.setFont(new Font("Dialog", Font.BOLD, 10));
+		lg.neverShowHelp.setFont(new Font("Dialog", Font.BOLD, 10));
+		lg.runInTray.setFont(new Font("Dialog", Font.BOLD, 10));
 		cards.add("SettingsLocalGeneral", lg);
-		cards.add("SettingsLocalViewsHost ListHeaders", hlh);
+
+		cards.add("SettingsLocalHost List Headers", hlh);
 
 	}
 
