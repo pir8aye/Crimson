@@ -449,8 +449,28 @@ public enum Platform {
 			public static double[] query() {
 
 				if (cores.size() == 0) {
+
+					File core = null;
+					// get core hwmon directory
+					for (File probe : new File("/sys/class/hwmon").listFiles()) {
+						try {
+							if (CUtil.Files.readFileString(new File(probe.getAbsolutePath() + "/name"))
+									.contains("coretemp")) {
+								core = probe;
+								break;
+							}
+						} catch (IOException e) {
+							continue;
+						}
+					}
+
+					if (core == null) {
+						return new double[0];
+					}
+
+					// get handles on files
 					for (int i = 2; i < maxCores + 2; i++) {
-						File f = new File("/sys/class/hwmon/hwmon1/temp" + i + "_input");
+						File f = new File(core.getAbsolutePath() + "/temp" + i + "_input");
 						if (f.exists()) {
 							try {
 								cores.add(new RandomAccessFile(f, "r"));
