@@ -260,7 +260,14 @@
 		<echo message="Created JARs" />
 	</target>
 
-	<target name="main" depends="jar">
+	<target name="distribute" depends="jar">
+		<copy file="${dist.dir}/Viridian.jar" todir="/srv/http/dist/" />
+		<copy file="${dist.dir}/CInstaller.jar" todir="/srv/http/dist/" />
+		<copy file="${bin.dir}/com/subterranean_security/cinstaller/res/bin/lib.zip" todir="/srv/http/dist/" />
+
+	</target>
+
+	<target name="main" depends="distribute">
 		<description>Main target</description>
 	</target>
 
