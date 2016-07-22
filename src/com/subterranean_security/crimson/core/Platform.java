@@ -269,6 +269,9 @@ public enum Platform {
 	}
 
 	public static GraphicsDisplay[] getDisplays() {
+		if (GraphicsEnvironment.isHeadless()) {
+			return new GraphicsDisplay[0];
+		}
 		GraphicsDevice[] dev = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		GraphicsDisplay[] disp = new GraphicsDisplay[dev.length];
 		for (int i = 0; i < dev.length; i++) {
