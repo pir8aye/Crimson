@@ -56,6 +56,7 @@ public class Processor extends JPanel implements DModule {
 	private ITrace2D trace = new Trace2DLtd(60);
 	private boolean speed = true;// TODO configurable
 	private boolean usage = true;
+	private boolean temp = true;
 
 	public Processor() {
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -271,8 +272,8 @@ public class Processor extends JPanel implements DModule {
 	public void setShowing(boolean showing) {
 		this.showing = showing;
 		if (showing) {
-			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).build(), profile.getCvid(),
-					(int) updatePeriod);
+			im = new InfoMaster(InfoParam.newBuilder().setCpuSpeed(speed).setCpuUsage(usage).setCpuTemp(temp).build(),
+					profile.getCvid(), (int) updatePeriod);
 			StreamStore.addStream(im);
 		} else {
 			if (im != null) {
