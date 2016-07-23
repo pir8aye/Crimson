@@ -209,6 +209,21 @@ public class ClientProfile implements Serializable {
 		if (userIcon == null && userAvatar.get() != null) {
 			userIcon = getUserAvatar();
 		}
+
+		// location
+		if (locationIcon == null && country.get() != null && countryCode.get() != null) {
+			try {
+				locationIcon = UIUtil.getIcon("flags/" + countryCode.get().toLowerCase() + ".png");
+			} catch (NullPointerException e) {
+				Reporter.report(Reporter.newReport()
+						.setComment("No location icon found: " + countryCode.get().toLowerCase()).build());
+
+				// fall back to default
+				locationIcon = UIUtil.getIcon("flags/un.png");
+			}
+			locationIcon.setDescription(country.get());
+		}
+
 	}
 
 	public String getOsArch() {
@@ -490,8 +505,6 @@ public class ClientProfile implements Serializable {
 
 	public void setCountryCode(String countryCode) {
 		this.countryCode.set(countryCode);
-		locationIcon = UIUtil.getIcon("icons16/flags/" + countryCode + ".png");
-		locationIcon.setDescription(country.get());
 	}
 
 	public String getRegion() {
@@ -519,12 +532,12 @@ public class ClientProfile implements Serializable {
 	}
 
 	public void setLocation(HashMap<String, String> map) {
-		setCountryCode(map.get("CountryCode").toLowerCase());
-		setCountry(map.get("CountryName"));
-		setRegion(map.get("RegionName"));
-		setCity(map.get("City"));
-		setLatitude(map.get("Latitude"));
-		setLongitude(map.get("Longitude"));
+		setCountryCode(map.get("countrycode"));
+		setCountry(map.get("countryname"));
+		setRegion(map.get("regionname"));
+		setCity(map.get("city"));
+		setLatitude(map.get("latitude"));
+		setLongitude(map.get("longitude"));
 	}
 
 	public ImageIcon getLocationIcon() {
@@ -857,6 +870,12 @@ public class ClientProfile implements Serializable {
 		}
 		if (c.hasFqdn()) {
 			setFqdn(c.getFqdn());
+		}
+		if (c.hasCountry()) {
+			setCountry(c.getCountry());
+		}
+		if (c.hasCountryCode()) {
+			setCountryCode(c.getCountryCode());
 		}
 		// network interfaces
 

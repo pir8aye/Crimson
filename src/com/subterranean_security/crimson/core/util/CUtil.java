@@ -943,11 +943,25 @@ public enum CUtil {
 			XMLStreamReader reader = XMLInputFactory.newInstance()
 					.createXMLStreamReader(new URL("https://freegeoip.lwan.ws/xml/" + ip).openStream());
 
+			String tag = "";
+			String value = "";
 			while (reader.hasNext()) {
 				switch (reader.next()) {
-				case XMLStreamConstants.END_ELEMENT:
-					info.put(reader.getLocalName().toLowerCase(), reader.getText().trim());
+				case XMLStreamConstants.START_ELEMENT:
+					tag = reader.getLocalName().toLowerCase();
+					break;
+				case XMLStreamConstants.CDATA:
+				case XMLStreamConstants.CHARACTERS:
+					if (!tag.equals("response")) {
+						value = reader.getText();
+					}
 
+					break;
+				case XMLStreamConstants.END_ELEMENT:
+					if (!tag.equals("response")) {
+						info.put(tag, value.trim());
+					}
+					break;
 				}
 			}
 			return info;

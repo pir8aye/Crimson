@@ -44,6 +44,8 @@ import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
 import com.subterranean_security.crimson.core.util.B64;
@@ -341,7 +343,10 @@ public enum Platform {
 		}
 
 		public static String getExtIp() {
-			return "183.200.100.10";// TODO
+			if (Common.instance == Instance.CLIENT && !Client.ic.getAllowMiscConnections()) {
+				return "0.0.0.0";
+			}
+			return CUtil.Network.getEIP();
 		}
 
 		public static String getCPUModel() {

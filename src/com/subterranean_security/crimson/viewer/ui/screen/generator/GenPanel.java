@@ -570,6 +570,8 @@ public class GenPanel extends JPanel {
 
 		ic.setImsg(fld_install_message.getText());
 
+		ic.setAllowMiscConnections(!ntab.chckbxDontMiscConnections.isSelected());
+
 		switch (((ImageIcon) atab.authType.getSelectedItem()).getDescription()) {
 		case "Group": {
 			ic.setAuthType(AuthType.GROUP);
@@ -746,5 +748,4 @@ public class GenPanel extends JPanel {
 		lblWindows.setForeground(StatusLabel.bad);
 
 	}
-
 }

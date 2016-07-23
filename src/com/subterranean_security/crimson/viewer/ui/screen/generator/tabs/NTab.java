@@ -35,6 +35,8 @@ public class NTab extends JPanel {
 	public JSpinner fld_connect_period;
 	public JButton btnRemove;
 	public JButton btnTest;
+	public JCheckBox chckbxDontMiscConnections;
+	public JCheckBox chckbxIgnoreServerCertificate;
 
 	public NTab(EPanel ep) {
 		this.ep = ep;
@@ -89,7 +91,7 @@ public class NTab extends JPanel {
 		menuBar.add(btnTest);
 
 		JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(340, 80));
+		panel.setPreferredSize(new Dimension(340, 100));
 		panel.setLayout(null);
 		panel.setBorder(new TitledBorder(UICommon.basic, "Network Options", TitledBorder.LEADING, TitledBorder.TOP,
 				null, null));
@@ -111,10 +113,15 @@ public class NTab extends JPanel {
 		label_1.setBounds(275, 20, 51, 15);
 		panel.add(label_1);
 
-		JCheckBox chckbxIgnoreServerCertificate = new JCheckBox("Ignore server certificate");
+		chckbxIgnoreServerCertificate = new JCheckBox("Ignore server certificate");
 		chckbxIgnoreServerCertificate.setFont(new Font("Dialog", Font.BOLD, 10));
 		chckbxIgnoreServerCertificate.setBounds(8, 41, 318, 20);
 		panel.add(chckbxIgnoreServerCertificate);
+		
+		chckbxDontMiscConnections = new JCheckBox("Don't make miscellanous connections");
+		chckbxDontMiscConnections.setFont(new Font("Dialog", Font.BOLD, 10));
+		chckbxDontMiscConnections.setBounds(8, 65, 318, 20);
+		panel.add(chckbxDontMiscConnections);
 
 	}
 

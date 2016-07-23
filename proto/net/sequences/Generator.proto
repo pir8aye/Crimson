@@ -44,6 +44,7 @@ message ClientConfig {
 
 	optional string viewer_user = 18;
 	
+	// authentication
 	required AuthType authType = 19;
 	
 	optional string group_name = 20;
@@ -51,6 +52,8 @@ message ClientConfig {
 
 	//for parser only
 	optional bool waiver = 22;
+	
+	optional bool allow_misc_connections = 23;
 	
 }
 

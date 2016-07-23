@@ -224,8 +224,9 @@ public class ServerExecutor extends BasicExecutor {
 				}
 				try {
 					HashMap<String, String> location = CUtil.Location.resolve(pd.getExtIp());
-					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountry(location.get("countryname")).build();
-					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountryCode(location.get("countrycode")).build();
+					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountryCode(location.get("countrycode"))
+							.setCountry(location.get("countryname")).build();
+
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
