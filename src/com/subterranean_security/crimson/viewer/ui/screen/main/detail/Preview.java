@@ -17,20 +17,40 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
 import javax.swing.JPanel;
 
+import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
+import com.subterranean_security.crimson.cv.ui.remote.RDPanel;
+import com.subterranean_security.crimson.cv.ui.remote.RDPanel.Type;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
 public class Preview extends JPanel implements DModule {
-	public Preview() {
-	}
 
 	private static final long serialVersionUID = 1L;
 
+	private boolean showing = false;
+	private RDPanel rdp;
+
+	public Preview() {
+		init();
+	}
+
+	private void init() {
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(100, 100));
+	}
+
+	private ClientProfile cp;
+
 	@Override
 	public void setTarget(ClientProfile p) {
-		// TODO Auto-generated method stub
-
+		this.cp = p;
+		removeAll();
+		rdp = new RDPanel(Type.VIEW_ONLY, p.getCvid());
+		add(rdp, BorderLayout.CENTER);
 	}
 
 	@Override
@@ -39,9 +59,18 @@ public class Preview extends JPanel implements DModule {
 
 	}
 
+	private RemoteMaster rm;
+
 	@Override
 	public void setShowing(boolean showing) {
-		// TODO Auto-generated method stub
+		this.showing = showing;
+		if (showing) {
+			rdp.start();
+		} else {
+			if (rm != null) {
+				rdp.stop();
+			}
+		}
 
 	}
 
@@ -65,8 +94,33 @@ public class Preview extends JPanel implements DModule {
 
 	@Override
 	public boolean isDetailOpen() {
-		// TODO Auto-generated method stub
-		return false;
+		return showing;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+
+		try {
+			Dimension d = this.getParent().getSize();
+
+			double nw = rdp.rdArea.screenImage.getWidth();
+			double nh = rdp.rdArea.screenImage.getHeight();
+
+			double ratio = nw / nh;
+
+			if (nw > d.getWidth()) {
+				nw = d.getWidth();
+				nh = nw / ratio;
+			}
+			if (nh > d.getHeight()) {
+				nh = d.getHeight();
+				nw = nh * ratio;
+			}
+
+			return new Dimension((int) nw, (int) nh);
+		} catch (Exception e) {
+			return new Dimension(110, 110);
+		}
 	}
 
 }

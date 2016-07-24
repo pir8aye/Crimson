@@ -29,7 +29,7 @@ import javax.swing.SwingWorker;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Processor;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Preview;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -176,7 +176,7 @@ class Detail extends JPanel {
 
 		// TODO get from database
 		// just add property for now
-		Processor dp = new Processor();
+		Preview dp = new Preview();
 		modules.add(dp);
 		addDM(dp);
 

@@ -103,37 +103,7 @@ public class RDPanel extends JPanel {
 		btnToggle.setToolTipText("Start");
 		btnToggle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				barToggle.setIndeterminate(true);
-				btnToggle.setEnabled(false);
-				btnKeyToggle.setEnabled(false);
-				btnMouseToggle.setEnabled(false);
-				new SwingWorker<Void, Void>() {
-
-					@Override
-					protected Void doInBackground() throws Exception {
-						if (running) {
-							stop();
-						} else {
-							running = true;
-							btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
-							btnToggle.setToolTipText("Stop");
-							stream = new RemoteMaster(RemoteParam.newBuilder().setRmethod(settings.getMethod())
-									.setMonitor(settings.getMonitor()).build(), cvid, rdArea);
-							StreamStore.addStream(stream);
-							stream.start();
-							rdArea.setStream(stream);
-						}
-
-						return null;
-					}
-
-					protected void done() {
-						barToggle.setIndeterminate(false);
-						btnToggle.setEnabled(true);
-						btnKeyToggle.setEnabled(running);
-						btnMouseToggle.setEnabled(running);
-					};
-				}.execute();
+				start();
 			}
 		});
 		btnToggle.setMargin(new Insets(2, 2, 2, 2));
@@ -289,6 +259,40 @@ public class RDPanel extends JPanel {
 
 	public boolean isRunning() {
 		return running;
+	}
+
+	public void start() {
+		barToggle.setIndeterminate(true);
+		btnToggle.setEnabled(false);
+		btnKeyToggle.setEnabled(false);
+		btnMouseToggle.setEnabled(false);
+		new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				if (running) {
+					stop();
+				} else {
+					running = true;
+					btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
+					btnToggle.setToolTipText("Stop");
+					stream = new RemoteMaster(RemoteParam.newBuilder().setRmethod(settings.getMethod())
+							.setMonitor(settings.getMonitor()).build(), cvid, rdArea);
+					StreamStore.addStream(stream);
+					stream.start();
+					rdArea.setStream(stream);
+				}
+
+				return null;
+			}
+
+			protected void done() {
+				barToggle.setIndeterminate(false);
+				btnToggle.setEnabled(true);
+				btnKeyToggle.setEnabled(running);
+				btnMouseToggle.setEnabled(running);
+			};
+		}.execute();
 	}
 
 	public void stop() {
