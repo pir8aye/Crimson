@@ -92,28 +92,22 @@ public class LoginPanel extends JPanel {
 
 		if (Common.isDebugMode()) {
 			fld_user.setText("admin");
-			fld_pass.setText("casio");
-			new Thread(new Runnable() {
-				public void run() {
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			fld_pass.setText("default");
+			new SwingWorker<Void, Void>() {
+				@Override
+				protected Void doInBackground() throws Exception {
+					Thread.sleep(500);
+					return null;
+				}
+
+				protected void done() {
 					for (char c : "10101".toCharArray()) {
 						fld_port.dispatchEvent(new KeyEvent(fld_port, KeyEvent.KEY_TYPED, System.currentTimeMillis(),
 								KeyEvent.KEY_FIRST, KeyEvent.VK_UNDEFINED, c));
 
 					}
-
-					for (char c : "127.0.0.1".toCharArray()) {
-						fld_address.dispatchEvent(new KeyEvent(fld_address, KeyEvent.KEY_TYPED,
-								System.currentTimeMillis(), KeyEvent.KEY_FIRST, KeyEvent.VK_UNDEFINED, c));
-
-					}
-				}
-			}).start();
+				};
+			}.execute();
 
 		}
 
