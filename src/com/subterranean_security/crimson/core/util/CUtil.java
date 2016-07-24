@@ -1121,7 +1121,7 @@ public enum CUtil {
 
 	public static class Logging {
 
-		private static final boolean netlevel = true;
+		private static final boolean netlevel = new File("/netdebug.txt").exists();
 
 		public static void configure() {
 			File config = new File(Common.Directories.varLog.getAbsolutePath() + "/logback-"
