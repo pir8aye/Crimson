@@ -48,8 +48,10 @@ public class RemoteSlave extends Stream {
 		private BufferedImage last;
 
 		public void run() {
+
+			Date iterationStart;
 			while (!Thread.interrupted()) {
-				Date d1 = new Date();
+				iterationStart = new Date();
 				BufferedImage image = robot.createScreenCapture(screenRect);
 				Date d2 = new Date();
 
@@ -91,14 +93,15 @@ public class RemoteSlave extends Stream {
 					}
 				}
 				Date d3 = new Date();
-				System.out.println("Screenshot taken in: " + (d2.getTime() - d1.getTime()) + " ms. Processed in: "
-						+ (d3.getTime() - d2.getTime()) + " ms");
+				System.out.println("Screenshot taken in: " + (d2.getTime() - iterationStart.getTime())
+						+ " ms. Processed in: " + (d3.getTime() - d2.getTime()) + " ms");
 
 				last = image;
 				uQueue.add(data.build());
-				// TODO
+
 				try {
-					Thread.sleep(param.getPeriod());
+					int iterationDuration = (int) (new Date().getTime() - iterationStart.getTime());
+					Thread.sleep(iterationDuration > param.getPeriod() ? 0 : param.getPeriod() - iterationDuration);
 				} catch (InterruptedException e) {
 					return;
 				}
