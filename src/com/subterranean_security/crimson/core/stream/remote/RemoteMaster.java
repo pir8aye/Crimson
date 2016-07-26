@@ -38,13 +38,12 @@ public class RemoteMaster extends Stream {
 	private Thread eventThread = new Thread(new Runnable() {
 		public void run() {
 
-			EV_StreamData.Builder ev = EV_StreamData.newBuilder().setStreamID(getStreamID());
-			Message.Builder msg = Message.newBuilder().setRid(cid).setEvStreamData(ev);
-
 			while (!Thread.interrupted()) {
 				try {
-					ev.setEventData(queue.take());
-					ViewerRouter.route(msg.build());
+					ViewerRouter.route(Message.newBuilder().setUrgent(true).setRid(cid)
+							.setEvStreamData(
+									EV_StreamData.newBuilder().setStreamID(getStreamID()).setEventData(queue.take()))
+							.build());
 				} catch (InterruptedException e) {
 					return;
 				}
@@ -68,7 +67,11 @@ public class RemoteMaster extends Stream {
 	@Override
 	public void received(Message m) {
 		// update rda
-		rda.updateScreen(m.getEvStreamData().getScreenData());
+		if (m.getEvStreamData().hasDirtyRect()) {
+			rda.updateScreen(m.getEvStreamData().getDirtyRect());
+		} else if (m.getEvStreamData().hasDirtyBlock()) {
+			rda.updateScreen(m.getEvStreamData().getDirtyBlock());
+		}
 
 	}
 

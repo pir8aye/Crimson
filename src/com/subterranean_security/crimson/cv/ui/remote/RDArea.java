@@ -18,14 +18,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.cv.ui.remote;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -34,17 +28,22 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 
+import com.subterranean_security.crimson.core.proto.Stream.DirtyBlock;
 import com.subterranean_security.crimson.core.proto.Stream.DirtyRect;
 import com.subterranean_security.crimson.core.proto.Stream.EventData;
-import com.subterranean_security.crimson.core.proto.Stream.MoveRect;
-import com.subterranean_security.crimson.core.proto.Stream.ScreenData;
+import com.subterranean_security.crimson.core.proto.Stream.ScreenScaleUpdate;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
+import com.subterranean_security.crimson.core.stream.remote.ScreenInterface;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 
 public class RDArea extends JLabel {
 
@@ -52,40 +51,24 @@ public class RDArea extends JLabel {
 
 	private RemoteMaster stream;
 
-	// selection rectangle.
-	private BasicStroke selectionRectangle = new BasicStroke(5, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0,
-			new float[] { 12, 12 }, 0);
+	private int monitorWidth;
+	private int monitorHeight;
+	private float scale;
+	public BufferedImage screenImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 
-	// rectangle selection outline
-	private GradientPaint selectionGradient = new GradientPaint(0.0f, 0.0f, Color.red, 1.0f, 1.0f, Color.white, true);
+	private EPanel ep;
 
-	// rectangles for all instances
-	public static final Rectangle emptyRect = new Rectangle(0, 0, 0, 0);
-	public static final Rectangle diffRect = new Rectangle(-1, -1, -1, -1);
-
-	public boolean isSelecting = false;
-	private Rectangle oldScreenRect = diffRect;
-	private float oldScreenScale = 1.0f;
-	private Rectangle oldSelectionRect = diffRect;
-	private Rectangle selectionRect = emptyRect;
-	boolean partialScreenMode = false;
-	public BufferedImage screenImage = new BufferedImage(1918, 1024, BufferedImage.TYPE_INT_RGB);
-
-	private Rectangle screenRect = emptyRect;
-
-	private float screenScale = 1.0f;
-
-	// mouse coordinates for selection
-	public int srcx, srcy, destx, desty;
-
-	public boolean pause = false;
-	public boolean hold = false;
-
-	public byte frames = 0;
-
-	public RDArea() {
+	public RDArea(EPanel ep) {
+		this.ep = ep;
 		initAdapters();
+
 	};
+
+	public void setMonitorSize(int w, int h) {
+		monitorHeight = h;
+		monitorWidth = w;
+		screenImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+	}
 
 	/*
 	 * Used to preserve aspect ratio
@@ -95,8 +78,12 @@ public class RDArea extends JLabel {
 
 		Dimension d = this.getParent().getSize();
 
-		double nw = screenImage.getWidth();
-		double nh = screenImage.getHeight();
+		if (stream == null) {
+			return d;
+		}
+
+		double nw = monitorWidth;
+		double nh = monitorHeight;
 
 		double ratio = nw / nh;
 
@@ -107,6 +94,14 @@ public class RDArea extends JLabel {
 		if (nh > d.getHeight()) {
 			nh = d.getHeight();
 			nw = nh * ratio;
+		}
+
+		if (!ep.isMoving()) {
+			screenImage = UIUtil.resize(screenImage, (int) nw, (int) nh);
+
+			scale = (float) (nw / monitorWidth);
+			stream.sendEvent(EventData.newBuilder().setScreenScaleUpdate(ScreenScaleUpdate.newBuilder().setScale(scale))
+					.build());
 		}
 
 		return new Dimension((int) nw, (int) nh);
@@ -120,182 +115,52 @@ public class RDArea extends JLabel {
 	public void paintComponent(Graphics g) {
 
 		g.drawImage(screenImage, 0, 0, this.getWidth(), this.getHeight(), this);
-		// DrawSelectingRect(g);
+
 	}
 
-	public void DrawSelectingRect(Graphics g) {
-		if (isSelecting)
-			if (srcx != destx || srcy != desty) {
-				// Compute upper-left and lower-right coordinates for selection
-				// rectangle corners.
+	/**
+	 * Update a static block
+	 * 
+	 * @param db
+	 */
+	public void updateScreen(DirtyBlock db) {
 
-				int x1 = (srcx < destx) ? srcx : destx;
-				int y1 = (srcy < desty) ? srcy : desty;
+		int startx = (int) (scale * ScreenInterface.getBlockScalarSize(monitorWidth))
+				* (db.getBlockId() % ScreenInterface.blockNumber);
+		int starty = (int) (scale * ScreenInterface.getBlockScalarSize(monitorHeight))
+				* (db.getBlockId() / ScreenInterface.blockNumber);
 
-				int x2 = (srcx > destx) ? srcx : destx;
-				int y2 = (srcy > desty) ? srcy : desty;
-
-				// Establish selection rectangle origin.
-				selectionRect.x = x1;
-				selectionRect.y = y1;
-
-				// Establish selection rectangle extents.
-				selectionRect.width = (x2 - x1) + 1;
-				selectionRect.height = (y2 - y1) + 1;
-
-				// Draw selection rectangle.
-				Graphics2D g2d = (Graphics2D) g;
-				g2d.setStroke(selectionRectangle);
-				g2d.setPaint(selectionGradient);
-				g2d.draw(selectionRect);
-
-				partialScreenMode = true;
-			}
-	}
-
-	public void updateScreenRect() {
-
-		if (!partialScreenMode) {
-			// screenRect = RemoteVariables.screenRect;
-			if (!screenRect.equals(oldScreenRect)) {
-				oldScreenRect = screenRect;
-				setSize(screenRect.getSize());
-				setPreferredSize(screenRect.getSize());
-				// if
-				// (!recorder.viewerOptions.capture.getScreenRect().equals(screenRect))
-				// {
-				// recorder.viewerOptions.capture.updateScreenSize(screenRect);
-				// recorder.viewerOptions.setNewScreenImage(screenRect,
-				// recorder.viewerOptions.getColorQuality());
-				// }
-			}
-
-			if (oldScreenScale != screenScale) {
-				Dimension dimension = new Dimension((int) (screenScale * screenRect.getWidth()),
-						(int) (screenScale * screenRect.getHeight()));
-				setSize(dimension);
-				setPreferredSize(dimension);
-				oldScreenScale = screenScale;
-			}
-		} else {
-			if (!isSelecting) {
-				if (!selectionRect.equals(oldSelectionRect)) {
-					// screenRect = selectionRect;
-					oldSelectionRect = selectionRect;
-					setSize(selectionRect.getSize());
-					setPreferredSize(selectionRect.getSize());
-					// if
-					// (!recorder.viewerOptions.capture.getScreenRect().equals(selectionRect))
-					// {
-					// recorder.viewerOptions.capture.updateScreenSize(selectionRect);
-					// recorder.viewerOptions.setNewScreenImage(selectionRect,
-					// recorder.viewerOptions.getColorQuality());
-					// }
-				}
-			}
-
-			// TODO figure this out
-			if (screenScale != screenScale) {
-				Dimension dimension = new Dimension((int) (screenScale * selectionRect.getWidth()),
-						(int) (screenScale * selectionRect.getHeight()));
-				setSize(dimension);
-				setPreferredSize(dimension);
-				oldScreenScale = screenScale;
-			}
+		ByteArrayOutputStream out = new ByteArrayOutputStream(db.getRGBCount());
+		for (int i = 0; i < db.getRGBCount(); i++) {
+			out.write(db.getRGB(i));
 		}
-	}
 
-	public void stopSelectingMode() {
-		partialScreenMode = false;
-		selectionRect = new Rectangle(0, 0, 0, 0);
-		oldSelectionRect = new Rectangle(-1, -1, -1, -1);
-		// RemoteVariables.screenRect = new Rectangle(0, 0, 0, 0);
-		// if (recorder.config.reverseConnection)
-		// recorder.viewerOptions.setChanged(true);
-		// else
-		// recorder.viewer.setOption(Commons.RECT_OPTION);
-	}
-
-	public void doneSelecting() {
-		if (isSelecting) {
-			isSelecting = false;
-			oldSelectionRect = new Rectangle(0, 0, 0, 0);
-
-			if (partialScreenMode) {
-
-				// TODO
-				float screenScale = 1.0f;
-				// float screenScale = 1.0f / RemoteVariables.screenScale;
-				Rectangle rect = new Rectangle(selectionRect);
-				rect.x = (int) (rect.x * screenScale);
-				rect.y = (int) (rect.y * screenScale);
-				rect.height = (int) (rect.height * screenScale);
-				rect.width = (int) (rect.width * screenScale);
-
-				// RemoteVariables.screenRect = rect;
-				// if (recorder.config.reverseConnection)
-				// recorder.viewerOptions.setChanged(true);
-				// else
-				// recorder.viewer.setOption(Commons.RECT_OPTION);
-			}
-
-			srcx = destx;
-			srcy = desty;
-
-			Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
-			setCursor(cursor);
+		try {
+			BufferedImage block = ImageIO.read(new ByteArrayInputStream(out.toByteArray()));
+			screenImage.getGraphics().drawImage(block, startx, starty, block.getWidth(), block.getHeight(), this);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-	}
-
-	public boolean isPartialScreenMode() {
-		return partialScreenMode;
-	}
-
-	public Rectangle getSelectionRect() {
-		return selectionRect;
-	}
-
-	public void startSelectingMode() {
-		isSelecting = true;
-		Cursor cursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
-		setCursor(cursor);
-	}
-
-	public void updateScreen(HashMap<String, byte[]> changedBlocks) {
-		updateScreenRect();
-
-		// screenImage = RemoteVariables.capture.setChangedBlocks(screenImage,
-		// changedBlocks);
-
 		repaint();
-		frames++;
 	}
 
-	public void updateScreen(ScreenData sd) {
-		for (MoveRect mr : sd.getMoveRectList()) {
-			// TODO
-			screenImage.getData(new Rectangle(mr.getSx(), mr.getSy(), mr.getW(), mr.getH()));
-		}
-		for (DirtyRect dr : sd.getDirtyRectList()) {
-			List<Integer> rgb = dr.getRGBAList();
-			// ImageIcon imgPiece = new ImageIcon();
-			// Graphics2D g = screenImage.createGraphics();
-			// g.drawImage(imgPiece.getImage(), dr.getSx(), dr.getSy(),
-			// dr.getW(), dr.getH(), null);
+	/**
+	 * Update an arbitrary rectangle
+	 * 
+	 * @param dr
+	 */
+	public void updateScreen(DirtyRect dr) {
 
-			// System.out.println("Dirty region: dr.getSx(): " + dr.getSx() + "
-			// dr.getSy(): " + dr.getSy() + " dr.getW(): "
-			// + dr.getW() + " dr.getH(): " + dr.getH());
-			int r = 0;
-			for (int j = dr.getSy(); j < dr.getSy() + dr.getH(); j++) {
-				for (int i = dr.getSx(); i < dr.getSx() + dr.getW(); i++) {
+		List<Integer> rgb = dr.getRGBAList();
+		int r = 0;
+		for (int j = dr.getSy(); j < dr.getSy() + dr.getH(); j++) {
+			for (int i = dr.getSx(); i < dr.getSx() + dr.getW(); i++) {
 
-					screenImage.setRGB(i, j, rgb.get(r++));
-				}
+				screenImage.setRGB(i, j, rgb.get(r++));
 			}
-			repaint(dr.getSx(), dr.getSy(), dr.getW(), dr.getH());
-
 		}
+		repaint(dr.getSx(), dr.getSy(), dr.getW(), dr.getH());
 
 	}
 
@@ -336,30 +201,23 @@ public class RDArea extends JLabel {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				if (isSelecting) {
-					destx = e.getX();
-					desty = e.getY();
-				} else {
-					stream.sendEvent(EventData.newBuilder().build());
-				}
+
+				stream.sendEvent(EventData.newBuilder().build());
+
 			}
 		};
 
 		ma = new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if (isSelecting) {
-					destx = srcx = e.getX();
-					desty = srcy = e.getY();
-				} else {
-					stream.sendEvent(EventData.newBuilder().setMousePressed(e.getButton()).setMouseMovedX(e.getX())
-							.setMouseMovedY(e.getY()).build());
-				}
+
+				stream.sendEvent(EventData.newBuilder().setMousePressed(e.getButton()).setMouseMovedX(e.getX())
+						.setMouseMovedY(e.getY()).build());
+
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				doneSelecting();
 				stream.sendEvent(EventData.newBuilder().setMouseReleased(e.getButton()).build());
 			}
 		};

@@ -1,8 +1,6 @@
 package com.subterranean_security.crimson.core.util;
 
-import java.awt.List;
 import java.io.File;
-import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +9,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.CoreStore;
 import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.Stream.DirtyRect;
-import com.subterranean_security.crimson.core.proto.Stream.ScreenData;
+import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
 
 public final class Native {
 
@@ -107,6 +105,6 @@ public final class Native {
 			dr.addRGBA(i);
 		}
 		CoreStore.Remote.getSlave()
-				.addFrame(ScreenData.newBuilder().addDirtyRect(dr.setSx(sx).setSy(sy).setW(w).setH(h)).build());
+				.addFrame(EV_StreamData.newBuilder().setDirtyRect(dr.setSx(sx).setSy(sy).setW(w).setH(h)));
 	}
 }

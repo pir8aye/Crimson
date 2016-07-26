@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.viewer.ui;
 
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -107,6 +108,17 @@ public enum UIUtil {
 		ColorModel cm = bi.getColorModel();
 		WritableRaster raster = bi.copyData(null);
 		return new BufferedImage(cm, raster, cm.isAlphaPremultiplied(), null);
+	}
+
+	public static BufferedImage resize(BufferedImage img, int newW, int newH) {
+		Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+		BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
+
+		Graphics2D g2d = dimg.createGraphics();
+		g2d.drawImage(tmp, 0, 0, null);
+		g2d.dispose();
+
+		return dimg;
 	}
 
 }

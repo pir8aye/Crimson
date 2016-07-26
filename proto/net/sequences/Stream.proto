@@ -13,8 +13,9 @@ message EV_StreamData {
 	required int32 streamID = 1;
 	
 	//remote
-	optional EventData eventData = 2;
-	optional ScreenData screenData = 3;
+	optional EventData event_data = 2;
+	optional DirtyRect dirty_rect = 4;
+	optional DirtyBlock dirty_block = 5;
 }
 
 message EventData {
@@ -25,26 +26,14 @@ message EventData {
 	
 	optional int32 mouseMovedX = 5;
 	optional int32 mouseMovedY = 6;
+	
+	optional ScreenScaleUpdate screen_scale_update = 7;
 
 }
 
-message ScreenData {
-	repeated MoveRect move_rect = 1;
-	repeated DirtyRect dirty_rect = 2;
-}
+message ScreenScaleUpdate {
+	required float scale = 1;
 
-message MoveRect {
-	//source point
-	required int32 sx = 1;
-	required int32 sy = 2;
-	
-	//dest point
-	required int32 dx = 3;
-	required int32 dy = 4;
-	
-	//size
-	required int32 w = 5;
-	required int32 h = 6;
 }
 
 message DirtyRect {
@@ -56,6 +45,11 @@ message DirtyRect {
 	required int32 h = 4;
 	
 	repeated int32 RGBA = 5;
+}
+
+message DirtyBlock {
+	required int32 block_id = 1;
+	repeated int32 RGB = 2;
 }
 
 message Param {

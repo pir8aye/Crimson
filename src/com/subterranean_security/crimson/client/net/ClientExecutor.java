@@ -81,6 +81,9 @@ public class ClientExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
+					if (m.hasEvStreamData()) {
+						ev_stream_data(m);
+					}
 
 					ReferenceCountUtil.release(m);
 				}
@@ -135,6 +138,10 @@ public class ClientExecutor extends BasicExecutor {
 			}
 		});
 		nbt.start();
+	}
+
+	private void ev_stream_data(Message m) {
+		StreamStore.getStream(m.getEvStreamData().getStreamID()).received(m);
 	}
 
 	private void rq_change_client_state(Message m) {
