@@ -35,7 +35,6 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
@@ -295,6 +294,11 @@ public class RDPanel extends JPanel {
 			}
 
 			protected void done() {
+				try {
+					get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				barToggle.setIndeterminate(false);
 				btnToggle.setEnabled(true);
 				btnKeyToggle.setEnabled(running);

@@ -94,13 +94,11 @@ public class Settings extends JPanel {
 
 	public int getColorType() {
 		String m = (String) colorBox.getSelectedItem();
-		if (m.equals(colorStrings[0])) {
-			return BufferedImage.TYPE_INT_ARGB;
-		} else if (m.equals(methodStrings[1])) {
+		if (m.equals(colorStrings[1])) {
 			return BufferedImage.TYPE_INT_RGB;
-		} else if (m.equals(methodStrings[2])) {
+		} else if (m.equals(colorStrings[2])) {
 			return BufferedImage.TYPE_USHORT_555_RGB;
-		} else if (m.equals(methodStrings[3])) {
+		} else if (m.equals(colorStrings[3])) {
 			return BufferedImage.TYPE_BYTE_GRAY;
 		} else {
 			return BufferedImage.TYPE_INT_ARGB;
@@ -109,13 +107,11 @@ public class Settings extends JPanel {
 
 	public float getCompType() {
 		String m = (String) colorBox.getSelectedItem();
-		if (m.equals(colorStrings[0])) {
-			return -1f;
-		} else if (m.equals(methodStrings[1])) {
+		if (m.equals(compStrings[1])) {
 			return 1.0f;
-		} else if (m.equals(methodStrings[2])) {
+		} else if (m.equals(compStrings[2])) {
 			return 0.5f;
-		} else if (m.equals(methodStrings[3])) {
+		} else if (m.equals(compStrings[3])) {
 			return 0.0f;
 		} else {
 			return -1f;
