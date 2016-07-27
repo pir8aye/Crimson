@@ -119,12 +119,26 @@ public class Settings extends JPanel {
 	}
 
 	private void resetStream() {
-		if (parent.stream == null) {
+		if (parent.stream == null || !parent.stream.isRunning()) {
 			return;
 		}
-		StreamStore.removeStream(parent.stream.getStreamID());
-		parent.running = false;
-		parent.start();
+
+		setAllEnabled(false);
+		new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+				StreamStore.removeStream(parent.stream.getStreamID());
+				// dont use parent.stop() to avoid gui changes
+				parent.running = false;
+				parent.start();
+				return null;
+			}
+
+			protected void done() {
+				setAllEnabled(true);
+			};
+
+		}.execute();
 
 	}
 
@@ -138,20 +152,7 @@ public class Settings extends JPanel {
 			@Override
 			public void itemStateChanged(ItemEvent event) {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
-					setAllEnabled(false);
-					new SwingWorker<Void, Void>() {
-						@Override
-						protected Void doInBackground() throws Exception {
-							resetStream();
-							return null;
-						}
-
-						protected void done() {
-							setAllEnabled(true);
-						};
-
-					}.execute();
-
+					resetStream();
 				}
 			}
 		});
@@ -166,20 +167,7 @@ public class Settings extends JPanel {
 
 			public void itemStateChanged(ItemEvent event) {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
-					setAllEnabled(false);
-					new SwingWorker<Void, Void>() {
-						@Override
-						protected Void doInBackground() throws Exception {
-							resetStream();
-							return null;
-						}
-
-						protected void done() {
-							setAllEnabled(true);
-						};
-
-					}.execute();
-
+					resetStream();
 				}
 			}
 		});
@@ -208,20 +196,7 @@ public class Settings extends JPanel {
 		colorBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
-					setAllEnabled(false);
-					new SwingWorker<Void, Void>() {
-						@Override
-						protected Void doInBackground() throws Exception {
-							resetStream();
-							return null;
-						}
-
-						protected void done() {
-							setAllEnabled(true);
-						};
-
-					}.execute();
-
+					resetStream();
 				}
 			}
 		});
@@ -240,20 +215,7 @@ public class Settings extends JPanel {
 		compBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
-					setAllEnabled(false);
-					new SwingWorker<Void, Void>() {
-						@Override
-						protected Void doInBackground() throws Exception {
-							resetStream();
-							return null;
-						}
-
-						protected void done() {
-							setAllEnabled(true);
-						};
-
-					}.execute();
-
+					resetStream();
 				}
 			}
 		});
