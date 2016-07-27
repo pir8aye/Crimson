@@ -55,15 +55,18 @@ public class RDPanel extends JPanel {
 	public boolean running;
 	public int cvid;
 
+	private boolean fullSettings;
 	public Settings settings;
 
 	public enum Type {
 		VIEW_ONLY, INTERACT;
 	}
 
-	public RDPanel(Type type, int cvid, boolean fullsettings) {
+	public RDPanel(Type type, int cvid, boolean fullSettings) {
+		this.fullSettings = fullSettings;
 		this.cvid = cvid;
-		settings = new Settings(ViewerStore.Profiles.getClient(cvid).getDisplays(), this, fullsettings);
+
+		settings = new Settings(ViewerStore.Profiles.getClient(cvid).getDisplays(), this, fullSettings);
 		init();
 
 	}
@@ -237,7 +240,7 @@ public class RDPanel extends JPanel {
 					ep.drop();
 				} else {
 					raised = true;
-					ep.raise(settings, 106);
+					ep.raise(settings, fullSettings ? 100 : 60);
 				}
 
 			}
