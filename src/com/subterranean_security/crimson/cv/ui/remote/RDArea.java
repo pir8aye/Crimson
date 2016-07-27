@@ -39,11 +39,9 @@ import javax.swing.JLabel;
 import com.subterranean_security.crimson.core.proto.Stream.DirtyBlock;
 import com.subterranean_security.crimson.core.proto.Stream.DirtyRect;
 import com.subterranean_security.crimson.core.proto.Stream.EventData;
-import com.subterranean_security.crimson.core.proto.Stream.ScreenScaleUpdate;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.core.stream.remote.ScreenInterface;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 
 public class RDArea extends JLabel {
 
@@ -54,12 +52,12 @@ public class RDArea extends JLabel {
 	private int monitorWidth;
 	private int monitorHeight;
 	private float scale;
-	public BufferedImage screenImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+	public BufferedImage screenImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
-	private EPanel ep;
+	private RDPanel parent;
 
-	public RDArea(EPanel ep) {
-		this.ep = ep;
+	public RDArea(RDPanel rdp) {
+		this.parent = rdp;
 		initAdapters();
 
 	};
@@ -67,7 +65,7 @@ public class RDArea extends JLabel {
 	public void setMonitorSize(int w, int h) {
 		monitorHeight = h;
 		monitorWidth = w;
-		screenImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+		screenImage = new BufferedImage(w, h, parent.settings.getColorType());
 	}
 
 	/*
@@ -96,12 +94,11 @@ public class RDArea extends JLabel {
 			nw = nh * ratio;
 		}
 
-		if (!ep.isMoving()) {
+		if (!parent.ep.isMoving()) {
 			screenImage = UIUtil.resize(screenImage, (int) nw, (int) nh);
 
 			scale = (float) (nw / monitorWidth);
-			stream.sendEvent(EventData.newBuilder().setScreenScaleUpdate(ScreenScaleUpdate.newBuilder().setScale(scale))
-					.build());
+			stream.sendEvent(EventData.newBuilder().setScaleUpdate(scale).build());
 		}
 
 		return new Dimension((int) nw, (int) nh);

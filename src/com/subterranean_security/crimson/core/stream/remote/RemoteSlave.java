@@ -67,6 +67,9 @@ public class RemoteSlave extends Stream {
 			}
 		}
 
+		ScreenInterface.setColorQuality(param.getRemoteParam().getColorType());
+		ScreenInterface.setCompQuality(param.getRemoteParam().getCompType());
+
 		start();
 	}
 
@@ -84,8 +87,8 @@ public class RemoteSlave extends Stream {
 		} else if (ev.hasMousePressed()) {
 			ScreenInterface.getRobot().mouseMove(ev.getMouseMovedX(), ev.getMouseMovedY());
 			ScreenInterface.getRobot().mousePress(ev.getMousePressed());
-		} else if (ev.hasScreenScaleUpdate()) {
-			ScreenInterface.setScale(ev.getScreenScaleUpdate().getScale());
+		} else if (ev.hasScaleUpdate()) {
+			ScreenInterface.setScale(ev.getScaleUpdate());
 		}
 	}
 

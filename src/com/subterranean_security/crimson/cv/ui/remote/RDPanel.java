@@ -53,10 +53,10 @@ public class RDPanel extends JPanel {
 	public RemoteMaster stream;
 
 	public RDArea rdArea;
-	private boolean running;
+	public boolean running;
 	public int cvid;
 
-	private Settings settings;
+	public Settings settings;
 
 	public enum Type {
 		VIEW_ONLY, INTERACT;
@@ -76,7 +76,7 @@ public class RDPanel extends JPanel {
 
 	private JButton btnToggle;
 
-	private EPanel ep;
+	public EPanel ep;
 
 	private JButton btnMouseToggle;
 
@@ -238,7 +238,7 @@ public class RDPanel extends JPanel {
 					ep.drop();
 				} else {
 					raised = true;
-					ep.raise(settings, 70);
+					ep.raise(settings, 106);
 				}
 
 			}
@@ -252,7 +252,7 @@ public class RDPanel extends JPanel {
 		ep = new EPanel(jp, SLSide.TOP);
 		add(ep, BorderLayout.CENTER);
 
-		rdArea = new RDArea(ep);
+		rdArea = new RDArea(this);
 		rdArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		jp.add(rdArea);
 
@@ -279,8 +279,10 @@ public class RDPanel extends JPanel {
 
 					btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
 					btnToggle.setToolTipText("Stop");
-					stream = new RemoteMaster(RemoteParam.newBuilder().setRmethod(settings.getMethod())
-							.setMonitor(settings.getMonitor()).build(), cvid, rdArea);
+					stream = new RemoteMaster(
+							RemoteParam.newBuilder().setRmethod(settings.getMethod()).setMonitor(settings.getMonitor())
+									.setColorType(settings.getColorType()).setCompType(settings.getCompType()).build(),
+							cvid, rdArea);
 					StreamStore.addStream(stream);
 					stream.start();
 					rdArea.setStream(stream);

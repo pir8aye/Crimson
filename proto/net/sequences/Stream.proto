@@ -27,12 +27,7 @@ message EventData {
 	optional int32 mouseMovedX = 5;
 	optional int32 mouseMovedY = 6;
 	
-	optional ScreenScaleUpdate screen_scale_update = 7;
-
-}
-
-message ScreenScaleUpdate {
-	required float scale = 1;
+	optional float scale_update = 7;
 
 }
 
@@ -76,11 +71,13 @@ message InfoParam {
 message RemoteParam {
 	enum RMethod {
 		POLL = 1;
-		POLL_DELTA = 2;
-		NATIVE = 3;
+		NATIVE = 2;
 	}
+
 	required RMethod rmethod = 1;
 	required string monitor = 2;
+	required int32 color_type = 3;
+	required float comp_type = 4;
 
 }
 

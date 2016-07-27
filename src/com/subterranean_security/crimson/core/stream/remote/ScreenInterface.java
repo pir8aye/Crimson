@@ -51,8 +51,8 @@ public final class ScreenInterface {
 	private static Robot robot;
 	private static Rectangle fullscreenRect;
 	private static float scale = 1;
-	private static float compQuality = 0.5f;
-	private static int colorQuality = BufferedImage.TYPE_INT_RGB;
+	private static float compQuality = -1f;
+	private static int colorQuality = BufferedImage.TYPE_INT_ARGB;
 	private static CompareAlgorithm compareType = CompareAlgorithm.COMPARE_SIZE;
 
 	// graphics rendering
@@ -65,19 +65,19 @@ public final class ScreenInterface {
 	static {
 		ImageIO.setUseCache(false);
 		iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-		iwp.setCompressionQuality(1);
+
 	}
 
 	private static byte[] toByteArray(BufferedImage image) {
 		try {
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
+
 			if (compQuality == -1) {
 				ImageIO.write(image, "jpeg", out);
 			} else {
 				ImageOutputStream ios = ImageIO.createImageOutputStream(out);
 				iw.setOutput(ios);
-				iwp.setCompressionQuality(compQuality);
 				iw.write(null, new IIOImage(image, null, null), iwp);
 				ios.close();
 			}
@@ -130,6 +130,10 @@ public final class ScreenInterface {
 	}
 
 	public static void setScale(float s) {
+		if (s > scale) {
+			// reset screen
+			screen = new byte[blockNumber * blockNumber][0];
+		}
 		scale = s;
 	}
 
@@ -137,20 +141,16 @@ public final class ScreenInterface {
 		return robot;
 	}
 
-	public static int getColorQuality() {
-		return colorQuality;
-	}
-
 	public static void setColorQuality(int colorQuality) {
 		ScreenInterface.colorQuality = colorQuality;
 	}
 
-	public static float getCompQuality() {
-		return compQuality;
-	}
-
 	public static void setCompQuality(float compQuality) {
 		ScreenInterface.compQuality = compQuality;
+		if (compQuality != -1) {
+			iwp.setCompressionQuality(compQuality);
+		}
+
 	}
 
 	public static final int blockNumber = 20;
