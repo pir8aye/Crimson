@@ -290,19 +290,12 @@ public class Processor extends JPanel implements DModule {
 
 	@Override
 	public int getWeight() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int compareTo(DModule arg0) {
-		// TODO Auto-generated method stub
-		return 0;
+		return 10;
 	}
 
 	@Override
 	public int getDWidth() {
-		return 0;
+		return 120;
 	}
 
 	private boolean showing = false;

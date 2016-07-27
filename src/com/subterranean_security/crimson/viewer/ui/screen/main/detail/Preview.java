@@ -40,13 +40,13 @@ public class Preview extends JPanel implements DModule {
 
 	private void init() {
 		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(100, 100));
 	}
 
 	private ClientProfile cp;
 
 	@Override
 	public void setTarget(ClientProfile p) {
+		System.out.println("Preview::setTarget");
 		this.cp = p;
 		removeAll();
 		rdp = new RDPanel(Type.VIEW_ONLY, p.getCvid(), false);
@@ -63,6 +63,7 @@ public class Preview extends JPanel implements DModule {
 
 	@Override
 	public void setShowing(boolean showing) {
+		System.out.println("Preview::setShowing: " + showing);
 		this.showing = showing;
 		if (showing) {
 			rdp.start();
@@ -81,15 +82,8 @@ public class Preview extends JPanel implements DModule {
 	}
 
 	@Override
-	public int compareTo(DModule o) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public int getDWidth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 120;
 	}
 
 	@Override
@@ -99,28 +93,8 @@ public class Preview extends JPanel implements DModule {
 
 	@Override
 	public Dimension getPreferredSize() {
+		return new Dimension(120, 100);
 
-		try {
-			Dimension d = this.getParent().getSize();
-
-			double nw = rdp.rdArea.screenImage.getWidth();
-			double nh = rdp.rdArea.screenImage.getHeight();
-
-			double ratio = nw / nh;
-
-			if (nw > d.getWidth()) {
-				nw = d.getWidth();
-				nh = nw / ratio;
-			}
-			if (nh > d.getHeight()) {
-				nh = d.getHeight();
-				nw = nh * ratio;
-			}
-
-			return new Dimension((int) nw, (int) nh);
-		} catch (Exception e) {
-			return new Dimension(110, 110);
-		}
 	}
 
 }

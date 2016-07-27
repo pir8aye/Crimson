@@ -30,6 +30,7 @@ import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Preview;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Processor;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -85,6 +86,7 @@ public class DPanel extends SLPanel {
 	}
 
 	public void showDetail(ClientProfile sp) {
+		System.out.println("showDetail");
 		if (!moving) {
 			if (!showing) {
 				// move the detail panel out
@@ -101,7 +103,6 @@ public class DPanel extends SLPanel {
 	}
 
 	public void closeDetail() {
-
 		if (showing && !moving) {
 			// move the detail panel back
 			moving = true;
@@ -177,8 +178,11 @@ class Detail extends JPanel {
 		// TODO get from database
 		// just add property for now
 		Preview dp = new Preview();
+		Processor p = new Processor();
 		modules.add(dp);
 		addDM(dp);
+		modules.add(p);
+		addDM(p);
 
 	}
 

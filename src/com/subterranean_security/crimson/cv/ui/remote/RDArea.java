@@ -76,7 +76,7 @@ public class RDArea extends JLabel {
 
 		Dimension d = this.getParent().getSize();
 
-		if (stream == null) {
+		if (stream == null || d.getWidth() <= 0 || d.getHeight() <= 0) {
 			return d;
 		}
 
