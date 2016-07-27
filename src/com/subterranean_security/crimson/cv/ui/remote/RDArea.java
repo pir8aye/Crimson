@@ -51,7 +51,7 @@ public class RDArea extends JLabel {
 
 	private int monitorWidth;
 	private int monitorHeight;
-	private float scale;
+	private double scale;
 	public BufferedImage screenImage;
 
 	private RDPanel parent;
@@ -94,7 +94,7 @@ public class RDArea extends JLabel {
 			nw = nh * ratio;
 		}
 
-		scale = (float) (nw / monitorWidth);
+		scale = (double) (nw / monitorWidth);
 
 		if (!parent.ep.isMoving() && stream.isRunning()) {
 			screenImage = UIUtil.resize(screenImage, (int) nw, (int) nh);

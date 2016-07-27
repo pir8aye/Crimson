@@ -50,7 +50,7 @@ public final class ScreenInterface {
 	// parameters
 	private static Robot robot;
 	private static Rectangle fullscreenRect;
-	private static float scale = 1;
+	private static double scale = 1;
 	private static float compQuality = -1f;
 	private static int colorQuality = BufferedImage.TYPE_INT_ARGB;
 	private static CompareAlgorithm compareType = CompareAlgorithm.COMPARE_SIZE;
@@ -129,7 +129,7 @@ public final class ScreenInterface {
 		}
 	}
 
-	public static void setScale(float s) {
+	public static void setScale(double s) {
 		if (s > scale) {
 			// reset screen
 			screen = new byte[blockNumber * blockNumber][0];

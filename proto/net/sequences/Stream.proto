@@ -27,7 +27,7 @@ message EventData {
 	optional int32 mouseMovedX = 5;
 	optional int32 mouseMovedY = 6;
 	
-	optional float scale_update = 7;
+	optional double scale_update = 7;
 
 }
 
