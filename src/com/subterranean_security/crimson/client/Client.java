@@ -75,7 +75,6 @@ public class Client {
 		}
 
 		ClientStore.Connections.setTargets(ic.getTargetList());
-		ClientStore.Connections.setPeriod(ic.getReconnectPeriod());
 		ClientStore.Connections.connectionRoutine();
 
 	}

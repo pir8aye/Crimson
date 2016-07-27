@@ -41,7 +41,6 @@ public enum ClientStore {
 	public static class Connections {
 		private static HashMap<Integer, ClientConnector> connections = new HashMap<Integer, ClientConnector>();
 		private static List<NetworkTarget> targets = null;
-		private static int period = 20000;
 
 		private static boolean connecting = false;
 
@@ -65,10 +64,6 @@ public enum ClientStore {
 			targets = t;
 		}
 
-		public static void setPeriod(int p) {
-			period = p;
-		}
-
 		public static void connectionRoutine() {
 			if (connecting || ShutdownHook.shuttingdown) {
 				return;
@@ -89,7 +84,7 @@ public enum ClientStore {
 						} catch (ConnectException e) {
 
 						}
-						Thread.sleep(period);
+						Thread.sleep(Client.ic.getReconnectPeriod() * 1000);
 
 					}
 				}
