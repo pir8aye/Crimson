@@ -61,9 +61,9 @@ public class RDPanel extends JPanel {
 		VIEW_ONLY, INTERACT;
 	}
 
-	public RDPanel(Type type, int cvid) {
+	public RDPanel(Type type, int cvid, boolean fullsettings) {
 		this.cvid = cvid;
-		settings = new Settings(ViewerStore.Profiles.getClient(cvid).getDisplays(), this);
+		settings = new Settings(ViewerStore.Profiles.getClient(cvid).getDisplays(), this, fullsettings);
 		init();
 
 	}

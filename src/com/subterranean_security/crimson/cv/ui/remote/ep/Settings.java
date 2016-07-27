@@ -1,26 +1,36 @@
+/******************************************************************************
+ *                                                                            *
+ *                    Copyright 2016 Subterranean Security                    *
+ *                                                                            *
+ *  Licensed under the Apache License, Version 2.0 (the "License");           *
+ *  you may not use this file except in compliance with the License.          *
+ *  You may obtain a copy of the License at                                   *
+ *                                                                            *
+ *      http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                            *
+ *  Unless required by applicable law or agreed to in writing, software       *
+ *  distributed under the License is distributed on an "AS IS" BASIS,         *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *  See the License for the specific language governing permissions and       *
+ *  limitations under the License.                                            *
+ *                                                                            *
+ *****************************************************************************/
 package com.subterranean_security.crimson.cv.ui.remote.ep;
 
-import java.awt.Font;
+import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
-import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam.RMethod;
 import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel;
-import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import javax.swing.JSlider;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
 
 public class Settings extends JPanel {
 
@@ -37,16 +47,34 @@ public class Settings extends JPanel {
 
 	private JComboBox monitorBox;
 	private JComboBox methodBox;
-	private JLabel lblCapture;
-
 	private JComboBox colorBox;
-	private JLabel lblCompression;
-
 	private JComboBox compBox;
 
-	public Settings(GraphicsDisplay[] displays, RDPanel parent) {
+	private JPanel settings;
+
+	private boolean full;
+
+	public Settings(GraphicsDisplay[] displays, RDPanel parent, boolean full) {
 		this.displays = displays;
 		this.parent = parent;
+		this.full = full;
+		if (full) {
+			FullSettings fs = new FullSettings();
+			monitorBox = fs.monitorBox;
+			methodBox = fs.methodBox;
+			colorBox = fs.colorBox;
+			compBox = fs.compBox;
+			settings = fs;
+		} else {
+			ReducedSettings rs = new ReducedSettings();
+			monitorBox = rs.monitorBox;
+			colorBox = rs.colorBox;
+
+			// not used, but initialize anyway
+			methodBox = new JComboBox();
+			compBox = new JComboBox();
+			settings = rs;
+		}
 		loadSettings();
 		init();
 	}
@@ -54,8 +82,8 @@ public class Settings extends JPanel {
 	private void loadSettings() {
 		displayStrings = new String[displays.length];
 		for (int i = 0; i < displays.length; i++) {
-			displayStrings[i] = "Monitor " + (i + 1) + " (" + displays[i].getWidth() + " x " + displays[i].getHeight()
-					+ ")";
+			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " (" + displays[i].getWidth() + " x "
+					+ displays[i].getHeight() + ")";
 		}
 
 		if (parent.stream != null) {
@@ -143,10 +171,9 @@ public class Settings extends JPanel {
 	}
 
 	private void init() {
-		setLayout(null);
+		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		add(settings);
 
-		monitorBox = new JComboBox();
-		monitorBox.setFont(new Font("Dialog", Font.BOLD, 10));
 		monitorBox.setModel(new DefaultComboBoxModel(displayStrings));
 		monitorBox.addItemListener(new ItemListener() {
 			@Override
@@ -157,72 +184,35 @@ public class Settings extends JPanel {
 			}
 		});
 
-		monitorBox.setBounds(130, 7, 164, 20);
-		add(monitorBox);
-
-		methodBox = new JComboBox();
 		methodBox.setModel(new DefaultComboBoxModel(methodStrings));
-		methodBox.setFont(new Font("Dialog", Font.BOLD, 10));
 		methodBox.addItemListener(new ItemListener() {
-
+			@Override
 			public void itemStateChanged(ItemEvent event) {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
 					resetStream();
 				}
 			}
 		});
-		methodBox.setBounds(130, 31, 164, 20);
-		add(methodBox);
 
-		JLabel lblCaptureDevice = new JLabel("Capture Device:");
-		lblCaptureDevice.setIcon(UIUtil.getIcon("icons16/general/viewer.png"));
-		lblCaptureDevice.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblCaptureDevice.setBounds(12, 7, 117, 20);
-		add(lblCaptureDevice);
-
-		lblCapture = new JLabel("Capture Mode:");
-		lblCapture.setIcon(UIUtil.getIcon("icons16/general/processor.png"));
-		lblCapture.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblCapture.setBounds(12, 31, 117, 20);
-		add(lblCapture);
-
-		JLabel lblColorQuality = new JLabel("Color Mode:");
-		lblColorQuality.setIcon(UIUtil.getIcon("icons16/general/palette.png"));
-		lblColorQuality.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblColorQuality.setBounds(12, 55, 117, 20);
-		add(lblColorQuality);
-
-		colorBox = new JComboBox();
 		colorBox.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent event) {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
 					resetStream();
 				}
 			}
 		});
-		colorBox.setFont(new Font("Dialog", Font.BOLD, 10));
 		colorBox.setModel(new DefaultComboBoxModel(colorStrings));
-		colorBox.setBounds(130, 56, 164, 20);
-		add(colorBox);
 
-		lblCompression = new JLabel("Compression:");
-		lblCompression.setIcon(UIUtil.getIcon("icons16/general/compress.png"));
-		lblCompression.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblCompression.setBounds(12, 79, 117, 20);
-		add(lblCompression);
-
-		compBox = new JComboBox();
 		compBox.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent event) {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
 					resetStream();
 				}
 			}
 		});
-		compBox.setFont(new Font("Dialog", Font.BOLD, 10));
 		compBox.setModel(new DefaultComboBoxModel(compStrings));
-		compBox.setBounds(130, 79, 164, 20);
-		add(compBox);
 
 	}
 

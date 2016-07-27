@@ -26,7 +26,7 @@ public class RDFrame extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
-		rdp = new RDPanel(type, cvid);
+		rdp = new RDPanel(type, cvid, true);
 		contentPane.add(rdp, BorderLayout.CENTER);
 	}
 
