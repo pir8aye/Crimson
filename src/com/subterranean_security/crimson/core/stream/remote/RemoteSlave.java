@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.core.stream.remote;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.InputEvent;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -83,10 +84,10 @@ public class RemoteSlave extends Stream {
 		} else if (ev.hasKeyReleased()) {
 			ScreenInterface.getRobot().keyRelease(m.getEvStreamData().getEventData().getKeyReleased());
 		} else if (ev.hasMouseReleased()) {
-			ScreenInterface.getRobot().mouseRelease(ev.getMouseReleased());
+			ScreenInterface.getRobot().mouseRelease(InputEvent.getMaskForButton(ev.getMouseReleased()));
 		} else if (ev.hasMousePressed()) {
 			ScreenInterface.getRobot().mouseMove(ev.getMouseMovedX(), ev.getMouseMovedY());
-			ScreenInterface.getRobot().mousePress(ev.getMousePressed());
+			ScreenInterface.getRobot().mousePress(InputEvent.getMaskForButton(ev.getMousePressed()));
 		} else if (ev.hasScaleUpdate()) {
 			ScreenInterface.setScale(ev.getScaleUpdate());
 		}
