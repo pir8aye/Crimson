@@ -194,7 +194,8 @@ public class RDArea extends JLabel {
 		mma = new MouseMotionAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				stream.sendEvent(EventData.newBuilder().setMouseMovedX(e.getX()).setMouseMovedY(e.getY()).build());
+				stream.sendEvent(EventData.newBuilder().setMouseMovedX((int) (e.getX() / scale))
+						.setMouseMovedY((int) (e.getY() / scale)).build());
 			}
 
 			@Override
@@ -209,8 +210,8 @@ public class RDArea extends JLabel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				stream.sendEvent(EventData.newBuilder().setMousePressed(e.getButton()).setMouseMovedX(e.getX())
-						.setMouseMovedY(e.getY()).build());
+				stream.sendEvent(EventData.newBuilder().setMousePressed(e.getButton())
+						.setMouseMovedX((int) (e.getX() / scale)).setMouseMovedY((int) (e.getY() / scale)).build());
 
 			}
 
