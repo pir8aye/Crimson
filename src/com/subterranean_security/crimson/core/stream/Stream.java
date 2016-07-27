@@ -53,13 +53,21 @@ public abstract class Stream {
 	 */
 	public abstract void send();
 
+	protected boolean running;
+
+	public boolean isRunning() {
+		return running;
+	}
+
 	public void start() {
+		running = true;
 		ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
 				.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
 
 	}
 
 	public void stop() {
+		running = false;
 		ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
 				.setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
 
