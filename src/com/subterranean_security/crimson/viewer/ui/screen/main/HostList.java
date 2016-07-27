@@ -55,34 +55,32 @@ public class HostList extends JPanel {
 		table.setShowVerticalLines(false);
 		table.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (MainFrame.main.dp.isMoving()) {
 					return;
 				}
 
 				// get source of click
-				JTable source = (JTable) e.getSource();
-				final int sourceRow = source.rowAtPoint(e.getPoint());
+				int sourceRow = table.rowAtPoint(e.getPoint());
 				if (sourceRow == -1) {
-					source.clearSelection();
+					table.clearSelection();
 					MainFrame.main.dp.closeDetail();
 					return;
+				} else if (!table.isRowSelected(sourceRow)) {
+					// select row
+					table.changeSelection(sourceRow, 0, false, false);
 				}
 
 				ClientProfile selected = tm.getRow(sourceRow);
 
-				if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
-					ContextMenu.getMenu(selected, "list").show(table, e.getX(), e.getY());
-
-				} else {
+				if (e.getButton() == MouseEvent.BUTTON1) {
 					// open up the detail
 					MainFrame.main.dp.showDetail(selected);
+				} else if (e.getButton() == MouseEvent.BUTTON3) {
+					ContextMenu.getMenu(selected, "list").show(table, e.getX(), e.getY());
+
 				}
 
-				// select row
-				if (!source.isRowSelected(sourceRow)) {
-					source.changeSelection(sourceRow, 0, false, false);
-				}
 			}
 		});
 
