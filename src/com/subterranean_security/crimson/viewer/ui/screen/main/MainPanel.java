@@ -73,15 +73,15 @@ public class MainPanel extends JPanel {
 	}
 
 	public void loadList() {
-		listLoaded = true;
 		list = new HostList();
 		add(list, "LIST");
+		listLoaded = true;
 	}
 
 	public void loadGraph() {
-		graphLoaded = true;
 		graph = new HostGraph();
 		add(graph, "GRAPH");
+		graphLoaded = true;
 	}
 
 	public void openConsole() {
