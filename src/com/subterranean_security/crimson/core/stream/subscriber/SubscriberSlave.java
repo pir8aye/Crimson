@@ -17,6 +17,9 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.stream.subscriber;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
@@ -31,6 +34,10 @@ import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
 public class SubscriberSlave extends Stream {
+
+	private static final Logger log = LoggerFactory.getLogger(SubscriberSlave.class);
+
+	private LogCallback lcb = new LogCallback(this);
 
 	public SubscriberSlave(Param p) {
 		param = p;
@@ -57,19 +64,27 @@ public class SubscriberSlave extends Stream {
 		if (param.getSubscriberParam().getKeylog()) {
 			ClientProfile cp = ServerStore.Profiles.getClient(param.getCID());
 
-			if (cp == null) {
-				System.out.println("CP IS NULL");
+			if (cp != null) {
+				cp.getKeylog().addCallback(lcb);
+			} else {
+				log.warn("ClientProfile: {} was null", param.getCID());
 			}
-
-			cp.getKeylog().addCallback(new LogCallback(this));
 		}
 
 	}
 
 	@Override
 	public void stop() {
-		// TODO remove callbacks
+		if (param.getSubscriberParam().getKeylog()) {
+			ClientProfile cp = ServerStore.Profiles.getClient(param.getCID());
 
+			if (cp != null) {
+				cp.getKeylog().removeCallback(lcb);
+			} else {
+				log.warn("ClientProfile: {} was null", param.getCID());
+			}
+
+		}
 	}
 
 	public void trigger(EV_KEvent k) {

@@ -100,16 +100,28 @@ public class Log implements Serializable {
 			pages.put(p.ref, p);
 		}
 
-		for (LogCallback lc : callbacks) {
-			lc.launch(evKevent);
+		if (callbacks != null) {
+			for (LogCallback lc : callbacks) {
+				lc.launch(evKevent);
+			}
 		}
 
 	}
 
-	private transient ArrayList<LogCallback> callbacks = new ArrayList<LogCallback>();
+	private transient ArrayList<LogCallback> callbacks;
 
 	public void addCallback(LogCallback r) {
+		if (callbacks == null) {
+			callbacks = new ArrayList<LogCallback>();
+		}
 		callbacks.add(r);
+	}
+
+	public void removeCallback(LogCallback r) {
+		if (callbacks != null) {
+			callbacks.remove(r);
+		}
+
 	}
 
 }
