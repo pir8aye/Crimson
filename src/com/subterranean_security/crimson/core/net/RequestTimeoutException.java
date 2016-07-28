@@ -15,68 +15,10 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.files;
+package com.subterranean_security.crimson.core.net;
 
-import javax.swing.AbstractListModel;
-import javax.swing.ComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.event.ListDataListener;
-
-import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.ui.UIUtil;
-
-public class FileComboBoxModel extends AbstractListModel implements ComboBoxModel {
+public class RequestTimeoutException extends Exception {
 
 	private static final long serialVersionUID = 1L;
-
-	ImageIcon viewer = UIUtil.getIcon("icons16/general/viewer.png");
-	ImageIcon server = UIUtil.getIcon("icons16/general/server.png");
-
-	private Object selected = null;
-
-	public FileComboBoxModel() {
-		viewer.setDescription("Viewer");
-		server.setDescription("Server");
-	}
-
-	@Override
-	public void addListDataListener(ListDataListener arg0) {
-		super.addListDataListener(arg0);
-	}
-
-	@Override
-	public Object getElementAt(int arg0) {
-		if (arg0 == 0) {
-			return viewer;
-		}
-		if (arg0 == 1) {
-			return server;
-		}
-
-		return ViewerStore.Profiles.clients.get(arg0 - 2).getOsMonitorIcon();
-
-	}
-
-	@Override
-	public int getSize() {
-
-		return 2 + ViewerStore.Profiles.clients.size();
-	}
-
-	@Override
-	public void removeListDataListener(ListDataListener arg0) {
-		super.removeListDataListener(arg0);
-	}
-
-	@Override
-	public Object getSelectedItem() {
-		return selected;
-	}
-
-	@Override
-	public void setSelectedItem(Object arg0) {
-		selected = arg0;
-
-	}
 
 }

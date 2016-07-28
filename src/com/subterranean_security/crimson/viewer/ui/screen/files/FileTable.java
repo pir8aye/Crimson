@@ -25,7 +25,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
@@ -38,7 +37,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
-import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
@@ -202,14 +200,8 @@ public class FileTable extends JPanel {
 		popup.add(menu_delete);
 	}
 
-	public void setFiles(List<FileListlet> list) {
-		ArrayList<FileItem> items = new ArrayList<FileItem>();
-
-		for (FileListlet fl : list) {
-			items.add(new FileItem(fl.getName(), fl.getDir(), fl.getSize(), fl.getMtime()));
-		}
-
-		tm.setFiles(items);
+	public void setFiles(ArrayList<FileItem> list) {
+		tm.setFiles(list);
 	}
 
 }

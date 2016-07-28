@@ -22,7 +22,6 @@ import java.awt.Color;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -37,11 +36,14 @@ import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
+import com.subterranean_security.crimson.core.net.RequestTimeoutException;
+import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
-import com.subterranean_security.crimson.core.proto.Misc.Outcome;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.files.ep.AdvancedFileInfo;
 import com.subterranean_security.crimson.viewer.ui.screen.files.ep.DeleteConfirmation;
 
@@ -81,7 +83,7 @@ public class Pane extends JPanel {
 		typeBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ImageIcon selected = (ImageIcon) typeBox.getSelectedItem();
-				String name = selected.getDescription().toLowerCase();
+				String name = selected.getDescription().toLowerCase();//npe
 				new Thread(new Runnable() {
 					public void run() {
 
@@ -174,81 +176,159 @@ public class Pane extends JPanel {
 
 	}
 
-	public void up() {
-		new Thread(new Runnable() {
-			public void run() {
-				beginLoading();
-				switch (type) {
-				case CLIENT:
-				case SERVER:
-					ViewerCommands.fm_up(ft, cid, fmid, true, true);
-					break;
-				case VIEWER:
-					lf.up();
-					refresh();
-					break;
+	public class UpWorker extends SwingWorker<ArrayList<FileItem>, Void> {
 
+		private String pwd;
+
+		@Override
+		protected ArrayList<FileItem> doInBackground() throws Exception {
+
+			ArrayList<FileItem> items = new ArrayList<FileItem>();
+			switch (type) {
+			case CLIENT:
+			case SERVER:
+				RS_FileListing rs = ViewerCommands.fm_up(cid, fmid, true, true);
+				if (rs == null) {
+					throw new RequestTimeoutException();
+				} else {
+					pwd = rs.getPath();
+					for (FileListlet fl : rs.getListingList()) {
+						items.add(new FileItem(fl.getName(), fl.getDir(), fl.getSize(), fl.getMtime()));
+					}
 				}
-				stopLoading();
-			}
-		}).start();
+				break;
+			case VIEWER:
+				lf.up();
+				pwd = lf.pwd();
+				for (FileListlet fl : lf.list()) {
+					items.add(new FileItem(fl.getName(), fl.getDir(), fl.getSize(), fl.getMtime()));
+				}
+				break;
 
+			}
+
+			return items;
+		}
+
+		@Override
+		protected void done() {
+			try {
+				ft.setFiles(get());
+				ft.pane.pwd.setPwd(pwd);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				parent.console.addLine("Request timed out", LineType.ORANGE);
+			}
+
+			stopLoading();
+		}
 	}
 
-	public void down(final String s) {
+	public void up() {
+		beginLoading();
+		new UpWorker().execute();
+	}
 
-		new Thread(new Runnable() {
-			public void run() {
-				beginLoading();
-				switch (type) {
-				case CLIENT:
-				case SERVER:
-					ViewerCommands.fm_down(ft, cid, fmid, s, true, true);
-					break;
-				case VIEWER:
-					lf.down(s);
-					refresh();
-					break;
+	public class DownWorker extends SwingWorker<ArrayList<FileItem>, Void> {
 
+		private String down;
+		private String pwd;
+
+		public DownWorker(String s) {
+			down = s;
+		}
+
+		@Override
+		protected ArrayList<FileItem> doInBackground() throws Exception {
+
+			ArrayList<FileItem> items = new ArrayList<FileItem>();
+			switch (type) {
+			case CLIENT:
+			case SERVER:
+				RS_FileListing rs = ViewerCommands.fm_down(cid, fmid, down, true, true);
+				if (rs == null) {
+					throw new RequestTimeoutException();
+				} else {
+					pwd = rs.getPath();
+					for (FileListlet fl : rs.getListingList()) {
+						items.add(new FileItem(fl.getName(), fl.getDir(), fl.getSize(), fl.getMtime()));
+					}
 				}
-				stopLoading();
+				break;
+			case VIEWER:
+				lf.down(down);
+				pwd = lf.pwd();
+				for (FileListlet fl : lf.list()) {
+					items.add(new FileItem(fl.getName(), fl.getDir(), fl.getSize(), fl.getMtime()));
+				}
+				break;
+
 			}
-		}).start();
+
+			return items;
+		}
+
+		@Override
+		protected void done() {
+			try {
+				ft.setFiles(get());
+				ft.pane.pwd.setPwd(pwd);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				parent.console.addLine("Request timed out", LineType.ORANGE);
+			}
+
+			stopLoading();
+		}
+	}
+
+	public void down(String s) {
+		beginLoading();
+		new DownWorker(s).execute();
+	}
+
+	public class InfoWorker extends SwingWorker<RS_AdvancedFileInfo, Void> {
+
+		private String name;
+
+		public InfoWorker(String n) {
+			name = n;
+		}
+
+		@Override
+		protected RS_AdvancedFileInfo doInBackground() throws Exception {
+			RS_AdvancedFileInfo rs = null;
+			String path = pwd.getPwd() + "/" + name;
+			switch (type) {
+			case CLIENT:
+			case SERVER:
+				rs = ViewerCommands.fm_file_info(cid, path);
+				break;
+			case VIEWER:
+				rs = LocalFilesystem.getInfo(path);
+				break;
+
+			}
+			return rs;
+		}
+
+		protected void done() {
+			try {
+				parent.ep.raise(new AdvancedFileInfo(get(), parent.ep), 80);
+			} catch (InterruptedException | ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		};
 
 	}
 
 	public void info(String name) {
-
-		new SwingWorker<RS_AdvancedFileInfo, Void>() {
-
-			@Override
-			protected RS_AdvancedFileInfo doInBackground() throws Exception {
-				RS_AdvancedFileInfo rs = null;
-				String path = pwd.getPwd() + "/" + name;
-				switch (type) {
-				case CLIENT:
-				case SERVER:
-					rs = ViewerCommands.fm_file_info(cid, path);
-					break;
-				case VIEWER:
-					rs = LocalFilesystem.getInfo(path);
-					break;
-
-				}
-				return rs;
-			}
-
-			protected void done() {
-				try {
-					parent.ep.raise(new AdvancedFileInfo(get(), parent.ep), 80);
-				} catch (InterruptedException | ExecutionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			};
-
-		}.execute();
-
+		new InfoWorker(name).execute();
 	}
 
 	public void delete(ArrayList<FileItem> f) {
@@ -260,32 +340,58 @@ public class Pane extends JPanel {
 
 	}
 
-	public void refresh() {
-		// TODO investigate ways to remove thread overhead
-		// probably by declaring the Runnable as a field
-		new Thread(new Runnable() {
-			public void run() {
-				beginLoading();
-				switch (type) {
-				case CLIENT:
-				case SERVER:
-					ViewerCommands.fm_list(ft, cid, fmid, true, true);
-					break;
-				case VIEWER:
-					try {
-						ft.setFiles(lf.list());
-						pwd.setPwd(lf.pwd());
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+	public class RefreshWorker extends SwingWorker<ArrayList<FileItem>, Void> {
+
+		private String pwd;
+
+		@Override
+		protected ArrayList<FileItem> doInBackground() throws Exception {
+
+			ArrayList<FileItem> items = new ArrayList<FileItem>();
+			switch (type) {
+			case CLIENT:
+			case SERVER:
+				RS_FileListing rs = ViewerCommands.fm_list(cid, fmid, true, true);
+				if (rs == null) {
+					throw new RequestTimeoutException();
+				} else {
+					pwd = rs.getPath();
+					for (FileListlet fl : rs.getListingList()) {
+						items.add(new FileItem(fl.getName(), fl.getDir(), fl.getSize(), fl.getMtime()));
 					}
-					break;
-
 				}
-				stopLoading();
-			}
-		}).start();
+				break;
+			case VIEWER:
+				pwd = lf.pwd();
+				for (FileListlet fl : lf.list()) {
+					items.add(new FileItem(fl.getName(), fl.getDir(), fl.getSize(), fl.getMtime()));
+				}
+				break;
 
+			}
+
+			return items;
+		}
+
+		@Override
+		protected void done() {
+			try {
+				ft.setFiles(get());
+				ft.pane.pwd.setPwd(pwd);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				parent.console.addLine("Request timed out", LineType.ORANGE);
+			}
+
+			stopLoading();
+		}
+	}
+
+	public void refresh() {
+		beginLoading();
+		new RefreshWorker().execute();
 	}
 
 	public void beginLoading() {

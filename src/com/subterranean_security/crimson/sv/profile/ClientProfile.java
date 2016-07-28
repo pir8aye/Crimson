@@ -55,6 +55,7 @@ public class ClientProfile implements Serializable {
 	private transient ImageIcon locationIcon;
 	private transient ImageIcon osNameIcon;
 	private transient ImageIcon userIcon;
+	private transient ImageIcon osMonitorIcon;
 
 	// General attributes
 	private Log keylog;
@@ -194,14 +195,17 @@ public class ClientProfile implements Serializable {
 
 			try {
 				osNameIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
+				osMonitorIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
 
 			} catch (NullPointerException e) {
 				Reporter.report(Reporter.newReport().setComment("No OS icon found: " + icon).build());
 
 				// fall back to os family
 				osNameIcon = UIUtil.getIcon("icons16/platform/" + osFamily.get() + ".png");
+				osMonitorIcon = UIUtil.getIcon("icons16/platform/" + osFamily.get() + ".png");
 			}
 			osNameIcon.setDescription(osName.get());
+			osMonitorIcon.setDescription(hostname.get());
 
 		}
 
@@ -546,6 +550,10 @@ public class ClientProfile implements Serializable {
 
 	public ImageIcon getOsNameIcon() {
 		return osNameIcon;
+	}
+
+	public ImageIcon getOsMonitorIcon() {
+		return osMonitorIcon;
 	}
 
 	public ImageIcon getUserIcon() {
