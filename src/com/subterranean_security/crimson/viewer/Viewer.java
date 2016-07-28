@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -47,6 +48,11 @@ public class Viewer {
 	private static final Logger log = LoggerFactory.getLogger(Viewer.class);
 
 	public static void main(String[] argv) {
+
+		if (GraphicsEnvironment.isHeadless()) {
+			System.out.println("Error: headless graphics environment detected!");
+			return;
+		}
 
 		CUtil.Logging.configure();
 
