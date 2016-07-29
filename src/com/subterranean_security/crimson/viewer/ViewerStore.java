@@ -154,7 +154,7 @@ public enum ViewerStore {
 			for (int i = 0; i < clients.size(); i++) {
 
 				if (clients.get(i).getHostname().equalsIgnoreCase(hostname)) {
-					return clients.get(i);
+					return clients.get(i).reinit();
 				}
 			}
 			return null;
@@ -164,7 +164,7 @@ public enum ViewerStore {
 			for (int i = 0; i < clients.size(); i++) {
 
 				if (clients.get(i).getCvid() == cid) {
-					return clients.get(i);
+					return clients.get(i).reinit();
 				}
 			}
 			return null;
@@ -188,9 +188,8 @@ public enum ViewerStore {
 						"Received new client connection" + (change.hasExtIp() ? " from: " + change.getExtIp() : ""),
 						LineType.GREEN);
 				cp = new ClientProfile(change.getCvid());
-				cp.getKeylog().pages.setDatabase(Databases.local);
 				cp.amalgamate(change);
-				clients.add(cp);
+				clients.add(cp.reinit());
 
 			}
 

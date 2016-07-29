@@ -29,7 +29,9 @@ import javax.swing.ImageIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Reporter;
+import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.exception.InvalidObjectException;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
@@ -54,8 +56,9 @@ public class ClientProfile implements Serializable {
 	// Transient attributes
 	private transient ImageIcon locationIcon;
 	private transient ImageIcon osNameIcon;
-	private transient ImageIcon userIcon;
 	private transient ImageIcon osMonitorIcon;
+	private transient ImageIcon userIcon;
+	private transient boolean initialized;
 
 	// General attributes
 	private Log keylog;
@@ -153,6 +156,20 @@ public class ClientProfile implements Serializable {
 		countryCode = new UntrackedAttribute();
 		region = new UntrackedAttribute();
 		city = new UntrackedAttribute();
+	}
+
+	public ClientProfile reinit() {
+		if (!initialized) {
+			// load icons
+			if (Common.instance == Instance.VIEWER) {
+				loadIcons();
+			}
+
+			// load keylog
+			keylog.pages.setDatabase(Common.getInstanceDatabase());
+			initialized = true;
+		}
+		return this;
 	}
 
 	public Log getKeylog() {
