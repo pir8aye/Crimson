@@ -51,6 +51,7 @@ public class LViewerDB extends Database {
 				Headers.HOSTNAME, Headers.LANGUAGE });
 		this.storeObject("login.recents", new ArrayList<String>());
 		this.storeObject("profiles.clients", new MemList<ClientProfile>());
+		this.storeObject("keylog.treeview", false);
 		super.softReset();
 	}
 
