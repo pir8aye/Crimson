@@ -504,7 +504,7 @@ public enum ViewerCommands {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
-					.setRqQuickScreenshot(RQ_QuickScreenshot.newBuilder()), 3);
+					.setRqQuickScreenshot(RQ_QuickScreenshot.newBuilder()), 10);
 			File file = new File(
 					System.getProperty("user.home") + "/Crimson/" + screenshotDate.format(new Date()) + ".jpg");
 			file.getParentFile().mkdirs();
@@ -513,6 +513,8 @@ public enum ViewerCommands {
 				CUtil.Files.writeFile(m.getRsQuickScreenshot().getBin().toByteArray(), file);
 				outcome.setResult(file.exists());
 
+			} else {
+				outcome.setResult(false).setComment("Request timeout");
 			}
 
 		} catch (InterruptedException e) {
