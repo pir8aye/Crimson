@@ -50,8 +50,6 @@ public class SInfoSlave extends InfoSlave {
 		sid.setServerStatus(Server.isRunning());
 		sid.setClientCount(ServerStore.Connections.countClients());
 		sid.setUserCount(ServerStore.Connections.countUsers());
-		if (param.getInfoParam().hasCpuSpeed()) {
-		}
 		if (param.getInfoParam().hasCpuTemp()) {
 			for (double d : Platform.Advanced.getCPUTemps()) {
 				sid.addCpuTemp(d);

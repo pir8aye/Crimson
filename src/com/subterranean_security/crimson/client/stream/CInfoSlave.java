@@ -33,7 +33,7 @@ public class CInfoSlave extends InfoSlave {
 	@Override
 	public void send() {
 		ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setSid(Common.cvid).setRid(param.getVID())
-				.setEvProfileDelta(gatherDefaultInfo()));
+				.setEvProfileDelta(gather()));
 
 	}
 

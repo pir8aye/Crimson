@@ -371,7 +371,6 @@ public enum Platform {
 			for (int i = 0; i < cpuInfo.length; i++) {
 				speeds[i] = cpuInfo[i].getMhz();
 			}
-			// log.debug("CPU Speeds: {}", Arrays.toString(speeds));
 			return speeds;
 		}
 
@@ -383,6 +382,10 @@ public enum Platform {
 			}
 
 			return cpuPerc.getCombined();
+		}
+
+		public static long getMemoryUsage() {
+			return 0;
 		}
 
 		public static long getCrimsonMemoryUsage() {

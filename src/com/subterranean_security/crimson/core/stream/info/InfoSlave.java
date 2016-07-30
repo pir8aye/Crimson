@@ -43,30 +43,69 @@ public abstract class InfoSlave extends Stream {
 		// do nothing
 	}
 
-	protected EV_ProfileDelta gatherDefaultInfo() {
+	private String lastActiveWindow = "";
+	private double lastCpuUsage;
+	private double lastCrimsonCpuUsage;
+	private long lastRamUsage;
+	private long lastCrimsonRamUsage;
+
+	protected EV_ProfileDelta gather() {
 		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(Common.cvid);
+
+		// active window
 		if (param.getInfoParam().hasActiveWindow()) {
-			pd.setActiveWindow(Native.getActiveWindow());
+			String activeWindow = Native.getActiveWindow();
+			if (!lastActiveWindow.equals(activeWindow)) {
+				pd.setActiveWindow(activeWindow);
+				lastActiveWindow = activeWindow;
+			}
 		}
-		if (param.getInfoParam().hasCpuSpeed()) {
-			for (double d : Platform.Advanced.getCPUSpeed()) {
-				pd.addCoreSpeed(d);
+
+		// ram usage
+		if (param.getInfoParam().hasRamUsage()) {
+			long ramUsage = Platform.Advanced.getMemoryUsage();
+			if (lastRamUsage != ramUsage) {
+				pd.setSystemRamUsage(ramUsage);
+				lastRamUsage = ramUsage;
 			}
 
 		}
+
+		// cpu usage
 		if (param.getInfoParam().hasCpuUsage()) {
-			pd.setCoreUsage(Platform.Advanced.getCPUUsage());
+			double coreUsage = Platform.Advanced.getCPUUsage();
+			if (lastCpuUsage != coreUsage) {
+				pd.setCoreUsage(coreUsage);
+				lastCpuUsage = coreUsage;
+			}
+
 		}
+
+		// cpu temps
 		if (param.getInfoParam().hasCpuTemp()) {
 			for (double d : Platform.Advanced.getCPUTemps()) {
 				pd.addCpuTemp(d);
 			}
 		}
+
+		// crimson ram usage
 		if (param.getInfoParam().hasCrimsonRamUsage()) {
-			pd.setCrimsonRamUsage(Platform.Advanced.getCrimsonMemoryUsage());
+			long crimsonRamUsage = Platform.Advanced.getCrimsonMemoryUsage();
+			if (lastCrimsonRamUsage != crimsonRamUsage) {
+				pd.setCrimsonRamUsage(crimsonRamUsage);
+				lastCrimsonRamUsage = crimsonRamUsage;
+			}
+
 		}
+
+		// crimson cpu usage
 		if (param.getInfoParam().hasCrimsonCpuUsage()) {
-			pd.setCrimsonCpuUsage(Platform.Advanced.getCrimsonCpuUsage());
+			double crimsonCpuUsage = Platform.Advanced.getCrimsonCpuUsage();
+			if (lastCrimsonCpuUsage != crimsonCpuUsage) {
+				pd.setCrimsonCpuUsage(crimsonCpuUsage);
+				lastCrimsonCpuUsage = crimsonCpuUsage;
+			}
+
 		}
 		return pd.build();
 	}

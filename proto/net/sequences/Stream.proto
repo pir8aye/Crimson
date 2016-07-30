@@ -60,7 +60,6 @@ message Param {
 
 message InfoParam {
 	optional bool active_window = 1;
-	optional bool cpu_speed = 2;
 	optional bool cpu_temp = 3;
 	optional bool cpu_usage = 4;
 	optional bool ram_usage = 5;
