@@ -79,7 +79,6 @@ public class Pane extends JPanel {
 		add(ft, BorderLayout.CENTER);
 
 		typeBox = new JComboBox();
-		typeBox.setBackground(UIManager.getColor("Menu.background"));
 		typeBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ImageIcon selected = (ImageIcon) typeBox.getSelectedItem();
