@@ -50,9 +50,6 @@ message ClientConfig {
 	optional string group_name = 20;
 	optional string password = 21;
 
-	//for parser only
-	optional bool waiver = 22;
-	
 	optional bool allow_misc_connections = 23;
 	
 }
