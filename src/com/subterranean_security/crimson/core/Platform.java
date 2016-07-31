@@ -161,7 +161,7 @@ public enum Platform {
 		}
 	}
 
-	public static OSFAMILY getFamily() {
+	private static OSFAMILY getFamily() {
 		String name = System.getProperty("os.name").toLowerCase();
 		if (name.endsWith("bsd")) {
 			return OSFAMILY.BSD;
@@ -178,7 +178,8 @@ public enum Platform {
 		}
 	}
 
-	public static String getOsName() {
+	private static String getOsName() {
+
 		switch (osFamily) {
 		case LIN:
 			File os_release = new File("/etc/os-release");
@@ -215,7 +216,7 @@ public enum Platform {
 		}
 	}
 
-	public static ARCH getJVMArch() {
+	private static ARCH getJVMArch() {
 		String osArch = System.getProperty("os.arch").toLowerCase();
 
 		if (osArch.equals("sparc")) {
