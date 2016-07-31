@@ -53,6 +53,7 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Screenshot.RS_QuickScreenshot;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
+import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteSlave;
 import com.subterranean_security.crimson.core.util.AuthenticationGroup;
@@ -141,7 +142,11 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void ev_stream_data(Message m) {
-		StreamStore.getStream(m.getEvStreamData().getStreamID()).received(m);
+		Stream s = StreamStore.getStream(m.getEvStreamData().getStreamID());
+		if (s != null) {
+			s.received(m);
+		}
+
 	}
 
 	private void rq_change_client_state(Message m) {
