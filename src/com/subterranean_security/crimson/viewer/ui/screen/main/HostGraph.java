@@ -33,6 +33,7 @@ import com.mxgraph.util.mxConstants;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import com.subterranean_security.crimson.core.storage.Headers;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
@@ -203,10 +204,16 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		}
 
 		try {
+			String iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
+					+ p.getOsName().replaceAll(" ", "_").toLowerCase() + ".png";
+
+			if (CUtil.Files.getResourceSize(iconLocation) == 0) {
+				iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
+						+ p.getOsFamily() + ".png";
+			}
 
 			Object v = graph.insertVertex(parent, null, "\n\n\n" + text, x, y, 80, 30,
-					"shape=image;image=/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
-							+ p.getOsName().replaceAll(" ", "_").toLowerCase() + ".png");
+					"shape=image;image=" + iconLocation);
 			vertices.put(v, p.getCvid());
 
 			graph.insertEdge(parent, null, "", serverVertex, v);
