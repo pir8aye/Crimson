@@ -101,7 +101,9 @@ public enum ClientStore {
 				ClientConnector c = get(m.getRid());
 				if (c != null) {
 					c.handle.write(m);
+					return;
 				}
+
 			}
 			get(0).handle.write(m);
 		}
