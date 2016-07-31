@@ -51,6 +51,8 @@ public final class ScreenInterface {
 	private static Robot robot;
 	private static Rectangle fullscreenRect;
 	private static double scale = 1;
+	private static int scalarBlockWidth;
+	private static int scalarBlockHeight;
 	private static float compQuality = -1f;
 	private static int colorQuality = BufferedImage.TYPE_INT_ARGB;
 	private static CompareAlgorithm compareType = CompareAlgorithm.COMPARE_SIZE;
@@ -90,38 +92,42 @@ public final class ScreenInterface {
 
 	public static void captureDelta(int rId, int streamId) {
 		BufferedImage image = robot.createScreenCapture(fullscreenRect);
-		BufferedImage drawingBlock = new BufferedImage((int) (scale * getBlockScalarSize(image.getWidth())),
-				(int) (scale * getBlockScalarSize(image.getHeight())), colorQuality);
-		for (int i = 0; i < screen.length; i++) {
-			// TODO maybe move outside of loop
-			Graphics2D subImageGraphics = drawingBlock.createGraphics();
-			subImageGraphics.setRenderingHints(rh);
+		BufferedImage drawingBlock = new BufferedImage((int) (scale * scalarBlockWidth),
+				(int) (scale * scalarBlockHeight), colorQuality);
 
-			int startx = getBlockScalarSize(image.getWidth()) * (i % blockNumber);
-			int starty = getBlockScalarSize(image.getHeight()) * (i / blockNumber);
+		Graphics2D subImageGraphics = drawingBlock.createGraphics();
+		subImageGraphics.setRenderingHints(rh);
+
+		for (int i = 0; i < screen.length; i++) {
+
+			int startx = scalarBlockWidth * (i % blockNumber);
+			int starty = scalarBlockHeight * (i / blockNumber);
 
 			subImageGraphics.drawImage(image, 0, 0, drawingBlock.getWidth(), drawingBlock.getHeight(), startx, starty,
-					startx + getBlockScalarSize(image.getWidth()), starty + getBlockScalarSize(image.getHeight()),
-					null);
+					startx + scalarBlockWidth, starty + scalarBlockHeight, null);
 
 			if (updateBlock(i, toByteArray(drawingBlock))) {
+
 				// send update
 				DirtyBlock.Builder db = DirtyBlock.newBuilder().setBlockId(i);
 				for (int j = 0; j < screen[i].length; j++) {
 					db.addRGB(screen[i][j]);
 				}
 
+				// slowest
 				ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setSid(Common.cvid).setRid(rId)
 						.setEvStreamData(EV_StreamData.newBuilder().setStreamID(streamId).setDirtyBlock(db)));
+
 			}
 		}
-
 	}
 
 	public static void setDevice(GraphicsDevice device) {
 		try {
 			robot = new Robot(device);
 			fullscreenRect = device.getDefaultConfiguration().getBounds();
+			scalarBlockWidth = getBlockScalarSize((int) fullscreenRect.getWidth());
+			scalarBlockHeight = getBlockScalarSize((int) fullscreenRect.getHeight());
 			screen = new byte[blockNumber * blockNumber][0];
 		} catch (AWTException e) {
 			// TODO Auto-generated catch block
@@ -168,7 +174,7 @@ public final class ScreenInterface {
 		} else {
 			switch (compareType) {
 			case COMPARE_BYTES:
-				for (int i = 0; i < block.length; i++) {
+				for (int i = 0; i < block.length; i += 5) {
 					if (block[i] != screen[blockID][i]) {
 						screen[blockID] = block;
 						return true;
@@ -176,7 +182,8 @@ public final class ScreenInterface {
 				}
 				return false;
 			case COMPARE_SIZE:
-				return false;
+				// compare first pixel
+				return block[0] != screen[blockID][0];
 
 			}
 		}
