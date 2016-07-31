@@ -159,7 +159,7 @@ public final class ScreenInterface {
 
 	}
 
-	public static final int blockNumber = 20;
+	public static final int blockNumber = 15;
 
 	public static int getBlockScalarSize(int totalSize) {
 		return totalSize / blockNumber;
