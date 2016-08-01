@@ -55,7 +55,7 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
-import com.subterranean_security.crimson.core.proto.Generator.ClientConfig.FLUSH_METHOD;
+import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.ui.StatusLabel;

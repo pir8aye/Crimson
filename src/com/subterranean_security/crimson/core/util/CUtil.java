@@ -1093,6 +1093,14 @@ public enum CUtil {
 			return pEMAIL.matcher(email).matches();
 		}
 
+		public static boolean flushValue(String value) {
+			try {
+				return (Integer.parseInt(value) > 0);
+			} catch (NumberFormatException e) {
+				return false;
+			}
+		}
+
 	}
 
 	public static class JavaLibraries {

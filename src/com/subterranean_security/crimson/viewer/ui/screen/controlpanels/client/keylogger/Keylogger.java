@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -30,7 +31,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-import com.subterranean_security.crimson.core.proto.Generator.ClientConfig.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -42,7 +42,6 @@ import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.C
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.ep.Settings;
 
 import aurelienribon.slidinglayout.SLSide;
-import java.awt.Insets;
 
 public class Keylogger extends JPanel implements CPPanel {
 
@@ -68,13 +67,11 @@ public class Keylogger extends JPanel implements CPPanel {
 	private JRadioButton rdbtnFlat;
 	private JButton btnNewButton;
 
-	private Settings settings;
 	private JButton btnNewButton_1;
 
 	public Keylogger(ClientProfile profile, Console console) {
 		init(profile, console);
-		// TODO get true values
-		settings = new Settings(ep, profile.getCvid(), true, FLUSH_METHOD.EVENT, 5);
+
 	}
 
 	public void init(ClientProfile profile, Console console) {
@@ -155,7 +152,8 @@ public class Keylogger extends JPanel implements CPPanel {
 		btnNewButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				ep.raise(settings, 160);
+				ep.raise(new Settings(ep, profile.getCvid(), profile.getKeyloggerState(), profile.getFlushMethod(),
+						profile.getFlushValue()), 160);
 			}
 		});
 		menuBar.add(btnNewButton);

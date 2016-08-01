@@ -1,5 +1,6 @@
 package com.subterranean_security.crimson.core.proto;
 
+import "net/sequences/Keylogger.proto";
 import "net/sequences/ClientAuth.proto";
 import "net/misc/Misc.proto";
 
@@ -50,11 +51,6 @@ message ClientConfig {
 
 	optional bool allow_misc_connections = 23;
 	
-	// keylogger options
-	enum FLUSH_METHOD {
-		TIME = 1;
-		EVENT = 2;
-	}
 	optional FLUSH_METHOD keylogger_flush_method = 24;
 	optional int32 keylogger_flush_value = 25;
 	

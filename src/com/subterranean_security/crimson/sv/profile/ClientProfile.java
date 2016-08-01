@@ -30,10 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.exception.InvalidObjectException;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
+import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
 import com.subterranean_security.crimson.core.proto.Misc.NetworkInterface;
 import com.subterranean_security.crimson.core.util.B64;
@@ -109,6 +111,11 @@ public class ClientProfile implements Serializable {
 	private Attribute countryCode;
 	private Attribute region;
 	private Attribute city;
+
+	// keylogger
+	private FLUSH_METHOD flushMethod;
+	private int flushValue;
+	private State keyloggerState;
 
 	public ClientProfile(int cvid) {
 		this();
@@ -544,6 +551,30 @@ public class ClientProfile implements Serializable {
 		this.city.set(city);
 	}
 
+	public FLUSH_METHOD getFlushMethod() {
+		return flushMethod;
+	}
+
+	public void setFlushMethod(FLUSH_METHOD flushMethod) {
+		this.flushMethod = flushMethod;
+	}
+
+	public int getFlushValue() {
+		return flushValue;
+	}
+
+	public void setFlushValue(int flushValue) {
+		this.flushValue = flushValue;
+	}
+
+	public State getKeyloggerState() {
+		return keyloggerState;
+	}
+
+	public void setKeyloggerState(State keyloggerState) {
+		this.keyloggerState = keyloggerState;
+	}
+
 	public int getCvid() {
 		return cvid;
 	}
@@ -911,6 +942,16 @@ public class ClientProfile implements Serializable {
 		}
 		if (gds.length != 0) {
 			setDisplays(gds);
+		}
+
+		if (c.hasKeyloggerState()) {
+			setKeyloggerState(c.getKeyloggerState());
+		}
+		if (c.hasFlushMethod()) {
+			setFlushMethod(c.getFlushMethod());
+		}
+		if (c.hasFlushValue()) {
+			setFlushValue(c.getFlushValue());
 		}
 
 		log.debug("Profile amalgamated in {} ms", new Date().getTime() - start.getTime());

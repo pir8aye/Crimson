@@ -3,6 +3,7 @@ package com.subterranean_security.crimson.core.proto;
 import "net/sequences/Login.proto";
 import "net/sequences/Keylogger.proto";
 import "net/sequences/ClientAuth.proto";
+import "net/sequences/ClientControl.proto";
 import "net/sequences/Generator.proto";
 import "net/sequences/Report.proto";
 import "net/sequences/Delta.proto";
@@ -59,8 +60,8 @@ message Message {
 	optional RS_EditUser rs_edit_user = 127;
 	optional RQ_KeyUpdate rq_key_update = 128;
 	optional RS_KeyUpdate rs_key_update = 129;
-	optional RQ_KeyloggerStateChange rq_keylogger_state_change = 142;
-	optional RS_KeyloggerStateChange rs_keylogger_state_change = 143;
+	optional RQ_ChangeSetting rq_change_setting = 142;
+	optional RS_ChangeSetting rs_change_setting = 143;
 	optional RQ_CreateAuthMethod rq_create_auth_method = 130;
 	optional RS_CreateAuthMethod rs_create_auth_method = 131;
 	optional RQ_RemoveAuthMethod rq_remove_auth_method = 132;

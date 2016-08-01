@@ -8,6 +8,11 @@ enum State {
 	ONLINE = 2;
 }
 
+enum FLUSH_METHOD {
+	TIME = 1;
+	EVENT = 2;
+}
+
 message RQ_KeyloggerStateChange {
 	required State newState = 1;
 }

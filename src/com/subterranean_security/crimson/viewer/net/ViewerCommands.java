@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_CreateAuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_RemoveAuthMethod;
+import com.subterranean_security.crimson.core.proto.ClientControl.RQ_ChangeSetting;
 import com.subterranean_security.crimson.core.proto.Delta.MI_TriggerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.core.proto.FileManager.MI_CloseFileHandle;
@@ -44,7 +45,6 @@ import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RQ_Generate;
 import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
 import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyloggerStateChange;
-import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_AddListener;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_RemoveListener;
@@ -557,19 +557,19 @@ public enum ViewerCommands {
 		return null;
 	}
 
-	public static Outcome changeKeyloggerState(int cid, State state) {
+	public static Outcome changeSetting(int cid, RQ_ChangeSetting rq) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
-					.setRqKeyloggerStateChange(RQ_KeyloggerStateChange.newBuilder().setNewState(state)), 4);
+			Message m = ViewerRouter
+					.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid).setRqChangeSetting(rq), 5);
 
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timed out");
 			} else {
-				if (m.getRsKeyloggerStateChange().getResult().getResult()) {
+				if (m.getRsChangeSetting().getResult().getResult()) {
 					// TODO update profile
 				}
-				return m.getRsKeyloggerStateChange().getResult();
+				return m.getRsChangeSetting().getResult();
 			}
 
 		} catch (InterruptedException e) {
