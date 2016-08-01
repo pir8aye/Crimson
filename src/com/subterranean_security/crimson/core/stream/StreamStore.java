@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stream storage for endpoints only
+ * Stream endpoint storage class
  *
  */
 public enum StreamStore {
@@ -41,19 +41,13 @@ public enum StreamStore {
 
 	public static void removeStream(int id) {
 		try {
-			streams.get(id).stop();
-			Thread.sleep(200);
-			streams.remove(id);
+			streams.remove(id).stop();
 		} catch (NullPointerException e) {
 			// that stream doesnt exist
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
 	public static void addStream(Stream s) {
-		System.out.println("Adding stream: " + s.getStreamID());
 		streams.put(s.getStreamID(), s);
 	}
 
