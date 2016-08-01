@@ -62,7 +62,7 @@ public final class ScreenInterface {
 			RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
 	// screen storage
-	private static byte[][] screen;// [block data][block id]
+	private static byte[][] screen;// [block id][block data]
 
 	static {
 		ImageIO.setUseCache(false);
@@ -100,8 +100,8 @@ public final class ScreenInterface {
 
 		for (int i = 0; i < screen.length; i++) {
 
-			int startx = scalarBlockWidth * (i % blockNumber);
-			int starty = scalarBlockHeight * (i / blockNumber);
+			int startx = scalarBlockWidth * (i % hBlocks);
+			int starty = scalarBlockHeight * (i / hBlocks);
 
 			subImageGraphics.drawImage(image, 0, 0, drawingBlock.getWidth(), drawingBlock.getHeight(), startx, starty,
 					startx + scalarBlockWidth, starty + scalarBlockHeight, null);
@@ -126,9 +126,9 @@ public final class ScreenInterface {
 		try {
 			robot = new Robot(device);
 			fullscreenRect = device.getDefaultConfiguration().getBounds();
-			scalarBlockWidth = getBlockScalarSize((int) fullscreenRect.getWidth());
-			scalarBlockHeight = getBlockScalarSize((int) fullscreenRect.getHeight());
-			screen = new byte[blockNumber * blockNumber][0];
+			scalarBlockWidth = getBlockWidth((int) fullscreenRect.getWidth());
+			scalarBlockHeight = getBlockHeight((int) fullscreenRect.getHeight());
+			screen = new byte[vBlocks * hBlocks][0];
 		} catch (AWTException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -138,7 +138,7 @@ public final class ScreenInterface {
 	public static void setScale(double s) {
 		if (s > scale) {
 			// reset screen
-			screen = new byte[blockNumber * blockNumber][0];
+			screen = new byte[vBlocks * hBlocks][0];
 		}
 		scale = s;
 	}
@@ -159,10 +159,21 @@ public final class ScreenInterface {
 
 	}
 
-	public static final int blockNumber = 15;
+	public static int vBlocks = 14;
+	public static int hBlocks = 14;
 
-	public static int getBlockScalarSize(int totalSize) {
-		return totalSize / blockNumber;
+	public static int getBlockWidth(int total) {
+		while (total % hBlocks != 0) {
+			hBlocks--;
+		}
+		return total / hBlocks;
+	}
+
+	public static int getBlockHeight(int total) {
+		while (total % vBlocks != 0) {
+			vBlocks--;
+		}
+		return total / vBlocks;
 	}
 
 	public static boolean updateBlock(int blockID, byte[] block) {

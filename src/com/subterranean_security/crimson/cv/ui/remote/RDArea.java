@@ -52,6 +52,8 @@ public class RDArea extends JLabel {
 	private int monitorWidth;
 	private int monitorHeight;
 	private double scale;
+	private int scaledBlockWidth;
+	private int scaledBlockHeight;
 	public BufferedImage screenImage;
 
 	private RDPanel parent;
@@ -94,7 +96,9 @@ public class RDArea extends JLabel {
 			nw = nh * ratio;
 		}
 
-		scale = (double) (nw / monitorWidth);
+		scale = (nw / (double) monitorWidth);
+		scaledBlockWidth = (int) (scale * ScreenInterface.getBlockWidth(monitorWidth));
+		scaledBlockHeight = (int) (scale * ScreenInterface.getBlockHeight(monitorHeight));
 
 		if (!parent.ep.isMoving() && stream.isRunning()) {
 			screenImage = UIUtil.resize(screenImage, (int) nw, (int) nh);
@@ -123,10 +127,8 @@ public class RDArea extends JLabel {
 	 */
 	public void updateScreen(DirtyBlock db) {
 
-		int startx = (int) (scale * ScreenInterface.getBlockScalarSize(monitorWidth))
-				* (db.getBlockId() % ScreenInterface.blockNumber);
-		int starty = (int) (scale * ScreenInterface.getBlockScalarSize(monitorHeight))
-				* (db.getBlockId() / ScreenInterface.blockNumber);
+		int startx = scaledBlockWidth * (db.getBlockId() % ScreenInterface.hBlocks);
+		int starty = scaledBlockHeight * (db.getBlockId() / ScreenInterface.hBlocks);
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream(db.getRGBCount());
 		for (int i = 0; i < db.getRGBCount(); i++) {
@@ -140,7 +142,7 @@ public class RDArea extends JLabel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		repaint();
+		repaint(startx, starty, scaledBlockWidth, scaledBlockHeight);
 	}
 
 	/**
