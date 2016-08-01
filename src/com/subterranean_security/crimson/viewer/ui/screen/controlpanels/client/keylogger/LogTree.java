@@ -155,7 +155,7 @@ public class LogTree extends JPanel {
 
 	}
 
-	private boolean refreshing = false;
+	public boolean refreshing = false;
 
 	public void refreshTree() {
 		refreshing = true;

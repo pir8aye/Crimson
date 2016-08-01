@@ -65,12 +65,6 @@ public class Keylogger extends JPanel implements CPPanel {
 
 		logs_panel = new JPanel();
 		logs_panel.setLayout(new BorderLayout(0, 0));
-		logs_panel.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-			}
-		});
 		add(logs_panel);
 
 		selection_panel = new JPanel();
@@ -106,6 +100,7 @@ public class Keylogger extends JPanel implements CPPanel {
 		rdbtnHierarchical = new JRadioButton("Hierarchical");
 		rdbtnHierarchical.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				logTree.refreshing = true;
 				ViewerStore.Databases.local.storeObject("keylog.treeview", false);
 				logTree.resetTree();
 				logTree.setFormatters();
@@ -117,6 +112,7 @@ public class Keylogger extends JPanel implements CPPanel {
 		rdbtnFlat = new JRadioButton("Flat");
 		rdbtnFlat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				logTree.refreshing = true;
 				ViewerStore.Databases.local.storeObject("keylog.treeview", true);
 				logTree.resetTree();
 				logTree.setFormatters();
