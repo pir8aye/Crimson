@@ -1,17 +1,19 @@
 package com.subterranean_security.crimson.core.proto;
 
+import "net/misc/Misc.proto";
+
 enum State {
 	UNINSTALLED = 0;
 	OFFLINE = 1;
 	ONLINE = 2;
 }
 
-message KeyloggerState_RQ {
+message RQ_KeyloggerStateChange {
 	required State newState = 1;
 }
 
-message KeyloggerState_RS {
-	required bool result = 1;
+message RS_KeyloggerStateChange {
+	required Outcome result = 1;
 }
 
 message RQ_KeyUpdate {

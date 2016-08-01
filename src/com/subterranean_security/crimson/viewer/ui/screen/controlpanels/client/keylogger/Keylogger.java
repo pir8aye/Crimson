@@ -19,23 +19,30 @@ package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import com.subterranean_security.crimson.core.proto.Generator.ClientConfig.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.CPPanel;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.ep.Settings;
+
+import aurelienribon.slidinglayout.SLSide;
+import java.awt.Insets;
 
 public class Keylogger extends JPanel implements CPPanel {
 
@@ -54,12 +61,23 @@ public class Keylogger extends JPanel implements CPPanel {
 
 	private LogTree logTree;
 
+	private EPanel ep;
 	private JPanel content_panel;
 	private JPanel loading;
 	private JRadioButton rdbtnHierarchical;
 	private JRadioButton rdbtnFlat;
+	private JButton btnNewButton;
+
+	private Settings settings;
+	private JButton btnNewButton_1;
 
 	public Keylogger(ClientProfile profile, Console console) {
+		init(profile, console);
+		// TODO get true values
+		settings = new Settings(ep, profile.getCvid(), true, FLUSH_METHOD.EVENT, 5);
+	}
+
+	public void init(ClientProfile profile, Console console) {
 
 		setLayout(new BorderLayout(0, 0));
 
@@ -76,7 +94,8 @@ public class Keylogger extends JPanel implements CPPanel {
 		selection_panel.add(logTree);
 
 		content_panel = new JPanel();
-		logs_panel.add(content_panel);
+		ep = new EPanel(content_panel, SLSide.TOP);
+		logs_panel.add(ep);
 		content_panel.setLayout(new CardLayout(0, 0));
 
 		blank = new JPanel();
@@ -124,6 +143,22 @@ public class Keylogger extends JPanel implements CPPanel {
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(rdbtnHierarchical);
 		bg.add(rdbtnFlat);
+
+		menuBar.add(Box.createHorizontalGlue());
+
+		btnNewButton_1 = new JButton(UIUtil.getIcon("icons16/general/statistics.png"));
+		btnNewButton_1.setMargin(new Insets(2, 4, 2, 4));
+		menuBar.add(btnNewButton_1);
+
+		btnNewButton = new JButton(UIUtil.getIcon("icons16/general/cog.png"));
+		btnNewButton.setMargin(new Insets(2, 4, 2, 4));
+		btnNewButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				ep.raise(settings, 160);
+			}
+		});
+		menuBar.add(btnNewButton);
 
 		try {
 			if (ViewerStore.Databases.local.getBoolean("keylog.treeview")) {

