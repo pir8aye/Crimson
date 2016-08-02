@@ -22,6 +22,7 @@ import java.awt.Font;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.LineBorder;
 
 public class StatusLabel extends JLabel {
@@ -64,19 +65,22 @@ public class StatusLabel extends JLabel {
 		if (frozen) {
 			return;
 		}
-		new Thread(new Runnable() {
-			public void run() {
-				setText(" ");
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
 
-				}
+		setText(" ");
+		new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				Thread.sleep(50);
+				return null;
+			}
+
+			protected void done() {
 				setText(s.toUpperCase());
 				setForeground(good);
 				setBorder(new LineBorder(good, 1, true));
-			}
-		}).start();
+			};
+		}.execute();
 
 	}
 
@@ -84,19 +88,22 @@ public class StatusLabel extends JLabel {
 		if (frozen) {
 			return;
 		}
-		new Thread(new Runnable() {
-			public void run() {
-				setText(" ");
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
 
-				}
+		setText(" ");
+		new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				Thread.sleep(50);
+				return null;
+			}
+
+			protected void done() {
 				setText(s.toUpperCase());
 				setForeground(warn);
 				setBorder(new LineBorder(warn, 1, true));
-			}
-		}).start();
+			};
+		}.execute();
 
 	}
 
@@ -104,19 +111,22 @@ public class StatusLabel extends JLabel {
 		if (frozen) {
 			return;
 		}
-		new Thread(new Runnable() {
-			public void run() {
-				setText(" ");
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
 
-				}
+		setText(" ");
+		new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				Thread.sleep(50);
+				return null;
+			}
+
+			protected void done() {
 				setText(s.toUpperCase());
 				setForeground(bad);
 				setBorder(new LineBorder(bad, 1, true));
-			}
-		}).start();
+			};
+		}.execute();
 
 	}
 
@@ -124,19 +134,22 @@ public class StatusLabel extends JLabel {
 		if (frozen) {
 			return;
 		}
-		new Thread(new Runnable() {
-			public void run() {
-				setText(" ");
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
 
-				}
+		setText(" ");
+		new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				Thread.sleep(50);
+				return null;
+			}
+
+			protected void done() {
 				setText(s.toUpperCase());
 				setForeground(info);
 				setBorder(new LineBorder(info, 1, true));
-			}
-		}).start();
+			};
+		}.execute();
 
 	}
 
