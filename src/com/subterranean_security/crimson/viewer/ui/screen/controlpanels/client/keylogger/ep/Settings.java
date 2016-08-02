@@ -50,7 +50,7 @@ public class Settings extends JPanel {
 
 	private String[] methodStrings = new String[] { "Event", "Periodic" };
 	private String eventDescription = "Keylogger flushes will be triggered after the specified number of key events.";
-	private String timeDescription = "Keylogger flushes will be triggered periodically.";
+	private String timeDescription = "Keylogger flushes will be triggered periodically. Period must be at least 1 second.";
 	private JTextArea textArea;
 	private JLabel lblRefreshValue;
 
@@ -69,21 +69,19 @@ public class Settings extends JPanel {
 		this.cid = cid;
 		this.keyloggerStatus = (state == State.ONLINE);
 		this.method = method;
-		this.flushValue = flushValue;
+		this.flushValue = (flushValue == 0) ? 60 : flushValue;
 		init();
 
-		if (method == FLUSH_METHOD.TIME) {
-			comboBox.setSelectedItem(methodStrings[1]);
-		}
 		refreshFlushMethod();
 		refreshStatus();
+		comboBox.setSelectedItem(methodStrings[(method == FLUSH_METHOD.EVENT) ? 0 : 1]);
 	}
 
 	public void init() {
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel.setPreferredSize(new Dimension(300, 150));
+		panel.setPreferredSize(new Dimension(281, 150));
 		add(panel);
 		panel.setLayout(null);
 
@@ -117,17 +115,17 @@ public class Settings extends JPanel {
 		});
 		btnApply.setMargin(new Insets(2, 4, 2, 4));
 		btnApply.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnApply.setBounds(123, 123, 53, 20);
+		btnApply.setBounds(114, 123, 53, 20);
 		panel.add(btnApply);
 
 		JLabel lblRefreshMethod = new JLabel("Flush Trigger:");
 		lblRefreshMethod.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblRefreshMethod.setBounds(12, 31, 117, 19);
+		lblRefreshMethod.setBounds(12, 71, 117, 19);
 		panel.add(lblRefreshMethod);
 
 		lblRefreshValue = new JLabel("Event Threshold:");
 		lblRefreshValue.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblRefreshValue.setBounds(12, 57, 117, 19);
+		lblRefreshValue.setBounds(12, 97, 117, 19);
 		panel.add(lblRefreshValue);
 
 		comboBox = new JComboBox<String>();
@@ -139,19 +137,19 @@ public class Settings extends JPanel {
 		});
 		comboBox.setFont(new Font("Dialog", Font.BOLD, 10));
 		comboBox.setModel(new DefaultComboBoxModel<String>(methodStrings));
-		comboBox.setBounds(201, 31, 87, 19);
+		comboBox.setBounds(182, 71, 87, 19);
 		panel.add(comboBox);
 
 		textField = new JTextField();
 		textField.setFont(new Font("Dialog", Font.PLAIN, 10));
 		textField.setText("" + flushValue);
-		textField.setBounds(201, 57, 36, 19);
+		textField.setBounds(181, 97, 36, 19);
 		panel.add(textField);
 		textField.setColumns(10);
 
 		JLabel lblKeyloggerStatus = new JLabel("Keylogger Status:");
 		lblKeyloggerStatus.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblKeyloggerStatus.setBounds(12, 6, 117, 19);
+		lblKeyloggerStatus.setBounds(12, 46, 117, 19);
 		panel.add(lblKeyloggerStatus);
 
 		btnStart = new JButton();
@@ -190,26 +188,26 @@ public class Settings extends JPanel {
 		});
 		btnStart.setMargin(new Insets(2, 4, 2, 4));
 		btnStart.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnStart.setBounds(235, 6, 53, 19);
+		btnStart.setBounds(216, 46, 53, 19);
 		panel.add(btnStart);
 
 		sl = new StatusLabel();
-		sl.setBounds(147, 7, 82, 17);
+		sl.setBounds(141, 47, 66, 17);
 		panel.add(sl);
 
 		textArea = new JTextArea();
-		textArea.setFont(new Font("Dialog", Font.PLAIN, 10));
+		textArea.setFont(new Font("Dialog", Font.BOLD, 10));
 		textArea.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		textArea.setWrapStyleWord(true);
 		textArea.setOpaque(false);
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
-		textArea.setBounds(12, 82, 276, 34);
+		textArea.setBounds(12, 6, 257, 34);
 		panel.add(textArea);
 
 		lblUnits = new JLabel("seconds");
 		lblUnits.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblUnits.setBounds(242, 57, 46, 19);
+		lblUnits.setBounds(223, 97, 46, 19);
 		panel.add(lblUnits);
 
 	}

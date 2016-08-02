@@ -152,8 +152,13 @@ public class Keylogger extends JPanel implements CPPanel {
 		btnNewButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				ep.raise(new Settings(ep, profile.getCvid(), profile.getKeyloggerState(), profile.getFlushMethod(),
-						profile.getFlushValue()), 160);
+				if (ep.isOpen() && ep.getEP() != null && ep.getEP() instanceof Settings) {
+					ep.drop();
+				} else {
+					ep.raise(new Settings(ep, profile.getCvid(), profile.getKeyloggerState(), profile.getFlushMethod(),
+							profile.getFlushValue()), 160);
+				}
+
 			}
 		});
 		menuBar.add(btnNewButton);
