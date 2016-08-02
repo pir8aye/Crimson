@@ -131,6 +131,10 @@ public class EPanel extends SLPanel {
 
 	private JPanel panel;
 
+	public JPanel getEP() {
+		return panel;
+	}
+
 	private void raise(JPanel panel) {
 		if (moving) {
 			return;
