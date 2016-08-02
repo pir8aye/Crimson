@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client;
 
-import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.io.File;
 
@@ -85,6 +84,10 @@ public class Client {
 		ClientStore.Connections.setTargets(ic.getTargetList());
 		ClientStore.Connections.connectionRoutine();
 
+	}
+
+	public static void saveIC() {
+		clientDB.storeObject("ic", new String(B64.encode(ic.toByteArray())));
 	}
 
 	public static AuthenticationGroup getGroup() {

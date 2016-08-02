@@ -62,6 +62,7 @@ public class Settings extends JPanel {
 	private JComboBox<String> comboBox;
 	private JButton btnStart;
 	private StatusLabel sl;
+	private JLabel lblUnits;
 
 	public Settings(EPanel ep, int cid, State state, FLUSH_METHOD method, int flushValue) {
 		this.ep = ep;
@@ -70,6 +71,10 @@ public class Settings extends JPanel {
 		this.method = method;
 		this.flushValue = flushValue;
 		init();
+
+		if (method == FLUSH_METHOD.TIME) {
+			comboBox.setSelectedItem(methodStrings[1]);
+		}
 		refreshFlushMethod();
 		refreshStatus();
 	}
@@ -134,13 +139,13 @@ public class Settings extends JPanel {
 		});
 		comboBox.setFont(new Font("Dialog", Font.BOLD, 10));
 		comboBox.setModel(new DefaultComboBoxModel<String>(methodStrings));
-		comboBox.setBounds(174, 31, 114, 19);
+		comboBox.setBounds(201, 31, 87, 19);
 		panel.add(comboBox);
 
 		textField = new JTextField();
 		textField.setFont(new Font("Dialog", Font.PLAIN, 10));
 		textField.setText("" + flushValue);
-		textField.setBounds(206, 57, 82, 19);
+		textField.setBounds(201, 57, 36, 19);
 		panel.add(textField);
 		textField.setColumns(10);
 
@@ -149,7 +154,7 @@ public class Settings extends JPanel {
 		lblKeyloggerStatus.setBounds(12, 6, 117, 19);
 		panel.add(lblKeyloggerStatus);
 
-		btnStart = new JButton("Start");
+		btnStart = new JButton();
 		btnStart.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -189,7 +194,7 @@ public class Settings extends JPanel {
 		panel.add(btnStart);
 
 		sl = new StatusLabel();
-		sl.setBounds(147, 6, 82, 19);
+		sl.setBounds(147, 7, 82, 17);
 		panel.add(sl);
 
 		textArea = new JTextArea();
@@ -201,6 +206,11 @@ public class Settings extends JPanel {
 		textArea.setEditable(false);
 		textArea.setBounds(12, 82, 276, 34);
 		panel.add(textArea);
+
+		lblUnits = new JLabel("seconds");
+		lblUnits.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblUnits.setBounds(242, 57, 46, 19);
+		panel.add(lblUnits);
 
 	}
 
@@ -216,9 +226,11 @@ public class Settings extends JPanel {
 		if (((String) comboBox.getSelectedItem()).equals(methodStrings[0])) {
 			textArea.setText(eventDescription);
 			lblRefreshValue.setText("Event Threshold:");
+			lblUnits.setText("events");
 		} else {
 			textArea.setText(timeDescription);
 			lblRefreshValue.setText("Refresh Period:");
+			lblUnits.setText("seconds");
 		}
 	}
 
