@@ -538,18 +538,23 @@ public enum CUtil {
 		}
 
 		public static void runBackgroundCommand(String c) throws IOException {
+			runBackgroundCommand(c, 0);
+		}
+
+		public static void runBackgroundCommand(String c, int sleep) throws IOException {
 			String command = "";
 			switch (Platform.osFamily) {
 			case SOL:
 			case BSD:
 			case LIN:
-				command = "nohup " + c + " &";
+				command = "nohup sleep " + sleep + " && \"" + c + "\" &";
 				break;
 			case OSX:
 				break;
 
 			case WIN:
-				command = "cmd /c start cmd /k \"" + c + "\"";
+				String sleepCommand = "PING -n " + (sleep + 1) + " 127.0.0.1>nul";
+				command = "cmd /c start cmd /k \"" + sleepCommand + " && " + c + "\"";
 				break;
 			default:
 				break;
@@ -557,6 +562,70 @@ public enum CUtil {
 			}
 			log.debug("Running background command: \"" + command + "\"");
 			Runtime.getRuntime().exec(command);
+		}
+
+		public static void runBackgroundScript(ArrayList<String> lines) {
+			String scriptEnding = "";
+			switch (Platform.osFamily) {
+			case WIN:
+				scriptEnding = ".bat";
+				break;
+			default:
+				scriptEnding = ".sh";
+				break;
+
+			}
+
+			File root = CUtil.Files.Temp.getDir();
+			root.mkdirs();
+			File script = new File(root.getAbsoluteFile() + File.separator + "script" + scriptEnding);
+			try {
+				script.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+			try {
+				PrintWriter pw = new PrintWriter(script);
+
+				// add sleep
+				switch (Platform.osFamily) {
+				case WIN:
+					pw.println("PING -n 4 127.0.0.1>nul");
+					break;
+				default:
+					pw.println("sleep 3");
+					break;
+
+				}
+
+				for (String s : lines) {
+					pw.println(s);
+				}
+				pw.println("exit");
+				pw.close();
+
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			try {
+				switch (Platform.osFamily) {
+				case WIN:
+					Runtime.getRuntime().exec("cmd /c start cmd /k " + script.getAbsolutePath());
+					break;
+				default:
+					Runtime.getRuntime().exec("sh " + script.getAbsolutePath());
+					break;
+
+				}
+
+			} catch (Exception e) {
+				log.error("Could not run script");
+			}
+
 		}
 
 		public static int rand(int lower, int upper) {

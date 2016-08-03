@@ -44,6 +44,8 @@ import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.controls.ControlsTab;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.Keylogger;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.logs.Logs;
 
@@ -55,6 +57,7 @@ public class ClientCPFrame extends JFrame {
 
 	private JTree tree = new JTree();
 	private JPanel cards = new JPanel();
+	private EPanel ep = new EPanel(cards);
 
 	public Console console = new Console();
 
@@ -95,7 +98,7 @@ public class ClientCPFrame extends JFrame {
 
 		splitPane.setTopComponent(panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
-		panel_1.add(cards, BorderLayout.CENTER);
+		panel_1.add(ep, BorderLayout.CENTER);
 		cards.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		cards.setLayout(new CardLayout(0, 0));
 
@@ -174,7 +177,7 @@ public class ClientCPFrame extends JFrame {
 		for (Panels p : getValidPanels()) {
 			switch (p) {
 			case CONTROLS:
-				cards.add(p.toString(), new ControlsTab(profile, console));
+				cards.add(p.toString(), new ControlsTab(ep, profile, console));
 				break;
 			case KEYLOGGER:
 				cards.add(p.toString(), new Keylogger(profile, console));

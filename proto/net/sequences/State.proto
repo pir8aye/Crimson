@@ -8,6 +8,8 @@ enum StateType {
 	STANDBY = 4;
 	HIBERNATE = 5;
 	UNINSTALL = 6;
+	KILL = 7;
+	RESTART_PROCESS = 8;
 	
 }
 

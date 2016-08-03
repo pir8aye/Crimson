@@ -21,6 +21,7 @@ import java.awt.HeadlessException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
@@ -179,6 +180,24 @@ public class ClientExecutor extends BasicExecutor {
 			break;
 		case STANDBY:
 			Native.standby();
+			break;
+		case RESTART_PROCESS:
+			try {
+				CUtil.Misc.runBackgroundCommand("java -jar "
+						+ new File(Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())
+								.getAbsolutePath(),
+						4);
+				System.exit(0);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		case KILL:
+			System.exit(0);
 			break;
 		default:
 			break;

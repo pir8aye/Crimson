@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client;
+package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.controls;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -40,13 +40,18 @@ import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
-import com.subterranean_security.crimson.viewer.ui.common.components.ProgressBarFactory;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
+import com.subterranean_security.crimson.viewer.ui.common.components.ProgressBarFactory;
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.CPPanel;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.controls.ep.Confirmation;
 
 public class ControlsTab extends JPanel implements CPPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	private ControlsTab thisCT = this;
+	private EPanel ep;
 	private ClientProfile profile;
 	private Console console;
 
@@ -58,7 +63,16 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 	private JButton btnUpdate;
 
-	public ControlsTab(ClientProfile profile, Console console) {
+	private JButton btnKill;
+
+	private JProgressBar barKill;
+
+	private JProgressBar barRestartClient;
+
+	private JButton btnRestartClient;
+
+	public ControlsTab(EPanel ep, ClientProfile profile, Console console) {
+		this.ep = ep;
 		this.profile = profile;
 		this.console = console;
 
@@ -73,7 +87,8 @@ public class ControlsTab extends JPanel implements CPPanel {
 		btnHibernate.setEnabled(e);
 		btnUninstall.setEnabled(e);
 		btnUpdate.setEnabled(e);
-
+		btnKill.setEnabled(e);
+		btnRestartClient.setEnabled(e);
 	}
 
 	public void init() {
@@ -267,7 +282,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 								console.addLine("Hibernate error: " + outcome.getComment());
 							}
 						} catch (InterruptedException | ExecutionException e) {
-							console.addLine("Standby failed: " + e.getMessage(), LineType.ORANGE);
+							console.addLine("Hibernate failed: " + e.getMessage(), LineType.ORANGE);
 						}
 
 						setControlsEnabled(true);
@@ -287,56 +302,97 @@ public class ControlsTab extends JPanel implements CPPanel {
 		panel_4.setBorder(new TitledBorder(null, "Crimson Client", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel_1.add(panel_4);
 
-		JPanel panel_10 = new JPanel();
-		panel_4.add(panel_10);
-		panel_10.setLayout(new BorderLayout(0, 0));
-
 		JProgressBar barUninstall = ProgressBarFactory.get();
 		barUninstall.setPreferredSize(new Dimension(100, 4));
-		panel_10.add(barUninstall, BorderLayout.SOUTH);
 
-		btnUninstall = new JButton("Uninstall");
-		panel_10.add(btnUninstall);
-		btnUninstall.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// TODO confirm with user
+		JPanel panel_12 = new JPanel();
+		panel_4.add(panel_12);
+		panel_12.setLayout(new BorderLayout(0, 0));
+
+		btnKill = new JButton("Kill");
+		btnKill.setToolTipText("Kills the client process.");
+		btnKill.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
 				setControlsEnabled(false);
-				barUninstall.setIndeterminate(true);
-				console.addLine("Sending uninstall signal to client: " + profile.getHostname());
+				barKill.setIndeterminate(true);
+				console.addLine("Sending kill signal to client: " + profile.getHostname());
 
 				new SwingWorker<Outcome, Void>() {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.changeClientState(profile.getCvid(), StateType.UNINSTALL);
+						return ViewerCommands.changeClientState(profile.getCvid(), StateType.KILL);
 					}
 
 					protected void done() {
 						try {
 							Outcome outcome = get();
 							if (!outcome.getResult()) {
-								console.addLine("Uninstall error: " + outcome.getComment());
+								console.addLine("Process kill error: " + outcome.getComment());
 							}
 						} catch (InterruptedException | ExecutionException e) {
-							console.addLine("Standby failed: " + e.getMessage(), LineType.ORANGE);
+							console.addLine("Process kill failed: " + e.getMessage(), LineType.ORANGE);
 						}
 
 						setControlsEnabled(true);
-						barUninstall.setIndeterminate(false);
+						barKill.setIndeterminate(false);
 					};
 
 				}.execute();
-
 			}
 		});
-		btnUninstall.setIcon(UIUtil.getIcon("icons16/general/radioactivity.png"));
-		btnUninstall.setMargin(new Insets(2, 4, 2, 4));
-		btnUninstall.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnKill.setMargin(new Insets(2, 4, 2, 4));
+		btnKill.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnKill.setIcon(UIUtil.getIcon("icons16/general/delete.png"));
+		panel_12.add(btnKill);
 
-		JButton btnRelocate = new JButton("Relocate");
-		btnRelocate.setEnabled(false);
-		btnRelocate.setFont(new Font("Dialog", Font.BOLD, 10));
-		panel_4.add(btnRelocate);
+		barKill = ProgressBarFactory.get();
+		barKill.setPreferredSize(new Dimension(100, 4));
+		panel_12.add(barKill, BorderLayout.SOUTH);
+
+		JPanel panel_11 = new JPanel();
+		panel_4.add(panel_11);
+		panel_11.setLayout(new BorderLayout(0, 0));
+
+		btnRestartClient = new JButton("Restart");
+		btnRestartClient.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setControlsEnabled(false);
+				barRestartClient.setIndeterminate(true);
+				console.addLine("Sending restart signal to client: " + profile.getHostname());
+
+				new SwingWorker<Outcome, Void>() {
+
+					@Override
+					protected Outcome doInBackground() throws Exception {
+						return ViewerCommands.changeClientState(profile.getCvid(), StateType.RESTART_PROCESS);
+					}
+
+					protected void done() {
+						try {
+							Outcome outcome = get();
+							if (!outcome.getResult()) {
+								console.addLine("Restart error: " + outcome.getComment());
+							}
+						} catch (InterruptedException | ExecutionException e) {
+							console.addLine("Restart failed: " + e.getMessage(), LineType.ORANGE);
+						}
+
+						setControlsEnabled(true);
+						barRestartClient.setIndeterminate(false);
+					};
+
+				}.execute();
+			}
+		});
+		panel_11.add(btnRestartClient);
+		btnRestartClient.setIcon(UIUtil.getIcon("icons16/general/arrow_refresh.png"));
+		btnRestartClient.setPreferredSize(UICommon.dim_control_button);
+		btnRestartClient.setFont(new Font("Dialog", Font.BOLD, 10));
+
+		barRestartClient = ProgressBarFactory.get();
+		barRestartClient.setPreferredSize(new Dimension(100, 4));
+		panel_11.add(barRestartClient, BorderLayout.SOUTH);
 
 		JPanel panel_9 = new JPanel();
 		panel_4.add(panel_9);
@@ -381,10 +437,86 @@ public class ControlsTab extends JPanel implements CPPanel {
 		btnUpdate.setIcon(UIUtil.getIcon("icons16/general/update.png"));
 		btnUpdate.setFont(new Font("Dialog", Font.BOLD, 10));
 
+		JPanel panel_10 = new JPanel();
+		panel_4.add(panel_10);
+		panel_10.setLayout(new BorderLayout(0, 0));
+		panel_10.add(barUninstall, BorderLayout.SOUTH);
+
+		btnUninstall = new JButton("Uninstall");
+		panel_10.add(btnUninstall);
+		btnUninstall.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				setControlsEnabled(false);
+
+				// confirm action with user
+				c = new Confirmation(ep, thisCT, "The Crimson client will be uninstalled immediately.");
+				ep.raise(c, 80);
+
+				new SwingWorker<Void, Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						synchronized (c) {
+							try {
+								c.wait();
+							} catch (InterruptedException e1) {
+							}
+						}
+						return null;
+					}
+
+					protected void done() {
+						if (!c.getResult()) {
+							setControlsEnabled(true);
+							return;
+						}
+						barUninstall.setIndeterminate(true);
+						console.addLine("Sending uninstall signal to client: " + profile.getHostname());
+
+						new SwingWorker<Outcome, Void>() {
+
+							@Override
+							protected Outcome doInBackground() throws Exception {
+								return ViewerCommands.changeClientState(profile.getCvid(), StateType.UNINSTALL);
+							}
+
+							protected void done() {
+								try {
+									Outcome outcome = get();
+									if (!outcome.getResult()) {
+										console.addLine("Uninstall error: " + outcome.getComment());
+									}
+								} catch (InterruptedException | ExecutionException e) {
+									console.addLine("Standby failed: " + e.getMessage(), LineType.ORANGE);
+								}
+
+								setControlsEnabled(true);
+								barUninstall.setIndeterminate(false);
+							};
+
+						}.execute();
+					}
+				}.execute();
+
+			}
+		});
+		btnUninstall.setIcon(UIUtil.getIcon("icons16/general/radioactivity.png"));
+		btnUninstall.setMargin(new Insets(2, 4, 2, 4));
+		btnUninstall.setFont(new Font("Dialog", Font.BOLD, 10));
+
 	}
 
 	public void refreshControls() {
 		// refresh update
+	}
+
+	private Confirmation c;
+
+	public void notifyConfirmation() {
+		synchronized (c) {
+			c.notifyAll();
+		}
 	}
 
 }
