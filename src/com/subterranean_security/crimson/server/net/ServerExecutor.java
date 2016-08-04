@@ -458,8 +458,11 @@ public class ServerExecutor extends BasicExecutor {
 				RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder().setCloud(cloud != null);
 				if (lcrq.getCloud()) {
 					lcrq.setSalt(cloud.getSalt());
-				} else {
+				} else if (ServerStore.Databases.system.userExists(user)) {
 					lcrq.setSalt(ServerStore.Databases.system.getSalt(user));
+				} else {
+					pass = false;
+					return;
 				}
 
 				receptor.handle.write(Message.newBuilder().setId(m.getId()).setRqLoginChallenge(lcrq).build());
