@@ -144,10 +144,12 @@ public class Keylogger extends JPanel implements CPPanel {
 		menuBar.add(Box.createHorizontalGlue());
 
 		btnNewButton_1 = new JButton(UIUtil.getIcon("icons16/general/statistics.png"));
+		btnNewButton_1.setFocusable(false);
 		btnNewButton_1.setMargin(new Insets(2, 4, 2, 4));
 		menuBar.add(btnNewButton_1);
 
 		btnNewButton = new JButton(UIUtil.getIcon("icons16/general/cog.png"));
+		btnNewButton.setFocusable(false);
 		btnNewButton.setMargin(new Insets(2, 4, 2, 4));
 		btnNewButton.addActionListener(new ActionListener() {
 
