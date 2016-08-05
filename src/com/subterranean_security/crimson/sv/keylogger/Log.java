@@ -21,6 +21,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -28,6 +31,8 @@ import com.subterranean_security.crimson.core.util.CUtil;
 public class Log implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger log = LoggerFactory.getLogger(Log.class);
 
 	public MemMap<Date, Page> pages = new MemMap<Date, Page>();
 
@@ -73,7 +78,7 @@ public class Log implements Serializable {
 			}
 
 		}
-
+		log.debug("Retrieved " + ev.size() + " keyevents after: " + target.toString());
 		return ev;
 
 	}
