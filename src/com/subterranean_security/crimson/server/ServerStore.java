@@ -306,7 +306,7 @@ public enum ServerStore {
 
 		public static ClientProfile getClient(int svid) {
 			try {
-				return clientProfiles.get(svid);
+				return clientProfiles.get(svid).reinit();
 			} catch (Exception e) {
 				return null;
 			}
