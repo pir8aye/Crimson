@@ -86,6 +86,8 @@ public class LoginPanel extends JPanel {
 	private Border fld_user_border;
 	private Border fld_server_border;
 
+	public boolean result = false;
+
 	public LoginPanel(final LoginDialog parent) {
 		this.parent = parent;
 		init();
@@ -395,6 +397,7 @@ public class LoginPanel extends JPanel {
 			protected void done() {
 				try {
 					Outcome outcome = get();
+					result = outcome.getResult();
 
 					lbl_status.unfreeze();
 					if (outcome.getResult()) {
