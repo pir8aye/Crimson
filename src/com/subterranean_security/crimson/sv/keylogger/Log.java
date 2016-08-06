@@ -107,9 +107,12 @@ public class Log implements Serializable {
 		}
 
 		if (callbacks != null) {
-			for (LogCallback lc : callbacks) {
-				lc.launch(evKevent);
+			synchronized (callbacks) {
+				for (LogCallback lc : callbacks) {
+					lc.launch(evKevent);
+				}
 			}
+
 		}
 
 	}
@@ -120,12 +123,17 @@ public class Log implements Serializable {
 		if (callbacks == null) {
 			callbacks = new ArrayList<LogCallback>();
 		}
-		callbacks.add(r);
+		synchronized (callbacks) {
+			callbacks.add(r);
+		}
+
 	}
 
 	public void removeCallback(LogCallback r) {
 		if (callbacks != null) {
-			callbacks.remove(r);
+			synchronized (callbacks) {
+				callbacks.remove(r);
+			}
 		}
 
 	}
