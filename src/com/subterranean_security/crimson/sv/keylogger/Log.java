@@ -107,10 +107,12 @@ public class Log implements Serializable {
 		}
 
 		if (callbacks != null) {
-			synchronized (callbacks) {
-				for (LogCallback lc : callbacks) {
-					lc.launch(evKevent);
+			try {
+				for (int i = 0; i < callbacks.size(); i++) {
+					callbacks.get(i).launch(evKevent);
 				}
+			} catch (IndexOutOfBoundsException e) {
+				// ignore since callback must have been removed
 			}
 
 		}
@@ -123,17 +125,12 @@ public class Log implements Serializable {
 		if (callbacks == null) {
 			callbacks = new ArrayList<LogCallback>();
 		}
-		synchronized (callbacks) {
-			callbacks.add(r);
-		}
-
+		callbacks.add(r);
 	}
 
 	public void removeCallback(LogCallback r) {
 		if (callbacks != null) {
-			synchronized (callbacks) {
-				callbacks.remove(r);
-			}
+			callbacks.remove(r);
 		}
 
 	}
