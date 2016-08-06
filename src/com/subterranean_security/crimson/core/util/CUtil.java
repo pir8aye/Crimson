@@ -541,7 +541,7 @@ public enum CUtil {
 			runBackgroundCommand(c, 0);
 		}
 
-		public static void runBackgroundCommand(String c, int sleep) throws IOException {
+		public static boolean runBackgroundCommand(String c, int sleep) throws IOException {
 			String command = "";
 			switch (Platform.osFamily) {
 			case SOL:
@@ -551,17 +551,16 @@ public enum CUtil {
 				break;
 			case OSX:
 				break;
-
 			case WIN:
 				String sleepCommand = "PING -n " + (sleep + 1) + " 127.0.0.1>nul";
 				command = "cmd /c start cmd /k \"" + sleepCommand + " && " + c + "\"";
 				break;
 			default:
-				break;
+				return false;
 
 			}
 			log.debug("Running background command: \"" + command + "\"");
-			Runtime.getRuntime().exec(command);
+			return Runtime.getRuntime().exec(command).isAlive();
 		}
 
 		public static void runBackgroundScript(ArrayList<String> lines) {

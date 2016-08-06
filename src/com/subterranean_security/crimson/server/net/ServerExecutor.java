@@ -714,9 +714,8 @@ public class ServerExecutor extends BasicExecutor {
 		String comment = "";
 		boolean result = true;
 
-		receptor.handle.write(Message.newBuilder().setId(m.getId())
-				.setRsChangeServerState(RS_ChangeServerState.newBuilder().setResult(result).setComment(comment))
-				.build());
+		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsChangeServerState(RS_ChangeServerState
+				.newBuilder().setOutcome(Outcome.newBuilder().setResult(result).setComment(comment))).build());
 		Server.setState(m.getRqChangeServerState().getNewState());
 	}
 

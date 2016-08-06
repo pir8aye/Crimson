@@ -148,10 +148,10 @@ public enum ViewerCommands {
 					Message.newBuilder().setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)), 3);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
-			} else if (!m.getRsChangeServerState().getResult()) {
+			} else if (!m.getRsChangeServerState().getOutcome().getResult()) {
 
-				outcome.setResult(false).setComment(m.getRsChangeServerState().hasComment()
-						? m.getRsChangeServerState().getComment() : "no comment");
+				outcome.setResult(false).setComment(m.getRsChangeServerState().getOutcome().hasComment()
+						? m.getRsChangeServerState().getOutcome().getComment() : "no comment");
 
 			} else {
 				outcome.setResult(true);
@@ -170,9 +170,9 @@ public enum ViewerCommands {
 					.setRqChangeClientState(RQ_ChangeClientState.newBuilder().setNewState(st)), 3);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
-			} else if (!m.getRsChangeClientState().getResult()) {
-				outcome.setResult(false).setComment(m.getRsChangeClientState().hasComment()
-						? m.getRsChangeClientState().getComment() : "no comment");
+			} else if (!m.getRsChangeClientState().getOutcome().getResult()) {
+				outcome.setResult(false).setComment(m.getRsChangeClientState().getOutcome().hasComment()
+						? m.getRsChangeClientState().getOutcome().getComment() : "no comment");
 			} else {
 				outcome.setResult(true);
 			}
