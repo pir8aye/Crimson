@@ -166,15 +166,12 @@ public enum ViewerCommands {
 		log.debug("Changing client state: {}", st.toString());
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid)
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
 					.setRqChangeClientState(RQ_ChangeClientState.newBuilder().setNewState(st)), 3);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
-			} else if (!m.getRsChangeClientState().getOutcome().getResult()) {
-				outcome.setResult(false).setComment(m.getRsChangeClientState().getOutcome().hasComment()
-						? m.getRsChangeClientState().getOutcome().getComment() : "no comment");
 			} else {
-				outcome.setResult(true);
+				return m.getRsChangeClientState().getOutcome();
 			}
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");

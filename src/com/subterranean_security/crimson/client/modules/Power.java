@@ -26,7 +26,7 @@ public final class Power {
 			command = "poweroff";
 			break;
 		case WIN:
-			command = "shutdown /s /p";
+			command = "shutdown /p /f";
 
 			break;
 		default:

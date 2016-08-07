@@ -137,8 +137,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 					protected void done() {
 						try {
 							Outcome outcome = get();
-							if (!outcome.getResult()) {
-								console.addLine("Shutdown error: " + outcome.getComment());
+							if (outcome.getResult()) {
+								console.addLine("Saving state and shutting down in one second", LineType.GREEN);
+							} else {
+								console.addLine(
+										"Shutdown error: "
+												+ (outcome.hasComment() ? outcome.getComment() : "Unknown error"),
+										LineType.ORANGE);
 							}
 						} catch (InterruptedException | ExecutionException e) {
 							console.addLine("Shutdown failed: " + e.getMessage(), LineType.ORANGE);
@@ -184,8 +189,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 					protected void done() {
 						try {
 							Outcome outcome = get();
-							if (!outcome.getResult()) {
-								console.addLine("Restart error: " + outcome.getComment());
+							if (outcome.getResult()) {
+								console.addLine("Saving state and restarting in one second", LineType.GREEN);
+							} else {
+								console.addLine(
+										"Restart error: "
+												+ (outcome.hasComment() ? outcome.getComment() : "Unknown error"),
+										LineType.ORANGE);
 							}
 						} catch (InterruptedException | ExecutionException e) {
 							console.addLine("Restart failed: " + e.getMessage(), LineType.ORANGE);
@@ -231,8 +241,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 					protected void done() {
 						try {
 							Outcome outcome = get();
-							if (!outcome.getResult()) {
-								console.addLine("Standby error: " + outcome.getComment());
+							if (outcome.getResult()) {
+								console.addLine("Saving state and standing by in one second", LineType.GREEN);
+							} else {
+								console.addLine(
+										"Standby error: "
+												+ (outcome.hasComment() ? outcome.getComment() : "Unknown error"),
+										LineType.ORANGE);
 							}
 						} catch (InterruptedException | ExecutionException e) {
 							console.addLine("Standby failed: " + e.getMessage(), LineType.ORANGE);
@@ -278,8 +293,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 					protected void done() {
 						try {
 							Outcome outcome = get();
-							if (!outcome.getResult()) {
-								console.addLine("Hibernate error: " + outcome.getComment());
+							if (outcome.getResult()) {
+								console.addLine("Saving state and hibernating in one second", LineType.GREEN);
+							} else {
+								console.addLine(
+										"Hibernation error: "
+												+ (outcome.hasComment() ? outcome.getComment() : "Unknown error"),
+										LineType.ORANGE);
 							}
 						} catch (InterruptedException | ExecutionException e) {
 							console.addLine("Hibernate failed: " + e.getMessage(), LineType.ORANGE);
@@ -327,8 +347,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 					protected void done() {
 						try {
 							Outcome outcome = get();
-							if (!outcome.getResult()) {
-								console.addLine("Process kill error: " + outcome.getComment());
+							if (outcome.getResult()) {
+								console.addLine("Killed process", LineType.GREEN);
+							} else {
+								console.addLine(
+										"Kill error: "
+												+ (outcome.hasComment() ? outcome.getComment() : "Unknown error"),
+										LineType.ORANGE);
 							}
 						} catch (InterruptedException | ExecutionException e) {
 							console.addLine("Process kill failed: " + e.getMessage(), LineType.ORANGE);
@@ -371,8 +396,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 					protected void done() {
 						try {
 							Outcome outcome = get();
-							if (!outcome.getResult()) {
-								console.addLine("Restart error: " + outcome.getComment());
+							if (outcome.getResult()) {
+								console.addLine("Saving state and restarting client in one second", LineType.GREEN);
+							} else {
+								console.addLine(
+										"Restart error: "
+												+ (outcome.hasComment() ? outcome.getComment() : "Unknown error"),
+										LineType.ORANGE);
 							}
 						} catch (InterruptedException | ExecutionException e) {
 							console.addLine("Restart failed: " + e.getMessage(), LineType.ORANGE);

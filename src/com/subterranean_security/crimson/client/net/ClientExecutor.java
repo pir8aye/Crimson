@@ -192,7 +192,7 @@ public class ClientExecutor extends BasicExecutor {
 			return;
 		}
 
-		connector.handle.write(Message.newBuilder().setId(m.getId())
+		connector.handle.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid())
 				.setRsChangeClientState(RS_ChangeClientState.newBuilder().setOutcome(outcome)).build());
 
 		if (outcome.getResult()) {
