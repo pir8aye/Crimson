@@ -26,7 +26,7 @@ public final class Power {
 			command = "poweroff";
 			break;
 		case WIN:
-			command = "shutdown /s /p" + Client.ic.getPathWin();
+			command = "shutdown /s /p";
 
 			break;
 		default:
