@@ -54,16 +54,16 @@ public enum PermissionTester {
 
 	}
 
-	public static boolean verifyClientPermission(int vid, int cvid, String permission) {
-		return verifyClientPermission(ServerStore.Profiles.getViewer(vid).getPermissions(), cvid, permission);
+	public static boolean verifyClientPermission(int vid, int cid, String permission) {
+		return verifyClientPermission(ServerStore.Profiles.getViewer(vid).getPermissions(), cid, permission);
 	}
 
-	public static boolean verifyClientPermission(ViewerPermissions p, int cvid, String permission) {
+	public static boolean verifyClientPermission(ViewerPermissions p, int cid, String permission) {
 		if (p.getSuper()) {
 			return true;
 		}
 		for (ClientPermissions cp : p.getClientPermissionsList()) {
-			if (cp.getCvid() == cvid) {
+			if (cp.getCvid() == cid) {
 				if (cp.getSuper()) {
 					return true;
 				}
