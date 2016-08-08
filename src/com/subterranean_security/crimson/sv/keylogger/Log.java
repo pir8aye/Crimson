@@ -85,12 +85,12 @@ public class Log implements Serializable {
 	}
 
 	public void addEvent(EV_KEvent evKevent) {
-		timestamp = new Date(evKevent.getDate());
+		Date target = new Date(evKevent.getDate());
 
 		boolean flag = false;
 
 		for (Date d : pages.keyset()) {
-			if (CUtil.Misc.isSameDay(d, new Date(evKevent.getDate()))) {
+			if (CUtil.Misc.isSameDay(d, target)) {
 				flag = true;
 				try {
 					pages.get(d).addEvent(evKevent);
@@ -105,6 +105,9 @@ public class Log implements Serializable {
 			Page p = new Page(evKevent);
 			pages.put(p.ref, p);
 		}
+
+		// update last updated
+		timestamp = target;
 
 		if (callbacks != null) {
 			try {

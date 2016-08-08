@@ -18,14 +18,21 @@
 package com.subterranean_security.crimson.sv.keylogger;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 
 public class Page implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger log = LoggerFactory.getLogger(Page.class);
 
 	public static final int sameWindowSeparationInterval = 1000 * 60 * 60;
 
@@ -34,7 +41,15 @@ public class Page implements Serializable {
 	public ArrayList<Event> events = new ArrayList<Event>();
 
 	public Page(EV_KEvent evKevent) {
-		ref = new Date(evKevent.getDate());
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+		try {
+			// convert this event time to start of day
+			ref = df.parse(df.format(new Date(evKevent.getDate())));
+		} catch (ParseException e) {
+			log.warn("Not setting page date reference to start of day");
+			ref = new Date(evKevent.getDate());
+		}
+
 		titles.add(evKevent.getTitle());
 		events.add(new Event(0, 0, evKevent.getEvent()));
 	}
