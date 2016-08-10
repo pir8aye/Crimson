@@ -44,6 +44,7 @@ public enum UICommon {
 	public static final Font font_text_help = new Font("Dialog", Font.PLAIN, 10);
 
 	// dimensions
+	public static final Dimension dim_frame_main = new Dimension(620, 310);
 	public static final Dimension dim_btn_up = new Dimension(40, 17);
 	public static final Dimension dim_ccp = new Dimension(575, 300);
 	public static final Dimension min_files = new Dimension(600, 350);

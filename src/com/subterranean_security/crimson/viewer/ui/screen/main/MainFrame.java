@@ -18,7 +18,6 @@
 package com.subterranean_security.crimson.viewer.ui.screen.main;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -29,6 +28,7 @@ import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.Tray;
 import com.subterranean_security.crimson.viewer.ui.common.panels.dpanel.DPanel;
@@ -51,14 +51,12 @@ public class MainFrame extends JFrame {
 	public MainPanel panel;
 	private JMenuBar sm;
 
-	public static final Dimension dim_frame_main = new Dimension(620, 310);
-
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(true);
-		setSize(dim_frame_main);
-		setPreferredSize(dim_frame_main);
-		setMinimumSize(dim_frame_main);
+		setSize(UICommon.dim_frame_main);
+		setPreferredSize(UICommon.dim_frame_main);
+		setMinimumSize(UICommon.dim_frame_main);
 		setIconImages(UIUtil.getIconList());
 
 		String buildNo = null;
