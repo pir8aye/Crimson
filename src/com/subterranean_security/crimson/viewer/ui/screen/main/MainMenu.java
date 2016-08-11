@@ -45,6 +45,7 @@ import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.GenDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;
+import com.subterranean_security.crimson.viewer.ui.screen.serials.AddSerial;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SettingsDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.users.UserMan;
 
@@ -255,6 +256,17 @@ public class MainMenu extends JPanel {
 		wmUpgrade.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
+
+				try {
+					if (ViewerStore.Databases.local.getString("serial").isEmpty()) {
+						throw new Exception();
+					} else {
+						// open serial manager
+					}
+				} catch (Exception e1) {
+					// show add serial EP
+					MainFrame.main.ep.raise(new AddSerial(MainFrame.main.ep), 100);
+				}
 
 				wmUpgrade.resetBG();
 				MenuSelectionManager.defaultManager().clearSelectedPath();
