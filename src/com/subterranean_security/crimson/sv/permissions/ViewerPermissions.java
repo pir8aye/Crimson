@@ -21,9 +21,14 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ViewerPermissions implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger log = LoggerFactory.getLogger(ViewerPermissions.class);
 
 	private HashMap<Integer, Boolean> flags = new HashMap<Integer, Boolean>();
 
@@ -52,7 +57,13 @@ public class ViewerPermissions implements Serializable {
 		if (flags.containsKey(Perm.Super) && flags.get(Perm.Super)) {
 			return true;
 		}
-		return flags.get(perm);
+		if (flags.containsKey(perm)) {
+			return flags.get(perm);
+		} else {
+			log.warn("Queried nonexistant flag: {}", perm);
+			return false;
+		}
+
 	}
 
 	public void load(int[] data) {
