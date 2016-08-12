@@ -44,7 +44,6 @@ import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RQ_Generate;
 import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
-import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyloggerStateChange;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_AddListener;
 import com.subterranean_security.crimson.core.proto.Listener.RQ_RemoveListener;
@@ -64,10 +63,10 @@ import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.proto.Update.RQ_GetClientConfig;
 import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RQ_EditUser;
-import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
@@ -264,9 +263,14 @@ public enum ViewerCommands {
 
 	public static Outcome addUser(String user, String pass, ViewerPermissions vp) {
 		Outcome.Builder outcome = Outcome.newBuilder();
+
+		RQ_AddUser.Builder add = RQ_AddUser.newBuilder().setUser(user).setPassword(pass);
+		for (int i : vp.extract()) {
+			add.addPermissions(i);
+		}
+
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder()
-					.setRqAddUser(RQ_AddUser.newBuilder().setUser(user).setPassword(pass).setPermissions(vp)), 2);
+			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRqAddUser(add), 2);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsAddUser().getResult()) {
@@ -286,7 +290,11 @@ public enum ViewerCommands {
 	public static Outcome editUser(String user, String oldpass, String newpass, ViewerPermissions vp) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 
-		RQ_AddUser.Builder rqau = RQ_AddUser.newBuilder().setUser(user).setPermissions(vp);
+		RQ_AddUser.Builder rqau = RQ_AddUser.newBuilder().setUser(user);
+		for (int i : vp.extract()) {
+			rqau.addPermissions(i);
+		}
+
 		RQ_EditUser.Builder rqeu = RQ_EditUser.newBuilder();
 		if (oldpass != null && newpass != null) {
 			rqau.setPassword(newpass);

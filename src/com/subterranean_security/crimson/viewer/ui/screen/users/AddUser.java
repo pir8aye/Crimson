@@ -1,3 +1,20 @@
+/******************************************************************************
+ *                                                                            *
+ *                    Copyright 2016 Subterranean Security                    *
+ *                                                                            *
+ *  Licensed under the Apache License, Version 2.0 (the "License");           *
+ *  you may not use this file except in compliance with the License.          *
+ *  You may obtain a copy of the License at                                   *
+ *                                                                            *
+ *      http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                            *
+ *  Unless required by applicable law or agreed to in writing, software       *
+ *  distributed under the License is distributed on an "AS IS" BASIS,         *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *  See the License for the specific language governing permissions and       *
+ *  limitations under the License.                                            *
+ *                                                                            *
+ *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.users;
 
 import java.awt.BorderLayout;
@@ -21,9 +38,10 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.sv.permissions.Perm;
+import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
@@ -248,14 +266,15 @@ public class AddUser extends JDialog {
 							public void run() {
 								if (verify()) {
 									sl.setInfo("Adding User...");
-									ViewerPermissions vp = ViewerPermissions.newBuilder()
-											.setSuper(chckbxSuperuser.isSelected())
-											.setGenerate(chckbxGenerator.isSelected())
-											.setCreateListener(chckbxListenerCreation.isSelected())
-											.setServerPower(chckbxServerPower.isSelected())
-											.setServerSettings(chckbxServerSettings.isSelected())
-											.setServerFsRead(chckbxServerFilesystemRead.isSelected())
-											.setServerFsWrite(chckbxServerFilesystemWrite.isSelected()).build();
+									ViewerPermissions vp = new ViewerPermissions();
+									vp.addFlag(Perm.Super, chckbxSuperuser.isSelected())
+											.addFlag(Perm.server.generator.generate, chckbxGenerator.isSelected())
+											.addFlag(Perm.server.network.create_listener,
+													chckbxListenerCreation.isSelected())
+											.addFlag(Perm.server.power.modify, chckbxServerPower.isSelected())
+											.addFlag(Perm.server.settings.modify, chckbxServerSettings.isSelected())
+											.addFlag(Perm.server.fs.read, chckbxServerFilesystemRead.isSelected())
+											.addFlag(Perm.server.fs.read, chckbxServerFilesystemWrite.isSelected());
 									Outcome outcome = ViewerCommands.addUser(textField.getText(),
 											UIUtil.getPassword(passwordField), vp);
 									if (outcome.getResult()) {

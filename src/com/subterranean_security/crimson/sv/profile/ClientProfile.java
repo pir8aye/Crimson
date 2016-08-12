@@ -64,6 +64,7 @@ public class ClientProfile implements Serializable {
 
 	// General attributes
 	private Log keylog;
+	private int authID;
 	private Attribute online;
 	private Attribute osFamily;
 	private Attribute osName;
@@ -182,6 +183,14 @@ public class ClientProfile implements Serializable {
 
 	public Log getKeylog() {
 		return keylog;
+	}
+
+	public int getAuthID() {
+		return authID;
+	}
+
+	public void setAuthID(int authID) {
+		this.authID = authID;
 	}
 
 	public boolean getOnline() {

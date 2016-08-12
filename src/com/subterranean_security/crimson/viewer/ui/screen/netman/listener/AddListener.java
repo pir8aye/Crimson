@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -29,13 +30,12 @@ import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.sv.PermissionTester;
+import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
-import javax.swing.border.BevelBorder;
 
 public class AddListener extends JPanel {
 
@@ -251,16 +251,14 @@ public class AddListener extends JPanel {
 								if (!verify()) {
 									return;
 								}
-								ViewerCommands
-										.addListener(ListenerConfig.newBuilder()
-												.setName(fld_name.getText().isEmpty() ? "Unnamed Listener"
-														: fld_name.getText())
-												.setClientAcceptor(chckbxAcceptClients.isSelected())
-												.setViewerAcceptor(chckbxAcceptViewers.isSelected())
-												.setLocalhostExclusive(chckbxRestrictToLocalhost.isSelected())
-												.setPort(Integer.parseInt(fld_port.getText()))
-												.setOwner((String) owner.getSelectedItem()).setId(IDGen.getListenerID())
-												.build());
+								ViewerCommands.addListener(ListenerConfig.newBuilder()
+										.setName(fld_name.getText().isEmpty() ? "Unnamed Listener" : fld_name.getText())
+										.setClientAcceptor(chckbxAcceptClients.isSelected())
+										.setViewerAcceptor(chckbxAcceptViewers.isSelected())
+										.setLocalhostExclusive(chckbxRestrictToLocalhost.isSelected())
+										.setPort(Integer.parseInt(fld_port.getText()))
+										.setOwner((String) owner.getSelectedItem()).setId(IDGen.getListenerID())
+										.build());
 								resetEPanels();
 								ep.drop();
 							}
@@ -321,7 +319,7 @@ public class AddListener extends JPanel {
 
 	public void updateOwners() {
 		String[] o = null;
-		if (PermissionTester.verifyServerPermission(ViewerStore.Profiles.vp.getPermissions(), "super")) {
+		if (ViewerStore.Profiles.vp.getPermissions().getFlag(Perm.Super)) {
 			o = new String[ViewerStore.Profiles.server.users.size()];
 			for (int i = 0; i < o.length; i++) {
 				o[i] = ViewerStore.Profiles.server.users.get(i).getUser();

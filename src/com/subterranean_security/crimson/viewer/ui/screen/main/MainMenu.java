@@ -33,7 +33,7 @@ import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
-import com.subterranean_security.crimson.sv.PermissionTester;
+import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.stream.VInfoSlave;
@@ -157,8 +157,7 @@ public class MainMenu extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (!ViewerState.isOnline()) {
 					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
-				} else if (PermissionTester.verifyServerPermission(ViewerStore.Profiles.vp.getPermissions(),
-						"generate")) {
+				} else if (ViewerStore.Profiles.vp.getPermissions().getFlag(Perm.server.generator.generate)) {
 					GenDialog gd = new GenDialog();
 					gd.setVisible(true);
 				} else {

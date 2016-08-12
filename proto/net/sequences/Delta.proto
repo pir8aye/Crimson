@@ -100,5 +100,5 @@ message EV_ViewerProfileDelta {
 	optional string last_login_ip = 3;
 	optional int64 login_time = 4;
 	optional string login_ip = 5;
-	optional ViewerPermissions viewer_permissions = 6;
+	repeated int32 viewer_permissions = 6;
 }

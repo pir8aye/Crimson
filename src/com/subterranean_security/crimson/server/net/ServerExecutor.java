@@ -78,7 +78,8 @@ import com.subterranean_security.crimson.server.ServerState;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
 import com.subterranean_security.crimson.sv.Listener;
-import com.subterranean_security.crimson.sv.PermissionTester;
+import com.subterranean_security.crimson.sv.permissions.Perm;
+import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.services.Services;
@@ -512,12 +513,14 @@ public class ServerExecutor extends BasicExecutor {
 				try {
 					for (Integer i : ServerStore.Profiles.getViewerKeyset()) {
 						ViewerProfile vpi = ServerStore.Profiles.getViewer(i);
-						sid.addViewerUser(EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
-								.setLoginIp(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
-										? vpi.getIp() : "<hidden>")
-								.setLoginTime(PermissionTester.verifyServerPermission(vp.getPermissions(), "super")
-										? vpi.getLoginTime().getTime() : 0)
-								.setViewerPermissions(vpi.getPermissions()).build());
+						EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
+								.setLoginIp(vp.getPermissions().getFlag(Perm.Super) ? vpi.getIp() : "<hidden>")
+								.setLoginTime(
+										vp.getPermissions().getFlag(Perm.Super) ? vpi.getLoginTime().getTime() : 0);
+						for (int j : vpi.getPermissions().extract()) {
+							b.addViewerPermissions(j);
+						}
+						sid.addViewerUser(b);
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -572,8 +575,8 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_file_listing(Message m) {
 		ViewerProfile vp = ServerStore.Profiles.getViewer(receptor.getCvid());
 
-		if (!PermissionTester.verifyServerPermission(vp.getPermissions(), "server_fs_read")) {
-			log.debug("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
+		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
+			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
 			return;
 		}
 
@@ -611,8 +614,8 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_file_handle(Message m) {
 		ViewerProfile vp = ServerStore.Profiles.getViewer(receptor.getCvid());
 
-		if (!PermissionTester.verifyServerPermission(vp.getPermissions(), "server_fs_read")) {
-			log.debug("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
+		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
+			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
 			return;
 		}
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsFileHandle(
@@ -659,12 +662,12 @@ public class ServerExecutor extends BasicExecutor {
 				Message.newBuilder().setId(m.getId()).setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
 
 		ServerStore.Databases.system.addLocalUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
-				m.getRqAddUser().getPermissions());
+				new ViewerPermissions(m.getRqAddUser().getPermissionsList()));
 
 		Message update = Message.newBuilder().setUrgent(true)
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder()
 						.addViewerUser(EV_ViewerProfileDelta.newBuilder().setUser(m.getRqAddUser().getUser())
-								.setViewerPermissions(m.getRqAddUser().getPermissions())))
+								.addAllViewerPermissions(m.getRqAddUser().getPermissionsList())))
 				.build();
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
 
@@ -688,11 +691,11 @@ public class ServerExecutor extends BasicExecutor {
 		}
 
 		EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder().setUser(rqad.getUser())
-				.setViewerPermissions(rqad.getPermissions());
+				.addAllViewerPermissions(m.getRqAddUser().getPermissionsList());
 
-		if (rqad.hasPermissions()) {
-			vp.setPermissions(rqad.getPermissions());
-			b.setViewerPermissions(rqad.getPermissions());
+		if (rqad.getPermissionsCount() != 0) {
+			vp.getPermissions().load(rqad.getPermissionsList());
+			b.addAllViewerPermissions(rqad.getPermissionsList());
 		}
 
 		if (rqad.hasPassword() && ServerStore.Databases.system.validLogin(rqad.getUser(), Crypto.hashCrimsonPassword(
@@ -758,9 +761,7 @@ public class ServerExecutor extends BasicExecutor {
 
 		try {
 			if (ServerStore.Profiles.getClient(receptor.getCvid()) == null) {
-				ClientProfile cp = new ClientProfile(receptor.getCvid());
-				cp.getKeylog().pages.setDatabase(ServerStore.Databases.system);
-				ServerStore.Profiles.addClient(cp);
+				ServerStore.Profiles.addClient(new ClientProfile(receptor.getCvid()));
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

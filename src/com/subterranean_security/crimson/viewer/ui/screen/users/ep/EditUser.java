@@ -1,3 +1,20 @@
+/******************************************************************************
+ *                                                                            *
+ *                    Copyright 2016 Subterranean Security                    *
+ *                                                                            *
+ *  Licensed under the Apache License, Version 2.0 (the "License");           *
+ *  you may not use this file except in compliance with the License.          *
+ *  You may obtain a copy of the License at                                   *
+ *                                                                            *
+ *      http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                            *
+ *  Unless required by applicable law or agreed to in writing, software       *
+ *  distributed under the License is distributed on an "AS IS" BASIS,         *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *  See the License for the specific language governing permissions and       *
+ *  limitations under the License.                                            *
+ *                                                                            *
+ *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.users.ep;
 
 import java.awt.BorderLayout;
@@ -24,8 +41,9 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.proto.Users.ViewerPermissions;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
+import com.subterranean_security.crimson.sv.permissions.Perm;
+import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -112,37 +130,37 @@ public class EditUser extends JPanel {
 			panel_1_1.setLayout(null);
 
 			chckbxGenerator = new JCheckBox("Generator");
-			chckbxGenerator.setSelected(original.getPermissions().getGenerate());
+			chckbxGenerator.setSelected(original.getPermissions().getFlag(Perm.server.generator.generate));
 			chckbxGenerator.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxGenerator.setBounds(8, 40, 181, 20);
 			panel_1_1.add(chckbxGenerator);
 
 			chckbxListenerCreation = new JCheckBox("Listener Creation");
-			chckbxListenerCreation.setSelected(original.getPermissions().getCreateListener());
+			chckbxListenerCreation.setSelected(original.getPermissions().getFlag(Perm.server.network.create_listener));
 			chckbxListenerCreation.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxListenerCreation.setBounds(8, 60, 181, 20);
 			panel_1_1.add(chckbxListenerCreation);
 
 			chckbxServerPower = new JCheckBox("Server Power");
-			chckbxServerPower.setSelected(original.getPermissions().getServerPower());
+			chckbxServerPower.setSelected(original.getPermissions().getFlag(Perm.server.power.modify));
 			chckbxServerPower.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxServerPower.setBounds(8, 80, 181, 20);
 			panel_1_1.add(chckbxServerPower);
 
 			chckbxServerSettings = new JCheckBox("Server Settings");
-			chckbxServerSettings.setSelected(original.getPermissions().getServerSettings());
+			chckbxServerSettings.setSelected(original.getPermissions().getFlag(Perm.server.settings.modify));
 			chckbxServerSettings.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxServerSettings.setBounds(8, 100, 181, 20);
 			panel_1_1.add(chckbxServerSettings);
 
 			chckbxServerFilesystemRead = new JCheckBox("Server Filesystem Read");
-			chckbxServerFilesystemRead.setSelected(original.getPermissions().getServerFsRead());
+			chckbxServerFilesystemRead.setSelected(original.getPermissions().getFlag(Perm.server.fs.read));
 			chckbxServerFilesystemRead.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxServerFilesystemRead.setBounds(8, 120, 181, 20);
 			panel_1_1.add(chckbxServerFilesystemRead);
 
 			chckbxServerFilesystemWrite = new JCheckBox("Server Filesystem Write");
-			chckbxServerFilesystemWrite.setSelected(original.getPermissions().getServerFsWrite());
+			chckbxServerFilesystemWrite.setSelected(original.getPermissions().getFlag(Perm.server.fs.read));
 			chckbxServerFilesystemWrite.setFont(new Font("Dialog", Font.BOLD, 10));
 			chckbxServerFilesystemWrite.setBounds(8, 140, 181, 20);
 			panel_1_1.add(chckbxServerFilesystemWrite);
@@ -150,7 +168,7 @@ public class EditUser extends JPanel {
 			chckbxSuperuser = new JCheckBox("Superuser");
 			chckbxSuperuser.setBounds(8, 20, 181, 20);
 			panel_1_1.add(chckbxSuperuser);
-			chckbxSuperuser.setSelected(original.getPermissions().getSuper());
+			chckbxSuperuser.setSelected(original.getPermissions().getFlag(Perm.Super));
 			chckbxSuperuser.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseEntered(MouseEvent arg0) {
@@ -192,14 +210,15 @@ public class EditUser extends JPanel {
 
 							@Override
 							protected Outcome doInBackground() throws Exception {
-								ViewerPermissions vp = ViewerPermissions.newBuilder()
-										.setSuper(chckbxSuperuser.isSelected())
-										.setGenerate(chckbxGenerator.isSelected())
-										.setCreateListener(chckbxListenerCreation.isSelected())
-										.setServerPower(chckbxServerPower.isSelected())
-										.setServerSettings(chckbxServerSettings.isSelected())
-										.setServerFsRead(chckbxServerFilesystemRead.isSelected())
-										.setServerFsWrite(chckbxServerFilesystemWrite.isSelected()).build();
+								ViewerPermissions vp = new ViewerPermissions();
+								vp.addFlag(Perm.Super, chckbxSuperuser.isSelected())
+										.addFlag(Perm.server.generator.generate, chckbxGenerator.isSelected())
+										.addFlag(Perm.server.network.create_listener,
+												chckbxListenerCreation.isSelected())
+										.addFlag(Perm.server.power.modify, chckbxServerPower.isSelected())
+										.addFlag(Perm.server.settings.modify, chckbxServerSettings.isSelected())
+										.addFlag(Perm.server.fs.read, chckbxServerFilesystemRead.isSelected())
+										.addFlag(Perm.server.fs.read, chckbxServerFilesystemWrite.isSelected());
 								String oldPass = UIUtil.getPassword(fld_old);
 								String newPass = UIUtil.getPassword(fld_new);
 								return ViewerCommands.editUser(original.getUser(), oldPass.isEmpty() ? null : oldPass,

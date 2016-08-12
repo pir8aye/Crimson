@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
@@ -120,7 +121,7 @@ class TM extends AbstractTableModel {
 			return ViewerStore.Profiles.server.users.get(rowIndex).getIp();
 		}
 		case "Superuser": {
-			return ViewerStore.Profiles.server.users.get(rowIndex).getPermissions().getSuper() ? "yes" : "no";
+			return ViewerStore.Profiles.server.users.get(rowIndex).getPermissions().getFlag(Perm.Super) ? "yes" : "no";
 		}
 
 		}

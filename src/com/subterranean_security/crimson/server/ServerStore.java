@@ -19,7 +19,6 @@ package com.subterranean_security.crimson.server;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -41,10 +40,8 @@ import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.Crypto;
-import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.Listener;
-import com.subterranean_security.crimson.sv.PermissionTester;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
@@ -150,8 +147,8 @@ public enum ServerStore {
 
 		public static void sendToViewersWithAuthorityOverClient(int cid, Message.Builder m, String permission) {
 			for (int cvid : getKeySet()) {
-				if (receptors.get(cvid).getInstance() == Instance.VIEWER
-						&& PermissionTester.verifyClientPermission(cvid, cid, permission)) {
+				// TODO filter
+				if (receptors.get(cvid).getInstance() == Instance.VIEWER) {
 					receptors.get(cvid).handle.write(m.build());
 				}
 			}
@@ -159,8 +156,8 @@ public enum ServerStore {
 
 		public static void sendToClientsUnderAuthorityOfViewer(int vid, Message.Builder m, String permission) {
 			for (int cvid : getKeySet()) {
-				if (receptors.get(cvid).getInstance() == Instance.CLIENT
-						&& PermissionTester.verifyClientPermission(vid, cvid, permission)) {
+				// TODO filter
+				if (receptors.get(cvid).getInstance() == Instance.CLIENT) {
 					receptors.get(cvid).handle.write(m.build());
 				}
 			}
@@ -235,12 +232,7 @@ public enum ServerStore {
 
 		public static Outcome create(AuthMethod am) {
 			Outcome.Builder outcome = Outcome.newBuilder();
-			for (int i = 0; i < methods.size(); i++) {
-				if (methods.get(i).getId() == am.getId()) {
-					methods.remove(i);
-					break;
-				}
-			}
+			remove(am.getId());
 
 			if (am.getType() == AuthType.GROUP) {
 				am = AuthMethod.newBuilder().mergeFrom(am).setGroup(
@@ -279,6 +271,36 @@ public enum ServerStore {
 			}
 			return false;
 		}
+
+		public static void refreshVisibilityPermissions() {
+			for (Integer i : Profiles.getClientKeyset()) {
+				refreshVisibilityPermissions(i);
+			}
+		}
+
+		public static void refreshVisibilityPermissions(int cid) {
+			ClientProfile cp = Profiles.getClient(cid);
+			if (cp == null) {
+				log.warn("Could not refresh permissions for nonexistant client: {}", cid);
+				return;
+			}
+			AuthMethod clientAuth = null;
+			for (int i = 0; i < methods.size(); i++) {
+				AuthMethod am = methods.get(i);
+				if (cp.getAuthID() == am.getId()) {
+					clientAuth = am;
+					break;
+				}
+
+			}
+			for (Integer i : Profiles.getViewerKeyset()) {
+				ViewerProfile vp = Profiles.getViewer(i);
+				if (clientAuth.getMemberList().contains(vp.getUser())) {
+					// this viewer has authority over this client
+				}
+
+			}
+		}
 	}
 
 	public static class Profiles {
@@ -304,9 +326,9 @@ public enum ServerStore {
 
 		}
 
-		public static ClientProfile getClient(int svid) {
+		public static ClientProfile getClient(int cid) {
 			try {
-				return clientProfiles.get(svid).reinit();
+				return clientProfiles.get(cid).reinit();
 			} catch (Exception e) {
 				return null;
 			}
@@ -314,11 +336,12 @@ public enum ServerStore {
 
 		public static void addClient(ClientProfile p) {
 			clientProfiles.put(p.getCvid(), p);
+			Authentication.refreshVisibilityPermissions(p.getCvid());
 		}
 
-		public static ViewerProfile getViewer(int svid) {
+		public static ViewerProfile getViewer(int vid) {
 			try {
-				return viewerProfiles.get(svid);
+				return viewerProfiles.get(vid);
 			} catch (Exception e) {
 				return null;
 			}
@@ -339,12 +362,13 @@ public enum ServerStore {
 			return null;
 		}
 
-		public static ArrayList<ViewerProfile> getViewersWithAuthorityOnClient(int cvid) {
-			// TODO
+		public static ArrayList<ViewerProfile> getViewersWithAuthorityOnClient(int cid) {
 			ArrayList<ViewerProfile> vps = new ArrayList<ViewerProfile>();
 			try {
 				for (Integer i : viewerProfiles.keyset()) {
+					// TODO filter
 					vps.add(viewerProfiles.get(i));
+
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -353,12 +377,13 @@ public enum ServerStore {
 			return vps;
 		}
 
-		public static ArrayList<ClientProfile> getClientsUnderAuthority(int cvid) {
-			// TODO
+		public static ArrayList<ClientProfile> getClientsUnderAuthority(int vid) {
 			ArrayList<ClientProfile> cps = new ArrayList<ClientProfile>();
 			try {
 				for (Integer i : clientProfiles.keyset()) {
+					// TODO filter
 					cps.add(clientProfiles.get(i));
+
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -369,6 +394,10 @@ public enum ServerStore {
 
 		public static Set<Integer> getViewerKeyset() {
 			return viewerProfiles.keyset();
+		}
+
+		public static Set<Integer> getClientKeyset() {
+			return clientProfiles.keyset();
 		}
 
 		public static void addViewer(ViewerProfile p) {
