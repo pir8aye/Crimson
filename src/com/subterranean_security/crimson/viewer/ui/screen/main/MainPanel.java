@@ -85,7 +85,7 @@ public class MainPanel extends JPanel {
 	}
 
 	public void openConsole() {
-		MainFrame.main.ep.raise(console, 2f);
+		MainFrame.main.ep.raise(console, 2f, true);
 	}
 
 	public void closeConsole() {

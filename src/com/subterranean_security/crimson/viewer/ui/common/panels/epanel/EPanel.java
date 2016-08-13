@@ -37,7 +37,7 @@ public class EPanel extends SLPanel {
 
 	private SLSide orientation;
 
-	private EPanel thisNP;
+	private EPanel thisNP = this;
 
 	private SLConfig pos1;
 	private SLConfig pos2;
@@ -57,7 +57,6 @@ public class EPanel extends SLPanel {
 	}
 
 	public EPanel(JPanel main, SLSide o) {
-		this.thisNP = this;
 		this.orientation = o;
 
 		movingBar = new MovingPanel(note);
@@ -91,8 +90,15 @@ public class EPanel extends SLPanel {
 		return moving;
 	}
 
-	public void raise(JPanel panel, int height) {
+	public void raise(JPanel panel, int height, boolean persist) {
+		raise(panel, height);
+		if (persist) {
+			persistPanel = panel;
+			persistConfig = pos2;
+		}
+	}
 
+	public void raise(JPanel panel, int height) {
 		switch (orientation) {
 		case BOTTOM:
 			pos2 = new SLConfig(this).gap(0, 0).row(6f).row(height).col(1f).place(0, 0, movingMain).place(1, 0,
@@ -108,7 +114,15 @@ public class EPanel extends SLPanel {
 		}
 
 		raise(panel);
+	}
 
+	public void raise(JPanel panel, float height, boolean persist) {
+		raise(panel, height);
+
+		if (persist) {
+			persistPanel = panel;
+			persistConfig = pos2;
+		}
 	}
 
 	public void raise(JPanel panel, float height) {
@@ -129,10 +143,13 @@ public class EPanel extends SLPanel {
 		raise(panel);
 	}
 
-	private JPanel panel;
+	private JPanel persistPanel;
+	private SLConfig persistConfig;
+
+	private JPanel lastPanel;
 
 	public JPanel getEP() {
-		return panel;
+		return lastPanel;
 	}
 
 	private void raise(JPanel panel) {
@@ -140,10 +157,10 @@ public class EPanel extends SLPanel {
 			return;
 		}
 
-		this.panel = panel;
+		this.lastPanel = panel;
 
 		if (isOpen()) {
-			drop();
+			drop(false);
 			new WaitAndRaise().execute();
 		} else {
 			open = true;
@@ -158,14 +175,13 @@ public class EPanel extends SLPanel {
 
 	class WaitAndRaise extends SwingWorker<Void, Void> {
 		protected Void doInBackground() throws Exception {
-
 			Thread.sleep(transitionTime);
 			return null;
 		}
 
 		protected void done() {
 			open = true;
-			note.setPanel(panel);
+			note.setPanel(lastPanel);
 
 			moving = true;
 			movingMain.runAction();
@@ -186,10 +202,25 @@ public class EPanel extends SLPanel {
 	}
 
 	public void drop() {
+		drop(true);
+	}
+
+	public void drop(boolean checkPersist) {
 		if (isOpen()) {
 			movingMain.runAction();
 			new EndMotion().execute();
 			open = false;
+
+			if (checkPersist && persistPanel != null) {
+				if (persistPanel == lastPanel) {
+					persistPanel = null;
+				} else {
+					lastPanel = persistPanel;
+					pos2 = persistConfig;
+					new WaitAndRaise().execute();
+				}
+
+			}
 		}
 	}
 
