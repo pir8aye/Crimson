@@ -30,13 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
-import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
-import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
@@ -45,9 +42,6 @@ import com.subterranean_security.crimson.core.util.Native;
 
 public final class Server {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
-
-	// TODO move to ServerStore.Listeners
-	private static boolean running = false;
 
 	public static void main(String[] argv) {
 
@@ -86,7 +80,7 @@ public final class Server {
 			System.exit(0);
 		}
 
-		start();
+		ServerStore.Listeners.start();
 
 		if (Common.isDebugMode() && !ServerState.isCloudMode() && !ServerState.isExampleMode()) {
 			generateDebugInstaller();
@@ -116,27 +110,6 @@ public final class Server {
 
 	}
 
-	public static boolean isRunning() {
-		return running;
-	}
-
-	public static void stop() {
-		if (running) {
-			log.info("Stopping network listeners");
-			running = false;
-			ServerStore.Listeners.unload();
-		}
-
-	}
-
-	public static void start() {
-		if (!running) {
-			log.info("Starting network listeners");
-			running = true;
-			ServerStore.Listeners.load();
-		}
-	}
-
 	private static void generateDebugInstaller() {
 
 		ServerStore.Authentication.create(AuthMethod.newBuilder().setCreation(new Date().getTime())
@@ -161,29 +134,6 @@ public final class Server {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	public static void setState(StateType stateType) {
-		switch (stateType) {
-		case FUNCTIONING_OFF:
-			stop();
-			break;
-		case FUNCTIONING_ON:
-			start();
-			break;
-		case RESTART:
-			break;
-		case SHUTDOWN:
-			break;
-		case UNINSTALL:
-			break;
-		default:
-			break;
-		}
-		// notify viewers
-		ServerStore.Connections.sendToAll(Instance.VIEWER, Message.newBuilder()
-				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().setServerStatus(running)).build());
-
 	}
 
 	// TODO move into a config class

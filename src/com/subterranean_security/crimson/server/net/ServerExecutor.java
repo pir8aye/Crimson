@@ -73,7 +73,6 @@ import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sc.Logsystem;
 import com.subterranean_security.crimson.server.Generator;
-import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.server.ServerState;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
@@ -524,7 +523,7 @@ public class ServerExecutor extends BasicExecutor {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				sid.setServerStatus(Server.isRunning());
+				sid.setServerStatus(ServerStore.Listeners.isRunning());
 			}
 
 		} finally {
@@ -706,13 +705,36 @@ public class ServerExecutor extends BasicExecutor {
 		String comment = "";
 		boolean result = true;
 
+		switch (m.getRqChangeServerState().getNewState()) {
+		case FUNCTIONING_OFF:
+			ServerStore.Listeners.stop();
+			break;
+		case FUNCTIONING_ON:
+			ServerStore.Listeners.start();
+			break;
+		case RESTART:
+			break;
+		case SHUTDOWN:
+			break;
+		case UNINSTALL:
+			break;
+		default:
+			break;
+		}
+
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsChangeServerState(RS_ChangeServerState
 				.newBuilder().setOutcome(Outcome.newBuilder().setResult(result).setComment(comment))).build());
-		Server.setState(m.getRqChangeServerState().getNewState());
+
+		// notify viewers
+		ServerStore.Connections.sendToAll(Instance.VIEWER,
+				Message.newBuilder()
+						.setEvServerProfileDelta(
+								EV_ServerProfileDelta.newBuilder().setServerStatus(ServerStore.Listeners.isRunning()))
+						.build());
 	}
 
 	private void rq_change_client_state(Message m) {
-		
+
 	}
 
 	private void rq_create_auth_method(Message m) {

@@ -51,6 +51,9 @@ public enum ServerStore {
 	private static final Logger log = LoggerFactory.getLogger(ServerStore.class);
 
 	public static class Listeners {
+
+		private static boolean running = false;
+
 		public static ArrayList<Listener> listeners = new ArrayList<Listener>();
 
 		public static void load() {
@@ -77,9 +80,25 @@ public enum ServerStore {
 			listeners.clear();
 		}
 
-		// TODO unload all except current
-		public static void unload() {
+		public static boolean isRunning() {
+			return running;
+		}
 
+		public static void stop() {
+			if (running) {
+				log.info("Stopping network listeners");
+				running = false;
+				unloadAll();
+			}
+
+		}
+
+		public static void start() {
+			if (!running) {
+				log.info("Starting network listeners");
+				running = true;
+				load();
+			}
 		}
 
 	}
