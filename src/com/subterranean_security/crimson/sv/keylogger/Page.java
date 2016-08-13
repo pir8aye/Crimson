@@ -50,8 +50,7 @@ public class Page implements Serializable {
 			ref = new Date(evKevent.getDate());
 		}
 
-		titles.add(evKevent.getTitle());
-		events.add(new Event(0, 0, evKevent.getEvent()));
+		addEvent(evKevent);
 	}
 
 	public void addEvent(EV_KEvent evKevent) {
