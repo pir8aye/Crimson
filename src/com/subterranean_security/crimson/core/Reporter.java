@@ -19,61 +19,127 @@
 package com.subterranean_security.crimson.core;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.services.Services;
 
 /**
- * @author subterranean Sends a report using the Services library
+ * 
+ * Securely sends a report to Subterranean Security using the Services library
+ * 
+ * @author Tyler Cook
  *
  */
-public class Reporter {
+public final class Reporter {
 
-	private static final Logger log = LoggerFactory.getLogger(Reporter.class);
+	private Reporter() {
+	}
 
 	public static void report(final MI_Report r) {
-		// add report to buffer TODO
 		new Thread(new Runnable() {
-
 			@Override
 			public void run() {
 				Services.sendReport(r);
 			}
-
 		}).start();
-
 	}
 
+	/**
+	 * 
+	 * Gathers system info in a fail-safe manner to prevent error report
+	 * amplification
+	 * 
+	 */
 	public static MI_Report.Builder newReport() {
 		MI_Report.Builder rb = MI_Report.newBuilder();
 		rb.setInitDate(new Date().getTime());
-		rb.setCrVersion(Common.version);
-		rb.setCrBuild("" + Common.build);
-		rb.setJreVersion(Platform.getJavaVersion());
-		rb.setInstance(Common.instance.toString());
-		rb.setOsFamily(Platform.osFamily.toString());
-		// rb.setSysArch(Platform.sysArch.toString());
-		rb.setJreArch(Platform.javaArch.toString());
-		rb.setJreUptime(CUtil.Misc.datediff(Common.start, new Date()));
-		rb.setSysLang(Platform.getLanguage());
-		rb.setOsName(Platform.osName);
 		try {
-			rb.setCrLog(CUtil.Files.readFileString(new File(Common.Directories.varLog.getAbsolutePath() + "/"
-					+ Common.instance.toString().toLowerCase() + ".log")));
-		} catch (IOException e) {
-
+			rb.setCrVersion(Common.version);
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query Crimson version: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setNettyLog(
+			rb.setCrBuild("" + Common.build);
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query Crimson build number: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setJreVersion(Platform.getJavaVersion());
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query Java version: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setJreVendor(Platform.getJavaVendor());
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query Java vendor: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setCrInstance(Common.instance.toString());
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query Crimson instance: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setSysArch(Platform.sysArch.toString());
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query system architecture: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setJreArch(Platform.javaArch.toString());
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query Java architecture: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setJreUptime(CUtil.Misc.datediff(Common.start, new Date()));
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query Java uptime: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setSysLang(Platform.getLanguage());
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query system language: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setOsName(Platform.osName);
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query operating system name: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setOsFamily(Platform.osFamily.toString());
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query OS family: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setSysCpuModel(Platform.Advanced.getCPUModel());
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query CPU model: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setLogCrimson(CUtil.Files.readFileString(new File(Common.Directories.varLog.getAbsolutePath() + "/"
+					+ Common.instance.toString().toLowerCase() + ".log")));
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query instance log: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
+			rb.setLogNetty(
 					CUtil.Files.readFileString(new File(Common.Directories.varLog.getAbsolutePath() + "/netty.log")));
-		} catch (IOException e) {
-
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query netty log: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 
 		return rb;

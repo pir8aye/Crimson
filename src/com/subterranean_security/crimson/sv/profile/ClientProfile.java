@@ -232,7 +232,7 @@ public class ClientProfile implements Serializable {
 				osMonitorIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
 
 			} catch (NullPointerException e) {
-				Reporter.report(Reporter.newReport().setComment("No OS icon found: " + icon).build());
+				Reporter.report(Reporter.newReport().setCrComment("No OS icon found: " + icon).build());
 
 				// fall back to os family
 				osNameIcon = UIUtil.getIcon("icons16/platform/" + osFamily.get() + ".png");
@@ -254,7 +254,7 @@ public class ClientProfile implements Serializable {
 				locationIcon = UIUtil.getIcon("flags/" + countryCode.get().toLowerCase() + ".png");
 			} catch (NullPointerException e) {
 				Reporter.report(Reporter.newReport()
-						.setComment("No location icon found: " + countryCode.get().toLowerCase()).build());
+						.setCrComment("No location icon found: " + countryCode.get().toLowerCase()).build());
 
 				// fall back to default
 				locationIcon = UIUtil.getIcon("flags/un.png");

@@ -45,13 +45,13 @@ public class EH implements Thread.UncaughtExceptionHandler {
 
 		Thread.currentThread().getStackTrace();// TODO send
 
-		Reporter.report(Reporter.newReport().setStackTrace(CUtil.Misc.getStack(t)).build());
+		Reporter.report(Reporter.newReport().setCrStackTrace(CUtil.Misc.getStack(t)).build());
 
 	}
 
 	public static void handle(Throwable t) {
 		log.debug(CUtil.Misc.getStack(t));
-		Reporter.report(Reporter.newReport().setStackTrace(CUtil.Misc.getStack(t)).build());
+		Reporter.report(Reporter.newReport().setCrStackTrace(CUtil.Misc.getStack(t)).build());
 	}
 
 }

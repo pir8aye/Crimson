@@ -29,6 +29,7 @@ import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -271,6 +272,10 @@ public enum Platform {
 
 	public static String getJavaArch() {
 		return System.getProperty("os.arch");
+	}
+
+	public static String getTimezone() {
+		return Calendar.getInstance().getTimeZone().getDisplayName();
 	}
 
 	public static GraphicsDisplay[] getDisplays() {

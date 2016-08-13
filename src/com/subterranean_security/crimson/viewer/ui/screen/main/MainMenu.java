@@ -28,7 +28,6 @@ import javax.swing.MenuSelectionManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
@@ -292,8 +291,7 @@ public class MainMenu extends JPanel {
 		wmTour.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// debug
-				Reporter.report(Reporter.newReport().setComment("User triggered report").build());
+
 				wmTour.resetBG();
 				MenuSelectionManager.defaultManager().clearSelectedPath();
 			}
