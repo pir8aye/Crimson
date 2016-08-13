@@ -34,7 +34,6 @@ import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.Crypto;
 
 public class Generator {
 
@@ -80,6 +79,7 @@ public class Generator {
 	}
 
 	private GenReport.Builder genJar(ClientConfig ic, int cvid) throws IOException {
+		log.info("Generating new jar installer");
 		GenReport.Builder gReport = GenReport.newBuilder();
 		Date start = new Date();
 
@@ -97,7 +97,6 @@ public class Generator {
 			}
 
 			database.close();
-			log.debug("Created client database successfully");
 		} catch (Exception e) {
 			e.printStackTrace();
 			gReport.setComment("Failed to create client database: " + e.getMessage());
@@ -183,6 +182,8 @@ public class Generator {
 		gReport.setFileSize((int) clientJar.length());
 		gReport.setResult(true);
 		gReport.setGenTime((int) (new Date().getTime() - start.getTime()));
+
+		log.info("Generated in {} ms", gReport.getGenTime());
 		return gReport;
 	}
 
