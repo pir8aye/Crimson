@@ -105,7 +105,6 @@ public class ServerExecutor extends BasicExecutor {
 					}
 					if (m.hasRid() && m.getRid() != 0) {
 						// route
-						log.debug("Routing message to CVID: {}", m.getRid());
 						try {
 							ServerStore.Connections.getConnection(m.getRid()).handle.write(m);
 						} catch (NullPointerException e) {
@@ -135,7 +134,6 @@ public class ServerExecutor extends BasicExecutor {
 					}
 					if (m.hasRid() && m.getRid() != 0) {
 						// route
-						log.debug("Routing message to CVID: {}", m.getRid());
 						try {
 							ServerStore.Connections.getConnection(m.getRid()).handle.write(m);
 						} catch (NullPointerException e) {
@@ -256,7 +254,7 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void mi_trigger_profile_delta(Message m) {
-		log.debug("mi_trigger_profile_delta");
+
 		for (ClientProfile cp : ServerStore.Profiles.getClientsUnderAuthority(receptor.getCvid())) {
 			boolean flag = true;
 			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
@@ -564,8 +562,6 @@ public class ServerExecutor extends BasicExecutor {
 				receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGenerate(rs).build());
 			}
 		} catch (Exception e) {
-			log.info("Could not generate installer");
-
 			receptor.handle.write(Message.newBuilder().setId(m.getId())
 					.setRsGenerate(RS_Generate.newBuilder().setReport(g.getReport())).build());
 		}
@@ -625,7 +621,6 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_delete(Message m) {
-		log.debug("rq_delete");
 		receptor.handle.write(Message.newBuilder().setId(m.getId())
 				.setRsDelete(RS_Delete.newBuilder().setOutcome(
 						LocalFilesystem.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
@@ -633,13 +628,11 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_advanced_file_info(Message m) {
-		log.debug("rq_advance_file_info");
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsAdvancedFileInfo(LocalFilesystem.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
 	}
 
 	private void rq_add_listener(Message m) {
-		log.debug("Executing: rq_add_listener");
 		// TODO check permissions
 		receptor.handle.write(Message.newBuilder().setId(m.getId())
 				.setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
@@ -651,12 +644,10 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_remove_listener(Message m) {
-		log.debug("Executing: rq_remove_listener");
 
 	}
 
 	private void rq_add_user(Message m) {
-		log.debug("Executing: rq_add_user");
 		// TODO check permissions
 		receptor.handle.write(
 				Message.newBuilder().setId(m.getId()).setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
@@ -674,7 +665,6 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_edit_user(Message m) {
-		log.debug("Executing: rq_edit_user");
 		// TODO check permissions
 		receptor.handle.write(
 				Message.newBuilder().setId(m.getId()).setRsEditUser(RS_EditUser.newBuilder().setResult(true)).build());
@@ -712,7 +702,6 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_change_server_state(Message m) {
-		log.debug("Executing: rq_change_server_state");
 		// TODO check permissions
 		String comment = "";
 		boolean result = true;
@@ -723,11 +712,10 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_change_client_state(Message m) {
-		log.debug("Executing: rq_change_client_state");
+		
 	}
 
 	private void rq_create_auth_method(Message m) {
-		log.debug("Creating new auth method");
 		Outcome outcome = ServerStore.Authentication.create(m.getRqCreateAuthMethod().getAuthMethod());
 
 		receptor.handle.write(Message.newBuilder().setId(m.getId())
