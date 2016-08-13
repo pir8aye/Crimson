@@ -53,7 +53,6 @@ public enum FileLocking {
 
 		if (lockExists(i)) {
 			// already locked
-			log.error("Crimson is already running in another instance");
 			return false;
 		}
 

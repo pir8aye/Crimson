@@ -46,22 +46,24 @@ import com.subterranean_security.crimson.core.util.Native;
 public final class Server {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
 
+	// TODO move to ServerStore.Listeners
 	private static boolean running = false;
 
 	public static void main(String[] argv) {
 
+		// apply LogBack settings for the session
 		CUtil.Logging.configure();
+		log.info("Launching Crimson Server (build {})", Common.build);
 
 		// Establish the custom fallback exception handler
-		log.debug("Initializing exception handler");
 		Thread.setDefaultUncaughtExceptionHandler(new EH());
 
 		// Establish the custom shutdown hook
-		log.debug("Initializing shutdown hook");
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Try to get a lock or exit
 		if (!FileLocking.lock(Instance.SERVER)) {
+			log.error("A Crimson server is already running in another process");
 			System.exit(0);
 		}
 
@@ -72,7 +74,6 @@ public final class Server {
 		Native.Loader.load();
 
 		// Clear /tmp/
-		log.debug("Clearing temporary directory");
 		CUtil.Files.Temp.clear();
 
 		// initialize system database
@@ -103,13 +104,14 @@ public final class Server {
 
 				if (input.isEmpty()) {
 					continue;
-				} else if (parts[0].equals("quit") || parts[0].equals("exit")) {
+				} else if (parts[0].equals("quit") || parts[0].equals("exit") || parts[0].equals("stop")) {
 					System.exit(0);
 				}
 
 			}
 		} catch (NoSuchElementException e) {
 			// ignore because server is probably shutting down
+			return;
 		}
 
 	}
@@ -120,7 +122,7 @@ public final class Server {
 
 	public static void stop() {
 		if (running) {
-			log.info("Stopping server");
+			log.info("Stopping network listeners");
 			running = false;
 			ServerStore.Listeners.unload();
 		}
@@ -129,14 +131,13 @@ public final class Server {
 
 	public static void start() {
 		if (!running) {
-			log.info("Starting server");
+			log.info("Starting network listeners");
 			running = true;
 			ServerStore.Listeners.load();
 		}
 	}
 
 	private static void generateDebugInstaller() {
-		log.debug("Generating debug installer");
 
 		ServerStore.Authentication.create(AuthMethod.newBuilder().setCreation(new Date().getTime())
 				.setType(AuthType.GROUP).setId(0).setName("TESTGROUP").setGroupSeedPrefix("gfdgdf").build());
