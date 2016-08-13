@@ -107,7 +107,6 @@ public class ServerDB extends Database {
 						new ClientDB(new File(Common.Directories.var + File.separator + UID + ".db")));
 			}
 
-			System.out.println("Testing hashes: " + hash + " , " + password);
 			return hash.equals(password);
 
 		} catch (Exception e) {
