@@ -41,7 +41,7 @@ import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.server.net.Receptor;
-import com.subterranean_security.crimson.sv.Listener;
+import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 

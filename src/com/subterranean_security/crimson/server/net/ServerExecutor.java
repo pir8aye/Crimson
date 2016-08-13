@@ -76,7 +76,7 @@ import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.ServerState;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
-import com.subterranean_security.crimson.sv.Listener;
+import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
