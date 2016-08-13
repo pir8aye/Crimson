@@ -161,8 +161,9 @@ public class Viewer {
 
 	public static void loadState() {
 		try {
-			ViewerState.trialMode = Databases.local.getString("serial").equals("TRIAL");
+			ViewerState.trialMode = Databases.local.getString("serial").isEmpty();
 		} catch (Exception e) {
+			ViewerState.trialMode = true;
 		}
 	}
 
