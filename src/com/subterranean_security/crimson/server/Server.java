@@ -126,7 +126,6 @@ public final class Server {
 			g.generate(cc);
 			byte[] res = g.getResult();
 			CUtil.Files.writeFile(res, new File(System.getProperty("user.home") + "/Desktop/client.jar"));
-			log.info("Installer size: " + res.length + " bytes");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

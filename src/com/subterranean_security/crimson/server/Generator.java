@@ -79,7 +79,6 @@ public class Generator {
 	}
 
 	private GenReport.Builder genJar(ClientConfig ic, int cvid) throws IOException {
-		log.info("Generating new jar installer");
 		GenReport.Builder gReport = GenReport.newBuilder();
 		Date start = new Date();
 
@@ -183,7 +182,7 @@ public class Generator {
 		gReport.setResult(true);
 		gReport.setGenTime((int) (new Date().getTime() - start.getTime()));
 
-		log.info("Generated in {} ms", gReport.getGenTime());
+		log.info("Generated jar in {} ms", gReport.getGenTime());
 		return gReport;
 	}
 
