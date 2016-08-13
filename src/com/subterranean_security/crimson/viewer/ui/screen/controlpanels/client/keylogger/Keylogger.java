@@ -109,6 +109,7 @@ public class Keylogger extends JPanel implements CPPanel {
 		add(menuBar, BorderLayout.NORTH);
 
 		btnNewButton_2 = new JButton(UIUtil.getIcon("icons16/general/tree_hierarchy.png"));
+		btnNewButton_2.setFocusable(false);
 		btnNewButton_2.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
