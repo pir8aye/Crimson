@@ -81,12 +81,16 @@ public class KeyLogPane extends JPanel {
 
 	public KeyLogPane() {
 		setLayout(new BorderLayout(0, 0));
-		JScrollPane scrollPane_8 = new JScrollPane();
-		scrollPane_8.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		add(scrollPane_8, BorderLayout.CENTER);
+
 		stack = new JPanel();
-		scrollPane_8.setViewportView(stack);
 		stack.setLayout(new BoxLayout(stack, BoxLayout.Y_AXIS));
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		add(scrollPane, BorderLayout.CENTER);
+
+		scrollPane.setViewportView(stack);
 
 	}
 
