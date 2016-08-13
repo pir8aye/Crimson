@@ -42,6 +42,7 @@ import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.net.Listener;
+import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
@@ -115,10 +116,9 @@ public enum ServerStore {
 			} else {
 				clients++;
 				Profiles.getClient(r.getCvid()).setOnline(true);
-				sendToViewersWithAuthorityOverClient(r.getCvid(),
+				sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
 						Message.newBuilder().setUrgent(true)
-								.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid()).setOnline(true)),
-						"client_visibility");
+								.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid()).setOnline(true)));
 			}
 			receptors.put(r.getCvid(), r);
 		}
@@ -132,8 +132,9 @@ public enum ServerStore {
 				} else {
 					clients--;
 					Profiles.getClient(cvid).setOnline(false);
-					sendToViewersWithAuthorityOverClient(cvid, Message.newBuilder().setUrgent(true).setEvProfileDelta(
-							EV_ProfileDelta.newBuilder().setCvid(cvid).setOnline(false)), "client_visibility");
+					sendToViewersWithAuthorityOverClient(cvid, Perm.client.visibility,
+							Message.newBuilder().setUrgent(true)
+									.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(cvid).setOnline(false)));
 				}
 				r.close();
 			}
@@ -164,19 +165,10 @@ public enum ServerStore {
 			}
 		}
 
-		public static void sendToViewersWithAuthorityOverClient(int cid, Message.Builder m, String permission) {
+		public static void sendToViewersWithAuthorityOverClient(int cid, int perm, Message.Builder m) {
 			for (int cvid : getKeySet()) {
-				// TODO filter
-				if (receptors.get(cvid).getInstance() == Instance.VIEWER) {
-					receptors.get(cvid).handle.write(m.build());
-				}
-			}
-		}
-
-		public static void sendToClientsUnderAuthorityOfViewer(int vid, Message.Builder m, String permission) {
-			for (int cvid : getKeySet()) {
-				// TODO filter
-				if (receptors.get(cvid).getInstance() == Instance.CLIENT) {
+				if (receptors.get(cvid).getInstance() == Instance.VIEWER
+						&& Profiles.getViewer(cvid).getPermissions().getFlag(cid, perm)) {
 					receptors.get(cvid).handle.write(m.build());
 				}
 			}
@@ -291,7 +283,7 @@ public enum ServerStore {
 			return false;
 		}
 
-		public static void refreshVisibilityPermissions() {
+		public static void refreshAllVisibilityPermissions() {
 			for (Integer i : Profiles.getClientKeyset()) {
 				refreshVisibilityPermissions(i);
 			}

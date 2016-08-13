@@ -18,74 +18,62 @@
 package com.subterranean_security.crimson.sv.permissions;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ViewerPermissions implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger log = LoggerFactory.getLogger(ViewerPermissions.class);
-
-	private HashMap<Integer, Boolean> flags = new HashMap<Integer, Boolean>();
+	private ArrayList<Long> flags = new ArrayList<Long>();
 
 	public ViewerPermissions() {
 
 	}
 
-	public ViewerPermissions(int[] data) {
+	public ViewerPermissions(List<Long> data) {
 		load(data);
 	}
 
-	public ViewerPermissions(List<Integer> data) {
-		load(data);
-	}
-
-	public ViewerPermissions addFlag(int perm, boolean bool) {
-		flags.put(perm, bool);
-		return this;
+	public ViewerPermissions addFlag(int perm, boolean b) {
+		if (b)
+			return addFlag(0, perm);
+		else
+			return this;
 	}
 
 	public ViewerPermissions addFlag(int perm) {
-		return addFlag(perm, true);
+		return addFlag(0, perm);
+	}
+
+	public ViewerPermissions addFlag(int cid, int perm) {
+		flags.add(translateFlag(cid, perm));
+		return this;
 	}
 
 	public boolean getFlag(int perm) {
-		if (flags.containsKey(Perm.Super) && flags.get(Perm.Super)) {
-			return true;
-		}
-		if (flags.containsKey(perm)) {
-			return flags.get(perm);
-		} else {
-			log.warn("Queried nonexistant flag: {}", perm);
-			return false;
-		}
-
+		return getFlag(0, perm);
 	}
 
-	public void load(int[] data) {
-		for (int i = 0; i < data.length; i += 2) {
-			addFlag(data[i], data[i + 1] == 1);
-		}
+	public boolean getFlag(int cid, int perm) {
+		return (flags.contains(Perm.Super) || flags.contains(translateFlag(cid, perm)));
 	}
 
-	public void load(List<Integer> data) {
-		for (int i = 0; i < data.size(); i += 2) {
-			addFlag(data.get(i), data.get(i + 1) == 1);
-		}
+	public long translateFlag(int cid, int perm) {
+		// the permission identifier exists in the upper 32 bits
+		long flag = ((long) perm) << 32;
+
+		// the cid occupies the lower 32 bits
+		flag += cid;
+		return flag;
 	}
 
-	public int[] extract() {
-		int[] data = new int[flags.size() * 2];
-		int r = 0;
-		for (int i : flags.keySet()) {
-			data[r++] = i;
-			data[r++] = flags.get(i) ? 1 : 0;
-		}
-		return data;
+	public void load(List<Long> data) {
+		flags.addAll(data);
+	}
+
+	public List<Long> extract() {
+		return flags;
 	}
 
 }

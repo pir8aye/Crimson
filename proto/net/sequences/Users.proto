@@ -3,7 +3,7 @@ package com.subterranean_security.crimson.core.proto;
 message RQ_AddUser {
 	required string user = 1;
 	optional string password = 2;
-	repeated int32 permissions = 3;
+	repeated int64 permissions = 3;
 
 }
 

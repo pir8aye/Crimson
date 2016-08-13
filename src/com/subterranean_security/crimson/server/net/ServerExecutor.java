@@ -47,6 +47,7 @@ import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_Delete;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
+import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
@@ -75,6 +76,8 @@ import com.subterranean_security.crimson.sc.Logsystem;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.ServerState;
 import com.subterranean_security.crimson.server.ServerStore;
+import com.subterranean_security.crimson.server.ServerStore.Connections;
+import com.subterranean_security.crimson.server.ServerStore.Profiles;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
 import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.sv.permissions.Perm;
@@ -239,16 +242,8 @@ public class ServerExecutor extends BasicExecutor {
 		}
 
 		ServerStore.Profiles.getClient(receptor.getCvid()).amalgamate(pd);
-
-		for (int svid : ServerStore.Connections.getKeySet()) {
-			Receptor r = ServerStore.Connections.getConnection(svid);
-			// somehow check permissions TODO
-
-			if (r.getInstance() == Instance.VIEWER) {
-				r.handle.write(Message.newBuilder().setUrgent(true).setEvProfileDelta(pd).build());
-
-			}
-		}
+		Connections.sendToViewersWithAuthorityOverClient(receptor.getCvid(), Perm.client.visibility,
+				Message.newBuilder().setUrgent(true).setEvProfileDelta(pd));
 
 	}
 
@@ -381,10 +376,16 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_key_update(Message m) {
-		// TODO check permissions
-
 		RQ_KeyUpdate rq = m.getRqKeyUpdate();
 		Date target = new Date(rq.getStartDate());
+
+		// check permissions
+		if (!Profiles.getViewer(receptor.getCvid()).getPermissions().getFlag(rq.getCid(),
+				Perm.client.keylogger.read_logs)) {
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(false)).build());
+			return;
+		}
 
 		ClientProfile cp = ServerStore.Profiles.getClient(rq.getCid());
 		if (cp != null) {
@@ -513,10 +514,9 @@ public class ServerExecutor extends BasicExecutor {
 						EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
 								.setLoginIp(vp.getPermissions().getFlag(Perm.Super) ? vpi.getIp() : "<hidden>")
 								.setLoginTime(
-										vp.getPermissions().getFlag(Perm.Super) ? vpi.getLoginTime().getTime() : 0);
-						for (int j : vpi.getPermissions().extract()) {
-							b.addViewerPermissions(j);
-						}
+										vp.getPermissions().getFlag(Perm.Super) ? vpi.getLoginTime().getTime() : 0)
+								.addAllViewerPermissions(vpi.getPermissions().extract());
+
 						sid.addViewerUser(b);
 					}
 				} catch (Exception e) {
@@ -537,6 +537,15 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_generate(Message m) {
+
+		// check permissions
+		if (!Profiles.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.generator.generate)) {
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setRsGenerate(RS_Generate.newBuilder()
+							.setReport(GenReport.newBuilder().setResult(false).setComment("Insufficient permissions")))
+					.build());
+			return;
+		}
 
 		byte[] res = null;
 		Generator g = new Generator();
@@ -620,6 +629,16 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_delete(Message m) {
+
+		// check permissions
+		if (!Profiles.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setRsDelete(RS_Delete.newBuilder()
+							.setOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions")))
+					.build());
+			return;
+		}
+
 		receptor.handle.write(Message.newBuilder().setId(m.getId())
 				.setRsDelete(RS_Delete.newBuilder().setOutcome(
 						LocalFilesystem.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
@@ -632,7 +651,15 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_add_listener(Message m) {
-		// TODO check permissions
+		// check permissions
+		if (!Profiles.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.network.create_listener)) {
+			receptor.handle.write(Message.newBuilder().setId(m.getId())
+					.setRsAddListener(
+							RS_AddListener.newBuilder().setResult(false).setComment("Insufficient permissions"))
+					.build());
+			return;
+		}
+
 		receptor.handle.write(Message.newBuilder().setId(m.getId())
 				.setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
 		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));

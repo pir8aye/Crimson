@@ -62,6 +62,9 @@ public final class Perm {
 	}
 
 	public static final class client {
+
+		public static final int visibility = 15;
+
 		public static final class power {
 			public static final int modify = 9;
 		}
