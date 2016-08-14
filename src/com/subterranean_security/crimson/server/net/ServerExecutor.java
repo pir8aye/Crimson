@@ -515,7 +515,7 @@ public class ServerExecutor extends BasicExecutor {
 								.setLoginIp(vp.getPermissions().getFlag(Perm.Super) ? vpi.getIp() : "<hidden>")
 								.setLoginTime(
 										vp.getPermissions().getFlag(Perm.Super) ? vpi.getLoginTime().getTime() : 0)
-								.addAllViewerPermissions(vpi.getPermissions().extract());
+								.addAllViewerPermissions(vpi.getPermissions().listPermissions());
 
 						sid.addViewerUser(b);
 					}

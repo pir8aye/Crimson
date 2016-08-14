@@ -265,7 +265,7 @@ public enum ViewerCommands {
 		Outcome.Builder outcome = Outcome.newBuilder();
 
 		RQ_AddUser.Builder add = RQ_AddUser.newBuilder().setUser(user).setPassword(pass)
-				.addAllPermissions(vp.extract());
+				.addAllPermissions(vp.listPermissions());
 
 		try {
 			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRqAddUser(add), 2);
@@ -288,7 +288,7 @@ public enum ViewerCommands {
 	public static Outcome editUser(String user, String oldpass, String newpass, ViewerPermissions vp) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 
-		RQ_AddUser.Builder rqau = RQ_AddUser.newBuilder().setUser(user).addAllPermissions(vp.extract());
+		RQ_AddUser.Builder rqau = RQ_AddUser.newBuilder().setUser(user).addAllPermissions(vp.listPermissions());
 
 		RQ_EditUser.Builder rqeu = RQ_EditUser.newBuilder();
 		if (oldpass != null && newpass != null) {

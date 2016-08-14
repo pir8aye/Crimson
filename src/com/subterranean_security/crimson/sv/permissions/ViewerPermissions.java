@@ -56,10 +56,13 @@ public class ViewerPermissions implements Serializable {
 	}
 
 	public boolean getFlag(int cid, int perm) {
-		return (flags.contains(Perm.Super) || flags.contains(translateFlag(cid, perm)));
+		boolean f = (flags.contains(Perm.Super) || flags.contains(translateFlag(cid, perm)));
+		System.out.println("result: " + f + " for query: " + cid + ":" + perm + " translation("
+				+ translateFlag(cid, perm) + ") arraysize: " + flags.size());
+		return f;
 	}
 
-	public long translateFlag(int cid, int perm) {
+	private long translateFlag(int cid, int perm) {
 		// the permission identifier exists in the upper 32 bits
 		long flag = ((long) perm) << 32;
 
@@ -72,7 +75,17 @@ public class ViewerPermissions implements Serializable {
 		flags.addAll(data);
 	}
 
-	public List<Long> extract() {
+	public List<Integer> listPermissions(int cid) {
+		List<Integer> list = new ArrayList<Integer>();
+		for (long l : flags) {
+			if ((l & 0xFFFFFFFF) == cid) {
+				list.add((int) (l >> 32));
+			}
+		}
+		return list;
+	}
+
+	public List<Long> listPermissions() {
 		return flags;
 	}
 
