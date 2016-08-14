@@ -160,10 +160,7 @@ public class MainMenu extends JPanel {
 					GenDialog gd = new GenDialog();
 					gd.setVisible(true);
 				} else {
-					// TODO
-					// MainFrame.main.np.addNote("error", "Permission denied");
-					GenDialog gd = new GenDialog();
-					gd.setVisible(true);
+					MainFrame.main.np.addNote("error", "Insufficient permissions!");
 				}
 
 				wmGen.resetBG();
