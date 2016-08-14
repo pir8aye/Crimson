@@ -250,20 +250,17 @@ public class MainMenu extends JPanel {
 		mnAbout.add(wmAbout);
 
 		final WideMenuItem wmUpgrade = new WideMenuItem(UIUtil.getIcon("icons16/general/barcode_2d.png"),
-				"Serial Codes", "Add/Remove Keys");
+				ViewerState.trialMode ? "Activate Key" : "Serial Manager",
+				ViewerState.trialMode ? "Enter a serial key" : "Add/Remove Keys");
 		wmUpgrade.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				try {
-					if (ViewerStore.Databases.local.getString("serial").isEmpty()) {
-						throw new Exception();
-					} else {
-						// open serial manager
-					}
-				} catch (Exception e1) {
+				if (ViewerState.trialMode) {
 					// show add serial EP
 					MainFrame.main.ep.raise(new AddSerial(MainFrame.main.ep), 100);
+				} else {
+					// open serial manager
 				}
 
 				wmUpgrade.resetBG();
