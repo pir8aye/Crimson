@@ -34,6 +34,7 @@ import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
@@ -156,6 +157,7 @@ public class GenDialog extends JDialog {
 
 	@Override
 	public void dispose() {
+		UIStore.genDialog = null;
 		gp.cancelTimer();
 		super.dispose();
 	}

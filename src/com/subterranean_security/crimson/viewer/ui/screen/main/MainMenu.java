@@ -156,10 +156,18 @@ public class MainMenu extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (!ViewerState.isOnline()) {
 					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
+
 				} else if (ViewerStore.Profiles.getLocalViewer().getPermissions()
 						.getFlag(Perm.server.generator.generate)) {
-					GenDialog gd = new GenDialog();
-					gd.setVisible(true);
+					if (UIStore.genDialog == null) {
+						UIStore.genDialog = new GenDialog();
+						UIStore.genDialog.setLocationRelativeTo(null);
+						UIStore.genDialog.setVisible(true);
+					} else {
+						UIStore.genDialog.setLocationRelativeTo(null);
+						UIStore.genDialog.toFront();
+					}
+
 				} else {
 					MainFrame.main.np.addNote("error", "Insufficient permissions!");
 				}
