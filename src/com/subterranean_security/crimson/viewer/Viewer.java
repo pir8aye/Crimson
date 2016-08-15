@@ -32,8 +32,6 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
 import com.subterranean_security.crimson.core.util.FileLocking;
 import com.subterranean_security.crimson.core.util.Native;
-import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore.Databases;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
@@ -69,8 +67,6 @@ public class Viewer {
 
 		// Load native libraries
 		Native.Loader.load();
-
-		loadDatabaseValues();
 
 		// Make platform specific UI tweaks
 		UIUtil.adaptPlatform();
@@ -146,17 +142,6 @@ public class Viewer {
 		Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { URL.class });
 		method.setAccessible(true);
 		method.invoke(ClassLoader.getSystemClassLoader(), new Object[] { target.toURI().toURL() });
-	}
-
-	public static void loadDatabaseValues() {
-		try {
-			ViewerStore.Profiles.server = (ServerProfile) ViewerStore.Databases.local.getObject("server.profile");
-			ViewerStore.Profiles.viewer = (ClientProfile) ViewerStore.Databases.local.getObject("viewer.profile");
-
-		} catch (Exception e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
 	}
 
 	public static void loadState() {

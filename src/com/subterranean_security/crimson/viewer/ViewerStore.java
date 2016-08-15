@@ -129,9 +129,12 @@ public enum ViewerStore {
 	}
 
 	public static class Profiles {
-		public static ServerProfile server = new ServerProfile();
-		public static ClientProfile viewer = new ClientProfile();
-		public static ViewerProfile vp = new ViewerProfile();
+
+		private static ClientProfile vcp = new ClientProfile();
+
+		private static ServerProfile server = new ServerProfile();
+
+		private static String localUser = null;
 
 		public static MemList<ClientProfile> clients;
 
@@ -144,6 +147,10 @@ public enum ViewerStore {
 				e.printStackTrace();
 			}
 
+		}
+
+		public static void setLocalUser(String user) {
+			localUser = user;
 		}
 
 		public static void removeClient(Integer id) {
@@ -170,12 +177,47 @@ public enum ViewerStore {
 			return null;
 		}
 
+		public static ServerProfile getServer() {
+			return server;
+		}
+
+		public static ClientProfile getLocalClient() {
+			return vcp;
+		}
+
+		public static ViewerProfile getLocalViewer() {
+			return getViewer(localUser);
+		}
+
+		public static void removeViewer(int vid) {
+
+		}
+
+		public static ViewerProfile getViewer(int vid) {
+			for (ViewerProfile v : server.users) {
+				if (v.getCvid() == vid) {
+					return v;
+				}
+			}
+			return null;
+		}
+
+		public static ViewerProfile getViewer(String user) {
+			for (ViewerProfile v : server.users) {
+				if (v.getUser().equals(user)) {
+					return v;
+				}
+			}
+			return null;
+		}
+
 		public static void update(EV_ServerProfileDelta change) {
 			server.amalgamate(change);
 		}
 
 		public static void update(EV_ViewerProfileDelta change) {
-			vp.amalgamate(change);
+			server.amalgamate(EV_ServerProfileDelta.newBuilder().addViewerUser(change).build());
+
 		}
 
 		public static void update(EV_ProfileDelta change) {

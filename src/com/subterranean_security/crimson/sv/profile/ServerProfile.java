@@ -29,6 +29,7 @@ import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 
 public class ServerProfile implements Serializable {
@@ -168,6 +169,7 @@ public class ServerProfile implements Serializable {
 		}
 
 		for (EV_ViewerProfileDelta lc : c.getViewerUserList()) {
+
 			boolean modified = false;
 			for (ViewerProfile l : users) {
 				if (lc.getUser().equals(l.getUser())) {

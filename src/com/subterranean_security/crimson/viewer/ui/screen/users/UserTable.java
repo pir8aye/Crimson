@@ -54,7 +54,7 @@ public class UserTable extends JScrollPane {
 				}
 
 				ViewerProfile selected = tm.getAt(sourceRow);
-				if (ViewerStore.Profiles.vp.getUser().equals(selected.getUser())) {
+				if (ViewerStore.Profiles.getLocalViewer().getUser().equals(selected.getUser())) {
 					parent.btnRemove.setEnabled(false);
 				}
 
@@ -93,7 +93,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerStore.Profiles.server.users.size();
+		return ViewerStore.Profiles.getServer().users.size();
 	}
 
 	@Override
@@ -106,22 +106,22 @@ class TM extends AbstractTableModel {
 
 		switch (headers[columnIndex]) {
 		case "Username": {
-			return ViewerStore.Profiles.server.users.get(rowIndex).getUser();
+			return ViewerStore.Profiles.getServer().users.get(rowIndex).getUser();
 		}
 		case "Login Time": {
-			if (ViewerStore.Profiles.server.users.get(rowIndex).getLoginTime() == null) {
+			if (ViewerStore.Profiles.getServer().users.get(rowIndex).getLoginTime() == null) {
 				return "";
 			}
-			if (ViewerStore.Profiles.server.users.get(rowIndex).getLoginTime().getTime() == 0) {
+			if (ViewerStore.Profiles.getServer().users.get(rowIndex).getLoginTime().getTime() == 0) {
 				return "<hidden>";
 			}
-			return ViewerStore.Profiles.server.users.get(rowIndex).getLoginTime().toString();
+			return ViewerStore.Profiles.getServer().users.get(rowIndex).getLoginTime().toString();
 		}
 		case "Login IP": {
-			return ViewerStore.Profiles.server.users.get(rowIndex).getIp();
+			return ViewerStore.Profiles.getServer().users.get(rowIndex).getIp();
 		}
 		case "Superuser": {
-			return ViewerStore.Profiles.server.users.get(rowIndex).getPermissions().getFlag(Perm.Super) ? "yes" : "no";
+			return ViewerStore.Profiles.getServer().users.get(rowIndex).getPermissions().getFlag(Perm.Super) ? "yes" : "no";
 		}
 
 		}
@@ -129,11 +129,11 @@ class TM extends AbstractTableModel {
 	}
 
 	public ViewerProfile getAt(int row) {
-		return ViewerStore.Profiles.server.users.get(row);
+		return ViewerStore.Profiles.getServer().users.get(row);
 	}
 
 	public void removeAt(int row) {
-		ViewerStore.Profiles.server.users.remove(row);
+		ViewerStore.Profiles.getServer().users.remove(row);
 	}
 
 }

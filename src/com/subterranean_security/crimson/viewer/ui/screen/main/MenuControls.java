@@ -386,23 +386,23 @@ public class MenuControls extends JPanel {
 	}
 
 	public void refresh() {
-		valViewerRamUsage.setText(ViewerStore.Profiles.viewer.getCrimsonRamUsage());
-		valViewerCpuTemp.setText(ViewerStore.Profiles.viewer.getCpuTempAverage());
-		valViewerCpuUsage.setText(ViewerStore.Profiles.viewer.getCrimsonCpuUsage());
-		valServerRamUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.server.getCrimsonRamUsage() : "");
-		valServerCpuTemp.setText(ViewerState.isOnline() ? ViewerStore.Profiles.server.getCpuTempAverage() : "");
-		valServerCpuUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.server.getCrimsonCpuUsage() : "");
-		valClients.setText(ViewerState.isOnline() ? "" + ViewerStore.Profiles.server.getConnectedClients() : "");
-		valUsers.setText(ViewerState.isOnline() ? "" + ViewerStore.Profiles.server.getConnectedUsers() : "");
-		valIp.setText(ViewerStore.Profiles.vp.getIp());
-		valUsername.setText(ViewerStore.Profiles.vp.getUser());
+		valViewerRamUsage.setText(ViewerStore.Profiles.getLocalClient().getCrimsonRamUsage());
+		valViewerCpuTemp.setText(ViewerStore.Profiles.getLocalClient().getCpuTempAverage());
+		valViewerCpuUsage.setText(ViewerStore.Profiles.getLocalClient().getCrimsonCpuUsage());
+		valServerRamUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCrimsonRamUsage() : "");
+		valServerCpuTemp.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCpuTempAverage() : "");
+		valServerCpuUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCrimsonCpuUsage() : "");
+		valClients.setText(ViewerState.isOnline() ? "" + ViewerStore.Profiles.getServer().getConnectedClients() : "");
+		valUsers.setText(ViewerState.isOnline() ? "" + ViewerStore.Profiles.getServer().getConnectedUsers() : "");
+		valIp.setText(ViewerStore.Profiles.getLocalViewer().getIp());
+		valUsername.setText(ViewerStore.Profiles.getLocalViewer().getUser());
 
 		if (!ViewerState.isOnline()) {
 			valStatus.setText("Offline");
 			valStatus.setForeground(Color.gray);// TODO
 			btnStartServer.setEnabled(false);
 			btnStopServer.setEnabled(false);
-		} else if (ViewerStore.Profiles.server.getStatus()) {
+		} else if (ViewerStore.Profiles.getServer().getStatus()) {
 			valStatus.setText("Running");
 			valStatus.setForeground(new Color(0, 149, 39));
 			btnStartServer.setEnabled(false);

@@ -487,7 +487,6 @@ public class ServerExecutor extends BasicExecutor {
 			}
 
 			if (pass) {
-				log.debug("Accepting Login");
 				receptor.setState(ConnectionState.AUTHENTICATED);
 
 				ServerStore.Connections.add(receptor);
@@ -496,6 +495,7 @@ public class ServerExecutor extends BasicExecutor {
 				vid.setUser(vp.getUser());
 				vid.setLoginIp(vp.getIp());
 				vid.setLoginTime(vp.getLoginTime().getTime());
+				vid.addAllViewerPermissions(vp.getPermissions().listPermissions());
 
 				if (vp.getLastLoginIp() != null) {
 					vid.setLastLoginIp(vp.getLastLoginIp());
@@ -510,7 +510,13 @@ public class ServerExecutor extends BasicExecutor {
 
 				try {
 					for (Integer i : ServerStore.Profiles.getViewerKeyset()) {
+
 						ViewerProfile vpi = ServerStore.Profiles.getViewer(i);
+						if (vpi.getUser().equals(user)) {
+							// skip the user logging in
+							continue;
+						}
+
 						EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
 								.setLoginIp(vp.getPermissions().getFlag(Perm.Super) ? vpi.getIp() : "<hidden>")
 								.setLoginTime(
@@ -529,9 +535,11 @@ public class ServerExecutor extends BasicExecutor {
 		} finally {
 			receptor.handle.write(Message.newBuilder().setId(m.getId())
 					.setRsLogin(RS_Login.newBuilder().setResponse(pass).setSpd(sid).setVpd(vid)).build());
-			log.info("Login outcome: " + pass);
+
 			if (!pass) {
 				receptor.close();
+			} else {
+				log.info("Logged in: {}", user);
 			}
 		}
 	}

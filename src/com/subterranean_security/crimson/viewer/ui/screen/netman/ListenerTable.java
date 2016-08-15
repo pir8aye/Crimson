@@ -86,7 +86,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerStore.Profiles.server.listeners.size();
+		return ViewerStore.Profiles.getServer().listeners.size();
 	}
 
 	@Override
@@ -99,19 +99,19 @@ class TM extends AbstractTableModel {
 
 		switch (headers[columnIndex]) {
 		case "ID": {
-			return ViewerStore.Profiles.server.listeners.get(rowIndex).getId();
+			return ViewerStore.Profiles.getServer().listeners.get(rowIndex).getId();
 		}
 		case "Name": {
-			return ViewerStore.Profiles.server.listeners.get(rowIndex).getName();
+			return ViewerStore.Profiles.getServer().listeners.get(rowIndex).getName();
 		}
 		case "Port": {
-			return ViewerStore.Profiles.server.listeners.get(rowIndex).getPort();
+			return ViewerStore.Profiles.getServer().listeners.get(rowIndex).getPort();
 		}
 		case "UPnP": {
-			return ViewerStore.Profiles.server.listeners.get(rowIndex).getUpnp() ? "yes" : "no";
+			return ViewerStore.Profiles.getServer().listeners.get(rowIndex).getUpnp() ? "yes" : "no";
 		}
 		case "Owner": {
-			return ViewerStore.Profiles.server.listeners.get(rowIndex).getOwner();
+			return ViewerStore.Profiles.getServer().listeners.get(rowIndex).getOwner();
 		}
 
 		}
@@ -119,11 +119,11 @@ class TM extends AbstractTableModel {
 	}
 
 	public ListenerConfig getAt(int row) {
-		return ViewerStore.Profiles.server.listeners.get(row);
+		return ViewerStore.Profiles.getServer().listeners.get(row);
 	}
 
 	public void removeAt(int row) {
-		ViewerStore.Profiles.server.listeners.remove(row);
+		ViewerStore.Profiles.getServer().listeners.remove(row);
 	}
 
 }

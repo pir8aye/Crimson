@@ -287,7 +287,7 @@ public class AddListener extends JPanel {
 			return false;
 		}
 
-		for (ListenerConfig lc : ViewerStore.Profiles.server.listeners) {
+		for (ListenerConfig lc : ViewerStore.Profiles.getServer().listeners) {
 			if (lc.getPort() == Integer.parseInt(fld_port.getText())) {
 				sl.setBad("Port in use");
 				return false;
@@ -319,13 +319,13 @@ public class AddListener extends JPanel {
 
 	public void updateOwners() {
 		String[] o = null;
-		if (ViewerStore.Profiles.vp.getPermissions().getFlag(Perm.Super)) {
-			o = new String[ViewerStore.Profiles.server.users.size()];
+		if (ViewerStore.Profiles.getLocalViewer().getPermissions().getFlag(Perm.Super)) {
+			o = new String[ViewerStore.Profiles.getServer().users.size()];
 			for (int i = 0; i < o.length; i++) {
-				o[i] = ViewerStore.Profiles.server.users.get(i).getUser();
+				o[i] = ViewerStore.Profiles.getServer().users.get(i).getUser();
 			}
 		} else {
-			o = new String[] { ViewerStore.Profiles.vp.getUser() };
+			o = new String[] { ViewerStore.Profiles.getLocalViewer().getUser() };
 		}
 		owner.setModel(new DefaultComboBoxModel<String>(o));
 	}

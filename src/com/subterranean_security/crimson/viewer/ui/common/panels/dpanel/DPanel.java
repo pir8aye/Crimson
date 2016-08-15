@@ -86,7 +86,6 @@ public class DPanel extends SLPanel {
 	}
 
 	public void showDetail(ClientProfile sp) {
-		System.out.println("showDetail");
 		if (!moving) {
 			if (!showing) {
 				// move the detail panel out

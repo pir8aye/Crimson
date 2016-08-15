@@ -120,9 +120,9 @@ public class StatsPanel extends JPanel {
 	public void refresh() {
 		label_5.setText(ViewerStore.Connections.getVC(0).getRemoteAddress());
 		label_3.setText(CUtil.Network.getIIP());
-		label_1.setText("" + ViewerStore.Profiles.server.listeners.size());
-		lblNewLabel.setText("" + ViewerStore.Profiles.server.getConnectedClients());
-		lblVal.setText("" + ViewerStore.Profiles.server.getConnectedUsers());
+		label_1.setText("" + ViewerStore.Profiles.getServer().listeners.size());
+		lblNewLabel.setText("" + ViewerStore.Profiles.getServer().getConnectedClients());
+		lblVal.setText("" + ViewerStore.Profiles.getServer().getConnectedUsers());
 		new SwingWorker<String, String>() {
 
 			@Override

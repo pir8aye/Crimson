@@ -122,7 +122,7 @@ public class Relogin extends JPanel {
 		gbc_lblUsername.gridy = 1;
 		panel.add(lblUsername, gbc_lblUsername);
 
-		lbl_user = new JLabel(ViewerStore.Profiles.vp.getUser());
+		lbl_user = new JLabel(ViewerStore.Profiles.getLocalViewer().getUser());
 		lbl_user.setEnabled(false);
 		lbl_user.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblAdmin = new GridBagConstraints();

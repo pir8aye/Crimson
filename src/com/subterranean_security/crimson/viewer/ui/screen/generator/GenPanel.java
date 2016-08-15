@@ -55,8 +55,8 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
-import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
+import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -577,7 +577,7 @@ public class GenPanel extends JPanel {
 
 		ic.setMelt(chckbxDeleteInstaller.isSelected());
 		ic.setAutostart(chckbxInstallAutostartModule.isSelected());
-		ic.setViewerUser(ViewerStore.Profiles.vp.getUser());
+		ic.setViewerUser(ViewerStore.Profiles.getLocalViewer().getUser());
 
 		ic.setDelay((int) fld_delay.getValue());
 		ic.setReconnectPeriod((int) ntab.fld_connect_period.getValue());

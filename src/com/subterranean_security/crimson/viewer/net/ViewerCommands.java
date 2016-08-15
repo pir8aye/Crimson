@@ -108,8 +108,8 @@ public enum ViewerCommands {
 			Message lrs = ViewerRouter.getReponse(0, id, 5);
 			if (lrs.hasRsLogin()) {
 				if (lrs.getRsLogin().getResponse()) {
-					ViewerStore.Profiles.server.amalgamate(lrs.getRsLogin().getSpd());
-					ViewerStore.Profiles.vp.amalgamate(lrs.getRsLogin().getVpd());
+					ViewerStore.Profiles.update(lrs.getRsLogin().getSpd());
+					ViewerStore.Profiles.update(lrs.getRsLogin().getVpd());
 					triggerProfileDelta();
 					return true;
 				}

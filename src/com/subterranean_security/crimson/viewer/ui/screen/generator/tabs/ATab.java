@@ -251,7 +251,7 @@ public class ATab extends JPanel {
 
 	private void loadGroups() {
 		ArrayList<AuthMethod> groups = new ArrayList<AuthMethod>();
-		for (AuthMethod am : ViewerStore.Profiles.server.authMethods) {
+		for (AuthMethod am : ViewerStore.Profiles.getServer().authMethods) {
 			if (am.getType() == AuthType.GROUP) {
 				groups.add(am);
 			}

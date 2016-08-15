@@ -121,7 +121,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerStore.Profiles.server.authMethods.size();
+		return ViewerStore.Profiles.getServer().authMethods.size();
 	}
 
 	@Override
@@ -134,24 +134,24 @@ class TM extends AbstractTableModel {
 
 		switch (headers[columnIndex]) {
 		case "ID":
-			return ViewerStore.Profiles.server.authMethods.get(rowIndex).getId();
+			return ViewerStore.Profiles.getServer().authMethods.get(rowIndex).getId();
 		case "Authentication Type":
-			return ViewerStore.Profiles.server.authMethods.get(rowIndex).getType();
+			return ViewerStore.Profiles.getServer().authMethods.get(rowIndex).getType();
 		case "Name":
-			return ViewerStore.Profiles.server.authMethods.get(rowIndex).getName();
+			return ViewerStore.Profiles.getServer().authMethods.get(rowIndex).getName();
 		case "Creation Date":
-			return new Date(ViewerStore.Profiles.server.authMethods.get(rowIndex).getCreation()).toString();
+			return new Date(ViewerStore.Profiles.getServer().authMethods.get(rowIndex).getCreation()).toString();
 
 		}
 		return null;
 	}
 
 	public AuthMethod getAt(int row) {
-		return ViewerStore.Profiles.server.authMethods.get(row);
+		return ViewerStore.Profiles.getServer().authMethods.get(row);
 	}
 
 	public void removeAt(int row) {
-		ViewerStore.Profiles.server.authMethods.remove(row);
+		ViewerStore.Profiles.getServer().authMethods.remove(row);
 	}
 
 }

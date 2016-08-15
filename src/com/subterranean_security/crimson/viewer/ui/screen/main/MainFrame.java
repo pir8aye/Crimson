@@ -137,10 +137,10 @@ public class MainFrame extends JFrame {
 			}
 
 			protected void done() {
-				if (ViewerStore.Profiles.vp.getLastLoginIp() != null) {
+				if (ViewerStore.Profiles.getLocalViewer().getLastLoginIp() != null) {
 					MainFrame.main.np.addNote("info",
-							"Last Login at " + ViewerStore.Profiles.vp.getLastLoginTime().toString() + " from "
-									+ ViewerStore.Profiles.vp.getLastLoginIp());
+							"Last Login at " + ViewerStore.Profiles.getLocalViewer().getLastLoginTime().toString()
+									+ " from " + ViewerStore.Profiles.getLocalViewer().getLastLoginIp());
 				}
 			};
 

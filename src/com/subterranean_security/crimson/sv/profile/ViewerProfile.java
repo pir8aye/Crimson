@@ -20,10 +20,7 @@ package com.subterranean_security.crimson.sv.profile;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.subterranean_security.crimson.core.exception.InvalidObjectException;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
-import com.subterranean_security.crimson.core.util.B64;
-import com.subterranean_security.crimson.core.util.ObjectTransfer;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.TrackedAttribute;

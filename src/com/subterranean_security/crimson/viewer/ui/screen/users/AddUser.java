@@ -314,7 +314,7 @@ public class AddUser extends JDialog {
 		}
 
 		// check for username conflicts
-		for (ViewerProfile vp : ViewerStore.Profiles.server.users) {
+		for (ViewerProfile vp : ViewerStore.Profiles.getServer().users) {
 			if (vp.getUser().equals(textField.getText())) {
 				sl.setBad("Username taken");
 				return false;

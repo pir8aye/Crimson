@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.sv.profile.ServerProfile;
 
 public class LViewerDB extends Database {
 	public LViewerDB(File dfile) throws Exception {
@@ -58,8 +57,6 @@ public class LViewerDB extends Database {
 	@Override
 	public void hardReset() {
 		this.softReset();
-		this.storeObject("viewer.profile", new ClientProfile());
-		this.storeObject("server.profile", new ServerProfile());
 		super.hardReset();
 	}
 }

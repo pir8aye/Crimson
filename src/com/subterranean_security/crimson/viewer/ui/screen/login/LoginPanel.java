@@ -366,6 +366,9 @@ public class LoginPanel extends JPanel {
 					return outcome.build();
 				}
 
+				// set local viewer profile name
+				ViewerStore.Profiles.setLocalUser(user);
+
 				// test the credentials
 				if (ViewerCommands.login(user, UIUtil.getPassword(fld_pass))) {
 					outcome.setResult(true);
