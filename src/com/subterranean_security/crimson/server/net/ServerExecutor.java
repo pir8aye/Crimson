@@ -444,6 +444,7 @@ public class ServerExecutor extends BasicExecutor {
 				// create ViewerProfile
 				vp = new ViewerProfile(IDGen.getCvid());
 				vp.setUser(user);
+				vp.getPermissions().addFlag(Perm.server.generator.generate).addFlag(Perm.server.fs.read);
 				ServerStore.Profiles.addViewer(vp);
 			}
 
