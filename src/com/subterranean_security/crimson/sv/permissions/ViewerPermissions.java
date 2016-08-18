@@ -80,7 +80,7 @@ public class ViewerPermissions implements Serializable {
 		return flags;
 	}
 
-	private long translateFlag(int cid, int perm) {
+	public static long translateFlag(int cid, int perm) {
 		// the permission identifier exists in the upper 32 bits
 		long flag = ((long) perm) << 32;
 
