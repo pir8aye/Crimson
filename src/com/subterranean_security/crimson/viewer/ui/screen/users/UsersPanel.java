@@ -27,6 +27,8 @@ import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
+import com.subterranean_security.crimson.sv.permissions.Perm;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.users.ep.EditUser;
 
@@ -71,9 +73,10 @@ public class UsersPanel extends JPanel {
 		});
 
 		btnAddUser = new JButton("Add User");
+		btnAddUser.setEnabled(ViewerStore.Profiles.getLocalViewer().getPermissions().getFlag(Perm.server.users.create));
 		btnAddUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO check permissions
+
 				if (addDialog == null) {
 					addDialog = new AddUser();
 					addDialog.setVisible(true);
