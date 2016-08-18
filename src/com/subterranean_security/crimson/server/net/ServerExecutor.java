@@ -59,6 +59,7 @@ import com.subterranean_security.crimson.core.proto.Log.RS_Logs;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.SMSG.RS_CloudUser;
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeServerState;
@@ -92,6 +93,8 @@ public class ServerExecutor extends BasicExecutor {
 	private static final Logger log = LoggerFactory.getLogger(ServerExecutor.class);
 
 	private Receptor receptor;
+
+	private int authID;
 
 	public ServerExecutor(Receptor r) {
 		receptor = r;
@@ -305,17 +308,19 @@ public class ServerExecutor extends BasicExecutor {
 				log.debug("Authentication failed: Invalid Group: {}", auth.getGroupName());
 				receptor.setState(ConnectionState.CONNECTED);
 				return;
+			} else {
+				authID = ServerStore.Authentication.getGroupMethod(auth.getGroupName()).getId();
 			}
-			final int id = IDGen.get();
+			final int mSeqID = IDGen.get();
 
 			final String magic = CUtil.Misc.randString(64);
 			RQ_GroupChallenge rq = RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
-			receptor.handle.write(Message.newBuilder().setId(id).setRqGroupChallenge(rq).build());
+			receptor.handle.write(Message.newBuilder().setId(mSeqID).setRqGroupChallenge(rq).build());
 
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						RS_GroupChallenge rs = receptor.cq.take(id, 7, TimeUnit.SECONDS).getRsGroupChallenge();
+						RS_GroupChallenge rs = receptor.cq.take(mSeqID, 7, TimeUnit.SECONDS).getRsGroupChallenge();
 						boolean flag = rs.getResult().equals(Crypto.hashSign(magic, group.getGroupKey()));
 						try {
 							group.destroy();
@@ -328,7 +333,7 @@ public class ServerExecutor extends BasicExecutor {
 							log.info("Challenge 1 failed");
 							receptor.setState(ConnectionState.CONNECTED);
 						}
-						receptor.handle.write(Message.newBuilder().setId(id)
+						receptor.handle.write(Message.newBuilder().setId(mSeqID)
 								.setMiChallengeresult(MI_GroupChallengeResult.newBuilder().setResult(flag).build())
 								.build());
 					} catch (Exception e) {
@@ -342,10 +347,14 @@ public class ServerExecutor extends BasicExecutor {
 			break;
 
 		case PASSWORD:
-			if (!ServerStore.Authentication.tryPassword(auth.getPassword())) {
-				log.debug("Authentication failed");
+			AuthMethod am = ServerStore.Authentication.getPassword(auth.getPassword());
+			if (am == null) {
+				log.debug("Password authentication failed");
 				receptor.setState(ConnectionState.CONNECTED);
 				break;
+			} else {
+				authID = am.getId();
+				// drop into NO_AUTH
 			}
 		case NO_AUTH:
 			// come on in
@@ -812,6 +821,8 @@ public class ServerExecutor extends BasicExecutor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		ServerStore.Profiles.getClient(receptor.getCvid()).setAuthID(authID);
 
 		ServerStore.Connections.add(receptor);
 	}

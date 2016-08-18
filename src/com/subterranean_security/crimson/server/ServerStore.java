@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.server;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
@@ -43,6 +45,7 @@ import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.sv.permissions.Perm;
+import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
@@ -115,6 +118,7 @@ public enum ServerStore {
 				users++;
 			} else {
 				clients++;
+				Authentication.refreshVisibilityPermissions(r.getCvid());
 				Profiles.getClient(r.getCvid()).setOnline(true);
 				sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
 						Message.newBuilder().setUrgent(true)
@@ -274,13 +278,13 @@ public enum ServerStore {
 			}
 		}
 
-		public static boolean tryPassword(String s) {
+		public static AuthMethod getPassword(String s) {
 			for (int i = 0; i < methods.size(); i++) {
 				if (s.equals(methods.get(i).getPassword())) {
-					return true;
+					return methods.get(i);
 				}
 			}
-			return false;
+			return null;
 		}
 
 		public static void refreshAllVisibilityPermissions() {
@@ -304,12 +308,42 @@ public enum ServerStore {
 				}
 
 			}
-			for (Integer i : Profiles.getViewerKeyset()) {
-				ViewerProfile vp = Profiles.getViewer(i);
-				if (clientAuth.getMemberList().contains(vp.getUser())) {
-					// this viewer has authority over this client
-				}
 
+			ArrayList<Integer> changed = new ArrayList<Integer>();
+
+			if (clientAuth == null) {
+				// no auth; append all viewers
+				for (Integer i : Profiles.getViewerKeyset()) {
+					ViewerProfile vp = Profiles.getViewer(i);
+					log.debug("Adding visibility flag to viewer {} for client {}", vp.getCvid(), cid);
+					vp.getPermissions().addFlag(cid, Perm.client.visibility);
+
+					// TODO only send if changed
+					changed.add(vp.getCvid());
+				}
+			} else {
+				for (Integer i : Profiles.getViewerKeyset()) {
+					ViewerProfile vp = Profiles.getViewer(i);
+					if (clientAuth.getOwnerList().contains(vp.getUser())
+							|| clientAuth.getMemberList().contains(vp.getUser())) {
+						// this viewer has authority over this client
+						log.debug("Adding visibility flag to viewer {} for client {}", vp.getCvid(), cid);
+						vp.getPermissions().addFlag(cid, Perm.client.visibility);
+
+						// TODO only send if changed
+						changed.add(vp.getCvid());
+					}
+
+				}
+			}
+			for (int id : changed) {
+				Receptor r = Connections.getConnection(id);
+				if (r != null) {
+					r.handle.write(Message.newBuilder()
+							.setEvViewerProfileDelta(EV_ViewerProfileDelta.newBuilder()
+									.addViewerPermissions(ViewerPermissions.translateFlag(cid, Perm.client.visibility)))
+							.build());
+				}
 			}
 		}
 	}
@@ -347,7 +381,6 @@ public enum ServerStore {
 
 		public static void addClient(ClientProfile p) {
 			clientProfiles.put(p.getCvid(), p);
-			Authentication.refreshVisibilityPermissions(p.getCvid());
 		}
 
 		public static ViewerProfile getViewer(int vid) {
