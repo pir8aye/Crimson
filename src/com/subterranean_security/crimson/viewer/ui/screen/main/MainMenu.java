@@ -156,7 +156,6 @@ public class MainMenu extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (!ViewerState.isOnline()) {
 					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
-
 				} else if (ViewerStore.Profiles.getLocalViewer().getPermissions()
 						.getFlag(Perm.server.generator.generate)) {
 					if (UIStore.genDialog == null) {
@@ -204,14 +203,21 @@ public class MainMenu extends JPanel {
 		wmUsers.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
+
 				if (!ViewerState.isOnline()) {
 					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
-				} else if (UIStore.userMan == null) {
-					UIStore.userMan = new UserMan();
-					UIStore.userMan.setLocationRelativeTo(null);
-					UIStore.userMan.setVisible(true);
+				} else if (ViewerStore.Profiles.getLocalViewer().getPermissions().getFlag(Perm.server.users.view)) {
+					if (UIStore.userMan == null) {
+						UIStore.userMan = new UserMan();
+						UIStore.userMan.setLocationRelativeTo(null);
+						UIStore.userMan.setVisible(true);
+					} else {
+						UIStore.userMan.setLocationRelativeTo(null);
+						UIStore.userMan.toFront();
+					}
+
 				} else {
-					UIStore.userMan.toFront();
+					MainFrame.main.np.addNote("error", "Insufficient permissions!");
 				}
 
 				wmUsers.resetBG();

@@ -55,6 +55,7 @@ public final class Perm {
 		}
 
 		public static final class users {
+			public static final int view = 15;
 			public static final int create = 7;
 			public static final int delete = 8;
 
