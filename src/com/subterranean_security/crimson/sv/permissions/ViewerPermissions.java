@@ -47,7 +47,10 @@ public class ViewerPermissions implements Serializable {
 	}
 
 	public ViewerPermissions addFlag(int cid, int perm) {
-		flags.add(translateFlag(cid, perm));
+		long flag = translateFlag(cid, perm);
+		if (!flags.contains(flag)) {
+			flags.add(flag);
+		}
 		return this;
 	}
 
