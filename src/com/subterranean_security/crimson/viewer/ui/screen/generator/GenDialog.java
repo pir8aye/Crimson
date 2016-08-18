@@ -33,6 +33,7 @@ import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -80,6 +81,7 @@ public class GenDialog extends JDialog {
 							if (config.getAuthType() == AuthType.GROUP
 									&& ((String) gp.atab.groupSelectionBox.getSelectedItem()).equals("Create Group")) {
 								if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
+										.addOwner(ViewerStore.Profiles.getLocalViewer().getUser())
 										.setId(IDGen.getAuthMethodID()).setCreation(new Date().getTime())
 										.setType(AuthType.GROUP).setName(config.getGroupName())
 										.setGroupSeedPrefix(gp.getGroupPrefix()).build()).getResult()) {
@@ -90,6 +92,7 @@ public class GenDialog extends JDialog {
 							} else if (config.getAuthType() == AuthType.PASSWORD
 									&& !gp.atab.chckbxDontInstallPassword.isSelected()) {
 								if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
+										.addOwner(ViewerStore.Profiles.getLocalViewer().getUser())
 										.setId(IDGen.getAuthMethodID()).setCreation(new Date().getTime())
 										.setType(AuthType.PASSWORD).setName(gp.atab.fld_password_name.getText())
 										.setPassword(gp.atab.getPassword()).build()).getResult()) {
