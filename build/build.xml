@@ -260,16 +260,6 @@
 		<echo message="Generated Jar files" />
 	</target>
 
-	<target name="package-arch" depends="jar">
-		<description>Generate Arch Linux packages</description>
-		<exec executable="/home/subterranean/Workspace/Crimson/scripts/package-arch.sh" />
-		<arg value="${arch.dir}" />
-		<arg value="${crimson.version}" />
-		<arg value="${build.number}" />
-		<arg value="${build.time}" />
-		
-	</target>
-
 	<target name="distribute" depends="jar">
 		<copy file="${dist.dir}/Viridian.jar" todir="/srv/http/dist/" />
 		<copy file="${dist.dir}/CInstaller.jar" todir="/srv/http/dist/" />
