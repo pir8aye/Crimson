@@ -24,6 +24,7 @@ import java.awt.Dimension;
 import javax.swing.Box;
 import javax.swing.JDialog;
 
+import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
 
 public class LoginDialog extends JDialog {
@@ -32,15 +33,13 @@ public class LoginDialog extends JDialog {
 	public final LoginPanel loginPanel = new LoginPanel(this);
 	public final HPanel hp = new HPanel(loginPanel);
 
-	private Dimension size = new Dimension(405, 320);
-
 	public LoginDialog(boolean localServer) {
 
 		loginPanel.addRecents(localServer);
 
 		setTitle("Crimson - Login");
-		setSize(size);
-		setPreferredSize(size);
+		setSize(UICommon.dim_login);
+		setPreferredSize(UICommon.dim_login);
 		setResizable(false);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
