@@ -71,16 +71,19 @@ public class AboutDialog extends JDialog {
 
 	public AboutDialog() {
 		setStaticValues();
+		init();
+	}
 
-		setBackground(UICommon.bg);
-		getContentPane().setBackground(new Color(60, 59, 57));
-
-		setIconImages(UIUtil.getIconList());
-		setResizable(false);
+	public void init() {
 		setTitle("About Crimson");
-		setBounds(100, 100, 630, 400);
+		setBackground(UICommon.bg);
+		setIconImages(UIUtil.getIconList());
+		setMinimumSize(UICommon.dim_about);
+		setPreferredSize(UICommon.dim_about);
+		setResizable(false);
+
 		getContentPane().setLayout(new BorderLayout(0, 0));
-		contentPanel.setBackground(new Color(60, 59, 57));
+		contentPanel.setBackground(UICommon.bg);
 		contentPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		getContentPane().add(contentPanel);
 		{
