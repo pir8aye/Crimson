@@ -96,17 +96,16 @@ public class EULADialog extends JDialog {
 
 	public EULADialog(boolean exitOnDispose) {
 		exitOnDisp = exitOnDispose;
+		init();
+	}
 
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-		setAlwaysOnTop(true);
-		// setIconImage(UICommon.appIcon);
-
-		setResizable(false);
-
+	public void init() {
 		setTitle("Crimson License Agreement");
-
-		setBounds(100, 100, 639, 310);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setAlwaysOnTop(true);
+		setResizable(false);
+		setMinimumSize(UICommon.dim_eula);
+		setPreferredSize(UICommon.dim_eula);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel);
