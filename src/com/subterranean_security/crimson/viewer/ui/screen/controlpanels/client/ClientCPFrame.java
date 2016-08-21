@@ -88,7 +88,7 @@ public class ClientCPFrame extends JFrame {
 		setTitle("Control Panel: " + profile.getHostname());
 		setIconImages(UIUtil.getIconList());
 		setResizable(true);
-		setMinimumSize(UICommon.dim_ccp);
+		setMinimumSize(UICommon.dim_control_panel);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setDividerLocation(0.85d);

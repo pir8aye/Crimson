@@ -25,8 +25,6 @@ import javax.swing.border.LineBorder;
 
 public enum UICommon {
 	;
-	// paths
-	// public static final Image appIcon =
 
 	public static String getLicensePath(String lang) {
 		return "/com/subterranean_security/crimson/viewer/ui/res/image/license-" + lang + ".png";
@@ -46,12 +44,12 @@ public enum UICommon {
 	// dimensions
 	public static final Dimension dim_login = new Dimension(405, 320);
 	public static final Dimension dim_eula = new Dimension(639, 310);
-	public static final Dimension dim_frame_main = new Dimension(620, 310);
+	public static final Dimension dim_main = new Dimension(620, 310);
 	public static final Dimension dim_btn_up = new Dimension(40, 17);
-	public static final Dimension dim_ccp = new Dimension(575, 300);
-	public static final Dimension min_files = new Dimension(600, 350);
-	public static final Dimension min_netman = new Dimension(573, 600);
-	public static final Dimension dim_min_users = new Dimension(450, 400);
+	public static final Dimension dim_control_panel = new Dimension(575, 300);
+	public static final Dimension dim_filemanager = new Dimension(600, 350);
+	public static final Dimension dim_networkmanager = new Dimension(573, 600);
+	public static final Dimension dim_usermanager = new Dimension(450, 400);
 	public static final Dimension dim_control_button = new Dimension(100, 27);
 
 	// borders

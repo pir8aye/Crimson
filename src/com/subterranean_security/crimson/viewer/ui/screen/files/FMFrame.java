@@ -50,7 +50,7 @@ public class FMFrame extends JFrame {
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
-		setMinimumSize(UICommon.min_files);
+		setMinimumSize(UICommon.dim_filemanager);
 		setContentPane(epanel);
 	}
 

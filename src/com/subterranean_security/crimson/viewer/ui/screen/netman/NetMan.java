@@ -43,7 +43,7 @@ public class NetMan extends JFrame {
 	public NetMan() {
 		setIconImages(UIUtil.getIconList());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setMinimumSize(UICommon.min_netman);
+		setMinimumSize(UICommon.dim_networkmanager);
 		setTitle("Network Manager");
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(hp);

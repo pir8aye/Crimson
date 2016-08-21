@@ -54,9 +54,9 @@ public class MainFrame extends JFrame {
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(true);
-		setSize(UICommon.dim_frame_main);
-		setPreferredSize(UICommon.dim_frame_main);
-		setMinimumSize(UICommon.dim_frame_main);
+		setSize(UICommon.dim_main);
+		setPreferredSize(UICommon.dim_main);
+		setMinimumSize(UICommon.dim_main);
 		setIconImages(UIUtil.getIconList());
 
 		String buildNo = null;

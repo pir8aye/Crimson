@@ -39,8 +39,8 @@ public class UserMan extends JFrame {
 		setIconImages(UIUtil.getIconList());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setResizable(true);
-		setSize(UICommon.dim_min_users);
-		setMinimumSize(UICommon.dim_min_users);
+		setSize(UICommon.dim_usermanager);
+		setMinimumSize(UICommon.dim_usermanager);
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(hp, BorderLayout.CENTER);
 
