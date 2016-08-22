@@ -62,6 +62,12 @@ public final class Reporter {
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
+			rb.setCrBaseDir(Common.Directories.base.getAbsolutePath());
+		} catch (Exception e) {
+			rb.setCrComment("Failed to query Crimson base directory: " + e.getMessage() + "\n"
+					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
+		}
+		try {
 			rb.setCrBuild("" + Common.build);
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Crimson build number: " + e.getMessage() + "\n"
