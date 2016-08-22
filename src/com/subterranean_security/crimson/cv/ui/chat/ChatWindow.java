@@ -28,6 +28,7 @@ import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import javax.swing.JMenuBar;
 import javax.swing.Box;
 import javax.swing.JButton;
+import java.awt.Insets;
 
 public class ChatWindow extends JFrame {
 
@@ -44,14 +45,14 @@ public class ChatWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setIconImages(UIUtil.getIconList());
 		setTitle("Remote Chat");
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 287, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
 		JPanel panel = new JPanel();
-		contentPane.add(panel, BorderLayout.CENTER);
+		contentPane.add(panel, BorderLayout.WEST);
 		panel.setLayout(new BorderLayout(0, 0));
 
 		ChatPanel chatPanel = new ChatPanel();
@@ -61,11 +62,16 @@ public class ChatWindow extends JFrame {
 		panel.add(menuBar, BorderLayout.NORTH);
 
 		JButton btnE = new JButton("E");
+		btnE.setMargin(new Insets(2, 4, 2, 4));
 		menuBar.add(btnE);
 
 		menuBar.add(Box.createHorizontalGlue());
-		JButton btnS = new JButton("S");
+		JButton btnS = new JButton(UIUtil.getIcon("icons16/general/cog.png"));
+		btnS.setMargin(new Insets(2, 4, 2, 4));
 		menuBar.add(btnS);
+
+		ep = new EPanel(new JPanel());
+		contentPane.add(ep, BorderLayout.EAST);
 
 	}
 

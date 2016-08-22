@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.proto.Chat.RQ_Chat;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_CreateAuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_RemoveAuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientControl.RQ_ChangeSetting;
@@ -579,6 +580,25 @@ public enum ViewerCommands {
 					}
 				}
 				return m.getRsChangeSetting().getResult();
+			}
+
+		} catch (InterruptedException e) {
+			outcome.setResult(false).setComment("Interrupted");
+		}
+		return outcome.build();
+	}
+
+	public static Outcome openChat(int cid, boolean prompt) {
+		Outcome.Builder outcome = Outcome.newBuilder();
+		try {
+			Message m = ViewerRouter.routeAndWait(
+					Message.newBuilder().setRid(cid).setSid(Common.cvid).setRqChat(RQ_Chat.newBuilder()), 5);
+
+			if (m == null) {
+				outcome.setResult(false).setComment("Request timed out");
+			} else {
+				// TODO open chat
+				outcome.setResult(true);
 			}
 
 		} catch (InterruptedException e) {

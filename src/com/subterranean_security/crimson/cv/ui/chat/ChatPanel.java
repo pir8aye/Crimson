@@ -25,6 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JTextArea;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Font;
 
 public class ChatPanel extends JPanel {
 
@@ -57,6 +58,7 @@ public class ChatPanel extends JPanel {
 		panel_1.add(panel_2, BorderLayout.EAST);
 
 		JButton btnSend = new JButton("Send");
+		btnSend.setFont(new Font("Dialog", Font.BOLD, 10));
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 

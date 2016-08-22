@@ -21,7 +21,6 @@ import java.awt.HeadlessException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
@@ -70,7 +69,6 @@ import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.sc.Logsystem;
 
 import io.netty.util.ReferenceCountUtil;
@@ -94,6 +92,8 @@ public class ClientExecutor extends BasicExecutor {
 					}
 					if (m.hasEvStreamData()) {
 						ev_stream_data(m);
+					} else if (m.hasEvChatMessage()) {
+						ev_chat_message(m);
 					}
 
 					ReferenceCountUtil.release(m);
@@ -141,6 +141,8 @@ public class ClientExecutor extends BasicExecutor {
 						rq_logs(m);
 					} else if (m.hasRqChangeSetting()) {
 						rq_change_setting(m);
+					} else if (m.hasRqChat()) {
+						rq_chat(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -158,6 +160,10 @@ public class ClientExecutor extends BasicExecutor {
 		if (s != null) {
 			s.received(m);
 		}
+
+	}
+
+	private void ev_chat_message(Message m) {
 
 	}
 
@@ -448,6 +454,10 @@ public class ClientExecutor extends BasicExecutor {
 					.setRsChangeSetting(RS_ChangeSetting.newBuilder().setResult(outcome)));
 		}
 
+	}
+
+	private void rq_chat(Message m) {
+		// TODO handle
 	}
 
 }

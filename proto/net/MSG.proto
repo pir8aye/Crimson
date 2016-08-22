@@ -1,5 +1,6 @@
 package com.subterranean_security.crimson.core.proto;
 
+import "net/sequences/Chat.proto";
 import "net/sequences/Login.proto";
 import "net/sequences/Keylogger.proto";
 import "net/sequences/ClientAuth.proto";
@@ -29,6 +30,7 @@ message Message {
 	optional EV_ServerProfileDelta ev_server_profile_delta = 7;
 	optional EV_ViewerProfileDelta ev_viewer_profile_delta = 8;
 	optional EV_KEvent ev_kevent = 9;
+	optional EV_ChatMessage ev_chat_message = 10;
 	
 	optional RQ_Login rq_login = 100;
 	optional RS_Login rs_login = 101;
@@ -74,6 +76,8 @@ message Message {
 	optional RS_Delete rs_delete = 139;
 	optional RQ_Logs rq_logs = 140;
 	optional RS_Logs rs_logs = 141;
+	optional RQ_Chat rq_chat = 144;
+	optional RS_Chat rs_chat = 145;
 
 	optional MI_TriggerProfileDelta mi_trigger_profile_delta = 199;
 	optional MI_StreamStart mi_stream_start = 200;
