@@ -67,6 +67,8 @@ public class EditUser extends JPanel {
 
 	private ViewerProfile original;
 	private EPanel ep;
+	private JCheckBox chckbxAddUser;
+	private JCheckBox chckbxViewUsers;
 
 	public EditUser(EPanel ep, ViewerProfile original) {
 		this.ep = ep;
@@ -89,10 +91,10 @@ public class EditUser extends JPanel {
 		panel_1.setLayout(null);
 
 		JPanel panel = new JPanel();
-		panel.setBounds(8, 6, 211, 113);
+		panel.setBounds(8, 6, 211, 102);
 		panel_1.add(panel);
-		panel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "User Information",
-				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+		panel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Password", TitledBorder.LEADING,
+				TitledBorder.TOP, null, new Color(51, 51, 51)));
 		panel.setLayout(null);
 
 		fld_old = new JPasswordField();
@@ -129,59 +131,112 @@ public class EditUser extends JPanel {
 					new TitledBorder(null, "Permissions", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panel_1_1.setLayout(null);
 
-			chckbxGenerator = new JCheckBox("Generator");
+			chckbxGenerator = new JCheckBox("Generate Installer");
 			chckbxGenerator.setSelected(original.getPermissions().getFlag(Perm.server.generator.generate));
 			chckbxGenerator.setFont(new Font("Dialog", Font.BOLD, 10));
-			chckbxGenerator.setBounds(8, 40, 181, 20);
+			chckbxGenerator.setBounds(8, 47, 181, 16);
 			panel_1_1.add(chckbxGenerator);
 
-			chckbxListenerCreation = new JCheckBox("Listener Creation");
+			chckbxListenerCreation = new JCheckBox("Create Listener");
 			chckbxListenerCreation.setSelected(original.getPermissions().getFlag(Perm.server.network.create_listener));
 			chckbxListenerCreation.setFont(new Font("Dialog", Font.BOLD, 10));
-			chckbxListenerCreation.setBounds(8, 60, 181, 20);
+			chckbxListenerCreation.setBounds(8, 63, 181, 16);
 			panel_1_1.add(chckbxListenerCreation);
 
 			chckbxServerPower = new JCheckBox("Server Power");
 			chckbxServerPower.setSelected(original.getPermissions().getFlag(Perm.server.power.modify));
 			chckbxServerPower.setFont(new Font("Dialog", Font.BOLD, 10));
-			chckbxServerPower.setBounds(8, 80, 181, 20);
+			chckbxServerPower.setBounds(8, 79, 181, 16);
 			panel_1_1.add(chckbxServerPower);
 
 			chckbxServerSettings = new JCheckBox("Server Settings");
 			chckbxServerSettings.setSelected(original.getPermissions().getFlag(Perm.server.settings.modify));
 			chckbxServerSettings.setFont(new Font("Dialog", Font.BOLD, 10));
-			chckbxServerSettings.setBounds(8, 100, 181, 20);
+			chckbxServerSettings.setBounds(8, 95, 181, 16);
 			panel_1_1.add(chckbxServerSettings);
 
 			chckbxServerFilesystemRead = new JCheckBox("Server Filesystem Read");
 			chckbxServerFilesystemRead.setSelected(original.getPermissions().getFlag(Perm.server.fs.read));
 			chckbxServerFilesystemRead.setFont(new Font("Dialog", Font.BOLD, 10));
-			chckbxServerFilesystemRead.setBounds(8, 120, 181, 20);
+			chckbxServerFilesystemRead.setBounds(8, 111, 181, 16);
 			panel_1_1.add(chckbxServerFilesystemRead);
 
 			chckbxServerFilesystemWrite = new JCheckBox("Server Filesystem Write");
 			chckbxServerFilesystemWrite.setSelected(original.getPermissions().getFlag(Perm.server.fs.read));
 			chckbxServerFilesystemWrite.setFont(new Font("Dialog", Font.BOLD, 10));
-			chckbxServerFilesystemWrite.setBounds(8, 140, 181, 20);
+			chckbxServerFilesystemWrite.setBounds(8, 127, 181, 16);
 			panel_1_1.add(chckbxServerFilesystemWrite);
 
-			chckbxSuperuser = new JCheckBox("Superuser");
-			chckbxSuperuser.setBounds(8, 20, 181, 20);
-			panel_1_1.add(chckbxSuperuser);
-			chckbxSuperuser.setSelected(original.getPermissions().getFlag(Perm.Super));
-			chckbxSuperuser.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseEntered(MouseEvent arg0) {
-					sl.setInfo("Grant all privileges on server and clients");
-				}
+			chckbxAddUser = new JCheckBox("Add User");
+			chckbxAddUser.setSelected(original.getPermissions().getFlag(Perm.server.users.create));
+			chckbxAddUser.setFont(new Font("Dialog", Font.BOLD, 10));
+			chckbxAddUser.setBounds(8, 15, 181, 16);
+			panel_1_1.add(chckbxAddUser);
 
-				@Override
-				public void mouseExited(MouseEvent e) {
-					sl.setDefault();
-				}
-			});
-			chckbxSuperuser.setFont(new Font("Dialog", Font.BOLD, 10));
+			chckbxViewUsers = new JCheckBox("View Users");
+			chckbxViewUsers.setSelected(original.getPermissions().getFlag(Perm.server.users.view));
+			chckbxViewUsers.setFont(new Font("Dialog", Font.BOLD, 10));
+			chckbxViewUsers.setBounds(8, 31, 181, 16);
+			panel_1_1.add(chckbxViewUsers);
 		}
+
+		JPanel panel_2 = new JPanel();
+		panel_2.setBorder(new TitledBorder(null, "Other", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_2.setBounds(8, 113, 211, 63);
+		panel_1.add(panel_2);
+		panel_2.setLayout(null);
+
+		JCheckBox chckbxAllowRemoteLogins = new JCheckBox("Allow remote logins");
+		chckbxAllowRemoteLogins.setSelected(true);
+		chckbxAllowRemoteLogins.setEnabled(false);
+		chckbxAllowRemoteLogins.setFont(new Font("Dialog", Font.BOLD, 10));
+		chckbxAllowRemoteLogins.setBounds(8, 16, 195, 16);
+		panel_2.add(chckbxAllowRemoteLogins);
+
+		chckbxSuperuser = new JCheckBox("Superuser");
+		chckbxSuperuser.setBounds(8, 35, 181, 16);
+		panel_2.add(chckbxSuperuser);
+		chckbxSuperuser.setSelected(original.getPermissions().getFlag(Perm.Super));
+		chckbxSuperuser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				boolean s = chckbxSuperuser.isSelected();
+				chckbxGenerator.setSelected(s);
+				chckbxGenerator.setEnabled(!s);
+
+				chckbxListenerCreation.setSelected(s);
+				chckbxListenerCreation.setEnabled(!s);
+
+				chckbxServerPower.setSelected(s);
+				chckbxServerPower.setEnabled(!s);
+
+				chckbxServerSettings.setSelected(s);
+				chckbxServerSettings.setEnabled(!s);
+
+				chckbxServerFilesystemRead.setSelected(s);
+				chckbxServerFilesystemRead.setEnabled(!s);
+
+				chckbxServerFilesystemWrite.setSelected(s);
+				chckbxServerFilesystemWrite.setEnabled(!s);
+
+				chckbxAddUser.setSelected(s);
+				chckbxAddUser.setEnabled(!s);
+
+				chckbxViewUsers.setSelected(s);
+				chckbxViewUsers.setEnabled(!s);
+			}
+		});
+		chckbxSuperuser.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				sl.setInfo("Grant all privileges on server and clients");
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				sl.setDefault();
+			}
+		});
+		chckbxSuperuser.setFont(new Font("Dialog", Font.BOLD, 10));
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -198,7 +253,7 @@ public class EditUser extends JPanel {
 				buttonPane.add(cancelButton);
 			}
 			{
-				JButton okButton = new JButton("Edit");
+				JButton okButton = new JButton("Apply");
 				okButton.setMargin(new Insets(2, 8, 2, 8));
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
@@ -218,7 +273,9 @@ public class EditUser extends JPanel {
 										.addFlag(Perm.server.power.modify, chckbxServerPower.isSelected())
 										.addFlag(Perm.server.settings.modify, chckbxServerSettings.isSelected())
 										.addFlag(Perm.server.fs.read, chckbxServerFilesystemRead.isSelected())
-										.addFlag(Perm.server.fs.read, chckbxServerFilesystemWrite.isSelected());
+										.addFlag(Perm.server.fs.read, chckbxServerFilesystemWrite.isSelected())
+										.addFlag(Perm.server.users.view, chckbxViewUsers.isSelected())
+										.addFlag(Perm.server.users.create, chckbxAddUser.isSelected());
 								String oldPass = UIUtil.getPassword(fld_old);
 								String newPass = UIUtil.getPassword(fld_new);
 								return ViewerCommands.editUser(original.getUser(), oldPass.isEmpty() ? null : oldPass,
