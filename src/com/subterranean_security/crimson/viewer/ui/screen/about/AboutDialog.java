@@ -90,9 +90,9 @@ public class AboutDialog extends JDialog {
 
 			GridBagLayout gbl_contentPanel = new GridBagLayout();
 			gbl_contentPanel.columnWidths = new int[] { 600, 0 };
-			gbl_contentPanel.rowHeights = new int[] { 150, 0, 0, 0, 0, 0, 0, 0, 0 };
+			gbl_contentPanel.rowHeights = new int[] { 150, 0, 0, 0, 0, 0, 0, 0, 4, 0 };
 			gbl_contentPanel.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-			gbl_contentPanel.rowWeights = new double[] { 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, Double.MIN_VALUE };
+			gbl_contentPanel.rowWeights = new double[] { 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, Double.MIN_VALUE };
 			contentPanel.setLayout(gbl_contentPanel);
 
 		}
@@ -316,17 +316,18 @@ public class AboutDialog extends JDialog {
 			}
 		}
 		{
-			JPanel panel = new JPanel();
-			GridBagConstraints gbc_panel = new GridBagConstraints();
-			gbc_panel.fill = GridBagConstraints.BOTH;
-			gbc_panel.gridx = 0;
-			gbc_panel.gridy = 7;
-			contentPanel.add(panel, gbc_panel);
-			panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+			JPanel stat_serial = new JPanel();
+			GridBagConstraints gbc_stat_serial = new GridBagConstraints();
+			gbc_stat_serial.insets = new Insets(0, 0, 5, 0);
+			gbc_stat_serial.fill = GridBagConstraints.BOTH;
+			gbc_stat_serial.gridx = 0;
+			gbc_stat_serial.gridy = 7;
+			contentPanel.add(stat_serial, gbc_stat_serial);
+			stat_serial.setLayout(new BoxLayout(stat_serial, BoxLayout.X_AXIS));
 			{
 				JPanel panel_1 = new JPanel();
 				panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
-				panel.add(panel_1);
+				stat_serial.add(panel_1);
 				{
 					JLabel lblNewLabel = new JLabel("Serial Code");
 					lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -337,7 +338,7 @@ public class AboutDialog extends JDialog {
 			{
 				JPanel panel_1 = new JPanel();
 				panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
-				panel.add(panel_1);
+				stat_serial.add(panel_1);
 				{
 					String serial = "XXXXXXXXXXXXXXXX";
 					try {
@@ -354,32 +355,8 @@ public class AboutDialog extends JDialog {
 				}
 			}
 		}
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setBackground(new Color(60, 59, 57));
-			buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER));
-			getContentPane().add(buttonPane, BorderLayout.PAGE_END);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.setFocusPainted(false);
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						dispose();
-					}
-				});
-				okButton.setBackground(new Color(242, 241, 240));
-				buttonPane.add(okButton);
-			}
-		}
 
 		timer.schedule(new Uptimer(), 0, 1000);
-	}
-
-	@Override
-	public void dispose() {
-		timer.cancel();
-		super.dispose();
-
 	};
 
 	private void setStaticValues() {
