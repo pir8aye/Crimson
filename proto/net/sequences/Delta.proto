@@ -2,7 +2,6 @@ package com.subterranean_security.crimson.core.proto;
 
 import "net/sequences/Keylogger.proto";
 import "net/sequences/Listener.proto";
-import "net/sequences/Users.proto";
 import "net/misc/Misc.proto";
 
 message MI_TriggerProfileDelta {

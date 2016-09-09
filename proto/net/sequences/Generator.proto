@@ -1,7 +1,6 @@
 package com.subterranean_security.crimson.core.proto;
 
 import "net/sequences/Keylogger.proto";
-import "net/sequences/ClientAuth.proto";
 import "net/misc/Misc.proto";
 
 message GenReport {
