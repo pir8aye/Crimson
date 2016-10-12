@@ -32,8 +32,10 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
-public enum Common {
-	;
+public final class Common {
+
+	private Common() {
+	}
 
 	public enum Instance {
 		SERVER, CLIENT, VIEWER, INSTALLER, VIRIDIAN;

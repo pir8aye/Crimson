@@ -40,11 +40,12 @@ import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
-public enum ViewerStore {
-
-	;
+public final class ViewerStore {
 
 	private static final Logger log = LoggerFactory.getLogger(ViewerStore.class);
+
+	private ViewerStore() {
+	}
 
 	public static class Connections {
 		private static HashMap<Integer, BasicConnector> connections = new HashMap<Integer, BasicConnector>();

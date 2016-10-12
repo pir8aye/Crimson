@@ -56,10 +56,12 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.ObjectTransfer;
 
-public enum Platform {
-	;
+public final class Platform {
 
 	private static final Logger log = LoggerFactory.getLogger(Platform.class);
+
+	private Platform() {
+	}
 
 	public static final ARCH sysArch = null;
 	public static final ARCH javaArch = getJVMArch();

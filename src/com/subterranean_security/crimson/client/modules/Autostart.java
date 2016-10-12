@@ -21,8 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public enum Autostart {
-	;
+public final class Autostart {
+
+	private Autostart() {
+	}
 
 	public static void install_win(File f) {
 		String command = "reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v \"" + f.getName()

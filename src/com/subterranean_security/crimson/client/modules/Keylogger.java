@@ -33,9 +33,12 @@ import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.util.Native;
 
-public enum Keylogger {
-	;
+public final class Keylogger {
+
 	private static final Logger log = LoggerFactory.getLogger(Keylogger.class);
+
+	private Keylogger() {
+	}
 
 	/**
 	 * Keybuffer that stores results from native hook

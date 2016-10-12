@@ -23,8 +23,10 @@ import java.awt.Font;
 
 import javax.swing.border.LineBorder;
 
-public enum UICommon {
-	;
+public final class UICommon {
+
+	private UICommon() {
+	}
 
 	public static String getLicensePath(String lang) {
 		return "/com/subterranean_security/crimson/viewer/ui/res/image/license-" + lang + ".png";

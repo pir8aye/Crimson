@@ -20,10 +20,12 @@ package com.subterranean_security.crimson.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public enum ServerState {
-	;
+public final class ServerState {
 
 	private static final Logger log = LoggerFactory.getLogger(ServerState.class);
+
+	private ServerState() {
+	}
 
 	private static boolean exampleMode = false;
 	private static boolean cloudMode = false;

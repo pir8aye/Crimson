@@ -25,8 +25,10 @@ import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
-public enum ClientCommands {
-	;
+public final class ClientCommands {
+
+	private ClientCommands() {
+	}
 
 	public static void downloadLibs() {
 

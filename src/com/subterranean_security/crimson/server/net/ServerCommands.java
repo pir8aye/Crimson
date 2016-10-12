@@ -20,8 +20,10 @@ package com.subterranean_security.crimson.server.net;
 import com.subterranean_security.crimson.core.proto.CVID.MI_AssignCVID;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
-public enum ServerCommands {
-	;
+public final class ServerCommands {
+
+	private ServerCommands() {
+	}
 
 	public static void setCvid(Receptor r, int cvid) {
 		r.setCvid(cvid);

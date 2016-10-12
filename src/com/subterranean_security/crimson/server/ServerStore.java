@@ -19,7 +19,6 @@ package com.subterranean_security.crimson.server;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -49,10 +48,12 @@ import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
-public enum ServerStore {
-	;
+public final class ServerStore {
 
 	private static final Logger log = LoggerFactory.getLogger(ServerStore.class);
+
+	private ServerStore() {
+	}
 
 	public static class Listeners {
 

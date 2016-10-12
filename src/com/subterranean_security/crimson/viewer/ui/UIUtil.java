@@ -40,10 +40,12 @@ import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
 
-public enum UIUtil {
-	;
+public final class UIUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(UIUtil.class);
+
+	private UIUtil() {
+	}
 
 	public static ArrayList<Image> getIconList() {
 		ArrayList<Image> icons = new ArrayList<Image>();

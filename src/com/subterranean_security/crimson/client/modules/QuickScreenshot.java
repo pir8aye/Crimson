@@ -24,8 +24,10 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 
-public enum QuickScreenshot {
-	;
+public final class QuickScreenshot {
+
+	private QuickScreenshot() {
+	}
 
 	private static Rectangle size = null;
 	private static Robot robot = null;

@@ -31,10 +31,12 @@ import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
-public enum ClientStore {
-	;
+public final class ClientStore {
 
 	private static final Logger log = LoggerFactory.getLogger(ClientStore.class);
+
+	private ClientStore() {
+	}
 
 	public static int connectionIterations = 0;
 

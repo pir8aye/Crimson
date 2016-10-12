@@ -23,8 +23,11 @@ import com.subterranean_security.crimson.viewer.ui.common.components.Console.Lin
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.relogin.Relogin;
 
-public enum ViewerState {
-	;
+public final class ViewerState {
+
+	private ViewerState() {
+	}
+
 	// we decided not to expend any effort hiding this
 	public static boolean trialMode;
 
