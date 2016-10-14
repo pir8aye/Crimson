@@ -185,12 +185,16 @@ public class AddSerial extends JPanel {
 		btnLookup.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
-				sl.setInfo("Lookup your key using account credentials");
+				if (btnLookup.isEnabled()) {
+					sl.setInfo("Lookup your key using account credentials");
+				}
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				sl.setDefault();
+				if (btnLookup.isEnabled()) {
+					sl.setDefault();
+				}
 			}
 		});
 		btnLookup.addActionListener(new ActionListener() {
@@ -336,12 +340,16 @@ public class AddSerial extends JPanel {
 		btnBuy.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				sl.setInfo("Open the website to buy a key");
+				if (btnBuy.isEnabled()) {
+					sl.setInfo("Open the website to buy a key");
+				}
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				sl.setDefault();
+				if (btnBuy.isEnabled()) {
+					sl.setDefault();
+				}
 			}
 		});
 		btnBuy.addActionListener(new ActionListener() {
