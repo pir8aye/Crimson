@@ -49,13 +49,13 @@ public class KeyLookup extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	public String key = "";
-	private StatusLabel status;
+	private StatusLabel sl;
+	private JButton btnActivate;
 	private JButton btnBack;
-	private JLabel left_alpha;
-	private JLabel left_business;
-	private JRadioButton rdbtnEssentialEdition;
-	private JRadioButton rdbtnProfessionalEdition;
-	private JButton okButton;
+	private JLabel remainingAlpha;
+	private JLabel remainingAdvanced;
+	private JRadioButton rdbtnAlpha;
+	private JRadioButton rdbtnAdvanced;
 
 	private RS_RetrieveKeys rs = null;
 	private JTextField fld_email;
@@ -74,10 +74,10 @@ public class KeyLookup extends JDialog {
 
 		ButtonGroup bg = new ButtonGroup();
 
-		status = new StatusLabel("enter account details to lookup key");
+		sl = new StatusLabel("enter account details to lookup key");
 
-		status.setBounds(8, 210, 206, 16);
-		contentPanel.add(status);
+		sl.setBounds(8, 210, 206, 16);
+		contentPanel.add(sl);
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(UICommon.basic, "Account Details", TitledBorder.LEADING, TitledBorder.TOP,
@@ -107,21 +107,25 @@ public class KeyLookup extends JDialog {
 		fld_pass.setBounds(46, 39, 97, 17);
 		panel.add(fld_pass);
 
-		JButton btnRefresh = new JButton("Login");
-		btnRefresh.addActionListener(new ActionListener() {
+		JButton btnLookup = new JButton("Lookup");
+		btnLookup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
 				String user = fld_email.getText();
 				if (!CUtil.Validation.email(user)) {
-					status.setBad("INVALID EMAIL");
+					sl.setBad("INVALID EMAIL");
 					return;
 				}
 				if (!CUtil.Validation.password(fld_pass)) {
-					status.setBad("INVALID PASSWORD");
+					sl.setBad("INVALID PASSWORD");
 					return;
 				}
 
-				status.setInfo("Querying server");
+				sl.setInfo("Querying server");
+
+				fld_email.setEnabled(false);
+				fld_pass.setEnabled(false);
+				btnLookup.setEnabled(false);
 
 				new SwingWorker<Void, Void>() {
 
@@ -133,22 +137,27 @@ public class KeyLookup extends JDialog {
 
 					protected void done() {
 						if (rs == null || !rs.getResult()) {
-							left_alpha.setText("Login Failed!");
-							left_business.setText("Login Failed!");
-							status.setBad(rs.hasComment() ? rs.getComment() : "Unknown error");
-							okButton.setEnabled(false);
+							remainingAlpha.setText("Login Failed!");
+							remainingAdvanced.setText("Login Failed!");
+							sl.setBad(rs == null ? "Connection Failed"
+									: (rs.hasComment() ? rs.getComment() : "Unknown Error"));
+							btnActivate.setEnabled(false);
+							fld_email.setEnabled(true);
+							fld_pass.setEnabled(true);
+							btnLookup.setEnabled(true);
+							return;
 						} else {
-							left_alpha.setText(rs.getAlphaKeyCount() + " left");
-
+							remainingAlpha.setText(rs.getAlphaKeyCount() + " left");
 						}
 
 						if (rs.getAlphaKeyCount() != 0) {
-							rdbtnEssentialEdition.setEnabled(true);
-							left_alpha.setEnabled(true);
-							okButton.setEnabled(true);
-							status.setGood("Retrieved: " + rs.getAlphaKeyCount() + " keys for user");
+							rdbtnAlpha.setEnabled(true);
+							remainingAlpha.setEnabled(true);
+							btnActivate.setEnabled(true);
+							sl.setGood("Retrieved: " + rs.getAlphaKeyCount() + " keys for user");
 						} else {
-							status.setBad("No keys found!");
+							btnActivate.setEnabled(false);
+							sl.setBad("No keys found!");
 						}
 
 					};
@@ -157,10 +166,10 @@ public class KeyLookup extends JDialog {
 
 			}
 		});
-		btnRefresh.setMargin(new Insets(2, 4, 2, 4));
-		btnRefresh.setFont(new Font("Dialog", Font.BOLD, 9));
-		btnRefresh.setBounds(146, 39, 50, 17);
-		panel.add(btnRefresh);
+		btnLookup.setMargin(new Insets(2, 4, 2, 4));
+		btnLookup.setFont(new Font("Dialog", Font.BOLD, 9));
+		btnLookup.setBounds(146, 39, 50, 17);
+		panel.add(btnLookup);
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(
@@ -169,31 +178,31 @@ public class KeyLookup extends JDialog {
 		contentPanel.add(panel_1);
 		panel_1.setLayout(null);
 
-		rdbtnEssentialEdition = new JRadioButton("ALPHA Edition");
-		rdbtnEssentialEdition.setFont(new Font("Dialog", Font.BOLD, 11));
-		rdbtnEssentialEdition.setBounds(7, 19, 139, 24);
-		panel_1.add(rdbtnEssentialEdition);
-		rdbtnEssentialEdition.setEnabled(false);
-		bg.add(rdbtnEssentialEdition);
+		rdbtnAlpha = new JRadioButton("ALPHA Edition");
+		rdbtnAlpha.setFont(new Font("Dialog", Font.BOLD, 11));
+		rdbtnAlpha.setBounds(7, 19, 139, 24);
+		panel_1.add(rdbtnAlpha);
+		rdbtnAlpha.setEnabled(false);
+		bg.add(rdbtnAlpha);
 
-		left_alpha = new JLabel("Unlocks Crimson ALPHA");
-		left_alpha.setBounds(29, 41, 177, 16);
-		panel_1.add(left_alpha);
-		left_alpha.setForeground(Color.GRAY);
-		left_alpha.setFont(new Font("Dialog", Font.BOLD, 10));
+		remainingAlpha = new JLabel("Unlocks Crimson ALPHA");
+		remainingAlpha.setBounds(29, 41, 177, 16);
+		panel_1.add(remainingAlpha);
+		remainingAlpha.setForeground(Color.GRAY);
+		remainingAlpha.setFont(new Font("Dialog", Font.BOLD, 10));
 
-		rdbtnProfessionalEdition = new JRadioButton("Advanced Edition");
-		rdbtnProfessionalEdition.setFont(new Font("Dialog", Font.BOLD, 11));
-		rdbtnProfessionalEdition.setBounds(7, 60, 175, 24);
-		panel_1.add(rdbtnProfessionalEdition);
-		rdbtnProfessionalEdition.setEnabled(false);
-		bg.add(rdbtnProfessionalEdition);
+		rdbtnAdvanced = new JRadioButton("Advanced Edition");
+		rdbtnAdvanced.setFont(new Font("Dialog", Font.BOLD, 11));
+		rdbtnAdvanced.setBounds(7, 60, 175, 24);
+		panel_1.add(rdbtnAdvanced);
+		rdbtnAdvanced.setEnabled(false);
+		bg.add(rdbtnAdvanced);
 
-		left_business = new JLabel("This edition is not available");
-		left_business.setBounds(29, 82, 177, 16);
-		panel_1.add(left_business);
-		left_business.setForeground(Color.GRAY);
-		left_business.setFont(new Font("Dialog", Font.BOLD, 10));
+		remainingAdvanced = new JLabel("This edition is not available");
+		remainingAdvanced.setBounds(29, 82, 177, 16);
+		panel_1.add(remainingAdvanced);
+		remainingAdvanced.setForeground(Color.GRAY);
+		remainingAdvanced.setFont(new Font("Dialog", Font.BOLD, 10));
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -210,13 +219,13 @@ public class KeyLookup extends JDialog {
 			btnBack.setMargin(new Insets(2, 6, 2, 6));
 			buttonPane.add(btnBack);
 			{
-				okButton = new JButton("OK");
-				okButton.setFont(new Font("Dialog", Font.BOLD, 10));
-				okButton.addActionListener(new ActionListener() {
+				btnActivate = new JButton("Use Key");
+				btnActivate.setFont(new Font("Dialog", Font.BOLD, 10));
+				btnActivate.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if (rdbtnEssentialEdition.isSelected()) {
+						if (rdbtnAlpha.isSelected()) {
 							key = rs.getAlphaKey();
-						} else if (rdbtnProfessionalEdition.isSelected()) {
+						} else if (rdbtnAdvanced.isSelected()) {
 							// key = rs.getBusinessKeys(0);// just take first
 							// key
 						} else {
@@ -225,10 +234,10 @@ public class KeyLookup extends JDialog {
 						dispose();
 					}
 				});
-				okButton.setEnabled(false);
-				okButton.setMargin(new Insets(2, 6, 2, 6));
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+				btnActivate.setEnabled(false);
+				btnActivate.setMargin(new Insets(2, 6, 2, 6));
+				buttonPane.add(btnActivate);
+				getRootPane().setDefaultButton(btnActivate);
 			}
 		}
 
