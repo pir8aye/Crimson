@@ -81,6 +81,7 @@ public class Generator {
 	private GenReport.Builder genJar(ClientConfig ic, int cvid) throws IOException {
 		GenReport.Builder gReport = GenReport.newBuilder();
 		Date start = new Date();
+		gReport.setGenDate(start.getTime());
 
 		File clientJar = new File(temp.getAbsolutePath() + "/installer.jar");
 		File clientDB = new File(temp.getAbsolutePath() + "/client.db");

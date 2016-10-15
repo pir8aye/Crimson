@@ -54,6 +54,7 @@ public final class UICommon {
 	public static final Dimension dim_networkmanager = new Dimension(573, 600);
 	public static final Dimension dim_usermanager = new Dimension(450, 400);
 	public static final Dimension dim_control_button = new Dimension(100, 27);
+	public static final Dimension dim_generation_report = new Dimension(450, 300);
 
 	// borders
 	public static final LineBorder basic = new LineBorder(new Color(184, 207, 229));

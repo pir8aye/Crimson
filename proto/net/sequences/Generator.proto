@@ -5,12 +5,13 @@ import "net/misc/Misc.proto";
 
 message GenReport {
 	required bool result = 1;
-	required int32 gen_time = 2;
-	optional string comment = 3;
-	optional string hash_md5 = 4;
-	optional string hash_sha256 = 5;
-	optional int32 fileSize = 6;
-	optional string output_type = 7;
+	required int64 gen_date = 2;
+	required int32 gen_time = 3;
+	optional string comment = 4;
+	optional string hash_md5 = 5;
+	optional string hash_sha256 = 6;
+	optional int32 fileSize = 7;
+	optional string output_type = 8;
 }
 
 message ClientConfig {

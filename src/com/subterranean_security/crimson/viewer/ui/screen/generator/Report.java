@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.generator;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -27,6 +28,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.viewer.ui.UICommon;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.DataViewer;
 
 public class Report extends JDialog {
@@ -35,27 +39,16 @@ public class Report extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 
 	public Report(GenReport gr) {
+		init(gr);
+	}
 
-		String[] h = new String[] { "Property", "Value" };
-		ArrayList<String[]> v = new ArrayList<String[]>();
-
-		v.add(new String[] { "Result", gr.getResult() ? "Success" : "Failed" });
-		v.add(new String[] { "Generation Time", "" + gr.getGenTime() + " milliseconds" });
-		if (gr.hasHashMd5()) {
-			v.add(new String[] { "MD5 Hash", gr.getHashMd5() });
-		}
-		if (gr.hasHashSha256()) {
-			v.add(new String[] { "SHA256 Hash", gr.getHashSha256() });
-		}
-		if (gr.hasFileSize()) {
-			v.add(new String[] { "Output Size: ", "" + gr.getFileSize() + " bytes" });
-		}
-		if (gr.hasComment()) {
-			v.add(new String[] { "Comment", gr.getComment() });
-		}
-
+	public void init(GenReport gr) {
+		setIconImages(UIUtil.getIconList());
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setPreferredSize(UICommon.dim_generation_report);
+		setMinimumSize(UICommon.dim_generation_report);
+		setTitle("Generation Report: " + gr.getOutputType());
+
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(new FlowLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -70,6 +63,29 @@ public class Report extends JDialog {
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
+		}
+
+		String[] h = new String[] { "Property", "Value" };
+		ArrayList<String[]> v = new ArrayList<String[]>();
+
+		v.add(new String[] { "Result", gr.getResult() ? "Success" : "Failed" });
+		v.add(new String[] { "Generation Date", "" + new Date(gr.getGenDate()).toString() });
+		v.add(new String[] { "Generation Time", "" + gr.getGenTime() + " milliseconds" });
+		if (gr.hasHashMd5()) {
+			v.add(new String[] { "MD5 Hash", gr.getHashMd5() });
+		}
+		if (gr.hasHashSha256()) {
+			v.add(new String[] { "SHA256 Hash", gr.getHashSha256() });
+		}
+		if (gr.hasOutputType()) {
+			v.add(new String[] { "Output Type", gr.getOutputType() });
+		}
+		if (gr.hasFileSize()) {
+			v.add(new String[] { "Output Size: ",
+					CUtil.Misc.familiarize(gr.getFileSize(), CUtil.Misc.BYTES) + " (" + gr.getFileSize() + " bytes)" });
+		}
+		if (gr.hasComment()) {
+			v.add(new String[] { "Comment", gr.getComment() });
 		}
 
 		DataViewer dv = new DataViewer();
