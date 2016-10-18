@@ -29,7 +29,10 @@ import javax.swing.ImageIcon;
 
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
-public class Tray {
+public final class Tray {
+
+	private Tray() {
+	}
 
 	private static TrayIcon trayObject = new TrayIcon(
 			(new ImageIcon(Tray.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/c-16.png"),
