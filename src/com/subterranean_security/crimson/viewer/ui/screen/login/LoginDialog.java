@@ -19,7 +19,6 @@ package com.subterranean_security.crimson.viewer.ui.screen.login;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.JDialog;
@@ -52,8 +51,9 @@ public class LoginDialog extends JDialog {
 		hp.nmenu.setButtons(buttons);
 
 		hp.hmenu.setDesc(
-				"Server addresses can be either DNS names or IP addresses.  Valid port numbers are between 1-25565. If the server is installed locally, select \"Local Server\" from the server selection dropdown.  For Crimson Cloud servers, use the information provided by Subterranean Security.");
+				"Enter the IP address or DNS name of a Crimson server. If the server is installed locally, select \"Local Server\" from the server selection dropdown.");
 
+		hp.hmenu.addStats();
 		hp.setHMenuHeight(80);
 	}
 
