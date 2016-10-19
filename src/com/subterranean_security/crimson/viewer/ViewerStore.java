@@ -73,6 +73,10 @@ public final class ViewerStore {
 				}
 			}
 		}
+
+		public static int getSize() {
+			return connections.size();
+		}
 	}
 
 	public static class LocalServer {
