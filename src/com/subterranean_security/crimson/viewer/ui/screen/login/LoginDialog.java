@@ -63,7 +63,7 @@ public class LoginDialog extends JDialog {
 		if (!loginPanel.result) {
 			System.exit(0);
 		}
-
+		hp.hmenu.nowClosed();
 	}
 
 }
