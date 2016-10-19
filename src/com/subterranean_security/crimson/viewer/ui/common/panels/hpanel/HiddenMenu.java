@@ -46,7 +46,7 @@ public class HiddenMenu extends JPanel {
 	private JPanel buttons;
 	private JTextArea textArea;
 	private JPanel btn;
-	private JPanel stats;
+	private StatsPanel stats;
 	private JPanel help;
 
 	private boolean help_added = false;
@@ -57,7 +57,7 @@ public class HiddenMenu extends JPanel {
 
 	public HiddenMenu() {
 		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setLayout(new BorderLayout());
 
 		buttons = new JPanel();
 		buttons.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Options", TitledBorder.LEADING,
@@ -68,13 +68,9 @@ public class HiddenMenu extends JPanel {
 		buttons.add(btn, BorderLayout.CENTER);
 		btn.setLayout(new BoxLayout(btn, BoxLayout.X_AXIS));
 
-		stats = new JPanel();
-		stats.setBorder(new TitledBorder(null, "Stats", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		stats.setLayout(new BorderLayout(0, 0));
-
 		help = new JPanel();
 		help.setMaximumSize(new Dimension(32767, 200));
-		help.setBorder(new TitledBorder(null, "Help", TitledBorder.LEADING, TitledBorder.TOP,
+		help.setBorder(new TitledBorder(UICommon.basic, "Help", TitledBorder.LEADING, TitledBorder.TOP,
 				UICommon.font_title_hmenu_help, null));
 
 		help.setLayout(new BorderLayout(0, 0));
@@ -102,10 +98,21 @@ public class HiddenMenu extends JPanel {
 
 	public void setDesc(String d) {
 		if (!help_added) {
-			add(help);
+			add(help, BorderLayout.CENTER);
 			help_added = true;
 		}
 		textArea.setText(d);
+	}
+
+	public void addStats() {
+		if (!stats_added) {
+			stats = new StatsPanel();
+			stats.setPreferredSize(new Dimension(200, 21));
+			stats.setSize(new Dimension(200, 21));
+			stats.setMaximumSize(new Dimension(200, 21));
+			add(stats, BorderLayout.SOUTH);
+			stats_added = true;
+		}
 	}
 
 	public void addButton(JButton jb) {
@@ -128,6 +135,14 @@ public class HiddenMenu extends JPanel {
 		});
 
 		btn.add(jb);
+	}
+
+	public void nowShowing() {
+		stats.start();
+	}
+
+	public void nowClosed() {
+		stats.stop();
 	}
 
 	/**

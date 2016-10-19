@@ -17,18 +17,82 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.common.panels.hpanel;
 
-import javax.swing.BoxLayout;
+import java.awt.Font;
+
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
+import javax.swing.border.EtchedBorder;
+
+import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.common.components.piestat.PieStat;
 
 public class StatsPanel extends JPanel {
 
-	private static final long	serialVersionUID	= 1L;
+	private static final long serialVersionUID = 1L;
 
-	private int					totalMUsage			= 0;
+	private JLabel lblCpu;
+	private JLabel lblMem;
+	private JLabel lblConnection;
+
+	private PieStat ps;
 
 	public StatsPanel() {
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		setLayout(null);
 
+		ps = new PieStat(17);
+		ps.setBounds(2, 2, 17, 17);
+		add(ps);
+
+		lblMem = new JLabel("MEM:");
+		lblMem.setToolTipText("Total memory usage of the Crimson process");
+		lblMem.setFont(new Font("Dialog", Font.BOLD, 9));
+		lblMem.setBounds(84, 3, 77, 15);
+		add(lblMem);
+
+		lblConnection = new JLabel("Connections: ");
+		lblConnection.setToolTipText("Total established network connections");
+		lblConnection.setFont(new Font("Dialog", Font.BOLD, 9));
+		lblConnection.setBounds(163, 3, 89, 15);
+		add(lblConnection);
+
+		lblCpu = new JLabel("CPU:");
+		lblCpu.setToolTipText("Total CPU utilization");
+		lblCpu.setFont(new Font("Dialog", Font.BOLD, 9));
+		lblCpu.setBounds(23, 3, 66, 15);
+		add(lblCpu);
+
+	}
+
+	Timer timer = null;
+
+	public void start() {
+		stop();
+		timer = new Timer(150, (e) -> {
+			double r = Platform.Advanced.getCPUUsage();
+
+			lblCpu.setText(String.format("CPU: %03.1f%%", (r * 100)));
+			ps.addPoint(r);
+
+			lblMem.setText(
+					"MEM: " + CUtil.Misc.familiarize(Platform.Advanced.getCrimsonMemoryUsage(), CUtil.Misc.BYTES));
+			lblConnection.setText("Connections: " + ViewerStore.Connections.getSize());
+
+		});
+		timer.setInitialDelay(0);
+		timer.start();
+		ps.startCPUStat();
+	}
+
+	public void stop() {
+		if (timer != null) {
+			timer.stop();
+			ps.stop();
+			timer = null;
+		}
 	}
 
 }
