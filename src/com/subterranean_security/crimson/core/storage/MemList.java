@@ -53,8 +53,10 @@ public class MemList<T> implements Serializable {
 
 	}
 
-	public void remove(Integer i) {
+	public T remove(Integer i) {
+		T t = get(i);
 		database.delete(index.get(i));
+		return t;
 	}
 
 	public int size() {
