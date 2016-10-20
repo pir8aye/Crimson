@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <project name="Crimson" default="main" basedir=".">
+	<property file="build/version.properties" />
 	<property file="build/build.properties" />
 	<tstamp>
 		<format property="build.time" pattern="MM-dd-yyyy HH:mm:ss" locale="en,US" />
@@ -86,8 +87,6 @@
 			</fileset>
 
 			<manifest>
-				<attribute name="EVersion" value="${sc.version}" />
-				<attribute name="CVersion" value="${sc.version}" />
 				<attribute name="CID" value="c02" />
 			</manifest>
 		</jar>
@@ -99,8 +98,6 @@
 			</fileset>
 
 			<manifest>
-				<attribute name="EVersion" value="${sv.version}" />
-				<attribute name="CVersion" value="${sv.version}" />
 				<attribute name="CID" value="c03" />
 			</manifest>
 		</jar>
@@ -112,8 +109,6 @@
 			</fileset>
 
 			<manifest>
-				<attribute name="EVersion" value="${cv.version}" />
-				<attribute name="CVersion" value="${cv.version}" />
 				<attribute name="CID" value="c04" />
 			</manifest>
 		</jar>
@@ -125,8 +120,6 @@
 			</fileset>
 
 			<manifest>
-				<attribute name="EVersion" value="${services.version}" />
-				<attribute name="CVersion" value="${services.version}" />
 				<attribute name="CID" value="c05" />
 			</manifest>
 		</jar>
