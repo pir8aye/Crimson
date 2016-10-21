@@ -73,7 +73,9 @@ public class MainMenu extends JPanel {
 		JMenuBar menuBar = new JMenuBar();
 		add(menuBar, BorderLayout.CENTER);
 
-		mnControls = new JMenu("Controls");
+		mnControls = new JMenu();
+		mnControls.setIcon(UIUtil.getIcon("icons16/general/multitool.png"));
+		mnControls.setToolTipText("Controls");
 		mnControls.addMenuListener(new MenuListener() {
 
 			@Override
@@ -104,7 +106,9 @@ public class MainMenu extends JPanel {
 
 		mnControls.add(mc);
 
-		JMenu mnManagement = new JMenu("Management");
+		JMenu mnManagement = new JMenu();
+		mnManagement.setIcon(UIUtil.getIcon("icons16/general/box_front.png"));
+		mnManagement.setToolTipText("Management");
 		menuBar.add(mnManagement);
 
 		final WideMenuItem wmFiles = new WideMenuItem(UIUtil.getIcon("icons16/general/folder.png"), "Files",
@@ -243,7 +247,9 @@ public class MainMenu extends JPanel {
 
 		mnManagement.add(wmSettings);
 
-		JMenu mnAbout = new JMenu("About");
+		JMenu mnAbout = new JMenu();
+		mnAbout.setIcon(UIUtil.getIcon("icons16/general/text_area.png"));
+		mnAbout.setToolTipText("About");
 		menuBar.add(mnAbout);
 
 		final WideMenuItem wmAbout = new WideMenuItem(UIUtil.getIcon("c-16.png"), "About Crimson", "Info on Crimson");
