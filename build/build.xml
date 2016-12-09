@@ -62,12 +62,12 @@
 
 	<!--Create jni files  -->
 	<target name="jni" depends="compile">
-		<javah destdir="${javah.dir}" verbose="yes" force="yes" classpath="/home/subterranean/Workspace/Crimson/build/bin">
+		<javah destdir="${javah.dir}" verbose="yes" force="yes" classpath="${bin.dir}">
 			<class name="com.subterranean_security.crimson.core.util.Native" />
 		</javah>
 
-		<exec executable="/home/subterranean/Workspace/Crimson/scripts/jni-win.sh" />
-		<exec executable="/home/subterranean/Workspace/Crimson/scripts/jni-lin.sh" />
+		<exec executable="${script.dir}/jni-win.sh" />
+		<exec executable="${script.dir}/jni-lin.sh" />
 
 	</target>
 
