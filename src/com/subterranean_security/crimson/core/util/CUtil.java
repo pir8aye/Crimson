@@ -1131,7 +1131,7 @@ public enum CUtil {
 		}
 
 		public static boolean privateIP(String ip) {
-			return valid_private_ipv4.matcher(ip).matches();
+			return valid_private_ipv4.matcher(ip).find();
 		}
 
 		public static boolean port(String port) {
