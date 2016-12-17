@@ -1079,15 +1079,19 @@ public enum CUtil {
 
 	public static class Validation {
 
-		private static final Pattern pDNS = Pattern.compile("^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.)+[A-Za-z]{2,6}$");
-		private static final Pattern pUSER = Pattern.compile("");// invalid
-																	// username
-																	// chars
-		private static final Pattern pIP = Pattern
+		private static final Pattern valid_dns = Pattern.compile("^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.)+[A-Za-z]{2,6}$");
+
+		// TODO define valid username characters
+		private static final Pattern valid_user = Pattern.compile("");
+
+		private static final Pattern valid_ipv4 = Pattern
 				.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 						+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-		private static final Pattern pEMAIL = Pattern
+		private static final Pattern valid_private_ipv4 = Pattern
+				.compile("(^127\\.)|(^10\\.)|(^172\\.1[6-9]\\.)|(^172\\.2[0-9]\\.)|(^172\\.3[0-1]\\.)|(^192\\.168\\.)");
+
+		private static final Pattern valid_email = Pattern
 				.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
 
 		public static boolean username(String user) {
@@ -1095,7 +1099,7 @@ public enum CUtil {
 				return false;
 			}
 
-			return !pUSER.matcher(user).matches();
+			return !valid_user.matcher(user).matches();
 		}
 
 		public static boolean groupname(String group) {
@@ -1116,14 +1120,18 @@ public enum CUtil {
 			if (dns == null) {
 				return false;
 			}
-			return pDNS.matcher(dns).find();
+			return valid_dns.matcher(dns).find();
 		}
 
 		public static boolean ip(String ip) {
 			if (ip == null) {
 				return false;
 			}
-			return pIP.matcher(ip).matches();
+			return valid_ipv4.matcher(ip).matches();
+		}
+
+		public static boolean privateIP(String ip) {
+			return valid_private_ipv4.matcher(ip).matches();
 		}
 
 		public static boolean port(String port) {
@@ -1158,7 +1166,7 @@ public enum CUtil {
 		}
 
 		public static boolean email(String email) {
-			return pEMAIL.matcher(email).matches();
+			return valid_email.matcher(email).matches();
 		}
 
 		public static boolean flushValue(String value) {
