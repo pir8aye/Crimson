@@ -250,7 +250,6 @@ public class ClientProfile implements Serializable {
 
 		// location
 		if (locationIcon == null && extIp.get() != null) {
-			System.out.println("Loading icon for: " + extIp.get());
 			if (CUtil.Validation.privateIP(extIp.get())) {
 				locationIcon = UIUtil.getIcon("icons16/general/localhost.png");
 				locationIcon.setDescription("Private IP");

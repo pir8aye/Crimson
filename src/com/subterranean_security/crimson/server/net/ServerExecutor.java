@@ -225,7 +225,6 @@ public class ServerExecutor extends BasicExecutor {
 			if (!pd.hasExtIp()) {
 				pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
 				if (!CUtil.Validation.privateIP(pd.getExtIp())) {
-					System.out.println(pd.getExtIp() + " is not a private IP");
 
 					try {
 						HashMap<String, String> location = CUtil.Location.resolve(pd.getExtIp());
@@ -239,8 +238,6 @@ public class ServerExecutor extends BasicExecutor {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				} else {
-					System.out.println(pd.getExtIp() + " is a private IP");
 				}
 			}
 		}
