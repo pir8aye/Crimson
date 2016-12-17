@@ -34,7 +34,7 @@ public class HostListHeaders extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public JCheckBox chckbxCountry = new JCheckBox(Headers.COUNTRY.toString());
+	public JCheckBox chckbxCountry = new JCheckBox(Headers.IP_LOCATION.toString());
 	public JCheckBox chckbxLanguage = new JCheckBox(Headers.LANGUAGE.toString());
 	public JCheckBox chckbxCrimsonVersion = new JCheckBox(Headers.CRIMSON_VERSION.toString());
 	public JCheckBox chckbxTimezone = new JCheckBox(Headers.TIMEZONE.toString());

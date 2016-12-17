@@ -155,7 +155,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		switch (Headers.HOSTNAME) {
 		case ACTIVE_WINDOW:
 			break;
-		case COUNTRY:
+		case IP_LOCATION:
 			break;
 		case CPU_MODEL:
 			break;

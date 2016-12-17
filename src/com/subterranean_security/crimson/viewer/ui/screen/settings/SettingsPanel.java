@@ -91,7 +91,7 @@ public class SettingsPanel extends JPanel {
 		if (hlh.chckbxCvid.isSelected())
 			h.add(Headers.CVID);
 		if (hlh.chckbxCountry.isSelected())
-			h.add(Headers.COUNTRY);
+			h.add(Headers.IP_LOCATION);
 		if (hlh.chckbxCpuModel.isSelected())
 			h.add(Headers.CPU_MODEL);
 		if (hlh.chckbxCpuTemp.isSelected())
@@ -166,7 +166,7 @@ public class SettingsPanel extends JPanel {
 				case CVID:
 					hlh.chckbxCvid.setSelected(true);
 					break;
-				case COUNTRY:
+				case IP_LOCATION:
 					hlh.chckbxCountry.setSelected(true);
 					break;
 				case CPU_MODEL:

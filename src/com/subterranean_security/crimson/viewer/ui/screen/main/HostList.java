@@ -183,7 +183,7 @@ class TM extends AbstractTableModel {
 			return clients.get(rowIndex).getLanguage();
 		case ACTIVE_WINDOW:
 			return clients.get(rowIndex).getActiveWindow();
-		case COUNTRY:
+		case IP_LOCATION:
 			return clients.get(rowIndex).getLocationIcon();
 		case CPU_MODEL:
 			return clients.get(rowIndex).getCpuModel();
