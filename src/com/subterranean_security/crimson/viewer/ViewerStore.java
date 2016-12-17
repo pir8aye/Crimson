@@ -231,13 +231,10 @@ public final class ViewerStore {
 				cp.amalgamate(change);
 			} else {
 				// add new profile
-				MainFrame.main.panel.console.addLine(
-						"Received new client connection" + (change.hasExtIp() ? " from: " + change.getExtIp() : ""),
-						LineType.GREEN);
 				cp = new ClientProfile(change.getCvid());
 				cp.amalgamate(change);
 				clients.add(cp.reinit());
-
+				MainFrame.main.panel.console.addLine("New client connection from: " + cp.getExtIp(), LineType.GREEN);
 			}
 
 			if (cp.getOnline()) {
