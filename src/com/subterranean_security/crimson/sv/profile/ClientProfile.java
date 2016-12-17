@@ -249,17 +249,26 @@ public class ClientProfile implements Serializable {
 		}
 
 		// location
-		if (locationIcon == null && country.get() != null && countryCode.get() != null) {
-			try {
-				locationIcon = UIUtil.getIcon("flags/" + countryCode.get().toLowerCase() + ".png");
-			} catch (NullPointerException e) {
-				Reporter.report(Reporter.newReport()
-						.setCrComment("No location icon found: " + countryCode.get().toLowerCase()).build());
+		if (locationIcon == null && extIp.get() != null) {
+			System.out.println("Loading icon for: " + extIp.get());
+			if (CUtil.Validation.privateIP(extIp.get())) {
+				locationIcon = UIUtil.getIcon("icons16/general/localhost.png");
+				locationIcon.setDescription("Private IP");
+			} else {
+				try {
+					locationIcon = UIUtil.getIcon("flags/" + countryCode.get().toLowerCase() + ".png");
+					locationIcon.setDescription(country.get());
+				} catch (NullPointerException e) {
+					Reporter.report(Reporter.newReport()
+							.setCrComment("No location icon found: " + countryCode.get().toLowerCase()).build());
 
-				// fall back to default
-				locationIcon = UIUtil.getIcon("flags/un.png");
+					// fall back to default
+					locationIcon = UIUtil.getIcon("flags/un.png");
+					locationIcon.setDescription("Unknown");
+				}
+
 			}
-			locationIcon.setDescription(country.get());
+
 		}
 
 	}
@@ -916,17 +925,8 @@ public class ClientProfile implements Serializable {
 		if (c.hasHostname()) {
 			setHostname(c.getHostname());
 		}
-
 		if (c.hasExtIp()) {
 			setExtIp(c.getExtIp());
-			// TODO resolve only if viewer location resolution is enabled
-			// try {
-			// setLocation(CUtil.Location.resolve(c.getExtIp()));
-			// loadTransientAttributes();
-			// } catch (IOException | XMLStreamException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
 		}
 		if (c.hasNetDns1()) {
 			setDns1(c.getNetDns1());

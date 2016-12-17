@@ -221,25 +221,30 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void ev_profileDelta(EV_ProfileDelta pd) {
 
-		if (pd.hasExtIp()) {
-			if (!receptor.getRemoteAddress().equals("127.0.0.1")) {
-				if (pd.getExtIp().equals("0.0.0.0")) {
-					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
-				}
-				try {
-					HashMap<String, String> location = CUtil.Location.resolve(pd.getExtIp());
-					pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountryCode(location.get("countrycode"))
-							.setCountry(location.get("countryname")).build();
+		if (pd.hasFirstPd() && pd.getFirstPd()) {
+			if (!pd.hasExtIp()) {
+				pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
+				if (!CUtil.Validation.privateIP(pd.getExtIp())) {
+					System.out.println(pd.getExtIp() + " is not a private IP");
 
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (XMLStreamException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					try {
+						HashMap<String, String> location = CUtil.Location.resolve(pd.getExtIp());
+						pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountryCode(location.get("countrycode"))
+								.setCountry(location.get("countryname")).build();
+
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (XMLStreamException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else {
+					System.out.println(pd.getExtIp() + " is a private IP");
 				}
 			}
 		}
+
 		if (pd.getCvid() != receptor.getCvid()) {
 			pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCvid(receptor.getCvid()).build();
 		}

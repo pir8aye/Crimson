@@ -353,9 +353,6 @@ public final class Platform {
 		}
 
 		public static String getExtIp() {
-			if (Common.instance == Instance.CLIENT && !Client.ic.getAllowMiscConnections()) {
-				return "0.0.0.0";
-			}
 			return CUtil.Network.getEIP();
 		}
 
@@ -431,6 +428,8 @@ public final class Platform {
 				info.setCvid(0);
 			}
 
+			info.setFirstPd(true);
+
 			info.setCrimsonVersion(Common.version);
 
 			info.setOsName(osName);
@@ -444,7 +443,10 @@ public final class Platform {
 			info.setJavaVendor(getJavaVersion());
 			info.setJavaArch(getJavaArch());
 			info.setCpuModel(getCPUModel());
-			info.setExtIp(getExtIp());
+			if (Client.ic.getAllowMiscConnections()) {
+				info.setExtIp(getExtIp());
+			}
+
 			for (GraphicsDisplay gd : getDisplays()) {
 				info.addDisplays(gd);
 			}
