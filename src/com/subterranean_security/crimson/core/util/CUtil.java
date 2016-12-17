@@ -1046,33 +1046,43 @@ public enum CUtil {
 			return (float) (dist * meterConversion);
 		}
 
+		private static final int connectionTimeout = 800;
+		private static final int readTimeout = 800;
+
 		public static HashMap<String, String> resolve(String ip) throws IOException, XMLStreamException {
 			log.debug("Resolving location for: {}", ip);
 			HashMap<String, String> info = new HashMap<String, String>();
-			XMLStreamReader reader = XMLInputFactory.newInstance()
-					.createXMLStreamReader(new URL("https://freegeoip.lwan.ws/xml/" + ip).openStream());
 
-			String tag = "";
-			String value = "";
-			while (reader.hasNext()) {
-				switch (reader.next()) {
-				case XMLStreamConstants.START_ELEMENT:
-					tag = reader.getLocalName().toLowerCase();
-					break;
-				case XMLStreamConstants.CDATA:
-				case XMLStreamConstants.CHARACTERS:
-					if (!tag.equals("response")) {
-						value = reader.getText();
-					}
+			URLConnection connection = new URL("https://freegeoip.lwan.ws/xml/" + ip).openConnection();
+			connection.setConnectTimeout(connectionTimeout);
+			connection.setReadTimeout(readTimeout);
+			try (InputStream in = connection.getInputStream()) {
+				XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(in);
 
-					break;
-				case XMLStreamConstants.END_ELEMENT:
-					if (!tag.equals("response")) {
-						info.put(tag, value.trim());
+				String tag = "";
+				String value = "";
+				while (reader.hasNext()) {
+					switch (reader.next()) {
+					case XMLStreamConstants.START_ELEMENT:
+						tag = reader.getLocalName().toLowerCase();
+						break;
+					case XMLStreamConstants.CDATA:
+					case XMLStreamConstants.CHARACTERS:
+						if (!tag.equals("response")) {
+							value = reader.getText();
+						}
+
+						break;
+					case XMLStreamConstants.END_ELEMENT:
+						if (!tag.equals("response")) {
+							info.put(tag, value.trim());
+						}
+						break;
 					}
-					break;
 				}
+				reader.close();
 			}
+
 			return info;
 		}
 	}
