@@ -51,6 +51,7 @@ public class HostList extends JPanel {
 		setLayout(new BorderLayout());
 		table.setModel(tm);
 		table.setDefaultRenderer(Object.class, tr);
+		table.setRowHeight(18);
 		table.setFillsViewportHeight(true);
 		table.setShowVerticalLines(false);
 		table.addMouseListener(new MouseAdapter() {
