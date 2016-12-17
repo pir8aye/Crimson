@@ -963,7 +963,9 @@ public class ClientProfile implements Serializable {
 			setFlushValue(c.getFlushValue());
 		}
 
-		log.debug("Profile amalgamated in {} ms", new Date().getTime() - start.getTime());
+		// TODO make amalgamation time available in some other way
+		// log.debug("Profile amalgamated in {} ms", new Date().getTime() -
+		// start.getTime());
 	}
 
 }
