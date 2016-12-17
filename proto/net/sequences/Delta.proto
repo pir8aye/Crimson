@@ -21,6 +21,7 @@ message EV_ProfileDelta {
 	
 	// General attributes
 	optional bool online = 42;
+	optional bool first_pd = 46;
 	optional string os_family = 17;
 	optional string os_name = 18;
 	optional string os_arch = 19;
