@@ -29,8 +29,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
+import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.screen.main.Headers;
+import com.subterranean_security.crimson.viewer.ui.screen.main.HostList;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 import java.awt.Font;
 import java.awt.Dimension;
@@ -156,91 +158,94 @@ public class SettingsPanel extends JPanel {
 			e.printStackTrace();
 		}
 
-		try {
-			Headers[] headers = (Headers[]) db.getObject("hostlist.headers");
-			for (Headers h : headers) {
-				switch (h) {
-				case ACTIVE_WINDOW:
-					hlh.chckbxActiveWindow.setSelected(true);
-					break;
-				case CVID:
-					hlh.chckbxCvid.setSelected(true);
-					break;
-				case IP_LOCATION:
-					hlh.chckbxCountry.setSelected(true);
-					break;
-				case CPU_MODEL:
-					hlh.chckbxCpuModel.setSelected(true);
-					break;
-				case CPU_TEMP:
-					hlh.chckbxCpuTemp.setSelected(true);
-					break;
-				case CPU_USAGE:
-					hlh.chckbxCpuUsage.setSelected(true);
-					break;
-				case CRIMSON_VERSION:
-					hlh.chckbxCrimsonVersion.setSelected(true);
-					break;
-				case EXTERNAL_IP:
-					hlh.chckbxExternalIp.setSelected(true);
-					break;
-				case HOSTNAME:
-					hlh.chckbxHostname.setSelected(true);
-					break;
-				case INTERNAL_IP:
-					hlh.chckbxInternalIp.setSelected(true);
-					break;
-				case JAVA_VERSION:
-					hlh.chckbxJavaVersion.setSelected(true);
-					break;
-				case LANGUAGE:
-					hlh.chckbxLanguage.setSelected(true);
-					break;
-				case MESSAGE_PING:
-					hlh.chckbxMessagePing.setSelected(true);
-					break;
-				case MONITOR_COUNT:
-					hlh.chckbxMonitorCount.setSelected(true);
-					break;
-				case OS_NAME:
-					hlh.chckbxOsName.setSelected(true);
-					break;
-				case OS_ARCH:
-					hlh.chckbxOSArch.setSelected(true);
-					break;
-				case OS_FAMILY:
-					hlh.chckbxOSFamily.setSelected(true);
-					break;
-				case RAM_CAPACITY:
-					hlh.chckbxRamCapacity.setSelected(true);
-					break;
-				case RAM_USAGE:
-					hlh.chckbxRamUsage.setSelected(true);
-					break;
-				case SCREEN_PREVIEW:
-					hlh.chckbxScreenPreview.setSelected(true);
-					break;
-				case TIMEZONE:
-					hlh.chckbxTimezone.setSelected(true);
-					break;
-				case USERNAME:
-					hlh.chckbxUsername.setSelected(true);
-					break;
-				case USER_STATUS:
-					hlh.chckbxUserStatus.setSelected(true);
-					break;
-				case VIRTUALIZATION:
-					hlh.chckbxVirtualization.setSelected(true);
-					break;
-				default:
-					break;
+		Headers[] headers = null;
 
-				}
-			}
+		try {
+			headers = (Headers[]) db.getObject("hostlist.headers");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			headers = HostList.defaultHeaders;
 		}
+
+		for (Headers h : headers) {
+			switch (h) {
+			case ACTIVE_WINDOW:
+				hlh.chckbxActiveWindow.setSelected(true);
+				break;
+			case CVID:
+				hlh.chckbxCvid.setSelected(true);
+				break;
+			case IP_LOCATION:
+				hlh.chckbxCountry.setSelected(true);
+				break;
+			case CPU_MODEL:
+				hlh.chckbxCpuModel.setSelected(true);
+				break;
+			case CPU_TEMP:
+				hlh.chckbxCpuTemp.setSelected(true);
+				break;
+			case CPU_USAGE:
+				hlh.chckbxCpuUsage.setSelected(true);
+				break;
+			case CRIMSON_VERSION:
+				hlh.chckbxCrimsonVersion.setSelected(true);
+				break;
+			case EXTERNAL_IP:
+				hlh.chckbxExternalIp.setSelected(true);
+				break;
+			case HOSTNAME:
+				hlh.chckbxHostname.setSelected(true);
+				break;
+			case INTERNAL_IP:
+				hlh.chckbxInternalIp.setSelected(true);
+				break;
+			case JAVA_VERSION:
+				hlh.chckbxJavaVersion.setSelected(true);
+				break;
+			case LANGUAGE:
+				hlh.chckbxLanguage.setSelected(true);
+				break;
+			case MESSAGE_PING:
+				hlh.chckbxMessagePing.setSelected(true);
+				break;
+			case MONITOR_COUNT:
+				hlh.chckbxMonitorCount.setSelected(true);
+				break;
+			case OS_NAME:
+				hlh.chckbxOsName.setSelected(true);
+				break;
+			case OS_ARCH:
+				hlh.chckbxOSArch.setSelected(true);
+				break;
+			case OS_FAMILY:
+				hlh.chckbxOSFamily.setSelected(true);
+				break;
+			case RAM_CAPACITY:
+				hlh.chckbxRamCapacity.setSelected(true);
+				break;
+			case RAM_USAGE:
+				hlh.chckbxRamUsage.setSelected(true);
+				break;
+			case SCREEN_PREVIEW:
+				hlh.chckbxScreenPreview.setSelected(true);
+				break;
+			case TIMEZONE:
+				hlh.chckbxTimezone.setSelected(true);
+				break;
+			case USERNAME:
+				hlh.chckbxUsername.setSelected(true);
+				break;
+			case USER_STATUS:
+				hlh.chckbxUserStatus.setSelected(true);
+				break;
+			case VIRTUALIZATION:
+				hlh.chckbxVirtualization.setSelected(true);
+				break;
+			default:
+				break;
+
+			}
+		}
+
 	}
 
 	class TreeListener implements TreeSelectionListener {

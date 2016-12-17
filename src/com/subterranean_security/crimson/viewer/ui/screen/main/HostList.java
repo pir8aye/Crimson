@@ -30,7 +30,6 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import com.subterranean_security.crimson.core.storage.Headers;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
@@ -38,6 +37,9 @@ import com.subterranean_security.crimson.viewer.ViewerStore;
 public class HostList extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+
+	public static final Headers[] defaultHeaders = new Headers[] { Headers.IP_LOCATION, Headers.OS_NAME,
+			Headers.USERNAME, Headers.HOSTNAME, Headers.LANGUAGE };
 
 	private static JTable table = new JTable();
 	private TM tm = new TM();
@@ -120,6 +122,7 @@ public class HostList extends JPanel {
 class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
+
 	public Headers[] headers = new Headers[] {};
 
 	private ArrayList<ClientProfile> clients = new ArrayList<ClientProfile>();
@@ -146,8 +149,7 @@ class TM extends AbstractTableModel {
 		try {
 			headers = (Headers[]) ViewerStore.Databases.local.getObject("hostlist.headers");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			headers = HostList.defaultHeaders;
 		}
 		this.fireTableStructureChanged();
 	}

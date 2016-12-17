@@ -28,7 +28,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.storage.Headers;
+import com.subterranean_security.crimson.viewer.ui.screen.main.Headers;
 
 public class HostListHeaders extends JPanel {
 
