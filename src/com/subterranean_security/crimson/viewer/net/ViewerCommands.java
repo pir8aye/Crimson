@@ -477,7 +477,7 @@ public enum ViewerCommands {
 		ClientConfig client = getClientConfig(cid);
 		if (client == null) {
 			outcome.setResult(false).setComment("Could not obtain client configuration");
-		} else if (client.getBuildNumber() >= Common.build) {
+		} else if (client.getBuildNumber() >= Common.build && !Common.isDebugMode()) {
 			outcome.setResult(false).setComment("No updated needed");
 		} else {
 			try {
