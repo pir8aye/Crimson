@@ -18,9 +18,12 @@
 package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel;
@@ -40,14 +43,13 @@ public class Preview extends JPanel implements DModule {
 
 	private void init() {
 		setLayout(new BorderLayout());
+		setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Preview", TitledBorder.CENTER,
+				TitledBorder.TOP, null, new Color(51, 51, 51)));
 	}
-
-	private ClientProfile cp;
 
 	@Override
 	public void setTarget(ClientProfile p) {
 		System.out.println("Preview::setTarget");
-		this.cp = p;
 		removeAll();
 		rdp = new RDPanel(Type.VIEW_ONLY, p.getCvid(), false);
 		add(rdp, BorderLayout.CENTER);

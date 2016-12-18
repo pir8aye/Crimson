@@ -18,19 +18,28 @@
 package com.subterranean_security.crimson.viewer.ui.common.panels.dpanel;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.lpanel.LPanel;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Preview;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Processor;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.WorldMap;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -50,7 +59,7 @@ public class DPanel extends SLPanel {
 	private MovingPanel movingBar;
 	private MovingPanel movingMain;
 
-	public Detail detail = new Detail();
+	public Detail detail = new Detail(this);
 
 	private boolean showing = false;
 	private boolean moving = false;
@@ -73,7 +82,7 @@ public class DPanel extends SLPanel {
 		movingMain.setAction(actionUP);
 
 		pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f).place(0, 0, movingMain);
-		pos2 = new SLConfig(this).gap(0, 0).row(5f).col(3f).col(1f).place(0, 0, movingMain).place(0, 1, movingBar);
+		pos2 = new SLConfig(this).gap(0, 0).row(5f).col(3f).col(1.25f).place(0, 0, movingMain).place(0, 1, movingBar);
 
 		this.setTweenManager(SLAnimator.createTweenManager());
 		this.initialize(pos1);
@@ -88,6 +97,9 @@ public class DPanel extends SLPanel {
 	public void showDetail(ClientProfile sp) {
 		if (!moving) {
 			if (!showing) {
+				// refresh width
+				// refreshWidth();
+
 				// move the detail panel out
 				moving = true;
 				movingMain.runAction();
@@ -162,48 +174,248 @@ class Detail extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	private DPanel parent = null;
+
 	private ArrayList<DModule> modules = new ArrayList<DModule>();
 
-	public Detail() {
-		refreshDetails();
+	private LPanel listPanel = new LPanel();
+
+	private ClientProfile target = null;
+
+	private boolean processor = false;
+	private boolean preview = false;
+	private boolean map = false;
+
+	public Detail(DPanel parent) {
+		this.parent = parent;
+		init();
+		addInitialDetails();
 	}
 
-	public void refreshDetails() {
-		nowClosed();
-		modules.clear();
-		removeAll();
-		init();
+	public void addInitialDetails() {
 
-		// TODO get from database
-		// just add property for now
-		Preview dp = new Preview();
-		Processor p = new Processor();
-		modules.add(dp);
-		addDM(dp);
-		modules.add(p);
-		addDM(p);
+		if (processor) {
+			Processor p = new Processor();
+			modules.add(p);
+			listPanel.addPanel(p);
+		}
+		if (preview) {
+			Preview p = new Preview();
+			modules.add(p);
+			listPanel.addPanel(p);
+		}
+		if (map) {
+			WorldMap p = new WorldMap();
+			modules.add(p);
+			listPanel.addPanel(p);
+		}
 
 	}
 
 	private void init() {
 		setLayout(new BorderLayout(0, 0));
-		last = new JPanel(new BorderLayout(0, 0));
-		JScrollPane jsp = new JScrollPane(last);
-		jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		add(jsp, BorderLayout.CENTER);
+
+		try {
+			processor = ViewerStore.Databases.local.getBoolean("detail.processor");
+			preview = ViewerStore.Databases.local.getBoolean("detail.preview");
+			map = ViewerStore.Databases.local.getBoolean("detail.map");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		JPanel menuPanel = new JPanel(new BorderLayout());
+		JMenuBar menu = new JMenuBar();
+		menuPanel.add(menu, BorderLayout.CENTER);
+		listPanel.addPanel(menuPanel);
+		add(listPanel, BorderLayout.CENTER);
+
+		JButton controlPanel = new JButton();
+		controlPanel.setToolTipText("Open Client Control Panel");
+		controlPanel.setIcon(UIUtil.getIcon("icons16/general/cog.png"));
+		controlPanel.setMargin(new Insets(1, 1, 1, 1));
+		controlPanel.addActionListener((ActionEvent e) -> {
+			parent.closeDetail();
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					ClientCPFrame ccpf = new ClientCPFrame(target);
+					ccpf.setLocationRelativeTo(null);
+					ccpf.setVisible(true);
+				}
+			});
+		});
+		menu.add(controlPanel);
+		menu.add(Box.createHorizontalGlue());
+
+		JButton toggleProcessor = new JButton();
+		if (processor) {
+			toggleProcessor.setIcon(UIUtil.getIcon("icons16/general/processor_del.png"));
+		} else {
+			toggleProcessor.setIcon(UIUtil.getIcon("icons16/general/processor_add.png"));
+		}
+		toggleProcessor.setToolTipText("Toggle Processor");
+		toggleProcessor.setMargin(new Insets(1, 1, 1, 1));
+		toggleProcessor.addActionListener((ActionEvent e) -> {
+
+			toggleProcessor.setEnabled(false);
+
+			new SwingWorker<Void, Void>() {
+				@Override
+				protected Void doInBackground() throws Exception {
+
+					ViewerStore.Databases.local.storeObject("detail.processor", processor = !processor);
+					return null;
+
+				}
+
+				protected void done() {
+					if (processor) {
+						toggleProcessor.setIcon(UIUtil.getIcon("icons16/general/processor_del.png"));
+
+						// add processor module
+						Processor p = new Processor();
+						p.setTarget(target);
+						p.setShowing(true);
+						modules.add(p);
+						listPanel.addPanel(p);
+					} else {
+						toggleProcessor.setIcon(UIUtil.getIcon("icons16/general/processor_add.png"));
+
+						// remove module
+						for (DModule dm : modules) {
+							if (dm instanceof Processor) {
+								listPanel.removePanel((Processor) dm);
+								modules.remove(dm);
+								dm.setShowing(false);
+								break;
+							}
+						}
+					}
+					toggleProcessor.setEnabled(true);
+					listPanel.revalidate();
+					listPanel.repaint();
+				};
+			}.execute();
+
+		});
+		menu.add(toggleProcessor);
+
+		JButton togglePreview = new JButton();
+		if (preview) {
+			togglePreview.setIcon(UIUtil.getIcon("icons16/general/monitor_del.png"));
+		} else {
+			togglePreview.setIcon(UIUtil.getIcon("icons16/general/monitor_add.png"));
+		}
+		togglePreview.setToolTipText("Toggle Preview");
+		togglePreview.setMargin(new Insets(1, 1, 1, 1));
+		togglePreview.addActionListener((ActionEvent e) -> {
+			togglePreview.setEnabled(false);
+
+			new SwingWorker<Void, Void>() {
+				@Override
+				protected Void doInBackground() throws Exception {
+
+					ViewerStore.Databases.local.storeObject("detail.preview", preview = !preview);
+					return null;
+
+				}
+
+				protected void done() {
+					if (preview) {
+						togglePreview.setIcon(UIUtil.getIcon("icons16/general/monitor_del.png"));
+
+						// add preview module
+						Preview p = new Preview();
+						p.setTarget(target);
+						p.setShowing(true);
+						modules.add(p);
+						listPanel.addPanel(p);
+					} else {
+						togglePreview.setIcon(UIUtil.getIcon("icons16/general/monitor_add.png"));
+
+						// remove module
+						for (DModule dm : modules) {
+							if (dm instanceof Preview) {
+								listPanel.removePanel((Preview) dm);
+								modules.remove(dm);
+								dm.setShowing(false);
+								break;
+							}
+						}
+					}
+					togglePreview.setEnabled(true);
+					listPanel.revalidate();
+					listPanel.repaint();
+				};
+			}.execute();
+		});
+		menu.add(togglePreview);
+
+		JButton toggleMap = new JButton();
+		if (map) {
+			toggleMap.setIcon(UIUtil.getIcon("icons16/general/map_del.png"));
+		} else {
+			toggleMap.setIcon(UIUtil.getIcon("icons16/general/map_add.png"));
+		}
+		toggleMap.setToolTipText("Toggle World Map");
+		toggleMap.setMargin(new Insets(1, 1, 1, 1));
+		toggleMap.addActionListener((ActionEvent e) -> {
+			toggleMap.setEnabled(false);
+
+			new SwingWorker<Void, Void>() {
+				@Override
+				protected Void doInBackground() throws Exception {
+
+					ViewerStore.Databases.local.storeObject("detail.map", map = !map);
+					return null;
+
+				}
+
+				protected void done() {
+					if (processor) {
+						toggleMap.setIcon(UIUtil.getIcon("icons16/general/map_del.png"));
+
+						// add map module
+						WorldMap p = new WorldMap();
+						p.setTarget(target);
+						p.setShowing(true);
+						modules.add(p);
+						listPanel.addPanel(p);
+					} else {
+						toggleMap.setIcon(UIUtil.getIcon("icons16/general/map_add.png"));
+
+						// remove module
+						for (DModule dm : modules) {
+							if (dm instanceof WorldMap) {
+								listPanel.removePanel((WorldMap) dm);
+								modules.remove(dm);
+								dm.setShowing(false);
+								break;
+							}
+						}
+					}
+					toggleMap.setEnabled(true);
+					listPanel.revalidate();
+					listPanel.repaint();
+				};
+			}.execute();
+		});
+		menu.add(toggleMap);
+
+		JButton toggleStats = new JButton();
+		toggleStats.setIcon(UIUtil.getIcon("icons16/general/statistics.png"));
+		toggleStats.setToolTipText("Toggle Statistics");
+		toggleStats.setMargin(new Insets(1, 1, 1, 1));
+		toggleStats.addActionListener((ActionEvent e) -> {
+
+		});
+		menu.add(toggleStats);
 	}
 
-	private JPanel last = new JPanel(new BorderLayout(0, 0));
-
-	public void addDM(Component comp) {
-		JPanel tmp = new JPanel(new BorderLayout(0, 0));
-		tmp.add(comp, BorderLayout.NORTH);
-		last.add(tmp, BorderLayout.CENTER);
-		last = tmp;
-
-	};
+	private JScrollPane jsp;
 
 	public void nowOpen(ClientProfile sp) {
+		target = sp;
 		for (DModule dm : modules) {
 			dm.setTarget(sp);
 			dm.setShowing(true);
@@ -221,7 +433,8 @@ class Detail extends JPanel {
 		for (DModule dm : modules) {
 			max = Math.max(max, dm.getDWidth());
 		}
-		return max;
+		System.out.println("Scrollbar width: " + jsp.getVerticalScrollBar().getWidth());
+		return max + jsp.getVerticalScrollBar().getWidth();
 	}
 
 }

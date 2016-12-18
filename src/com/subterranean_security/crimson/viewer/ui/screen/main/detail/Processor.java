@@ -128,14 +128,14 @@ public class Processor extends JPanel implements DModule {
 		gbc_panel_2.gridy = 1;
 		panel.add(panel_2, gbc_panel_2);
 		GridBagLayout gbl_panel_2 = new GridBagLayout();
-		gbl_panel_2.columnWidths = new int[] { 65, 65, 0 };
+		gbl_panel_2.columnWidths = new int[] { 65, 45, 0 };
 		gbl_panel_2.rowHeights = new int[] { 15, 15, 15 };
 		gbl_panel_2.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
 		gbl_panel_2.rowWeights = new double[] { 0.0, 0.0, 0.0 };
 		panel_2.setLayout(gbl_panel_2);
 
 		JLabel lblTotalCpuUsage = new JLabel("Model:");
-		lblTotalCpuUsage.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblTotalCpuUsage.setFont(new Font("Dialog", Font.BOLD, 9));
 		GridBagConstraints gbc_lblTotalCpuUsage = new GridBagConstraints();
 		gbc_lblTotalCpuUsage.fill = GridBagConstraints.BOTH;
 		gbc_lblTotalCpuUsage.insets = new Insets(0, 0, 5, 5);
@@ -153,8 +153,8 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblLoading.gridy = 0;
 		panel_2.add(lblCpuModel, gbc_lblLoading);
 
-		JLabel lblNewLabel = new JLabel("Clock Speed:");
-		lblNewLabel.setFont(new Font("Dialog", Font.BOLD, 10));
+		JLabel lblNewLabel = new JLabel("Frequency:");
+		lblNewLabel.setFont(new Font("Dialog", Font.BOLD, 9));
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.fill = GridBagConstraints.BOTH;
 		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
@@ -172,8 +172,8 @@ public class Processor extends JPanel implements DModule {
 		gbc_lblNewLabel_1.gridy = 1;
 		panel_2.add(lblNewLabel_1, gbc_lblNewLabel_1);
 
-		JLabel lblNewLabel_2 = new JLabel("Temperature:");
-		lblNewLabel_2.setFont(new Font("Dialog", Font.BOLD, 10));
+		JLabel lblNewLabel_2 = new JLabel("Core Temp:");
+		lblNewLabel_2.setFont(new Font("Dialog", Font.BOLD, 9));
 		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
 		gbc_lblNewLabel_2.fill = GridBagConstraints.BOTH;
 		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
@@ -296,7 +296,7 @@ public class Processor extends JPanel implements DModule {
 
 	@Override
 	public int getDWidth() {
-		return 120;
+		return 100;
 	}
 
 	private boolean showing = false;
