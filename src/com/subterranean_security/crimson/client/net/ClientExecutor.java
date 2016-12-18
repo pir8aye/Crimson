@@ -92,6 +92,8 @@ public class ClientExecutor extends BasicExecutor {
 					}
 					if (m.hasEvStreamData()) {
 						ev_stream_data(m);
+					} else if (m.hasEvEndpointClosed()) {
+						ev_endpoint_closed(m);
 					} else if (m.hasEvChatMessage()) {
 						ev_chat_message(m);
 					}
@@ -161,6 +163,11 @@ public class ClientExecutor extends BasicExecutor {
 			s.received(m);
 		}
 
+	}
+
+	private void ev_endpoint_closed(Message m) {
+		// remove half-open streams
+		StreamStore.removeStreamsByCVID(m.getEvEndpointClosed().getCVID());
 	}
 
 	private void ev_chat_message(Message m) {
@@ -350,7 +357,7 @@ public class ClientExecutor extends BasicExecutor {
 
 	private void stream_stop_ev(Message m) {
 		log.debug("stream_stop_ev");
-		StreamStore.removeStream(m.getMiStreamStop().getStreamID());
+		StreamStore.removeStreamBySID(m.getMiStreamStop().getStreamID());
 
 	}
 

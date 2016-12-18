@@ -36,7 +36,7 @@ public class SInfoSlave extends InfoSlave {
 	public void send() {
 		Receptor r = ServerStore.Connections.getConnection(param.getVID());
 		if (r == null) {
-			StreamStore.removeStream(getStreamID());
+			StreamStore.removeStreamBySID(getStreamID());
 			return;
 		}
 		r.handle.write(Message.newBuilder().setUrgent(true).setRid(param.getCID()).setSid(param.getVID())

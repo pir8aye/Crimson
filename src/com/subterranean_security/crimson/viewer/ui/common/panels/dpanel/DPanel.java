@@ -94,6 +94,10 @@ public class DPanel extends SLPanel {
 				movingBar);
 	}
 
+	public ClientProfile getTarget() {
+		return detail.getTarget();
+	}
+
 	public void showDetail(ClientProfile sp) {
 		if (!moving) {
 			if (!showing) {
@@ -181,6 +185,10 @@ class Detail extends JPanel {
 	private LPanel listPanel = new LPanel();
 
 	private ClientProfile target = null;
+
+	public ClientProfile getTarget() {
+		return target;
+	}
 
 	private boolean processor = false;
 	private boolean preview = false;

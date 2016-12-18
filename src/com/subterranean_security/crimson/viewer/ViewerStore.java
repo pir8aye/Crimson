@@ -243,10 +243,18 @@ public final class ViewerStore {
 				if (MainFrame.main.panel.graphLoaded)
 					MainFrame.main.panel.graph.addClient(cp);
 			} else {
-				if (MainFrame.main.panel.listLoaded)
+				if (MainFrame.main.panel.listLoaded) {
 					MainFrame.main.panel.list.removeClient(cp);
+					ClientProfile detailTarget = MainFrame.main.dp.getTarget();
+					if (cp.getCvid() == detailTarget.getCvid()) {
+						MainFrame.main.dp.closeDetail();
+						MainFrame.main.panel.console.addLine(
+								"The client (" + detailTarget.getExtIp() + ") has disconnected", LineType.ORANGE);
+					}
+				}
 				if (MainFrame.main.panel.graphLoaded)
 					MainFrame.main.panel.graph.removeClient(cp);
+				// TODO test if controlpanel is open
 			}
 
 		}

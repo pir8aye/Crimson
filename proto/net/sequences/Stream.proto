@@ -19,6 +19,10 @@ message EV_StreamData {
 	optional DirtyBlock dirty_block = 5;
 }
 
+message EV_EndpointClosed {
+	required int32 CVID = 1;
+}
+
 message EventData {
 	optional int32 keyPressed = 1;
 	optional int32 keyReleased = 2;

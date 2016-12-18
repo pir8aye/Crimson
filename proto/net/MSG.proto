@@ -27,11 +27,12 @@ message Message {
 	optional int32 sid = 4;
 
 	optional EV_StreamData ev_stream_data = 5;
-	optional EV_ProfileDelta ev_profile_delta = 6;
-	optional EV_ServerProfileDelta ev_server_profile_delta = 7;
-	optional EV_ViewerProfileDelta ev_viewer_profile_delta = 8;
-	optional EV_KEvent ev_kevent = 9;
-	optional EV_ChatMessage ev_chat_message = 10;
+	optional EV_EndpointClosed ev_endpoint_closed = 6;
+	optional EV_ProfileDelta ev_profile_delta = 7;
+	optional EV_ServerProfileDelta ev_server_profile_delta = 8;
+	optional EV_ViewerProfileDelta ev_viewer_profile_delta = 9;
+	optional EV_KEvent ev_kevent = 10;
+	optional EV_ChatMessage ev_chat_message = 11;
 	
 	optional RQ_Login rq_login = 100;
 	optional RS_Login rs_login = 101;

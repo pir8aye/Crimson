@@ -91,7 +91,7 @@ public class SubscriberSlave extends Stream {
 		Receptor r = ServerStore.Connections.getConnection(param.getVID());
 		if (r == null) {
 			// stop this stream
-			StreamStore.removeStream(getStreamID());
+			StreamStore.removeStreamBySID(getStreamID());
 			return;
 		}
 		r.handle.write(Message.newBuilder().setUrgent(true).setSid(param.getCID()).setEvKevent(k).build());

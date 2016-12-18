@@ -35,10 +35,13 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
+import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.storage.MemList;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
+import com.subterranean_security.crimson.core.stream.Stream;
+import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.server.net.Receptor;
@@ -47,6 +50,7 @@ import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
 public final class ServerStore {
 
@@ -130,6 +134,8 @@ public final class ServerStore {
 
 		public static void remove(int cvid) {
 			log.debug("Removing receptor (CVID: {})", cvid);
+
+			// remove receptor
 			if (receptors.containsKey(cvid)) {
 				Receptor r = receptors.remove(cvid);
 				if (r.getInstance() == Instance.VIEWER) {

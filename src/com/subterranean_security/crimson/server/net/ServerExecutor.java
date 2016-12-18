@@ -63,6 +63,7 @@ import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.SMSG.RS_CloudUser;
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeServerState;
+import com.subterranean_security.crimson.core.proto.Stream.EV_EndpointClosed;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_AddUser;
@@ -114,6 +115,8 @@ public class ServerExecutor extends BasicExecutor {
 							ServerStore.Connections.getConnection(m.getRid()).handle.write(m);
 						} catch (NullPointerException e) {
 							log.debug("Could not forward message to CVID: {}", m.getRid());
+							receptor.handle.write(Message.newBuilder().setUrgent(true)
+									.setEvEndpointClosed(EV_EndpointClosed.newBuilder().setCVID(m.getRid())).build());
 						}
 					} else if (m.hasEvProfileDelta()) {
 						ev_profileDelta(m.getEvProfileDelta());
@@ -383,7 +386,7 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void mi_stream_stop(Message m) {
-		StreamStore.removeStream(m.getMiStreamStop().getStreamID());
+		StreamStore.removeStreamBySID(m.getMiStreamStop().getStreamID());
 	}
 
 	private void rq_key_update(Message m) {

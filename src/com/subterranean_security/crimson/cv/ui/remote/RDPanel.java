@@ -314,6 +314,6 @@ public class RDPanel extends JPanel {
 		running = false;
 		btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_go.png"));
 		btnToggle.setToolTipText("Start");
-		StreamStore.removeStream(stream.getStreamID());
+		StreamStore.removeStreamBySID(stream.getStreamID());
 	}
 }

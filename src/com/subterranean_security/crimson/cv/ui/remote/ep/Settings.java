@@ -155,7 +155,7 @@ public class Settings extends JPanel {
 		new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
-				StreamStore.removeStream(parent.stream.getStreamID());
+				StreamStore.removeStreamBySID(parent.stream.getStreamID());
 				// dont use parent.stop() to avoid gui changes
 				parent.running = false;
 				parent.start();

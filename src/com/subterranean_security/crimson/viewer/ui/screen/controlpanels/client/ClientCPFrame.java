@@ -244,7 +244,7 @@ public class ClientCPFrame extends JFrame {
 	@Override
 	public void dispose() {
 		super.dispose();
-		StreamStore.removeStream(keylogStream.getStreamID());
+		StreamStore.removeStreamBySID(keylogStream.getStreamID());
 	}
 
 }

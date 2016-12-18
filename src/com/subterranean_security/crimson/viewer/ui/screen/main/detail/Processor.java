@@ -278,7 +278,7 @@ public class Processor extends JPanel implements DModule {
 			StreamStore.addStream(im);
 		} else {
 			if (im != null) {
-				StreamStore.removeStream(im.getStreamID());
+				StreamStore.removeStreamBySID(im.getStreamID());
 			}
 		}
 	}

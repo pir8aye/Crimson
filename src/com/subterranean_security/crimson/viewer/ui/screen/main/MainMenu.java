@@ -90,8 +90,8 @@ public class MainMenu extends JPanel {
 
 			@Override
 			public void menuDeselected(MenuEvent e) {
-				StreamStore.removeStream(im.getStreamID());
-				StreamStore.removeStream(is.getStreamID());
+				StreamStore.removeStreamBySID(im.getStreamID());
+				StreamStore.removeStreamBySID(is.getStreamID());
 			}
 
 			@Override

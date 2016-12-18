@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.core.stream;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +40,22 @@ public enum StreamStore {
 		return streams;
 	}
 
-	public static void removeStream(int id) {
+	public static void removeStreamBySID(int id) {
 		try {
 			streams.remove(id).stop();
 		} catch (NullPointerException e) {
 			// that stream doesnt exist
+		}
+	}
+
+	public static void removeStreamsByCVID(int cvid) {
+		Iterator<Stream> it = streams.values().iterator();
+		while (it.hasNext()) {
+			Stream s = it.next();
+			if (s.param.getVID() == cvid || s.param.getCID() == cvid) {
+				log.debug("Removed half-open stream");
+				StreamStore.removeStreamBySID(s.getStreamID());
+			}
 		}
 	}
 
