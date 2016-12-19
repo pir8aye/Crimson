@@ -1,5 +1,8 @@
 package com.subterranean_security.crimson.viewer.ui;
 
+import java.util.ArrayList;
+
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.GenDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.auth.CreateGroup;
@@ -22,5 +25,7 @@ public final class UIStore {
 
 	public static CreateGroup ECreateGroup;
 	public static CreatePassword ECreatePassword;
+
+	public static ArrayList<ClientCPFrame> clientControlPanels = new ArrayList<ClientCPFrame>();
 
 }

@@ -34,6 +34,7 @@ import com.subterranean_security.crimson.cv.ui.remote.RDFrame;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel.Type;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
@@ -89,7 +90,16 @@ public enum ContextMenu {
 
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
+						for (ClientCPFrame frame : UIStore.clientControlPanels) {
+							if (frame.profile.getCvid() == selected.getCvid()) {
+								// there is already an open control panel
+								frame.setLocationRelativeTo(null);
+								frame.toFront();
+								return;
+							}
+						}
 						ClientCPFrame ccpf = new ClientCPFrame(selected);
+						UIStore.clientControlPanels.add(ccpf);
 						ccpf.setLocationRelativeTo(null);
 						ccpf.setVisible(true);
 

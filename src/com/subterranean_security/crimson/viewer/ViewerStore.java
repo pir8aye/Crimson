@@ -37,7 +37,9 @@ import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
+import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public final class ViewerStore {
@@ -237,24 +239,38 @@ public final class ViewerStore {
 				MainFrame.main.panel.console.addLine("New client connection from: " + cp.getExtIp(), LineType.GREEN);
 			}
 
-			if (cp.getOnline()) {
-				if (MainFrame.main.panel.listLoaded)
-					MainFrame.main.panel.list.addOrUpdate(cp);
-				if (MainFrame.main.panel.graphLoaded)
-					MainFrame.main.panel.graph.addClient(cp);
-			} else {
-				if (MainFrame.main.panel.listLoaded) {
-					MainFrame.main.panel.list.removeClient(cp);
-					ClientProfile detailTarget = MainFrame.main.dp.getTarget();
-					if (detailTarget != null && cp.getCvid() == detailTarget.getCvid()) {
-						MainFrame.main.dp.closeDetail();
-						MainFrame.main.panel.console.addLine(
-								"The client (" + detailTarget.getExtIp() + ") has disconnected", LineType.ORANGE);
+			if (change.hasOnline()) {
+				if (change.getOnline()) {
+					if (MainFrame.main.panel.listLoaded)
+						MainFrame.main.panel.list.addOrUpdate(cp);
+					if (MainFrame.main.panel.graphLoaded)
+						MainFrame.main.panel.graph.addClient(cp);
+
+					for (ClientCPFrame ccpf : UIStore.clientControlPanels) {
+						if (ccpf.profile.getCvid() == cp.getCvid()) {
+							ccpf.clientOnline();
+						}
 					}
+				} else {
+					if (MainFrame.main.panel.listLoaded) {
+						MainFrame.main.panel.list.removeClient(cp);
+						ClientProfile detailTarget = MainFrame.main.dp.getTarget();
+						if (detailTarget != null && cp.getCvid() == detailTarget.getCvid()) {
+							MainFrame.main.dp.closeDetail();
+							MainFrame.main.panel.console.addLine(
+									"The client (" + detailTarget.getExtIp() + ") has disconnected", LineType.ORANGE);
+						}
+					}
+					if (MainFrame.main.panel.graphLoaded)
+						MainFrame.main.panel.graph.removeClient(cp);
+
+					for (ClientCPFrame ccpf : UIStore.clientControlPanels) {
+						if (ccpf.profile.getCvid() == cp.getCvid()) {
+							ccpf.clientOffline();
+						}
+					}
+
 				}
-				if (MainFrame.main.panel.graphLoaded)
-					MainFrame.main.panel.graph.removeClient(cp);
-				// TODO test if controlpanel is open
 			}
 
 		}

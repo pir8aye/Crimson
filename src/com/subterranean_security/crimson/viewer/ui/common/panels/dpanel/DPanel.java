@@ -32,6 +32,7 @@ import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.lpanel.LPanel;
@@ -246,7 +247,16 @@ class Detail extends JPanel {
 			parent.closeDetail();
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
+					for (ClientCPFrame frame : UIStore.clientControlPanels) {
+						if (frame.profile.getCvid() == target.getCvid()) {
+							// there is already an open control panel
+							frame.setLocationRelativeTo(null);
+							frame.toFront();
+							return;
+						}
+					}
 					ClientCPFrame ccpf = new ClientCPFrame(target);
+					UIStore.clientControlPanels.add(ccpf);
 					ccpf.setLocationRelativeTo(null);
 					ccpf.setVisible(true);
 				}

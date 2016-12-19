@@ -549,4 +549,41 @@ public class ControlsTab extends JPanel implements CPPanel {
 		}
 	}
 
+	@Override
+	public void clientOffline() {
+		btnHibernate.setEnabled(false);
+		btnKill.setEnabled(false);
+		btnRestart.setEnabled(false);
+		btnRestartClient.setEnabled(false);
+		btnShutdown.setEnabled(false);
+		btnStandby.setEnabled(false);
+		btnUninstall.setEnabled(false);
+		btnUpdate.setEnabled(false);
+
+	}
+
+	@Override
+	public void serverOffline() {
+		clientOffline();
+
+	}
+
+	@Override
+	public void clientOnline() {
+		btnHibernate.setEnabled(true);
+		btnKill.setEnabled(true);
+		btnRestart.setEnabled(true);
+		btnRestartClient.setEnabled(true);
+		btnShutdown.setEnabled(true);
+		btnStandby.setEnabled(true);
+		btnUninstall.setEnabled(true);
+		btnUpdate.setEnabled(true);
+	}
+
+	@Override
+	public void serverOnline() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

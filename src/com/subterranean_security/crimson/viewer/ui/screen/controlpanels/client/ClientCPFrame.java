@@ -22,6 +22,7 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -42,14 +43,20 @@ import com.subterranean_security.crimson.core.stream.subscriber.SubscriberMaster
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
+import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.controls.ControlsTab;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.Keylogger;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.logs.Logs;
 
-public class ClientCPFrame extends JFrame {
+/**
+ * This class technically should not implement CPPanel, but it is convenient
+ *
+ */
+public class ClientCPFrame extends JFrame implements CPPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -63,7 +70,6 @@ public class ClientCPFrame extends JFrame {
 
 	private SubscriberMaster keylogStream;
 
-	// not needed yet
 	private HashMap<Panels, CPPanel> panels = new HashMap<Panels, CPPanel>();
 	private final JPanel panel_1 = new JPanel();
 	private final JSplitPane splitPane = new JSplitPane();
@@ -90,6 +96,7 @@ public class ClientCPFrame extends JFrame {
 		setResizable(true);
 		setMinimumSize(UICommon.dim_control_panel);
 		getContentPane().setLayout(new BorderLayout(0, 0));
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setDividerLocation(0.85d);
 		splitPane.setResizeWeight(0.85d);
@@ -177,13 +184,19 @@ public class ClientCPFrame extends JFrame {
 		for (Panels p : getValidPanels()) {
 			switch (p) {
 			case CONTROLS:
-				cards.add(p.toString(), new ControlsTab(ep, profile, console));
+				ControlsTab tab = new ControlsTab(ep, profile, console);
+				cards.add(p.toString(), tab);
+				panels.put(p, tab);
 				break;
 			case KEYLOGGER:
-				cards.add(p.toString(), new Keylogger(profile, console));
+				Keylogger tab2 = new Keylogger(profile, console);
+				cards.add(p.toString(), tab2);
+				panels.put(p, tab2);
 				break;
 			case LOGS:
-				cards.add(p.toString(), new Logs(profile, console));
+				Logs tab3 = new Logs(profile, console);
+				cards.add(p.toString(), tab3);
+				panels.put(p, tab3);
 				break;
 			default:
 				break;
@@ -191,6 +204,39 @@ public class ClientCPFrame extends JFrame {
 			}
 		}
 
+	}
+
+	@Override
+	public void clientOffline() {
+		setTitle("Control Panel: " + profile.getHostname() + " (client offline)");
+		console.addLine("The client has disconnected!", LineType.ORANGE);
+		for (CPPanel panel : panels.values()) {
+			panel.clientOffline();
+		}
+	}
+
+	@Override
+	public void serverOffline() {
+		setTitle("Control Panel: " + profile.getHostname() + " (server offline)");
+		for (CPPanel panel : panels.values()) {
+			panel.serverOffline();
+		}
+	}
+
+	@Override
+	public void clientOnline() {
+		setTitle("Control Panel: " + profile.getHostname());
+		console.addLine("The client has reconnected!", LineType.GREEN);
+		for (CPPanel panel : panels.values()) {
+			panel.clientOnline();
+		}
+	}
+
+	@Override
+	public void serverOnline() {
+		for (CPPanel panel : panels.values()) {
+			panel.serverOnline();
+		}
 	}
 
 	class TreeListener implements TreeSelectionListener {
@@ -244,7 +290,20 @@ public class ClientCPFrame extends JFrame {
 	@Override
 	public void dispose() {
 		super.dispose();
-		StreamStore.removeStreamBySID(keylogStream.getStreamID());
-	}
+		new Thread(new Runnable() {
+			public void run() {
+				StreamStore.removeStreamBySID(keylogStream.getStreamID());
 
+				// remove from UIStore
+				Iterator<ClientCPFrame> it = UIStore.clientControlPanels.iterator();
+				while (it.hasNext()) {
+					ClientCPFrame cf = it.next();
+					if (profile.getCvid() == cf.profile.getCvid()) {
+						it.remove();
+						break;
+					}
+				}
+			}
+		}).start();
+	}
 }

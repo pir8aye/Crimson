@@ -19,4 +19,12 @@ package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client;
 
 public interface CPPanel {
 
+	public void clientOffline();
+
+	public void serverOffline();
+
+	public void clientOnline();
+
+	public void serverOnline();
+
 }

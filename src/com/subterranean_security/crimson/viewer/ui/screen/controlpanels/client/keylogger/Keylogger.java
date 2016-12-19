@@ -59,10 +59,10 @@ public class Keylogger extends JPanel implements CPPanel {
 	private EPanel ep;
 	private JPanel content_panel;
 	private JPanel loading;
-	private JButton btnNewButton;
 
-	private JButton btnNewButton_1;
-	private JButton btnNewButton_2;
+	private JButton btnSettingsEP;
+	private JButton btnStatsEP;
+	private JButton btnView;
 
 	private boolean flatView;
 
@@ -108,20 +108,20 @@ public class Keylogger extends JPanel implements CPPanel {
 		menuBar = new JMenuBar();
 		add(menuBar, BorderLayout.NORTH);
 
-		btnNewButton_2 = new JButton(UIUtil.getIcon("icons16/general/tree_hierarchy.png"));
-		btnNewButton_2.setFocusable(false);
-		btnNewButton_2.addActionListener(new ActionListener() {
+		btnView = new JButton(UIUtil.getIcon("icons16/general/tree_hierarchy.png"));
+		btnView.setFocusable(false);
+		btnView.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				logTree.refreshing = true;
 				flatView = !flatView;
 				ViewerStore.Databases.local.storeObject("keylog.treeview", flatView);
 				if (flatView) {
-					btnNewButton_2.setIcon(UIUtil.getIcon("icons16/general/tree_list.png"));
-					btnNewButton_2.setToolTipText("Switch to flat view");
+					btnView.setIcon(UIUtil.getIcon("icons16/general/tree_list.png"));
+					btnView.setToolTipText("Switch to flat view");
 				} else {
-					btnNewButton_2.setIcon(UIUtil.getIcon("icons16/general/tree_hierarchy.png"));
-					btnNewButton_2.setToolTipText("Switch to hierarchical view");
+					btnView.setIcon(UIUtil.getIcon("icons16/general/tree_hierarchy.png"));
+					btnView.setToolTipText("Switch to hierarchical view");
 				}
 
 				logTree.resetTree();
@@ -130,23 +130,23 @@ public class Keylogger extends JPanel implements CPPanel {
 
 			}
 		});
-		btnNewButton_2.setToolTipText(flatView ? "Switch to hierarchical view" : "Switch to flat view");
-		btnNewButton_2.setMargin(new Insets(2, 4, 2, 4));
-		menuBar.add(btnNewButton_2);
+		btnView.setToolTipText(flatView ? "Switch to hierarchical view" : "Switch to flat view");
+		btnView.setMargin(new Insets(2, 4, 2, 4));
+		menuBar.add(btnView);
 
 		menuBar.add(Box.createHorizontalGlue());
 
-		btnNewButton_1 = new JButton(UIUtil.getIcon("icons16/general/statistics.png"));
-		btnNewButton_1.setToolTipText("Keylogger Statistics");
-		btnNewButton_1.setFocusable(false);
-		btnNewButton_1.setMargin(new Insets(2, 4, 2, 4));
-		menuBar.add(btnNewButton_1);
+		btnStatsEP = new JButton(UIUtil.getIcon("icons16/general/statistics.png"));
+		btnStatsEP.setToolTipText("Keylogger Statistics");
+		btnStatsEP.setFocusable(false);
+		btnStatsEP.setMargin(new Insets(2, 4, 2, 4));
+		menuBar.add(btnStatsEP);
 
-		btnNewButton = new JButton(UIUtil.getIcon("icons16/general/cog.png"));
-		btnNewButton.setToolTipText("Keylogger Settings");
-		btnNewButton.setFocusable(false);
-		btnNewButton.setMargin(new Insets(2, 4, 2, 4));
-		btnNewButton.addActionListener(new ActionListener() {
+		btnSettingsEP = new JButton(UIUtil.getIcon("icons16/general/cog.png"));
+		btnSettingsEP.setToolTipText("Keylogger Settings");
+		btnSettingsEP.setFocusable(false);
+		btnSettingsEP.setMargin(new Insets(2, 4, 2, 4));
+		btnSettingsEP.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				if (ep.isOpen() && ep.getEP() != null && ep.getEP() instanceof Settings) {
@@ -158,7 +158,7 @@ public class Keylogger extends JPanel implements CPPanel {
 
 			}
 		});
-		menuBar.add(btnNewButton);
+		menuBar.add(btnSettingsEP);
 
 		profile.getKeylog().addCallback(new LogCallback(this));
 
@@ -179,6 +179,30 @@ public class Keylogger extends JPanel implements CPPanel {
 
 	public void hideKeylog() {
 		((CardLayout) content_panel.getLayout()).show(content_panel, "BLANK");
+	}
+
+	@Override
+	public void clientOffline() {
+		btnSettingsEP.setEnabled(false);
+
+	}
+
+	@Override
+	public void serverOffline() {
+		clientOffline();
+
+	}
+
+	@Override
+	public void clientOnline() {
+		btnSettingsEP.setEnabled(true);
+
+	}
+
+	@Override
+	public void serverOnline() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

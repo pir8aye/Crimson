@@ -32,6 +32,7 @@ public class Logs extends JPanel implements CPPanel {
 	private JTabbedPane tabbedPane;
 	private JButton btnExport;
 	private JButton btnClose;
+	private JButton btnRefresh;
 
 	public Logs(ClientProfile profile, Console console) {
 		setLayout(new BorderLayout(0, 0));
@@ -39,9 +40,9 @@ public class Logs extends JPanel implements CPPanel {
 		JMenuBar menuBar = new JMenuBar();
 		add(menuBar, BorderLayout.NORTH);
 
-		JButton btnNewButton = new JButton(UIUtil.getIcon("icons16/general/arrow_refresh.png"));
-		btnNewButton.setToolTipText("Refresh");
-		btnNewButton.addActionListener(new ActionListener() {
+		btnRefresh = new JButton(UIUtil.getIcon("icons16/general/arrow_refresh.png"));
+		btnRefresh.setToolTipText("Refresh");
+		btnRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				new SwingWorker<Iterable<LogFile>, Void>() {
 
@@ -96,8 +97,8 @@ public class Logs extends JPanel implements CPPanel {
 				}.execute();
 			}
 		});
-		btnNewButton.setMargin(new Insets(2, 2, 2, 2));
-		menuBar.add(btnNewButton);
+		btnRefresh.setMargin(new Insets(2, 2, 2, 2));
+		menuBar.add(btnRefresh);
 
 		btnExport = new JButton(UIUtil.getIcon("icons16/general/export_log.png"));
 		btnExport.setToolTipText("Export log to filesystem");
@@ -153,6 +154,30 @@ public class Logs extends JPanel implements CPPanel {
 
 		JProgressBar progressBar = new JProgressBar();
 		add(progressBar, BorderLayout.SOUTH);
+	}
+
+	@Override
+	public void clientOffline() {
+		btnRefresh.setEnabled(false);
+
+	}
+
+	@Override
+	public void serverOffline() {
+		clientOffline();
+
+	}
+
+	@Override
+	public void clientOnline() {
+		btnRefresh.setEnabled(true);
+
+	}
+
+	@Override
+	public void serverOnline() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

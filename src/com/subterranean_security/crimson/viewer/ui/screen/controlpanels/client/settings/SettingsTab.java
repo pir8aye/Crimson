@@ -15,9 +15,11 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client;
+package com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.settings;
 
 import javax.swing.JPanel;
+
+import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.CPPanel;
 
 public class SettingsTab extends JPanel implements CPPanel {
 
@@ -28,6 +30,30 @@ public class SettingsTab extends JPanel implements CPPanel {
 	}
 
 	public void init() {
+
+	}
+
+	@Override
+	public void clientOffline() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void serverOffline() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void clientOnline() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void serverOnline() {
+		// TODO Auto-generated method stub
 
 	}
 
