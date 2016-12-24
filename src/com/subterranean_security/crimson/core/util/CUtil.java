@@ -1255,22 +1255,22 @@ public enum CUtil {
 	}
 
 	public static class UnitTranslator {
-		// TODO fix conversion!!!
+		
 		public static String translateMemSize(long l) {
-			if (l < 1000000) {
-				return String.format("%f KB", l / 1000.0);
-			} else if (l < 1000000000) {
-				return String.format("%f MB", l / 1000000.0);
+			if (l < 1024 * 1024) {
+				return String.format("%f KB", l / 1024.0);
+			} else if (l < 1024 * 1024 * 1024) {
+				return String.format("%f MB", l / (1024.0 * 1024.0));
 			} else {
-				return String.format("%f GB", l / 1000000000.0);
+				return String.format("%f GB", l / (1024.0 * 1024.0 * 1024.0));
 			}
 		}
 
 		public static String translateCacheSize(long l) {
-			if (l < 1000000) {
-				return String.format("%f KB", l / 1000.0);
+			if (l < 1024 * 1024) {
+				return String.format("%f KB", l / 1024.0);
 			} else {
-				return String.format("%f MB", l / 1000000.0);
+				return String.format("%f MB", l / (1024.0 * 1024.0));
 			}
 		}
 
