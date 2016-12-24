@@ -70,6 +70,15 @@ public final class SigarStore {
 		return cpuInfo;
 	}
 
+	public static void refreshCpuPerc() {
+		try {
+			cpuPerc = sigar.getCpuPercList();
+		} catch (SigarException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public static CpuPerc[] getCpuPercs() {
 		return cpuPerc;
 	}

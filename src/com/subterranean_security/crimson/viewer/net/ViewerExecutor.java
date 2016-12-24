@@ -56,7 +56,6 @@ public class ViewerExecutor extends BasicExecutor {
 					} else if (m.hasEvEndpointClosed()) {
 						StreamStore.removeStreamsByCVID(m.getEvEndpointClosed().getCVID());
 					} else if (m.hasEvProfileDelta()) {
-						System.out.println("Got PD. FIG: " + m.getEvProfileDelta().hasFig());
 						ViewerStore.Profiles.update(m.getEvProfileDelta());
 					} else if (m.hasEvServerProfileDelta()) {
 						ViewerStore.Profiles.update(m.getEvServerProfileDelta());

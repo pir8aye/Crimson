@@ -24,7 +24,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,6 +31,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -218,20 +218,15 @@ public class Processor extends JPanel implements DModule {
 			public void run() {
 				if (isDetailOpen()) {
 
-					// TODO improve
-					// check timeout
 					double time = System.currentTimeMillis() - start.getTime();
-					if (time > 5 * 1000) {
-						timeout();
-					}
 
 					if (System.currentTimeMillis() - last.getTime() > updatePeriod * 2) {
 						trace.addPoint(time - 1, Double.NaN);
 					}
 
 					// usage
-					// TODO!!!!
-					double usage = 0;
+					double usage = Double.parseDouble(
+							profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TOTAL_USAGE).get());
 
 					val_usage.setText(String.format("Average Utilization: %5.2f%%", usage));
 
@@ -251,12 +246,6 @@ public class Processor extends JPanel implements DModule {
 			}
 
 		}, 0, updatePeriod);
-	}
-
-	private void timeout() {
-		if (lblTemperatureVar.getText().equals("Loading...")) {
-			lblTemperatureVar.setText("unknown");
-		}
 	}
 
 	private ClientProfile profile;
@@ -282,6 +271,23 @@ public class Processor extends JPanel implements DModule {
 
 	}
 
+	private SwingWorker<Void, Void> timeout = new SwingWorker<Void, Void>() {
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			Thread.sleep(3000);
+			return null;
+		}
+
+		@Override
+		protected void done() {
+			if (lblTemperatureVar.getText().equals("Loading...")) {
+				lblTemperatureVar.setText("N/A");
+			}
+		};
+
+	};
+
 	@Override
 	public void setShowing(boolean showing) {
 		this.showing = showing;
@@ -289,6 +295,9 @@ public class Processor extends JPanel implements DModule {
 			im = new InfoMaster(InfoParam.newBuilder().setCpuUsage(true).setCpuTemp(true).build(), profile.getCid(),
 					(int) updatePeriod);
 			StreamStore.addStream(im);
+
+			// launch timeout
+			timeout.execute();
 		} else {
 			if (im != null) {
 				StreamStore.removeStreamBySID(im.getStreamID());

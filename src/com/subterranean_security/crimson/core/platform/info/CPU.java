@@ -86,7 +86,8 @@ public final class CPU {
 		return CUtil.UnitTranslator.translateCacheSize(SigarStore.getCpuInfos()[i].getCacheSize());
 	}
 
-	public static String getUsage(int i) {
+	public static String getTotalUsage(int i) {
+		SigarStore.refreshCpuPerc();
 		return String.format("%5.2f", SigarStore.getCpuPercs()[i].getCombined() * 100);
 	}
 

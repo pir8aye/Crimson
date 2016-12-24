@@ -68,7 +68,7 @@ public abstract class InfoSlave extends Stream {
 		if (param.getInfoParam().hasCpuUsage()) {
 
 			lastCpuUsage = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.CPU.ordinal())
-					.setGroupId(cpuID).setAttributeType(AttributeGroupType.CPU_USAGES.ordinal());
+					.setGroupId(cpuID).setAttributeType(AttributeGroupType.CPU_TOTAL_USAGE.ordinal());
 		}
 
 		if (param.getInfoParam().hasCpuTemp()) {
@@ -94,7 +94,8 @@ public abstract class InfoSlave extends Stream {
 
 		// cpu usage
 		if (param.getInfoParam().hasCpuUsage()) {
-			String coreUsage = CPU.getUsage(whichCPU);
+			String coreUsage = CPU.getTotalUsage(whichCPU);
+			System.out.println("coreUsage: " + coreUsage);
 			if (!lastCpuUsage.getValue().equals(coreUsage)) {
 				pd.addGroupAttr(lastCpuUsage.setValue(coreUsage));
 			}

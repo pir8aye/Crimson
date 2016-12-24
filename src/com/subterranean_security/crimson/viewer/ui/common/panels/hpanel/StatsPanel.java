@@ -75,7 +75,7 @@ public class StatsPanel extends JPanel {
 		stop();
 		timer = new Timer(150, (e) -> {
 
-			double point = Double.parseDouble(CPU.getUsage(0));
+			double point = Double.parseDouble(CPU.getTotalUsage(0));
 			lblCpu.setText("CPU: " + point + "%");
 			ps.addPoint(point);
 

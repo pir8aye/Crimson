@@ -40,9 +40,15 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
 import com.subterranean_security.crimson.core.proto.State.StateType;
+import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
+import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.core.stream.info.InfoMaster;
+import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.stream.VInfoSlave;
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.Tray;
 
 public class MenuControls extends JPanel {
@@ -100,6 +106,7 @@ public class MenuControls extends JPanel {
 		panel_1.setLayout(null);
 
 		JLabel lblConnections = new JLabel("Status:");
+		lblConnections.setIcon(UIUtil.getIcon("icons16/general/server.png"));
 		lblConnections.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblConnections.setBounds(6, 17, 67, 17);
 		panel_1.add(lblConnections);
@@ -162,26 +169,31 @@ public class MenuControls extends JPanel {
 		btnStopServer.setFont(new Font("Dialog", Font.BOLD, 10));
 
 		JLabel lblLoggedInUsers = new JLabel("Users connected:");
+		lblLoggedInUsers.setIcon(UIUtil.getIcon("icons16/general/user.png"));
 		lblLoggedInUsers.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblLoggedInUsers.setBounds(6, 34, 115, 17);
 		panel_1.add(lblLoggedInUsers);
 
 		JLabel lblTotalConn = new JLabel("Clients connected:");
+		lblTotalConn.setIcon(UIUtil.getIcon("icons16/general/users_3.png"));
 		lblTotalConn.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblTotalConn.setBounds(6, 51, 115, 17);
 		panel_1.add(lblTotalConn);
 
-		JLabel lblCpuTemperature_1 = new JLabel("CPU temperature:");
-		lblCpuTemperature_1.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblCpuTemperature_1.setBounds(6, 74, 115, 17);
-		panel_1.add(lblCpuTemperature_1);
+		JLabel lblServerCpuTemp = new JLabel("CPU temperature:");
+		lblServerCpuTemp.setIcon(UIUtil.getIcon("icons16/general/processor.png"));
+		lblServerCpuTemp.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblServerCpuTemp.setBounds(6, 74, 115, 17);
+		panel_1.add(lblServerCpuTemp);
 
-		JLabel lblCpuTemperature = new JLabel("Crimson CPU usage:");
-		lblCpuTemperature.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblCpuTemperature.setBounds(6, 91, 115, 17);
-		panel_1.add(lblCpuTemperature);
+		JLabel lblServerCpuUsage = new JLabel("CPU usage:");
+		lblServerCpuUsage.setIcon(UIUtil.getIcon("icons16/general/processor.png"));
+		lblServerCpuUsage.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblServerCpuUsage.setBounds(6, 91, 115, 17);
+		panel_1.add(lblServerCpuUsage);
 
-		lblServerMemUsage = new JLabel("Crimson RAM footprint:");
+		lblServerMemUsage = new JLabel("RAM footprint:");
+		lblServerMemUsage.setIcon(UIUtil.getIcon("icons16/general/ram.png"));
 		lblServerMemUsage.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblServerMemUsage.setBounds(6, 109, 115, 17);
 		panel_1.add(lblServerMemUsage);
@@ -219,13 +231,14 @@ public class MenuControls extends JPanel {
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "Local",
 				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_2.setBounds(198, 0, 198, 184);
+		panel_2.setBounds(198, 0, 198, 160);
 		panel.add(panel_2);
 		panel_2.setLayout(null);
 
 		JLabel lblUsername = new JLabel("Username:");
+		lblUsername.setIcon(UIUtil.getIcon("icons16/general/user.png"));
 		lblUsername.setFont(new Font("Dialog", Font.BOLD, 10));
-		lblUsername.setBounds(6, 17, 69, 17);
+		lblUsername.setBounds(6, 17, 94, 17);
 		panel_2.add(lblUsername);
 
 		valUsername = new JLabel("loading...");
@@ -246,49 +259,29 @@ public class MenuControls extends JPanel {
 		btnCloseToTray.setEnabled(SystemTray.isSupported());
 		btnCloseToTray.setFont(new Font("Dialog", Font.BOLD, 10));
 
-		JButton btnShutdown = new JButton("Exit");
-		btnShutdown.setBounds(100, 130, 88, 20);
-		panel_2.add(btnShutdown);
-		btnShutdown.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				new Thread(new Runnable() {
-					public void run() {
-						MainFrame.main.mm.closeControls();
-						try {
-							Thread.sleep(200);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						System.exit(0);
-					}
-				}).start();
-
-			}
-		});
-		btnShutdown.setMargin(new Insets(2, 4, 2, 4));
-		btnShutdown.setFont(new Font("Dialog", Font.BOLD, 10));
-
 		JButton btnLogOff = new JButton("Log Off");
 		btnLogOff.setMargin(new Insets(2, 4, 2, 4));
 		btnLogOff.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnLogOff.setBounds(12, 155, 88, 20);
+		btnLogOff.setBounds(100, 130, 88, 20);
 		panel_2.add(btnLogOff);
 
-		JLabel lblViewerRamFootprint = new JLabel("Crimson RAM footprint:");
+		JLabel lblViewerRamFootprint = new JLabel("RAM footprint:");
+		lblViewerRamFootprint.setIcon(UIUtil.getIcon("icons16/general/ram.png"));
 		lblViewerRamFootprint.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblViewerRamFootprint.setBounds(6, 109, 115, 17);
 		panel_2.add(lblViewerRamFootprint);
 
-		lblViewerCpuUsage = new JLabel("Crimson CPU usage:");
+		lblViewerCpuUsage = new JLabel("CPU usage:");
+		lblViewerCpuUsage.setIcon(UIUtil.getIcon("icons16/general/processor.png"));
 		lblViewerCpuUsage.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblViewerCpuUsage.setBounds(6, 91, 115, 17);
 		panel_2.add(lblViewerCpuUsage);
 
-		JLabel label_6 = new JLabel("CPU temperature:");
-		label_6.setFont(new Font("Dialog", Font.BOLD, 10));
-		label_6.setBounds(6, 74, 115, 17);
-		panel_2.add(label_6);
+		JLabel lblViewerCpuTemp = new JLabel("CPU temperature:");
+		lblViewerCpuTemp.setIcon(UIUtil.getIcon("icons16/general/processor.png"));
+		lblViewerCpuTemp.setFont(new Font("Dialog", Font.BOLD, 10));
+		lblViewerCpuTemp.setBounds(6, 74, 115, 17);
+		panel_2.add(lblViewerCpuTemp);
 
 		valViewerCpuTemp = new JLabel("loading...");
 		valViewerCpuTemp.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -309,6 +302,7 @@ public class MenuControls extends JPanel {
 		panel_2.add(valViewerRamUsage);
 
 		JLabel lblIpAddress = new JLabel("IP Address:");
+		lblIpAddress.setIcon(UIUtil.getIcon("icons16/general/ip.png"));
 		lblIpAddress.setFont(new Font("Dialog", Font.BOLD, 10));
 		lblIpAddress.setBounds(6, 34, 88, 17);
 		panel_2.add(lblIpAddress);
@@ -322,11 +316,12 @@ public class MenuControls extends JPanel {
 		JPanel panel_4 = new JPanel();
 		panel_4.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229), 1, true), "Views",
 				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_4.setBounds(0, 160, 198, 77);
+		panel_4.setBounds(198, 160, 198, 77);
 		panel.add(panel_4);
 		panel_4.setLayout(null);
 
 		tglbtnList = new JToggleButton("Host List");
+		tglbtnList.setIcon(UIUtil.getIcon("icons16/general/view_list.png"));
 		tglbtnList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				MainFrame.main.panel.switchToList();
@@ -335,12 +330,13 @@ public class MenuControls extends JPanel {
 		});
 
 		tglbtnList.setFont(new Font("Dialog", Font.BOLD, 10));
-		tglbtnList.setMargin(new Insets(2, 4, 2, 4));
+		tglbtnList.setMargin(new Insets(2, 2, 2, 2));
 		tglbtnList.setBounds(12, 20, 88, 20);
 		panel_4.add(tglbtnList);
 
 		tglbtnGraph = new JToggleButton("Host Graph");
-		tglbtnGraph.setMargin(new Insets(2, 4, 2, 4));
+		tglbtnGraph.setIcon(UIUtil.getIcon("icons16/general/view_graph.png"));
+		tglbtnGraph.setMargin(new Insets(2, 2, 2, 2));
 		tglbtnGraph.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MainFrame.main.panel.switchToGraph();
@@ -356,20 +352,23 @@ public class MenuControls extends JPanel {
 		bg.add(tglbtnList);
 		bg.add(tglbtnGraph);
 
-		JButton btnNewButton = new JButton("History");
-		btnNewButton.setEnabled(false);
-		btnNewButton.setMargin(new Insets(2, 4, 2, 4));
-		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnNewButton.setBounds(12, 45, 88, 20);
-		panel_4.add(btnNewButton);
+		JButton btnViewHistory = new JButton("History");
+		btnViewHistory.setIcon(UIUtil.getIcon("icons16/general/view_history.png"));
+		btnViewHistory.setEnabled(false);
+		btnViewHistory.setMargin(new Insets(2, 4, 2, 4));
+		btnViewHistory.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnViewHistory.setBounds(12, 45, 88, 20);
+		panel_4.add(btnViewHistory);
 
-		JButton btnConsole = new JButton("Console");
-		btnConsole.setSelected(true);
-		btnConsole.addActionListener(new ActionListener() {
+		JButton btnViewConsole = new JButton("Console");
+		btnViewConsole.setMargin(new Insets(2, 2, 2, 2));
+		btnViewConsole.setIcon(UIUtil.getIcon("icons16/general/view_console.png"));
+		btnViewConsole.setSelected(true);
+		btnViewConsole.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!MainFrame.main.ep.isMoving()) {
-					btnConsole.setSelected(!btnConsole.isSelected());
-					if (btnConsole.isSelected()) {
+					btnViewConsole.setSelected(!btnViewConsole.isSelected());
+					if (btnViewConsole.isSelected()) {
 						MainFrame.main.panel.openConsole();
 					} else {
 						MainFrame.main.panel.closeConsole();
@@ -378,9 +377,9 @@ public class MenuControls extends JPanel {
 
 			}
 		});
-		btnConsole.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnConsole.setBounds(100, 45, 88, 20);
-		panel_4.add(btnConsole);
+		btnViewConsole.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnViewConsole.setBounds(100, 45, 88, 20);
+		panel_4.add(btnViewConsole);
 
 		add(Box.createHorizontalStrut(width), BorderLayout.SOUTH);
 		add(Box.createVerticalStrut(length), BorderLayout.EAST);
@@ -388,13 +387,15 @@ public class MenuControls extends JPanel {
 	}
 
 	public void refresh() {
-		valViewerRamUsage.setText(ViewerStore.Profiles.getLocalClient().getAttr(SimpleAttribute.RAM_USAGE));
+		valViewerRamUsage.setText(ViewerStore.Profiles.getLocalClient().getAttr(SimpleAttribute.CLIENT_RAM_USAGE));
 		valViewerCpuTemp.setText(ViewerStore.Profiles.getLocalClient().getPrimaryCPU()
 				.queryAttribute(AttributeGroupType.CPU_TEMP).get());
-		valViewerCpuUsage.setText(ViewerStore.Profiles.getLocalClient().getAttr(SimpleAttribute.CLIENT_CPU_USAGE));
+		valViewerCpuUsage
+				.setText(ViewerStore.Profiles.getLocalClient().getAttr(SimpleAttribute.CLIENT_CPU_USAGE) + " %");
 		valServerRamUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCrimsonRamUsage() : "");
-		valServerCpuTemp.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCpuTempAverage() : "");
-		valServerCpuUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCrimsonCpuUsage() : "");
+		valServerCpuTemp.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCpuTemp() : "");
+		valServerCpuUsage
+				.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCrimsonCpuUsage() + " %" : "");
 		valClients.setText(ViewerState.isOnline() ? "" + ViewerStore.Profiles.getServer().getConnectedClients() : "");
 		valUsers.setText(ViewerState.isOnline() ? "" + ViewerStore.Profiles.getServer().getConnectedUsers() : "");
 		valIp.setText(ViewerStore.Profiles.getLocalViewer().getIp());
@@ -417,5 +418,23 @@ public class MenuControls extends JPanel {
 			btnStopServer.setEnabled(false);
 		}
 
+	}
+
+	private InfoMaster im;
+	private InfoSlave is;
+
+	public void startStreams() {
+		im = new InfoMaster(
+				InfoParam.newBuilder().setCpuTemp(true).setCrimsonCpuUsage(true).setCrimsonRamUsage(true).build(),
+				1000);
+		StreamStore.addStream(im);
+		is = new VInfoSlave(
+				InfoParam.newBuilder().setCpuTemp(true).setCrimsonCpuUsage(true).setCrimsonRamUsage(true).build());
+		StreamStore.addStream(is);
+	}
+
+	public void stopStreams() {
+		StreamStore.removeStreamBySID(im.getStreamID());
+		StreamStore.removeStreamBySID(is.getStreamID());
 	}
 }

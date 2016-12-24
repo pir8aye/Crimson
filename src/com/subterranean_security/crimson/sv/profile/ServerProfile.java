@@ -54,14 +54,14 @@ public class ServerProfile implements Serializable {
 	private Attribute crimsonRamUsage;
 
 	// CPU attributes
-	private ArrayList<Double> cpuTemp;
+	private Attribute cpuTemp;
 	private Attribute crimsonCpuUsage;
 
 	public ServerProfile() {
 
 		messageLatency = new UntrackedAttribute();
 		crimsonRamUsage = new UntrackedAttribute();
-		cpuTemp = new ArrayList<Double>();
+		cpuTemp = new UntrackedAttribute();
 		crimsonCpuUsage = new UntrackedAttribute();
 	}
 
@@ -69,17 +69,12 @@ public class ServerProfile implements Serializable {
 		return cvid;
 	}
 
-	public String getCpuTempAverage() {
-		return CUtil.Misc.average(cpuTemp) + " C";
+	public String getCpuTemp() {
+		return cpuTemp.get();
 	}
 
-	public ArrayList<Double> getCpuTemps() {
-		return cpuTemp;
-	}
-
-	public void setCpuTemp(List<Double> l) {
-		this.cpuTemp.clear();
-		this.cpuTemp.addAll(l);
+	public void setCpuTemp(String temp) {
+		this.cpuTemp.set(temp);
 	}
 
 	public String getMessageLatency() {
@@ -144,14 +139,14 @@ public class ServerProfile implements Serializable {
 		if (c.hasUserCount()) {
 			setConnectedUsers(c.getUserCount());
 		}
-		if (c.getCpuTempCount() != 0) {
-			setCpuTemp(c.getCpuTempList());
+		if (c.hasCpuTemp()) {
+			setCpuTemp(c.getCpuTemp());
 		}
 		if (c.hasRamCrimsonUsage()) {
-			setCrimsonRamUsage(CUtil.Misc.familiarize(c.getRamCrimsonUsage(), CUtil.Misc.BYTES));
+			setCrimsonRamUsage(c.getRamCrimsonUsage());
 		}
 		if (c.hasCpuCrimsonUsage()) {
-			setCrimsonCpuUsage(String.format("%.2f%%", c.getCpuCrimsonUsage()));
+			setCrimsonCpuUsage(c.getCpuCrimsonUsage());
 		}
 
 		for (ListenerConfig lc : c.getListenerList()) {

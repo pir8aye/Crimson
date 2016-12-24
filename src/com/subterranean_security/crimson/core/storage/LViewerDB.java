@@ -46,7 +46,7 @@ public class LViewerDB extends Database {
 		this.storeObject("show_helps", true);
 		this.storeObject("show_detail", true);
 		this.storeObject("detail.processor", true);
-		this.storeObject("detail.preview", true);
+		this.storeObject("detail.preview", false);
 		this.storeObject("detail.map", false);
 		this.storeObject("view.last", "list");
 		this.storeObject("login.recents", new ArrayList<String>());

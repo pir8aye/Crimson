@@ -28,14 +28,9 @@ import javax.swing.MenuSelectionManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.info.InfoMaster;
-import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.stream.VInfoSlave;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -52,9 +47,9 @@ public class MainMenu extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	public ProgressArea progressArea;
-	private InfoMaster im;
-	private InfoSlave is;
+
 	private JMenu mnControls;
+	private MenuControls mc;
 
 	public MainMenu() {
 		init();
@@ -80,29 +75,22 @@ public class MainMenu extends JPanel {
 
 			@Override
 			public void menuSelected(MenuEvent e) {
-				im = new InfoMaster(InfoParam.newBuilder().setCpuTemp(true).setCrimsonCpuUsage(true)
-						.setCrimsonRamUsage(true).build(), 1000);
-				StreamStore.addStream(im);
-				is = new VInfoSlave(InfoParam.newBuilder().setCpuTemp(true).setCrimsonCpuUsage(true)
-						.setCrimsonRamUsage(true).build());
-				StreamStore.addStream(is);
+				mc.startStreams();
 			}
 
 			@Override
 			public void menuDeselected(MenuEvent e) {
-				StreamStore.removeStreamBySID(im.getStreamID());
-				StreamStore.removeStreamBySID(is.getStreamID());
+				mc.stopStreams();
 			}
 
 			@Override
 			public void menuCanceled(MenuEvent e) {
-				System.out.println("menuCanceled");
-
+				mc.stopStreams();
 			}
 		});
 		menuBar.add(mnControls);
 
-		MenuControls mc = new MenuControls();
+		mc = new MenuControls();
 
 		mnControls.add(mc);
 

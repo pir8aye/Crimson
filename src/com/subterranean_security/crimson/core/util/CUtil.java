@@ -1258,11 +1258,11 @@ public enum CUtil {
 		
 		public static String translateMemSize(long l) {
 			if (l < 1024 * 1024) {
-				return String.format("%f KB", l / 1024.0);
+				return String.format("%.2f KB", l / 1024.0);
 			} else if (l < 1024 * 1024 * 1024) {
-				return String.format("%f MB", l / (1024.0 * 1024.0));
+				return String.format("%.2f MB", l / (1024.0 * 1024.0));
 			} else {
-				return String.format("%f GB", l / (1024.0 * 1024.0 * 1024.0));
+				return String.format("%.2f GB", l / (1024.0 * 1024.0 * 1024.0));
 			}
 		}
 
