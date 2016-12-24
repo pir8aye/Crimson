@@ -224,27 +224,28 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void ev_profileDelta(EV_ProfileDelta pd) {
-		System.out.println("Got PD. FIG: " + pd.hasFig());
 		if (pd.hasFig() && pd.getFig()) {
-			if (pd.containsStrAttr(SimpleAttribute.NET_EXTERNALIP.ordinal())) {
-				String ip = receptor.getRemoteAddress();
+			String ip = pd.getStrAttrOrDefault(SimpleAttribute.NET_EXTERNALIP.ordinal(), "");
+			if (!pd.containsStrAttr(SimpleAttribute.NET_EXTERNALIP.ordinal())) {
+				ip = receptor.getRemoteAddress();
 				pd = EV_ProfileDelta.newBuilder(pd).putStrAttr(SimpleAttribute.NET_EXTERNALIP.ordinal(), ip).build();
-				if (!CUtil.Validation.privateIP(ip)) {
 
-					try {
-						HashMap<String, String> location = CUtil.Location.resolve(ip);
-						pd = EV_ProfileDelta.newBuilder(pd)
-								.putStrAttr(SimpleAttribute.IPLOC_COUNTRYCODE.ordinal(), location.get("countrycode"))
-								.putStrAttr(SimpleAttribute.IPLOC_COUNTRY.ordinal(), location.get("countryname"))
-								.build();
+			}
 
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (XMLStreamException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			if (!CUtil.Validation.privateIP(ip)) {
+
+				try {
+					HashMap<String, String> location = CUtil.Location.resolve(ip);
+					pd = EV_ProfileDelta.newBuilder(pd)
+							.putStrAttr(SimpleAttribute.IPLOC_COUNTRYCODE.ordinal(), location.get("countrycode"))
+							.putStrAttr(SimpleAttribute.IPLOC_COUNTRY.ordinal(), location.get("countryname")).build();
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (XMLStreamException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}
@@ -256,7 +257,6 @@ public class ServerExecutor extends BasicExecutor {
 		ServerStore.Profiles.getClient(receptor.getCvid()).amalgamate(pd);
 		Connections.sendToViewersWithAuthorityOverClient(receptor.getCvid(), Perm.client.visibility,
 				Message.newBuilder().setUrgent(true).setEvProfileDelta(pd));
-		System.out.println("Sent PD. FIG: " + pd.hasFig());
 	}
 
 	private void mi_trigger_profile_delta(Message m) {
