@@ -1,11 +1,14 @@
 package com.subterranean_security.crimson.core.profile.group;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
 
-public class AttributeGroup {
+public class AttributeGroup implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * All Attribute Groups start out modern
