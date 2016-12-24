@@ -19,10 +19,11 @@ package com.subterranean_security.crimson.core.platform.info;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.platform.Platform.ARCH;
+import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.util.Native;
 
 public final class OS {
@@ -31,7 +32,7 @@ public final class OS {
 	}
 
 	public static String getLanguage() {
-		return System.getProperty("user.language");
+		return new Locale(System.getProperty("user.language")).getDisplayName();
 	}
 
 	public static String getTimezone() {
