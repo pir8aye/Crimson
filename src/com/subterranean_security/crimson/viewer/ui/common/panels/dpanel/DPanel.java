@@ -248,7 +248,7 @@ class Detail extends JPanel {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					for (ClientCPFrame frame : UIStore.clientControlPanels) {
-						if (frame.profile.getCvid() == target.getCvid()) {
+						if (frame.profile.getCid() == target.getCid()) {
 							// there is already an open control panel
 							frame.setLocationRelativeTo(null);
 							frame.toFront();

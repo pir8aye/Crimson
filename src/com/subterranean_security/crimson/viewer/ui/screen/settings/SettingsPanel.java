@@ -20,6 +20,8 @@ package com.subterranean_security.crimson.viewer.ui.screen.settings;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -29,13 +31,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
+import com.subterranean_security.crimson.core.profile.AbstractAttribute;
 import com.subterranean_security.crimson.core.storage.LViewerDB;
-import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.ui.screen.main.Headers;
 import com.subterranean_security.crimson.viewer.ui.screen.main.HostList;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
-import java.awt.Font;
-import java.awt.Dimension;
 
 public class SettingsPanel extends JPanel {
 
@@ -87,57 +86,15 @@ public class SettingsPanel extends JPanel {
 		db.storeObject("show_eula", lg.neverShowLicense.isSelected());
 		db.storeObject("show_helps", lg.neverShowHelp.isSelected());
 
-		ArrayList<Headers> h = new ArrayList<Headers>();
-		if (hlh.chckbxActiveWindow.isSelected())
-			h.add(Headers.ACTIVE_WINDOW);
-		if (hlh.chckbxCvid.isSelected())
-			h.add(Headers.CVID);
-		if (hlh.chckbxCountry.isSelected())
-			h.add(Headers.IP_LOCATION);
-		if (hlh.chckbxCpuModel.isSelected())
-			h.add(Headers.CPU_MODEL);
-		if (hlh.chckbxCpuTemp.isSelected())
-			h.add(Headers.CPU_TEMP);
-		if (hlh.chckbxCpuUsage.isSelected())
-			h.add(Headers.CPU_USAGE);
-		if (hlh.chckbxCrimsonVersion.isSelected())
-			h.add(Headers.CRIMSON_VERSION);
-		if (hlh.chckbxExternalIp.isSelected())
-			h.add(Headers.EXTERNAL_IP);
-		if (hlh.chckbxHostname.isSelected())
-			h.add(Headers.HOSTNAME);
-		if (hlh.chckbxInternalIp.isSelected())
-			h.add(Headers.INTERNAL_IP);
-		if (hlh.chckbxJavaVersion.isSelected())
-			h.add(Headers.JAVA_VERSION);
-		if (hlh.chckbxLanguage.isSelected())
-			h.add(Headers.LANGUAGE);
-		if (hlh.chckbxMessagePing.isSelected())
-			h.add(Headers.MESSAGE_PING);
-		if (hlh.chckbxMonitorCount.isSelected())
-			h.add(Headers.MONITOR_COUNT);
-		if (hlh.chckbxOsName.isSelected())
-			h.add(Headers.OS_NAME);
-		if (hlh.chckbxOSArch.isSelected())
-			h.add(Headers.OS_ARCH);
-		if (hlh.chckbxOSFamily.isSelected())
-			h.add(Headers.OS_FAMILY);
-		if (hlh.chckbxRamCapacity.isSelected())
-			h.add(Headers.RAM_CAPACITY);
-		if (hlh.chckbxRamUsage.isSelected())
-			h.add(Headers.RAM_USAGE);
-		if (hlh.chckbxScreenPreview.isSelected())
-			h.add(Headers.SCREEN_PREVIEW);
-		if (hlh.chckbxTimezone.isSelected())
-			h.add(Headers.TIMEZONE);
-		if (hlh.chckbxUsername.isSelected())
-			h.add(Headers.USERNAME);
-		if (hlh.chckbxUserStatus.isSelected())
-			h.add(Headers.USER_STATUS);
-		if (hlh.chckbxVirtualization.isSelected())
-			h.add(Headers.VIRTUALIZATION);
+		ArrayList<AbstractAttribute> h = new ArrayList<AbstractAttribute>();
 
-		Headers[] headers = new Headers[h.size()];
+		for (AbstractAttribute aa : hlh.boxes.keySet()) {
+			if (hlh.boxes.get(aa).isSelected()) {
+				h.add(aa);
+			}
+		}
+
+		AbstractAttribute[] headers = new AbstractAttribute[h.size()];
 		for (int i = 0; i < h.size(); i++) {
 			headers[i] = h.get(i);
 		}
@@ -158,92 +115,16 @@ public class SettingsPanel extends JPanel {
 			e.printStackTrace();
 		}
 
-		Headers[] headers = null;
+		AbstractAttribute[] headers = null;
 
 		try {
-			headers = (Headers[]) db.getObject("hostlist.headers");
+			headers = (AbstractAttribute[]) db.getObject("hostlist.headers");
 		} catch (Exception e) {
 			headers = HostList.defaultHeaders;
 		}
 
-		for (Headers h : headers) {
-			switch (h) {
-			case ACTIVE_WINDOW:
-				hlh.chckbxActiveWindow.setSelected(true);
-				break;
-			case CVID:
-				hlh.chckbxCvid.setSelected(true);
-				break;
-			case IP_LOCATION:
-				hlh.chckbxCountry.setSelected(true);
-				break;
-			case CPU_MODEL:
-				hlh.chckbxCpuModel.setSelected(true);
-				break;
-			case CPU_TEMP:
-				hlh.chckbxCpuTemp.setSelected(true);
-				break;
-			case CPU_USAGE:
-				hlh.chckbxCpuUsage.setSelected(true);
-				break;
-			case CRIMSON_VERSION:
-				hlh.chckbxCrimsonVersion.setSelected(true);
-				break;
-			case EXTERNAL_IP:
-				hlh.chckbxExternalIp.setSelected(true);
-				break;
-			case HOSTNAME:
-				hlh.chckbxHostname.setSelected(true);
-				break;
-			case INTERNAL_IP:
-				hlh.chckbxInternalIp.setSelected(true);
-				break;
-			case JAVA_VERSION:
-				hlh.chckbxJavaVersion.setSelected(true);
-				break;
-			case LANGUAGE:
-				hlh.chckbxLanguage.setSelected(true);
-				break;
-			case MESSAGE_PING:
-				hlh.chckbxMessagePing.setSelected(true);
-				break;
-			case MONITOR_COUNT:
-				hlh.chckbxMonitorCount.setSelected(true);
-				break;
-			case OS_NAME:
-				hlh.chckbxOsName.setSelected(true);
-				break;
-			case OS_ARCH:
-				hlh.chckbxOSArch.setSelected(true);
-				break;
-			case OS_FAMILY:
-				hlh.chckbxOSFamily.setSelected(true);
-				break;
-			case RAM_CAPACITY:
-				hlh.chckbxRamCapacity.setSelected(true);
-				break;
-			case RAM_USAGE:
-				hlh.chckbxRamUsage.setSelected(true);
-				break;
-			case SCREEN_PREVIEW:
-				hlh.chckbxScreenPreview.setSelected(true);
-				break;
-			case TIMEZONE:
-				hlh.chckbxTimezone.setSelected(true);
-				break;
-			case USERNAME:
-				hlh.chckbxUsername.setSelected(true);
-				break;
-			case USER_STATUS:
-				hlh.chckbxUserStatus.setSelected(true);
-				break;
-			case VIRTUALIZATION:
-				hlh.chckbxVirtualization.setSelected(true);
-				break;
-			default:
-				break;
-
-			}
+		for (AbstractAttribute h : headers) {
+			hlh.boxes.get(h).setSelected(true);
 		}
 
 	}

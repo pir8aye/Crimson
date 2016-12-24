@@ -17,7 +17,9 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.stream;
 
-import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.platform.Platform;
+import com.subterranean_security.crimson.core.platform.SigarStore;
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
@@ -50,15 +52,17 @@ public class SInfoSlave extends InfoSlave {
 		sid.setClientCount(ServerStore.Connections.countClients());
 		sid.setUserCount(ServerStore.Connections.countUsers());
 		if (param.getInfoParam().hasCpuTemp()) {
-			for (double d : Platform.Advanced.getCPUTemps()) {
-				sid.addCpuTemp(d);
-			}
+			// for (double d : SigarStore.getCPUTemps()) {
+			// sid.addCpuTemp(d);
+			// }
 		}
+
+		// TODO keep track of last value and send selectively
 		if (param.getInfoParam().hasCrimsonRamUsage()) {
-			sid.setRamCrimsonUsage(Platform.Advanced.getCrimsonMemoryUsage());
+			// sid.setRamCrimsonUsage(Platform.queryAttribute(SimpleAttribute.CLIENT_RAM_USAGE));
 		}
 		if (param.getInfoParam().hasCrimsonCpuUsage()) {
-			sid.setCpuCrimsonUsage(Platform.Advanced.getCrimsonCpuUsage());
+			// sid.setCpuCrimsonUsage(Platform.queryAttribute(SimpleAttribute.CLIENT_CPU_USAGE));
 		}
 		return sid.build();
 	}

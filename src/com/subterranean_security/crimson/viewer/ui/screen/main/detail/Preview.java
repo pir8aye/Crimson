@@ -51,7 +51,7 @@ public class Preview extends JPanel implements DModule {
 	public void setTarget(ClientProfile p) {
 		System.out.println("Preview::setTarget");
 		removeAll();
-		rdp = new RDPanel(Type.VIEW_ONLY, p.getCvid(), false);
+		rdp = new RDPanel(Type.VIEW_ONLY, p.getCid(), false);
 		add(rdp, BorderLayout.CENTER);
 	}
 

@@ -21,6 +21,9 @@ package com.subterranean_security.crimson.core;
 import java.io.File;
 import java.util.Date;
 
+import com.subterranean_security.crimson.core.platform.Platform;
+import com.subterranean_security.crimson.core.platform.SigarStore;
+import com.subterranean_security.crimson.core.platform.info.*;
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.services.Services;
@@ -74,13 +77,13 @@ public final class Reporter {
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setJreVersion(Platform.getJavaVersion());
+			rb.setJreVersion(Java.getVersion());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Java version: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setJreVendor(Platform.getJavaVendor());
+			rb.setJreVendor(Java.getVendor());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Java vendor: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
@@ -92,7 +95,7 @@ public final class Reporter {
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setSysArch(Platform.sysArch.toString());
+			rb.setSysArch(OS.getArch());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query system architecture: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
@@ -110,13 +113,13 @@ public final class Reporter {
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setSysLang(Platform.getLanguage());
+			rb.setSysLang(OS.getLanguage());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query system language: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setOsName(Platform.osName);
+			rb.setOsName(OS.getName());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query operating system name: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
@@ -128,7 +131,7 @@ public final class Reporter {
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setSysCpuModel(Platform.Advanced.getCPUModel());
+			rb.setSysCpuModel(CPU.getPrimaryModel());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query CPU model: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));

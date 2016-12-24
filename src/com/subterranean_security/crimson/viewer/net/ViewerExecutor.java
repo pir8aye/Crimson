@@ -56,6 +56,7 @@ public class ViewerExecutor extends BasicExecutor {
 					} else if (m.hasEvEndpointClosed()) {
 						StreamStore.removeStreamsByCVID(m.getEvEndpointClosed().getCVID());
 					} else if (m.hasEvProfileDelta()) {
+						System.out.println("Got PD. FIG: " + m.getEvProfileDelta().hasFig());
 						ViewerStore.Profiles.update(m.getEvProfileDelta());
 					} else if (m.hasEvServerProfileDelta()) {
 						ViewerStore.Profiles.update(m.getEvServerProfileDelta());
@@ -93,7 +94,7 @@ public class ViewerExecutor extends BasicExecutor {
 
 	private void assign_1w(Message m) {
 		Common.cvid = m.getMiAssignCvid().getId();
-		ViewerStore.Profiles.getLocalClient().setCvid(Common.cvid);
+		ViewerStore.Profiles.getLocalClient().setCid(Common.cvid);
 		log.debug("Assigned new CVID: {}", Common.cvid);
 	}
 

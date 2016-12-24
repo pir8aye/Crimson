@@ -37,6 +37,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.subscriber.SubscriberMaster;
@@ -81,9 +82,9 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 		new Thread(new Runnable() {
 			public void run() {
-				ViewerCommands.trigger_key_update(profile.getCvid(), cp.getKeylog().timestamp);
+				ViewerCommands.trigger_key_update(profile.getCid(), cp.getKeylog().timestamp);
 				keylogStream = new SubscriberMaster(SubscriberParam.newBuilder().setKeylog(true).build(),
-						profile.getCvid());
+						profile.getCid());
 				StreamStore.addStream(keylogStream);
 			}
 		}).start();
@@ -91,7 +92,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 	public void init() {
 
-		setTitle("Control Panel: " + profile.getHostname());
+		setTitle("Control Panel: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
 		setIconImages(UIUtil.getIconList());
 		setResizable(true);
 		setMinimumSize(UICommon.dim_control_panel);
@@ -115,7 +116,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 		panel.add(Box.createHorizontalStrut(50), BorderLayout.SOUTH);
 		tree.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 
-		tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode(profile.getHostname()) {
+		tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode(profile.getAttr(SimpleAttribute.NET_HOSTNAME)) {
 
 			private static final long serialVersionUID = 1L;
 
@@ -208,7 +209,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 	@Override
 	public void clientOffline() {
-		setTitle("Control Panel: " + profile.getHostname() + " (client offline)");
+		setTitle("Control Panel: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME) + " (client offline)");
 		console.addLine("The client has disconnected!", LineType.ORANGE);
 		for (CPPanel panel : panels.values()) {
 			panel.clientOffline();
@@ -217,7 +218,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 	@Override
 	public void serverOffline() {
-		setTitle("Control Panel: " + profile.getHostname() + " (server offline)");
+		setTitle("Control Panel: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME) + " (server offline)");
 		for (CPPanel panel : panels.values()) {
 			panel.serverOffline();
 		}
@@ -225,7 +226,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 	@Override
 	public void clientOnline() {
-		setTitle("Control Panel: " + profile.getHostname());
+		setTitle("Control Panel: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
 		console.addLine("The client has reconnected!", LineType.GREEN);
 		for (CPPanel panel : panels.values()) {
 			panel.clientOnline();
@@ -298,7 +299,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 				Iterator<ClientCPFrame> it = UIStore.clientControlPanels.iterator();
 				while (it.hasNext()) {
 					ClientCPFrame cf = it.next();
-					if (profile.getCvid() == cf.profile.getCvid()) {
+					if (profile.getCid() == cf.profile.getCid()) {
 						it.remove();
 						break;
 					}

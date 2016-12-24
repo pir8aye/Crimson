@@ -52,10 +52,10 @@ public class Logs extends JPanel implements CPPanel {
 
 						try {
 
-							logs.add(ViewerCommands.getLog(profile.getCvid(),
+							logs.add(ViewerCommands.getLog(profile.getCid(),
 									((LogPane) tabbedPane.getSelectedComponent()).getLogType()));
 						} catch (Throwable e) {
-							logs.addAll(ViewerCommands.getLogs(profile.getCvid()));
+							logs.addAll(ViewerCommands.getLogs(profile.getCid()));
 						}
 
 						return logs;

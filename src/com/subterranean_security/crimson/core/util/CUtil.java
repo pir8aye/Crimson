@@ -83,7 +83,7 @@ import org.w3c.dom.NodeList;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.server.Server;
 import com.subterranean_security.crimson.viewer.Viewer;
 
@@ -1252,6 +1252,35 @@ public enum CUtil {
 			return elements;
 		}
 
+	}
+
+	public static class UnitTranslator {
+		// TODO fix conversion!!!
+		public static String translateMemSize(long l) {
+			if (l < 1000000) {
+				return String.format("%f KB", l / 1000.0);
+			} else if (l < 1000000000) {
+				return String.format("%f MB", l / 1000000.0);
+			} else {
+				return String.format("%f GB", l / 1000000000.0);
+			}
+		}
+
+		public static String translateCacheSize(long l) {
+			if (l < 1000000) {
+				return String.format("%f KB", l / 1000.0);
+			} else {
+				return String.format("%f MB", l / 1000000.0);
+			}
+		}
+
+		public static String translateCpuFrequency(int l) {
+			if (l < 1000) {
+				return String.format("%.2f MHz", l);
+			} else {
+				return String.format("%.2f GHz", l / 1000.0);
+			}
+		}
 	}
 
 	public static class Logging {

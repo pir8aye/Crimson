@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.core.Platform;
-import com.subterranean_security.crimson.core.Platform.OSFAMILY;
+import com.subterranean_security.crimson.core.platform.Platform;
+import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.util.CUtil;
 

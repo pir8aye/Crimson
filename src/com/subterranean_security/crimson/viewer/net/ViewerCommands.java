@@ -134,7 +134,7 @@ public enum ViewerCommands {
 			ClientProfile cp = ViewerStore.Profiles.clients.get(i);
 
 			mi.addProfileTimestamp(
-					ProfileTimestamp.newBuilder().setCvid(cp.getCvid()).setTimestamp(cp.getLastUpdate().getTime()));
+					ProfileTimestamp.newBuilder().setCvid(cp.getCid()).setTimestamp(cp.getLastUpdate().getTime()));
 		}
 		ViewerRouter.route(Message.newBuilder().setMiTriggerProfileDelta(mi));
 

@@ -30,9 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
+import com.subterranean_security.crimson.core.platform.LocalFS;
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
@@ -223,16 +224,19 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void ev_profileDelta(EV_ProfileDelta pd) {
-
-		if (pd.hasFirstPd() && pd.getFirstPd()) {
-			if (!pd.hasExtIp()) {
-				pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setExtIp(receptor.getRemoteAddress()).build();
-				if (!CUtil.Validation.privateIP(pd.getExtIp())) {
+		System.out.println("Got PD. FIG: " + pd.hasFig());
+		if (pd.hasFig() && pd.getFig()) {
+			if (pd.containsStrAttr(SimpleAttribute.NET_EXTERNALIP.ordinal())) {
+				String ip = receptor.getRemoteAddress();
+				pd = EV_ProfileDelta.newBuilder(pd).putStrAttr(SimpleAttribute.NET_EXTERNALIP.ordinal(), ip).build();
+				if (!CUtil.Validation.privateIP(ip)) {
 
 					try {
-						HashMap<String, String> location = CUtil.Location.resolve(pd.getExtIp());
-						pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCountryCode(location.get("countrycode"))
-								.setCountry(location.get("countryname")).build();
+						HashMap<String, String> location = CUtil.Location.resolve(ip);
+						pd = EV_ProfileDelta.newBuilder(pd)
+								.putStrAttr(SimpleAttribute.IPLOC_COUNTRYCODE.ordinal(), location.get("countrycode"))
+								.putStrAttr(SimpleAttribute.IPLOC_COUNTRY.ordinal(), location.get("countryname"))
+								.build();
 
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -246,13 +250,13 @@ public class ServerExecutor extends BasicExecutor {
 		}
 
 		if (pd.getCvid() != receptor.getCvid()) {
-			pd = EV_ProfileDelta.newBuilder().mergeFrom(pd).setCvid(receptor.getCvid()).build();
+			pd = EV_ProfileDelta.newBuilder(pd).setCvid(receptor.getCvid()).build();
 		}
 
 		ServerStore.Profiles.getClient(receptor.getCvid()).amalgamate(pd);
 		Connections.sendToViewersWithAuthorityOverClient(receptor.getCvid(), Perm.client.visibility,
 				Message.newBuilder().setUrgent(true).setEvProfileDelta(pd));
-
+		System.out.println("Sent PD. FIG: " + pd.hasFig());
 	}
 
 	private void mi_trigger_profile_delta(Message m) {
@@ -260,7 +264,7 @@ public class ServerExecutor extends BasicExecutor {
 		for (ClientProfile cp : ServerStore.Profiles.getClientsUnderAuthority(receptor.getCvid())) {
 			boolean flag = true;
 			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
-				if (pt.getCvid() == cp.getCvid()) {
+				if (pt.getCvid() == cp.getCid()) {
 					log.debug("Updating client in viewer");
 					receptor.handle.write(Message.newBuilder().setUrgent(true)
 							.setEvProfileDelta(cp.getUpdates(new Date(pt.getTimestamp()))).build());
@@ -608,7 +612,7 @@ public class ServerExecutor extends BasicExecutor {
 		}
 
 		RQ_FileListing rq = m.getRqFileListing();
-		LocalFilesystem lf = ServerStore.LocalFilesystems.get(rq.getFmid());
+		LocalFS lf = ServerStore.LocalFilesystems.get(rq.getFmid());
 		if (rq.hasUp() && rq.getUp()) {
 			lf.up();
 		} else if (rq.hasDown()) {
@@ -645,8 +649,9 @@ public class ServerExecutor extends BasicExecutor {
 			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
 			return;
 		}
-		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsFileHandle(
-				RS_FileHandle.newBuilder().setFmid(ServerStore.LocalFilesystems.add(new LocalFilesystem(true, true))))
+		receptor.handle.write(Message.newBuilder().setId(m.getId())
+				.setRsFileHandle(
+						RS_FileHandle.newBuilder().setFmid(ServerStore.LocalFilesystems.add(new LocalFS(true, true))))
 				.build());
 
 	}
@@ -663,14 +668,14 @@ public class ServerExecutor extends BasicExecutor {
 		}
 
 		receptor.handle.write(Message.newBuilder().setId(m.getId())
-				.setRsDelete(RS_Delete.newBuilder().setOutcome(
-						LocalFilesystem.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
+				.setRsDelete(RS_Delete.newBuilder()
+						.setOutcome(LocalFS.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
 				.build());
 	}
 
 	private void rq_advanced_file_info(Message m) {
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
-				.setRsAdvancedFileInfo(LocalFilesystem.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
+				.setRsAdvancedFileInfo(LocalFS.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
 	}
 
 	private void rq_add_listener(Message m) {

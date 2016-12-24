@@ -24,7 +24,9 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.platform.SigarStore;
+import com.subterranean_security.crimson.core.platform.info.CPU;
+import com.subterranean_security.crimson.core.platform.info.RAM;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.common.components.piestat.PieStat;
@@ -72,13 +74,12 @@ public class StatsPanel extends JPanel {
 	public void start() {
 		stop();
 		timer = new Timer(150, (e) -> {
-			double r = Platform.Advanced.getCPUUsage();
 
-			lblCpu.setText(String.format("CPU: %03.1f%%", (r * 100)));
-			ps.addPoint(r);
+			double point = Double.parseDouble(CPU.getUsage(0));
+			lblCpu.setText("CPU: " + point + "%");
+			ps.addPoint(point);
 
-			lblMem.setText(
-					"MEM: " + CUtil.Misc.familiarize(Platform.Advanced.getCrimsonMemoryUsage(), CUtil.Misc.BYTES));
+			lblMem.setText("MEM: " + RAM.getClientUsage());
 			lblConnection.setText("Connections: " + ViewerStore.Connections.getSize());
 
 		});

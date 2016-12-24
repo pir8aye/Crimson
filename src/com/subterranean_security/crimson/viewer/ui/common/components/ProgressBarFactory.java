@@ -24,7 +24,7 @@ import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.platform.Platform;
 
 public class ProgressBarFactory {
 

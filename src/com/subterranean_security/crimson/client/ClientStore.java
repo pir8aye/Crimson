@@ -27,8 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.net.ClientConnector;
-import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.ConnectionState;
+import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
@@ -135,15 +135,15 @@ public final class ClientStore {
 	}
 
 	public static class LocalFilesystems {
-		private static ArrayList<LocalFilesystem> lfs = new ArrayList<LocalFilesystem>();
+		private static ArrayList<LocalFS> lfs = new ArrayList<LocalFS>();
 
-		public static int add(LocalFilesystem l) {
+		public static int add(LocalFS l) {
 			lfs.add(l);
 			return l.getFmid();
 		}
 
-		public static LocalFilesystem get(int fmid) {
-			for (LocalFilesystem l : lfs) {
+		public static LocalFS get(int fmid) {
+			for (LocalFS l : lfs) {
 				if (l.getFmid() == fmid) {
 					return l;
 				}

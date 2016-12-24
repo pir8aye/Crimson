@@ -65,11 +65,15 @@ message Param {
 
 message InfoParam {
 	optional bool active_window = 1;
+	optional string cpu_id = 2;
 	optional bool cpu_temp = 3;
 	optional bool cpu_usage = 4;
 	optional bool ram_usage = 5;
 	optional bool crimson_ram_usage = 6;
 	optional bool crimson_cpu_usage = 7;
+	optional string if_id = 8;
+	optional bool if_rx_speed = 9;
+	optional bool if_tx_speed = 10;
 }
 
 message RemoteParam {

@@ -21,13 +21,14 @@ import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
+import com.subterranean_security.crimson.core.proto.RepeatableAttributes.Display;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam.RMethod;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel;
@@ -36,7 +37,7 @@ public class Settings extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private GraphicsDisplay[] displays;
+	private ArrayList<Display> displays;
 	private String[] displayStrings;
 
 	private String[] methodStrings = new String[] { "Simple Poll (slowest)", "Native Hook (fastest)" };
@@ -54,7 +55,7 @@ public class Settings extends JPanel {
 
 	private boolean full;
 
-	public Settings(GraphicsDisplay[] displays, RDPanel parent, boolean full) {
+	public Settings(ArrayList<Display> displays, RDPanel parent, boolean full) {
 		this.displays = displays;
 		this.parent = parent;
 		this.full = full;
@@ -80,10 +81,10 @@ public class Settings extends JPanel {
 	}
 
 	private void loadSettings() {
-		displayStrings = new String[displays.length];
-		for (int i = 0; i < displays.length; i++) {
-			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " (" + displays[i].getWidth() + " x "
-					+ displays[i].getHeight() + ")";
+		displayStrings = new String[displays.size()];
+		for (int i = 0; i < displays.size(); i++) {
+			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " (" + displays.get(i).getWidth() + " x "
+					+ displays.get(i).getHeight() + ")";
 		}
 
 		if (parent.stream != null) {
@@ -116,8 +117,8 @@ public class Settings extends JPanel {
 		return getDisplay().getId();
 	}
 
-	public GraphicsDisplay getDisplay() {
-		return displays[monitorBox.getSelectedIndex()];
+	public Display getDisplay() {
+		return displays.get(monitorBox.getSelectedIndex());
 	}
 
 	public int getColorType() {

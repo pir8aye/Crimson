@@ -26,7 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.fm.LocalFilesystem;
+import com.subterranean_security.crimson.core.platform.LocalFS;
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
@@ -126,8 +127,8 @@ public final class ServerStore {
 				Authentication.refreshVisibilityPermissions(r.getCvid());
 				Profiles.getClient(r.getCvid()).setOnline(true);
 				sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
-						Message.newBuilder().setUrgent(true)
-								.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid()).setOnline(true)));
+						Message.newBuilder().setUrgent(true).setEvProfileDelta(EV_ProfileDelta.newBuilder()
+								.setCvid(r.getCvid()).putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "1")));
 			}
 			receptors.put(r.getCvid(), r);
 		}
@@ -144,8 +145,8 @@ public final class ServerStore {
 					clients--;
 					Profiles.getClient(cvid).setOnline(false);
 					sendToViewersWithAuthorityOverClient(cvid, Perm.client.visibility,
-							Message.newBuilder().setUrgent(true)
-									.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(cvid).setOnline(false)));
+							Message.newBuilder().setUrgent(true).setEvProfileDelta(EV_ProfileDelta.newBuilder()
+									.setCvid(cvid).putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "0")));
 				}
 				r.close();
 			}
@@ -200,15 +201,15 @@ public final class ServerStore {
 	}
 
 	public static class LocalFilesystems {
-		private static ArrayList<LocalFilesystem> lfs = new ArrayList<LocalFilesystem>();
+		private static ArrayList<LocalFS> lfs = new ArrayList<LocalFS>();
 
-		public static int add(LocalFilesystem l) {
+		public static int add(LocalFS l) {
 			lfs.add(l);
 			return l.getFmid();
 		}
 
-		public static LocalFilesystem get(int fmid) {
-			for (LocalFilesystem l : lfs) {
+		public static LocalFS get(int fmid) {
+			for (LocalFS l : lfs) {
 				if (l.getFmid() == fmid) {
 					return l;
 				}
@@ -380,14 +381,14 @@ public final class ServerStore {
 
 		public static ClientProfile getClient(int cid) {
 			try {
-				return clientProfiles.get(cid).reinit();
+				return clientProfiles.get(cid).initialize();
 			} catch (Exception e) {
 				return null;
 			}
 		}
 
 		public static void addClient(ClientProfile p) {
-			clientProfiles.put(p.getCvid(), p);
+			clientProfiles.put(p.getCid(), p);
 		}
 
 		public static ViewerProfile getViewer(int vid) {

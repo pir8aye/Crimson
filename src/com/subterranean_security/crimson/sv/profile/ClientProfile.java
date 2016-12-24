@@ -19,10 +19,11 @@ package com.subterranean_security.crimson.sv.profile;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 
@@ -32,142 +33,146 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.Reporter;
-import com.subterranean_security.crimson.core.exception.InvalidObjectException;
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
+import com.subterranean_security.crimson.core.profile.group.AttributeGroup;
+import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
+import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
+import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
-import com.subterranean_security.crimson.core.proto.Misc.GraphicsDisplay;
-import com.subterranean_security.crimson.core.proto.Misc.NetworkInterface;
-import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.ObjectTransfer;
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
-import com.subterranean_security.crimson.sv.profile.attribute.TrackedAttribute;
 import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class ClientProfile implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private static final Logger log = LoggerFactory.getLogger(ClientProfile.class);
 
-	private static final long serialVersionUID = 1L;
+	// Simple Attributes
+	private HashMap<SimpleAttribute, Attribute> attributes;
 
-	private int cvid;
+	// Attribute Groups
+	private ArrayList<HashMap<String, AttributeGroup>> groups;
+
+	public Collection<AttributeGroup> getModernAttributesOfGroup(GroupAttributeType agt) {
+		Collection<AttributeGroup> set = groups.get(agt.ordinal()).values();
+		Iterator<AttributeGroup> it = set.iterator();
+		while (it.hasNext()) {
+			if (!it.next().isModern()) {
+				it.remove();
+			}
+		}
+		return set;
+	}
+
+	public int countModernAttributesGroups(AttributeGroupType agt) {
+		int total = 0;
+		for (AttributeGroup ag : groups.get(agt.ordinal()).values()) {
+			if (ag.isModern()) {
+				total++;
+			}
+		}
+		return total;
+	}
+
+	public int countAllAttributeGroups(AttributeGroupType agt) {
+		return groups.get(agt.ordinal()).values().size();
+	}
+
+	public AttributeGroup getPrimaryCPU() {
+		return getModernAttributesOfGroup(GroupAttributeType.CPU).iterator().next();
+	}
 
 	// Transient attributes
-	private transient ImageIcon locationIcon;
-	private transient ImageIcon osNameIcon;
+	private transient ImageIcon ipLocationIcon;
+	private transient ImageIcon osTypeIcon;
 	private transient ImageIcon osMonitorIcon;
-	private transient ImageIcon userIcon;
 	private transient boolean initialized;
+	private transient int messageLatency;
 
-	// General attributes
-	private Log keylog;
+	// Client CID
+	private int cid;
+
 	private int authID;
-	private Attribute online;
-	private Attribute osFamily;
-	private Attribute osName;
-	private Attribute osArch;
-	private Attribute javaArch;
-	private Attribute javaVersion;
-	private Attribute javaVendor;
-	private Attribute crimsonVersion;
-	private Attribute timezone;
-	private Attribute language;
-	private Attribute username;
-	private Attribute userAvatar;
-	private Attribute userStatus;
-	private Attribute userHome;
-	private Attribute activeWindow;
-	private Attribute virtualization;
-	private Attribute messageLatency;
-	private GraphicsDisplay[] displays;
 
-	// RAM attributes
-	private Attribute systemRamCapacity;
-	private Attribute systemRamUsage;
-	private Attribute crimsonRamUsage;
+	public int getAuthID() {
+		return authID;
+	}
 
-	// CPU attributes
-	private Attribute cpuModel;
-	private Attribute cpuCache;
-	private ArrayList<Double> cpuTemp;
-	private Attribute crimsonCpuUsage;
-	private ArrayList<Double> coreSpeeds;
-	private Attribute cpuUsage;
+	public void setAuthID(int authID) {
+		this.authID = authID;
+	}
 
-	// Network attributes
-	private Attribute hostname;
-	private Attribute extIp;
-	private Attribute dns1;
-	private Attribute dns2;
-	private Attribute fqdn;
-	private ArrayList<NetworkInterface> interfaces;
+	public void setOnline(boolean online) {
+		boolean state = getOnline();
+		if (online) {
+			if (!state) {
+				attributes.get(SimpleAttribute.CLIENT_ONLINE).set("1");
+			}
+		} else {
+			if (state) {
+				attributes.get(SimpleAttribute.CLIENT_ONLINE).set("0");
+			}
+		}
 
-	// Location attributes
-	private Attribute latitude;
-	private Attribute longitude;
-	private Attribute country;
-	private Attribute countryCode;
-	private Attribute region;
-	private Attribute city;
+	}
 
-	// keylogger
+	public boolean getOnline() {
+		return attributes.get(SimpleAttribute.CLIENT_ONLINE).equals("1");
+	}
+
+	private void createAttributeIfRequired(SimpleAttribute attribute) {
+		if (!attributes.containsKey(attribute)) {
+			// TODO TrackedAttribute
+			attributes.put(attribute, new UntrackedAttribute());
+		}
+	}
+
+	public String getAttr(SimpleAttribute attribute) {
+		createAttributeIfRequired(attribute);
+		// System.out.println("Getting simple attribute (" +
+		// attribute.toSuperString() + "<>"
+		// + attributes.get(attribute).get() + ")");
+		return attributes.get(attribute).get();
+	}
+
+	public void setAttr(SimpleAttribute attribute, String value) {
+		createAttributeIfRequired(attribute);
+		attributes.get(attribute).set(value);
+	}
+
+	// Keylogger options
 	private FLUSH_METHOD flushMethod;
 	private int flushValue;
 	private State keyloggerState;
+	private Log keylog;
 
-	public ClientProfile(int cvid) {
+	public ClientProfile(int cid) {
 		this();
-		this.cvid = cvid;
-		reinit();
-		log.debug("Created new ClientProfile: {}", cvid);
+		this.cid = cid;
+		log.debug("Created new ClientProfile: {}", cid);
 	}
 
 	public ClientProfile() {
+		// Use strict capacity for HashMap because maximum size is known
+		attributes = new HashMap<SimpleAttribute, Attribute>(SimpleAttribute.values().length + 1, 1.0f);
+
+		setAttr(SimpleAttribute.CLIENT_ONLINE, "1");
+
 		keylog = new Log();
-		online = new TrackedAttribute();
-		osFamily = new UntrackedAttribute();
-		osName = new UntrackedAttribute();
-		osArch = new UntrackedAttribute();
-		javaArch = new UntrackedAttribute();
-		javaVersion = new UntrackedAttribute();
-		javaVendor = new UntrackedAttribute();
-		crimsonVersion = new UntrackedAttribute();
-		timezone = new UntrackedAttribute();
-		language = new UntrackedAttribute();
-		username = new UntrackedAttribute();
-		userAvatar = new UntrackedAttribute();
-		userStatus = new UntrackedAttribute();
-		userHome = new UntrackedAttribute();
-		activeWindow = new UntrackedAttribute();
-		virtualization = new UntrackedAttribute();
-		messageLatency = new UntrackedAttribute();
-		systemRamCapacity = new UntrackedAttribute();
-		systemRamUsage = new UntrackedAttribute();
-		crimsonRamUsage = new UntrackedAttribute();
-		cpuModel = new UntrackedAttribute();
-		cpuCache = new UntrackedAttribute();
-		cpuTemp = new ArrayList<Double>();
-		crimsonCpuUsage = new UntrackedAttribute();
-		// core_speeds
-		cpuUsage = new UntrackedAttribute();
-		hostname = new UntrackedAttribute();
-		extIp = new UntrackedAttribute();
-		dns1 = new UntrackedAttribute();
-		dns2 = new UntrackedAttribute();
-		fqdn = new UntrackedAttribute();
-		interfaces = new ArrayList<NetworkInterface>();
-		latitude = new UntrackedAttribute();
-		longitude = new UntrackedAttribute();
-		country = new UntrackedAttribute();
-		countryCode = new UntrackedAttribute();
-		region = new UntrackedAttribute();
-		city = new UntrackedAttribute();
+
+		// initialize attribute groups
+		groups = new ArrayList<HashMap<String, AttributeGroup>>();
+		for (AttributeGroupType agt : AttributeGroupType.values()) {
+			groups.add(new HashMap<String, AttributeGroup>());
+		}
 	}
 
-	public ClientProfile reinit() {
+	public ClientProfile initialize() {
 		if (!initialized) {
 			// load icons
 			if (Common.instance == Instance.VIEWER) {
@@ -185,85 +190,49 @@ public class ClientProfile implements Serializable {
 		return keylog;
 	}
 
-	public int getAuthID() {
-		return authID;
-	}
-
-	public void setAuthID(int authID) {
-		this.authID = authID;
-	}
-
-	public boolean getOnline() {
-		return Boolean.parseBoolean(online.get());
-	}
-
-	public void setOnline(boolean b) {
-		((TrackedAttribute) online).set("" + b);
-	}
-
-	public String getOsFamily() {
-		return osFamily.get();
-	}
-
-	public void setOsFamily(String osFamily) {
-		this.osFamily.set(osFamily);
-	}
-
-	public String getOsName() {
-		return osName.get();
-	}
-
-	public void setOsName(String osName) {
-		this.osName.set(osName);
-
-	}
-
 	public void loadIcons() {
 		// os icon
-		if (osNameIcon == null && osName.get() != null) {
-			String icon = osName.get().replaceAll(" ", "_").toLowerCase();
+		if (osTypeIcon == null && getAttr(SimpleAttribute.OS_NAME) != null) {
+			String icon = getAttr(SimpleAttribute.OS_NAME).replaceAll(" ", "_").toLowerCase();
 
 			if (icon.contains("ubuntu")) {
 				icon = "ubuntu";
 			}
 
 			try {
-				osNameIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
+				osTypeIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
 				osMonitorIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
 
 			} catch (NullPointerException e) {
 				Reporter.report(Reporter.newReport().setCrComment("No OS icon found: " + icon).build());
 
 				// fall back to os family
-				osNameIcon = UIUtil.getIcon("icons16/platform/" + osFamily.get() + ".png");
-				osMonitorIcon = UIUtil.getIcon("icons16/platform/" + osFamily.get() + ".png");
+				osTypeIcon = UIUtil.getIcon("icons16/platform/" + getAttr(SimpleAttribute.OS_FAMILY) + ".png");
+				osMonitorIcon = UIUtil.getIcon("icons16/platform/" + getAttr(SimpleAttribute.OS_FAMILY) + ".png");
 			}
-			osNameIcon.setDescription(osName.get());
-			osMonitorIcon.setDescription(hostname.get());
+			osTypeIcon.setDescription(getAttr(SimpleAttribute.OS_NAME));
+			osMonitorIcon.setDescription(getAttr(SimpleAttribute.NET_HOSTNAME));
 
-		}
-
-		// user avatar
-		if (userIcon == null && userAvatar.get() != null) {
-			userIcon = getUserAvatar();
 		}
 
 		// location
-		if (locationIcon == null && extIp.get() != null) {
-			if (CUtil.Validation.privateIP(extIp.get())) {
-				locationIcon = UIUtil.getIcon("icons16/general/localhost.png");
-				locationIcon.setDescription("Private IP");
+		if (ipLocationIcon == null && getAttr(SimpleAttribute.NET_EXTERNALIP) != null) {
+			if (CUtil.Validation.privateIP(getAttr(SimpleAttribute.NET_EXTERNALIP))) {
+				ipLocationIcon = UIUtil.getIcon("icons16/general/localhost.png");
+				ipLocationIcon.setDescription("Private IP");
 			} else {
 				try {
-					locationIcon = UIUtil.getIcon("flags/" + countryCode.get().toLowerCase() + ".png");
-					locationIcon.setDescription(country.get());
+					ipLocationIcon = UIUtil
+							.getIcon("flags/" + getAttr(SimpleAttribute.IPLOC_COUNTRYCODE).toLowerCase() + ".png");
+					ipLocationIcon.setDescription(getAttr(SimpleAttribute.IPLOC_COUNTRY));
 				} catch (NullPointerException e) {
-					Reporter.report(Reporter.newReport()
-							.setCrComment("No location icon found: " + countryCode.get().toLowerCase()).build());
+					Reporter.report(Reporter.newReport().setCrComment(
+							"No location icon found: " + getAttr(SimpleAttribute.IPLOC_COUNTRYCODE).toLowerCase())
+							.build());
 
 					// fall back to default
-					locationIcon = UIUtil.getIcon("flags/un.png");
-					locationIcon.setDescription("Unknown");
+					ipLocationIcon = UIUtil.getIcon("flags/un.png");
+					ipLocationIcon.setDescription("Unknown");
 				}
 
 			}
@@ -272,301 +241,12 @@ public class ClientProfile implements Serializable {
 
 	}
 
-	public String getOsArch() {
-		return osArch.get();
+	public int getMessageLatency() {
+		return messageLatency;
 	}
 
-	public void setOsArch(String osArch) {
-		this.osArch.set(osArch);
-	}
-
-	public String getJavaArch() {
-		return javaArch.get();
-	}
-
-	public void setJavaArch(String javaArch) {
-		this.javaArch.set(javaArch);
-	}
-
-	public String getJavaVersion() {
-		return javaVersion.get();
-	}
-
-	public void setJavaVersion(String javaVersion) {
-		this.javaVersion.set(javaVersion);
-	}
-
-	public String getJavaVendor() {
-		return javaVendor.get();
-	}
-
-	public void setJavaVendor(String javaVendor) {
-		this.javaVendor.set(javaVendor);
-	}
-
-	public String getCrimsonVersion() {
-		return crimsonVersion.get();
-	}
-
-	public void setCrimsonVersion(String crimsonVersion) {
-		this.crimsonVersion.set(crimsonVersion);
-	}
-
-	public String getTimezone() {
-		return timezone.get();
-	}
-
-	public void setTimezone(String timezone) {
-		this.timezone.set(timezone);
-	}
-
-	public String getLanguage() {
-		return language.get();
-	}
-
-	public void setLanguage(String language) {
-		this.language.set(new Locale(language).getDisplayName());
-	}
-
-	public String getUsername() {
-		return username.get();
-	}
-
-	public void setUsername(String username) {
-		this.username.set(username);
-	}
-
-	public ImageIcon getUserAvatar() {
-		try {
-			return (ImageIcon) ObjectTransfer.Default.deserialize(B64.decode(userAvatar.get()));
-		} catch (InvalidObjectException e) {
-			return null;
-		}
-	}
-
-	public void setUserAvatar(String userAvatar) {
-		this.userAvatar.set(userAvatar);
-	}
-
-	public String getUserStatus() {
-		return userStatus.get();
-	}
-
-	public void setUserStatus(String userStatus) {
-		this.userStatus.set(userStatus);
-	}
-
-	public String getUserHome() {
-		return userHome.get();
-	}
-
-	public void setUserHome(String userHome) {
-		this.userHome.set(userHome);
-	}
-
-	public String getActiveWindow() {
-		return activeWindow.get();
-	}
-
-	public void setActiveWindow(String activeWindow) {
-		this.activeWindow.set(activeWindow);
-	}
-
-	public String getVirtualization() {
-		return virtualization.get();
-	}
-
-	public void setVirtualization(String virtualization) {
-		this.virtualization.set(virtualization);
-	}
-
-	public String getMessageLatency() {
-		return messageLatency.get();
-	}
-
-	public void setMessageLatency(String messageLatency) {
-		this.messageLatency.set(messageLatency);
-	}
-
-	public GraphicsDisplay[] getDisplays() {
-		return displays;
-	}
-
-	public void setDisplays(GraphicsDisplay[] displays) {
-		this.displays = displays;
-	}
-
-	public String getSystemRamCapacity() {
-		return systemRamCapacity.get();
-	}
-
-	public void setSystemRamCapacity(String ramCapacity) {
-		this.systemRamCapacity.set(ramCapacity);
-	}
-
-	public String getSystemRamUsage() {
-		return systemRamUsage.get();
-	}
-
-	public void setSystemRamUsage(String ramUsage) {
-		this.systemRamUsage.set(ramUsage);
-	}
-
-	public String getCrimsonRamUsage() {
-		return crimsonRamUsage.get();
-	}
-
-	public void setCrimsonRamUsage(String crimsonRamUsage) {
-		this.crimsonRamUsage.set(crimsonRamUsage);
-	}
-
-	public String getCpuModel() {
-		return cpuModel.get();
-	}
-
-	public void setCpuModel(String cpuModel) {
-		this.cpuModel.set(cpuModel);
-	}
-
-	public String getCpuCache() {
-		return cpuCache.get();
-	}
-
-	public void setCpuCache(String cpuCache) {
-		this.cpuCache.set(cpuCache);
-	}
-
-	public String getCpuTempAverage() {
-		return CUtil.Misc.average(cpuTemp) + " C";
-	}
-
-	public ArrayList<Double> getCpuTemps() {
-		return cpuTemp;
-	}
-
-	public void setCpuTemp(List<Double> l) {
-		this.cpuTemp.clear();
-		this.cpuTemp.addAll(l);
-	}
-
-	public String getCrimsonCpuUsage() {
-		return crimsonCpuUsage.get();
-	}
-
-	public void setCrimsonCpuUsage(String crimsonCpuUsage) {
-		this.crimsonCpuUsage.set(crimsonCpuUsage);
-	}
-
-	public ArrayList<Double> getCoreSpeeds() {
-		return coreSpeeds;
-	}
-
-	public void setCoreSpeeds(ArrayList<Double> coreSpeeds) {
-		this.coreSpeeds = coreSpeeds;
-	}
-
-	public String getCpuUsage() {
-		return cpuUsage.get();
-	}
-
-	public void setCpuUsage(String coreUsages) {
-		this.cpuUsage.set(coreUsages);
-	}
-
-	public String getHostname() {
-		return hostname.get();
-	}
-
-	public void setHostname(String hostname) {
-		this.hostname.set(hostname);
-	}
-
-	public String getExtIp() {
-		return extIp.get();
-	}
-
-	public void setExtIp(String extIp) {
-		this.extIp.set(extIp);
-	}
-
-	public String getDns1() {
-		return dns1.get();
-	}
-
-	public void setDns1(String dns1) {
-		this.dns1.set(dns1);
-	}
-
-	public String getDns2() {
-		return dns2.get();
-	}
-
-	public void setDns2(String dns2) {
-		this.dns2.set(dns2);
-	}
-
-	public String getFqdn() {
-		return fqdn.get();
-	}
-
-	public void setFqdn(String fqdn) {
-		this.fqdn.set(fqdn);
-	}
-
-	public ArrayList<NetworkInterface> getInterfaces() {
-		return interfaces;
-	}
-
-	public void setInterfaces(ArrayList<NetworkInterface> interfaces) {
-		this.interfaces = interfaces;
-	}
-
-	public String getLatitude() {
-		return latitude.get();
-	}
-
-	public void setLatitude(String latitude) {
-		this.latitude.set(latitude);
-	}
-
-	public String getLongitude() {
-		return longitude.get();
-	}
-
-	public void setLongitude(String longitude) {
-		this.longitude.set(longitude);
-	}
-
-	public String getCountry() {
-		return country.get();
-	}
-
-	public void setCountry(String country) {
-		this.country.set(country);
-	}
-
-	public String getCountryCode() {
-		return countryCode.get();
-	}
-
-	public void setCountryCode(String countryCode) {
-		this.countryCode.set(countryCode);
-	}
-
-	public String getRegion() {
-		return region.get();
-	}
-
-	public void setRegion(String region) {
-		this.region.set(region);
-	}
-
-	public String getCity() {
-		return city.get();
-	}
-
-	public void setCity(String city) {
-		this.city.set(city);
+	public void setMessageLatency(int messageLatency) {
+		this.messageLatency = messageLatency;
 	}
 
 	public FLUSH_METHOD getFlushMethod() {
@@ -593,143 +273,33 @@ public class ClientProfile implements Serializable {
 		this.keyloggerState = keyloggerState;
 	}
 
-	public int getCvid() {
-		return cvid;
+	public int getCid() {
+		return cid;
 	}
 
-	public void setCvid(int cvid) {
-		this.cvid = cvid;
-	}
-
-	public void setLocation(HashMap<String, String> map) {
-		setCountryCode(map.get("countrycode"));
-		setCountry(map.get("countryname"));
-		setRegion(map.get("regionname"));
-		setCity(map.get("city"));
-		setLatitude(map.get("latitude"));
-		setLongitude(map.get("longitude"));
+	public void setCid(int cid) {
+		this.cid = cid;
+		setAttr(SimpleAttribute.CLIENT_CID, "" + cid);
 	}
 
 	public ImageIcon getLocationIcon() {
-		return locationIcon;
+		return ipLocationIcon;
 	}
 
 	public ImageIcon getOsNameIcon() {
-		return osNameIcon;
+		return osTypeIcon;
 	}
 
 	public ImageIcon getOsMonitorIcon() {
 		return osMonitorIcon;
 	}
 
-	public ImageIcon getUserIcon() {
-		return userIcon;
-	}
-
 	public Date getLastUpdate() {
 		Date d = new Date(0);
-
-		if (online.getTimestamp().after(d)) {
-			d = online.getTimestamp();
-		}
-		if (osFamily.getTimestamp().after(d)) {
-			d = osFamily.getTimestamp();
-		}
-		if (osName.getTimestamp().after(d)) {
-			d = osName.getTimestamp();
-		}
-		if (osArch.getTimestamp().after(d)) {
-			d = osArch.getTimestamp();
-		}
-		if (javaArch.getTimestamp().after(d)) {
-			d = javaArch.getTimestamp();
-		}
-		if (javaVersion.getTimestamp().after(d)) {
-			d = javaVersion.getTimestamp();
-		}
-		if (javaVendor.getTimestamp().after(d)) {
-			d = javaVendor.getTimestamp();
-		}
-		if (crimsonVersion.getTimestamp().after(d)) {
-			d = crimsonVersion.getTimestamp();
-		}
-		if (timezone.getTimestamp().after(d)) {
-			d = timezone.getTimestamp();
-		}
-		if (language.getTimestamp().after(d)) {
-			d = language.getTimestamp();
-		}
-		if (username.getTimestamp().after(d)) {
-			d = username.getTimestamp();
-		}
-		if (userStatus.getTimestamp().after(d)) {
-			d = userStatus.getTimestamp();
-		}
-		if (userHome.getTimestamp().after(d)) {
-			d = userHome.getTimestamp();
-		}
-		if (activeWindow.getTimestamp().after(d)) {
-			d = activeWindow.getTimestamp();
-		}
-		if (virtualization.getTimestamp().after(d)) {
-			d = virtualization.getTimestamp();
-		}
-		if (messageLatency.getTimestamp().after(d)) {
-			d = messageLatency.getTimestamp();
-		}
-		if (systemRamCapacity.getTimestamp().after(d)) {
-			d = systemRamCapacity.getTimestamp();
-		}
-		if (systemRamUsage.getTimestamp().after(d)) {
-			d = systemRamUsage.getTimestamp();
-		}
-		if (crimsonRamUsage.getTimestamp().after(d)) {
-			d = crimsonRamUsage.getTimestamp();
-		}
-		if (cpuModel.getTimestamp().after(d)) {
-			d = cpuModel.getTimestamp();
-		}
-		if (cpuCache.getTimestamp().after(d)) {
-			d = cpuCache.getTimestamp();
-		}
-		if (crimsonCpuUsage.getTimestamp().after(d)) {
-			d = crimsonCpuUsage.getTimestamp();
-		}
-		if (cpuUsage.getTimestamp().after(d)) {
-			d = cpuUsage.getTimestamp();
-		}
-		if (hostname.getTimestamp().after(d)) {
-			d = hostname.getTimestamp();
-		}
-		if (extIp.getTimestamp().after(d)) {
-			d = extIp.getTimestamp();
-		}
-		if (dns1.getTimestamp().after(d)) {
-			d = dns1.getTimestamp();
-		}
-		if (dns2.getTimestamp().after(d)) {
-			d = dns2.getTimestamp();
-		}
-		if (fqdn.getTimestamp().after(d)) {
-			d = fqdn.getTimestamp();
-		}
-		if (latitude.getTimestamp().after(d)) {
-			d = latitude.getTimestamp();
-		}
-		if (longitude.getTimestamp().after(d)) {
-			d = longitude.getTimestamp();
-		}
-		if (country.getTimestamp().after(d)) {
-			d = country.getTimestamp();
-		}
-		if (countryCode.getTimestamp().after(d)) {
-			d = countryCode.getTimestamp();
-		}
-		if (region.getTimestamp().after(d)) {
-			d = region.getTimestamp();
-		}
-		if (city.getTimestamp().after(d)) {
-			d = city.getTimestamp();
+		for (Attribute a : attributes.values()) {
+			if (a.getTimestamp().after(d)) {
+				d = a.getTimestamp();
+			}
 		}
 
 		log.debug("Found last update date: {}", d);
@@ -738,104 +308,33 @@ public class ClientProfile implements Serializable {
 
 	public EV_ProfileDelta getUpdates(Date last) {
 		Date start = new Date();
-		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(getCvid());
+		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(getCid());
 
-		if (online.getTimestamp().after(last)) {
-			pd.setOnline(Boolean.parseBoolean(online.get()));
-		}
-		if (osFamily.getTimestamp().after(last)) {
-			pd.setOsFamily(osFamily.get());
-		}
-		if (osName.getTimestamp().after(last)) {
-			pd.setOsName(osName.get());
-		}
-		if (javaArch.getTimestamp().after(last)) {
-			pd.setJavaArch(javaArch.get());
-		}
-		if (javaVersion.getTimestamp().after(last)) {
-			pd.setJavaArch(javaVersion.get());
-		}
-		if (javaVendor.getTimestamp().after(last)) {
-			pd.setJavaVendor(javaVendor.get());
-		}
-		if (crimsonVersion.getTimestamp().after(last)) {
-			pd.setCrimsonVersion(crimsonVersion.get());
-		}
-		if (timezone.getTimestamp().after(last)) {
-			pd.setTimezone(timezone.get());
-		}
-		if (language.getTimestamp().after(last)) {
-			pd.setLanguage(language.get());
-		}
-		if (username.getTimestamp().after(last)) {
-			pd.setUserName(username.get());
-		}
-		if (userStatus.getTimestamp().after(last)) {
-			pd.setUserStatus(userStatus.get());
-		}
-		if (userHome.getTimestamp().after(last)) {
-			pd.setUserHome(userHome.get());
-		}
-		if (activeWindow.getTimestamp().after(last)) {
-			pd.setActiveWindow(activeWindow.get());
-		}
-		if (virtualization.getTimestamp().after(last)) {
-			pd.setVirtualization(virtualization.get());
+		// Simple Attributes
+		for (SimpleAttribute key : attributes.keySet()) {
+			Attribute a = attributes.get(key);
+			if (a.getTimestamp().after(last)) {
+				pd.putStrAttr(key.ordinal(), a.get());
+			}
 		}
 
-		if (systemRamCapacity.getTimestamp().after(last)) {
-			// pd.setSystemRamCapacity(systemRamCapacity.get());
-		}
-		if (systemRamUsage.getTimestamp().after(last)) {
-			// pd.setSystemRamUsage(systemRamUsage.get());
-		}
-		if (crimsonRamUsage.getTimestamp().after(last)) {
-			// pd.setCrimsonRamUsage(crimsonRamUsage.get());
-		}
-		if (cpuModel.getTimestamp().after(last)) {
-			pd.setCpuModel(cpuModel.get());
-		}
-		if (cpuCache.getTimestamp().after(last)) {
-			pd.setCpuCache(cpuCache.get());
-		}
-		if (crimsonCpuUsage.getTimestamp().after(last)) {
-			// pd.setCrimsonCpuUsage(crimsonCpuUsage.get());
-		}
-		if (cpuUsage.getTimestamp().after(last)) {
-			//
-		}
-		if (hostname.getTimestamp().after(last)) {
-			pd.setHostname(hostname.get());
-		}
-		if (extIp.getTimestamp().after(last)) {
-			pd.setExtIp(extIp.get());
-		}
-		if (dns1.getTimestamp().after(last)) {
-			pd.setNetDns1(dns1.get());
-		}
-		if (dns2.getTimestamp().after(last)) {
-			pd.setNetDns2(dns2.get());
-		}
-		if (fqdn.getTimestamp().after(last)) {
-			pd.setFqdn(fqdn.get());
-		}
-		if (latitude.getTimestamp().after(last)) {
-			//
-		}
-		if (longitude.getTimestamp().after(last)) {
-			//
-		}
-		if (country.getTimestamp().after(last)) {
-			pd.setCountry(country.get());
-		}
-		if (countryCode.getTimestamp().after(last)) {
-			pd.setCountryCode(countryCode.get());
-		}
-		if (region.getTimestamp().after(last)) {
-			//
-		}
-		if (city.getTimestamp().after(last)) {
-			//
+		// Attribute Groups
+		for (GroupAttributeType gat : GroupAttributeType.values()) {
+			HashMap<String, AttributeGroup> map = groups.get(gat.ordinal());
+			for (String gid : map.keySet()) {
+				AttributeGroup ag = map.get(gid);
+				if (ag.isModern()) {
+					HashMap<AttributeGroupType, Attribute> amap = ag.getAttributeMap();
+					for (AttributeGroupType agt : amap.keySet()) {
+						Attribute a = amap.get(agt);
+						if (a.getTimestamp().after(last)) {
+							pd.addGroupAttr(AttributeGroupContainer.newBuilder().setGroupType(gat.ordinal())
+									.setGroupId(gid).setAttributeType(agt.ordinal()).setValue(a.get()));
+						}
+					}
+				}
+
+			}
 		}
 
 		log.debug("Calulated profile update in {} ms", new Date().getTime() - start.getTime());
@@ -846,111 +345,40 @@ public class ClientProfile implements Serializable {
 	public void amalgamate(EV_ProfileDelta c) {
 		Date start = new Date();
 		if (c.hasDepartureTime()) {
-			setMessageLatency("" + (new Date().getTime() - c.getDepartureTime()) + " ms");
+			messageLatency = (int) (start.getTime() - c.getDepartureTime());
 		}
-		if (c.hasOnline()) {
-			setOnline(c.getOnline());
-		}
-		if (c.hasOsFamily()) {
-			setOsFamily(c.getOsFamily());
-		}
-		if (c.hasOsName()) {
-			setOsName(c.getOsName());
-		}
-		if (c.hasOsArch()) {
-			setOsArch(c.getOsArch());
-		}
-		if (c.hasJavaArch()) {
-			setJavaArch(c.getJavaArch());
-		}
-		if (c.hasJavaVersion()) {
-			setJavaVersion(c.getJavaVersion());
-		}
-		if (c.hasJavaVendor()) {
-			setJavaVendor(c.getJavaVendor());
-		}
-		if (c.hasCrimsonVersion()) {
-			setCrimsonVersion(c.getCrimsonVersion());
-		}
-		if (c.hasTimezone()) {
-			setTimezone(c.getTimezone());
-		}
-		if (c.hasLanguage()) {
-			setLanguage(c.getLanguage());
-		}
-		if (c.hasUserName()) {
-			setUsername(c.getUserName());
-		}
-		if (c.hasUserAvatar()) {
-			setUserAvatar(c.getUserAvatar());
-		}
-		if (c.hasUserStatus()) {
-			setUserStatus(c.getUserStatus());
-		}
-		if (c.hasUserHome()) {
-			setUserHome(c.getUserHome());
-		}
-		if (c.hasActiveWindow()) {
-			setActiveWindow(c.getActiveWindow());
-		}
-		if (c.hasVirtualization()) {
-			setVirtualization(c.getVirtualization());
-		}
-		if (c.hasSystemRamCapacity()) {
-			setSystemRamCapacity(CUtil.Misc.familiarize(c.getSystemRamCapacity(), CUtil.Misc.BYTES));
-		}
-		if (c.hasSystemRamUsage()) {
-			setSystemRamUsage(CUtil.Misc.familiarize(c.getSystemRamUsage(), CUtil.Misc.BYTES));
-		}
-		if (c.hasCrimsonRamUsage()) {
-			setCrimsonRamUsage(CUtil.Misc.familiarize(c.getCrimsonRamUsage(), CUtil.Misc.BYTES));
-		}
-		if (c.hasCpuModel()) {
-			setCpuModel(c.getCpuModel());
-		}
-		if (c.hasCpuCache()) {
-			setCpuCache(c.getCpuCache());
-		}
-		if (c.getCpuTempCount() != 0) {
-			setCpuTemp(c.getCpuTempList());
-		}
-		if (c.hasCrimsonCpuUsage()) {
-			setCrimsonCpuUsage(String.format("%.2f%%", 100 * c.getCrimsonCpuUsage()));
-		}
-		// core_speed
-		if (c.hasCoreUsage()) {
-			setCpuUsage(String.format("%.2f", 100 * c.getCoreUsage()));
-		}
-		if (c.hasHostname()) {
-			setHostname(c.getHostname());
-		}
-		if (c.hasExtIp()) {
-			setExtIp(c.getExtIp());
-		}
-		if (c.hasNetDns1()) {
-			setDns1(c.getNetDns1());
-		}
-		if (c.hasNetDns2()) {
-			setDns2(c.getNetDns2());
-		}
-		if (c.hasFqdn()) {
-			setFqdn(c.getFqdn());
-		}
-		if (c.hasCountry()) {
-			setCountry(c.getCountry());
-		}
-		if (c.hasCountryCode()) {
-			setCountryCode(c.getCountryCode());
-		}
-		// network interfaces
 
-		// displays
-		GraphicsDisplay[] gds = new GraphicsDisplay[c.getDisplaysCount()];
-		for (int i = 0; i < gds.length; i++) {
-			gds[i] = c.getDisplays(i);
+		Map<Integer, String> map = c.getStrAttrMap();
+		for (Integer key : map.keySet()) {
+			// System.out.println("Setting (" +
+			// SimpleAttribute.ordinal[key].toSuperString() + "<>" +
+			// map.get(key) + ")");
+			setAttr(SimpleAttribute.ordinal[key], map.get(key));
 		}
-		if (gds.length != 0) {
-			setDisplays(gds);
+
+		// If FIG, then set all groups to old
+		if (c.hasFig() && c.getFig()) {
+			for (HashMap<String, AttributeGroup> g : groups) {
+				for (AttributeGroup ag : g.values()) {
+					ag.setModern(false);
+				}
+			}
+		}
+
+		for (AttributeGroupContainer agc : c.getGroupAttrList()) {
+			HashMap<String, AttributeGroup> group = groups.get(agc.getGroupType());
+			if (!group.containsKey(agc.getGroupId())) {
+				group.put(agc.getGroupId(), new AttributeGroup());
+			}
+
+			AttributeGroup ag = group.get(agc.getGroupId());
+			ag.setModern(true);
+			if (!ag.hasAttribute(agc.getAttributeType())) {
+				// TODO account for tracked attributes
+				ag.addAttribute(agc.getAttributeType());
+			}
+			ag.queryAttribute(agc.getAttributeType()).set(agc.getValue());
+
 		}
 
 		if (c.hasKeyloggerState()) {

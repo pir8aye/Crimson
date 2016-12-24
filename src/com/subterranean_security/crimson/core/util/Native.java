@@ -7,7 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.CoreStore;
-import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.platform.SigarStore;
+import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.Stream.DirtyRect;
 import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
 
@@ -42,7 +43,7 @@ public final class Native {
 		public static void load() {
 			loadJDBC();
 			loadLapis();
-			Platform.Advanced.loadSigar();
+			SigarStore.loadSigar();
 		}
 
 		public static boolean loadLapis() {

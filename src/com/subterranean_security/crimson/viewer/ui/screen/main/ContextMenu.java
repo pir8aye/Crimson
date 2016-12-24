@@ -91,7 +91,7 @@ public enum ContextMenu {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						for (ClientCPFrame frame : UIStore.clientControlPanels) {
-							if (frame.profile.getCvid() == selected.getCvid()) {
+							if (frame.profile.getCid() == selected.getCid()) {
 								// there is already an open control panel
 								frame.setLocationRelativeTo(null);
 								frame.toFront();
@@ -131,7 +131,7 @@ public enum ContextMenu {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.quickScreenshot(selected.getCvid());
+						return ViewerCommands.quickScreenshot(selected.getCid());
 					}
 
 					protected void done() {
@@ -162,7 +162,7 @@ public enum ContextMenu {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				RDFrame rdf = new RDFrame(Type.INTERACT, selected.getCvid());
+				RDFrame rdf = new RDFrame(Type.INTERACT, selected.getCid());
 				rdf.setVisible(true);
 
 			}
@@ -181,7 +181,7 @@ public enum ContextMenu {
 
 				new Thread() {
 					public void run() {
-						Outcome outcome = ViewerCommands.changeClientState(selected.getCvid(), StateType.SHUTDOWN);
+						Outcome outcome = ViewerCommands.changeClientState(selected.getCid(), StateType.SHUTDOWN);
 						if (!outcome.getResult()) {
 							// TODO
 						}
@@ -201,7 +201,7 @@ public enum ContextMenu {
 
 				new Thread() {
 					public void run() {
-						Outcome outcome = ViewerCommands.changeClientState(selected.getCvid(), StateType.RESTART);
+						Outcome outcome = ViewerCommands.changeClientState(selected.getCid(), StateType.RESTART);
 						if (!outcome.getResult()) {
 							// TODO
 						}

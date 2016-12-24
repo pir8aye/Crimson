@@ -37,6 +37,8 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
+import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
@@ -386,9 +388,10 @@ public class MenuControls extends JPanel {
 	}
 
 	public void refresh() {
-		valViewerRamUsage.setText(ViewerStore.Profiles.getLocalClient().getCrimsonRamUsage());
-		valViewerCpuTemp.setText(ViewerStore.Profiles.getLocalClient().getCpuTempAverage());
-		valViewerCpuUsage.setText(ViewerStore.Profiles.getLocalClient().getCrimsonCpuUsage());
+		valViewerRamUsage.setText(ViewerStore.Profiles.getLocalClient().getAttr(SimpleAttribute.RAM_USAGE));
+		valViewerCpuTemp.setText(ViewerStore.Profiles.getLocalClient().getPrimaryCPU()
+				.queryAttribute(AttributeGroupType.CPU_TEMP).get());
+		valViewerCpuUsage.setText(ViewerStore.Profiles.getLocalClient().getAttr(SimpleAttribute.CLIENT_CPU_USAGE));
 		valServerRamUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCrimsonRamUsage() : "");
 		valServerCpuTemp.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCpuTempAverage() : "");
 		valServerCpuUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCrimsonCpuUsage() : "");

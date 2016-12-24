@@ -8,19 +8,6 @@ message Outcome {
 
 }
 
-message NetworkInterface {
-	optional string name = 1;
-	optional string ip = 2;
-	required string mac = 3;
-	optional string netmask = 4;
-}
-
-message GraphicsDisplay {
-	required string id = 1;
-	required int32 width = 2;
-	required int32 height = 3;
-}
-
 enum AuthType {
 	GROUP = 0; PASSWORD = 1; NO_AUTH = 2;
 }

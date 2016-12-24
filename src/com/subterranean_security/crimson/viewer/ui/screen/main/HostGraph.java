@@ -32,6 +32,8 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
+import com.subterranean_security.crimson.core.profile.AbstractAttribute;
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
@@ -68,6 +70,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 			graph.setAllowDanglingEdges(false);
 			graph.setConnectableEdges(false);
 			graph.setAllowNegativeCoordinates(false);
+			// TODO change behavior if not connected
 			serverVertex = graph.insertVertex(parent, null, "\n\n\nServer", 260, 135, 80, 30,
 					"shape=image;image=/com/subterranean_security/crimson/viewer/ui/res/image/icons32/general/server.png");
 
@@ -120,7 +123,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 	public void addClient(ClientProfile p) {
 		for (Object o : vertices.keySet()) {
-			if (vertices.get(o) == p.getCvid()) {
+			if (vertices.get(o) == p.getCid()) {
 				// TODO
 				return;
 			}
@@ -134,6 +137,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		int x = 0;
 		int y = 0;
 
+		// TODO timeout if screen full
 		while (true) {
 			x = xMin + (int) (Math.random() * ((xMax - xMin) + 1));
 			y = yMin + (int) (Math.random() * ((yMax - yMin) + 1));
@@ -151,69 +155,19 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		}
 		graph.getModel().beginUpdate();
 		String text = "";
-		switch (Headers.HOSTNAME) {
-		case ACTIVE_WINDOW:
-			break;
-		case IP_LOCATION:
-			break;
-		case CPU_MODEL:
-			break;
-		case CPU_TEMP:
-			break;
-		case CPU_USAGE:
-			break;
-		case CRIMSON_VERSION:
-			break;
-		case EXTERNAL_IP:
-			break;
-		case HOSTNAME:
-			text = p.getHostname();
-			break;
-		case INTERNAL_IP:
-			break;
-		case JAVA_VERSION:
-			break;
-		case LANGUAGE:
-			break;
-		case MESSAGE_PING:
-			break;
-		case MONITOR_COUNT:
-			break;
-		case OS_ARCH:
-			break;
-		case OS_FAMILY:
-			break;
-		case RAM_CAPACITY:
-			break;
-		case RAM_USAGE:
-			break;
-		case SCREEN_PREVIEW:
-			break;
-		case TIMEZONE:
-			break;
-		case USERNAME:
-			break;
-		case USER_STATUS:
-			break;
-		case VIRTUALIZATION:
-			break;
-		default:
-			break;
-
-		}
 
 		try {
 			String iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
-					+ p.getOsName().replaceAll(" ", "_").toLowerCase() + ".png";
+					+ p.getAttr(SimpleAttribute.OS_NAME).replaceAll(" ", "_").toLowerCase() + ".png";
 
 			if (CUtil.Files.getResourceSize(iconLocation) == 0) {
 				iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
-						+ p.getOsFamily() + ".png";
+						+ p.getAttr(SimpleAttribute.OS_FAMILY) + ".png";
 			}
 
 			Object v = graph.insertVertex(parent, null, "\n\n\n" + text, x, y, 80, 30,
 					"shape=image;image=" + iconLocation);
-			vertices.put(v, p.getCvid());
+			vertices.put(v, p.getCid());
 
 			graph.insertEdge(parent, null, "", serverVertex, v);
 
@@ -231,7 +185,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		Object target = null;
 
 		for (Entry<Object, Integer> entry : vertices.entrySet()) {
-			if (entry.getValue() == p.getCvid()) {
+			if (entry.getValue() == p.getCid()) {
 				// found the connection to remove
 				target = entry.getKey();
 
@@ -255,6 +209,21 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 	public void mouseWheelMoved(MouseWheelEvent e) {
 
 		int notches = e.getWheelRotation();
+
+	}
+
+	private AbstractAttribute textType = SimpleAttribute.CLIENT_CID;
+
+	// TODO updates should trigger this method
+	public String getTextAt(ClientProfile cp) {
+		if (textType instanceof SimpleAttribute) {
+			SimpleAttribute sa = (SimpleAttribute) textType;
+			return cp.getAttr(sa);
+
+		} else {
+			// TODO complex attribute
+			return "";
+		}
 
 	}
 

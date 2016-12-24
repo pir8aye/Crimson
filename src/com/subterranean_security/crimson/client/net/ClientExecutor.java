@@ -38,11 +38,11 @@ import com.subterranean_security.crimson.client.modules.Power;
 import com.subterranean_security.crimson.client.modules.QuickScreenshot;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Platform;
-import com.subterranean_security.crimson.core.Platform.OSFAMILY;
-import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
+import com.subterranean_security.crimson.core.platform.LocalFS;
+import com.subterranean_security.crimson.core.platform.Platform;
+import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
@@ -282,7 +282,7 @@ public class ClientExecutor extends BasicExecutor {
 				if (flag) {
 					connector.setState(ConnectionState.AUTHENTICATED);
 
-					oneway.setPd(Platform.Advanced.getFullProfile());
+					oneway.setPd(Platform.getBasicInfo());
 				} else {
 					// TODO handle more
 					connector.setState(ConnectionState.CONNECTED);
@@ -298,7 +298,7 @@ public class ClientExecutor extends BasicExecutor {
 
 		RQ_FileListing rq = m.getRqFileListing();
 		log.debug("file_listing_rq. fmid: " + rq.getFmid());
-		LocalFilesystem lf = ClientStore.LocalFilesystems.get(rq.getFmid());
+		LocalFS lf = ClientStore.LocalFilesystems.get(rq.getFmid());
 		if (rq.hasUp() && rq.getUp()) {
 			lf.up();
 		} else if (rq.hasDown()) {
@@ -323,20 +323,20 @@ public class ClientExecutor extends BasicExecutor {
 		log.debug("rq_file_handle");
 		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsFileHandle(RS_FileHandle.newBuilder()
-						.setFmid(ClientStore.LocalFilesystems.add(new LocalFilesystem(true, true)))));
+						.setFmid(ClientStore.LocalFilesystems.add(new LocalFS(true, true)))));
 	}
 
 	private void rq_advanced_file_info(Message m) {
 		log.debug("rq_advance_file_info");
 		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
-				.setRsAdvancedFileInfo(LocalFilesystem.getInfo(m.getRqAdvancedFileInfo().getFile())));
+				.setRsAdvancedFileInfo(LocalFS.getInfo(m.getRqAdvancedFileInfo().getFile())));
 	}
 
 	private void rq_delete(Message m) {
 		log.debug("rq_delete");
 		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsDelete(RS_Delete.newBuilder().setOutcome(
-						LocalFilesystem.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))));
+						LocalFS.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))));
 	}
 
 	private void assign_1w(Message m) {

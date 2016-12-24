@@ -16,7 +16,7 @@
  *                                                                            *
  *****************************************************************************/
 
-package com.subterranean_security.crimson.core.fm;
+package com.subterranean_security.crimson.core.platform;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,6 @@ import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
@@ -43,12 +42,14 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.ObjectTransfer;
 
 /**
- * @author subterranean For file system browsing
+ * This class provides convenient access to the local filesystem.
+ * 
+ * @author Tyler Cook
  *
  */
-public class LocalFilesystem {
+public class LocalFS {
 
-	private static final Logger log = LoggerFactory.getLogger(LocalFilesystem.class);
+	private static final Logger log = LoggerFactory.getLogger(LocalFS.class);
 
 	private Path ref;
 
@@ -61,13 +62,13 @@ public class LocalFilesystem {
 	private boolean mtime;
 	private boolean size;
 
-	public LocalFilesystem(boolean size, boolean mtime) {
+	public LocalFS(boolean size, boolean mtime) {
 		this(System.getProperty("user.home"));
 		this.size = size;
 		this.mtime = mtime;
 	}
 
-	public LocalFilesystem(String start) {
+	public LocalFS(String start) {
 		ref = Paths.get(start);
 		fmid = IDGen.getFmid();
 		log.debug("Initialized local filesystem handle (FMID: {}, PATH: {})", fmid, pwd());
@@ -141,7 +142,7 @@ public class LocalFilesystem {
 		rs.setSize(f.length());
 		rs.setMtime(f.lastModified());
 		try {
-			fileInfo.gather(Platform.Advanced.getSigar(), f.getAbsolutePath());
+			fileInfo.gather(SigarStore.getSigar(), f.getAbsolutePath());
 			rs.setAtime(fileInfo.getAtime());
 			rs.setCtime(fileInfo.getCtime());
 		} catch (SigarException e) {

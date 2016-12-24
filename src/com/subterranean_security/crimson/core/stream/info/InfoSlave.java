@@ -18,7 +18,12 @@
 package com.subterranean_security.crimson.core.stream.info;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Platform;
+import com.subterranean_security.crimson.core.platform.info.CPU;
+import com.subterranean_security.crimson.core.platform.info.RAM;
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
+import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
+import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
+import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
@@ -29,8 +34,47 @@ import com.subterranean_security.crimson.core.util.Native;
 
 public abstract class InfoSlave extends Stream {
 
+	/**
+	 * The last profile delta. Subsequent updates use this as a base.
+	 */
+	private EV_ProfileDelta.Builder pd;
+	private AttributeGroupContainer.Builder lastCpuUsage;
+	private AttributeGroupContainer.Builder lastCpuTemp;
+	private int whichCPU = 0;// TODO set according to group id in param
+
 	public InfoSlave(Param p) {
 		param = p;
+		pd = EV_ProfileDelta.newBuilder().setCvid(Common.cvid);
+
+		String cpuID = null;
+		if (param.getInfoParam().hasCpuUsage() || param.getInfoParam().hasCpuTemp()) {
+			if (param.getInfoParam().hasCpuId()) {
+				cpuID = param.getInfoParam().getCpuId();
+				for (int i = 0; i < CPU.getCount(); i++) {
+					if (cpuID.equals(CPU.computeGID(i))) {
+						whichCPU = i;
+						break;
+					}
+				}
+				// TODO check if for loop actually found the correct row
+				// If not, the supplied cpuID is no longer attached
+			} else {
+				// calculate the primary cpu id
+				cpuID = CPU.computeGID(0);
+				whichCPU = 0;
+			}
+		}
+
+		if (param.getInfoParam().hasCpuUsage()) {
+
+			lastCpuUsage = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.CPU.ordinal())
+					.setGroupId(cpuID).setAttributeType(AttributeGroupType.CPU_USAGES.ordinal());
+		}
+
+		if (param.getInfoParam().hasCpuTemp()) {
+			lastCpuTemp = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.CPU.ordinal())
+					.setGroupId(cpuID).setAttributeType(AttributeGroupType.CPU_TEMP.ordinal());
+		}
 		start();
 	}
 
@@ -43,67 +87,66 @@ public abstract class InfoSlave extends Stream {
 		// do nothing
 	}
 
-	private String lastActiveWindow = "";
-	private double lastCpuUsage;
-	private double lastCrimsonCpuUsage;
-	private long lastRamUsage;
-	private long lastCrimsonRamUsage;
-
 	protected EV_ProfileDelta gather() {
-		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(Common.cvid);
+
+		// purge last attribute groups
+		pd.clearGroupAttr();
+
+		// cpu usage
+		if (param.getInfoParam().hasCpuUsage()) {
+			String coreUsage = CPU.getUsage(whichCPU);
+			if (!lastCpuUsage.getValue().equals(coreUsage)) {
+				pd.addGroupAttr(lastCpuUsage.setValue(coreUsage));
+			}
+		}
+
+		// cpu temps
+		if (param.getInfoParam().hasCpuTemp()) {
+			String cpuTemp = CPU.getTemp();
+			if (!lastCpuTemp.getValue().equals(cpuTemp)) {
+				pd.addGroupAttr(lastCpuTemp.setValue(cpuTemp));
+			}
+		}
 
 		// active window
 		if (param.getInfoParam().hasActiveWindow()) {
 			String activeWindow = Native.getActiveWindow();
-			if (!lastActiveWindow.equals(activeWindow)) {
-				pd.setActiveWindow(activeWindow);
-				lastActiveWindow = activeWindow;
+			if (!pd.getStrAttrOrDefault(SimpleAttribute.OS_ACTIVE_WINDOW.ordinal(), "").equals(activeWindow)) {
+				pd.putStrAttr(SimpleAttribute.OS_ACTIVE_WINDOW.ordinal(), activeWindow);
+			} else {
+				pd.removeStrAttr(SimpleAttribute.OS_ACTIVE_WINDOW.ordinal());
 			}
 		}
 
 		// ram usage
 		if (param.getInfoParam().hasRamUsage()) {
-			long ramUsage = Platform.Advanced.getMemoryUsage();
-			if (lastRamUsage != ramUsage) {
-				pd.setSystemRamUsage(ramUsage);
-				lastRamUsage = ramUsage;
+			String ramUsage = RAM.getUsage();
+			if (!pd.getStrAttrOrDefault(SimpleAttribute.RAM_USAGE.ordinal(), "").equals(ramUsage)) {
+				pd.putStrAttr(SimpleAttribute.RAM_USAGE.ordinal(), ramUsage);
+			} else {
+				pd.removeStrAttr(SimpleAttribute.RAM_USAGE.ordinal());
 			}
 
-		}
-
-		// cpu usage
-		if (param.getInfoParam().hasCpuUsage()) {
-			double coreUsage = Platform.Advanced.getCPUUsage();
-			if (lastCpuUsage != coreUsage) {
-				pd.setCoreUsage(coreUsage);
-				lastCpuUsage = coreUsage;
-			}
-
-		}
-
-		// cpu temps
-		if (param.getInfoParam().hasCpuTemp()) {
-			for (double d : Platform.Advanced.getCPUTemps()) {
-				pd.addCpuTemp(d);
-			}
 		}
 
 		// crimson ram usage
 		if (param.getInfoParam().hasCrimsonRamUsage()) {
-			long crimsonRamUsage = Platform.Advanced.getCrimsonMemoryUsage();
-			if (lastCrimsonRamUsage != crimsonRamUsage) {
-				pd.setCrimsonRamUsage(crimsonRamUsage);
-				lastCrimsonRamUsage = crimsonRamUsage;
+			String crimsonRamUsage = RAM.getClientUsage();
+			if (!pd.getStrAttrOrDefault(SimpleAttribute.CLIENT_RAM_USAGE.ordinal(), "").equals(crimsonRamUsage)) {
+				pd.putStrAttr(SimpleAttribute.CLIENT_RAM_USAGE.ordinal(), crimsonRamUsage);
+			} else {
+				pd.removeStrAttr(SimpleAttribute.CLIENT_RAM_USAGE.ordinal());
 			}
 
 		}
 
 		// crimson cpu usage
 		if (param.getInfoParam().hasCrimsonCpuUsage()) {
-			double crimsonCpuUsage = Platform.Advanced.getCrimsonCpuUsage();
-			if (lastCrimsonCpuUsage != crimsonCpuUsage) {
-				pd.setCrimsonCpuUsage(crimsonCpuUsage);
-				lastCrimsonCpuUsage = crimsonCpuUsage;
+			String crimsonCpuUsage = CPU.getClientUsage();
+			if (!pd.getStrAttrOrDefault(SimpleAttribute.CLIENT_CPU_USAGE.ordinal(), "").equals(crimsonCpuUsage)) {
+				pd.putStrAttr(SimpleAttribute.CLIENT_CPU_USAGE.ordinal(), crimsonCpuUsage);
+			} else {
+				pd.removeStrAttr(SimpleAttribute.CLIENT_CPU_USAGE.ordinal());
 			}
 
 		}
@@ -112,15 +155,12 @@ public abstract class InfoSlave extends Stream {
 
 	@Override
 	public void start() {
-
 		timer.schedule(sendTask, 0, param.hasPeriod() ? param.getPeriod() : 1000);
-
 	}
 
 	@Override
 	public void stop() {
 		timer.cancel();
-
 	}
 
 }

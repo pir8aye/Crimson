@@ -30,6 +30,8 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.subterranean_security.crimson.core.profile.AbstractAttribute;
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
@@ -38,8 +40,9 @@ public class HostList extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final Headers[] defaultHeaders = new Headers[] { Headers.IP_LOCATION, Headers.OS_NAME,
-			Headers.USERNAME, Headers.HOSTNAME, Headers.LANGUAGE };
+	public static final AbstractAttribute[] defaultHeaders = new AbstractAttribute[] { SimpleAttribute.IPLOC_COUNTRY,
+			SimpleAttribute.OS_NAME, SimpleAttribute.USER_NAME, SimpleAttribute.NET_HOSTNAME,
+			SimpleAttribute.OS_LANGUAGE };
 
 	private static JTable table = new JTable();
 	private TM tm = new TM();
@@ -95,7 +98,7 @@ public class HostList extends JPanel {
 	public void addOrUpdate(ClientProfile cp) {
 		cp.loadIcons();
 		for (int i = 0; i < tm.getClientList().size(); i++) {
-			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
+			if (cp.getCid() == tm.getClientList().get(i).getCid()) {
 				tm.fireTableRowsUpdated(i, i);
 				return;
 			}
@@ -105,7 +108,7 @@ public class HostList extends JPanel {
 
 	public void removeClient(ClientProfile cp) {
 		for (int i = 0; i < tm.getClientList().size(); i++) {
-			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
+			if (cp.getCid() == tm.getClientList().get(i).getCid()) {
 				tm.getClientList().remove(i);
 				tm.fireTableRowsDeleted(i, i);
 				return;
@@ -123,7 +126,7 @@ class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 
-	public Headers[] headers = new Headers[] {};
+	public AbstractAttribute[] headers = new AbstractAttribute[] {};
 
 	private ArrayList<ClientProfile> clients = new ArrayList<ClientProfile>();
 
@@ -147,7 +150,7 @@ class TM extends AbstractTableModel {
 
 	public void refreshHeaders() {
 		try {
-			headers = (Headers[]) ViewerStore.Databases.local.getObject("hostlist.headers");
+			headers = (AbstractAttribute[]) ViewerStore.Databases.local.getObject("hostlist.headers");
 		} catch (Exception e) {
 			headers = HostList.defaultHeaders;
 		}
@@ -171,60 +174,20 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		switch (headers[columnIndex]) {
-		case USERNAME:
-			return clients.get(rowIndex).getUsername();
-		case USER_STATUS:
-			return clients.get(rowIndex).getUserStatus();
-		case HOSTNAME:
-			return clients.get(rowIndex).getHostname();
-		case INTERNAL_IP:
+		AbstractAttribute aa = headers[columnIndex];
+		if (aa instanceof SimpleAttribute) {
+			SimpleAttribute sa = (SimpleAttribute) aa;
+			switch (sa) {
+			case IPLOC_COUNTRY:
+				return clients.get(rowIndex).getLocationIcon();
+			case OS_NAME:
+				return clients.get(rowIndex).getOsNameIcon();
+			default:
+				return clients.get(rowIndex).getAttr(sa);
+			}
+		} else {
+			// TODO complex attribute
 			return null;
-		case EXTERNAL_IP:
-			return clients.get(rowIndex).getExtIp();
-		case LANGUAGE:
-			return clients.get(rowIndex).getLanguage();
-		case ACTIVE_WINDOW:
-			return clients.get(rowIndex).getActiveWindow();
-		case IP_LOCATION:
-			return clients.get(rowIndex).getLocationIcon();
-		case CPU_MODEL:
-			return clients.get(rowIndex).getCpuModel();
-		case CPU_USAGE:
-			return clients.get(rowIndex).getCpuUsage();
-		case CPU_TEMP:
-			return clients.get(rowIndex).getCpuTempAverage();
-		case CVID:
-			return clients.get(rowIndex).getCvid();
-		case RAM_CAPACITY:
-			return clients.get(rowIndex).getSystemRamCapacity();
-		case RAM_USAGE:
-			return clients.get(rowIndex).getSystemRamUsage();
-		case CRIMSON_VERSION:
-			return clients.get(rowIndex).getCrimsonVersion();
-		case OS_FAMILY:
-			return clients.get(rowIndex).getOsFamily();
-		case OS_ARCH:
-			return clients.get(rowIndex).getOsArch();
-		case JAVA_VERSION:
-			return clients.get(rowIndex).getJavaVersion();
-		case MONITOR_COUNT:
-			return null;
-		case VIRTUALIZATION:
-			return clients.get(rowIndex).getVirtualization();
-		case TIMEZONE:
-			return clients.get(rowIndex).getTimezone();
-		case CPU_SPEED:
-			return null;
-		case MESSAGE_PING:
-			return clients.get(rowIndex).getMessageLatency();
-		case SCREEN_PREVIEW:
-			return null;
-		case OS_NAME:
-			return clients.get(rowIndex).getOsNameIcon();
-		default:
-			return null;
-
 		}
 
 	}

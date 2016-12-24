@@ -35,8 +35,8 @@ import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 
-import com.subterranean_security.crimson.core.fm.LocalFilesystem;
 import com.subterranean_security.crimson.core.net.RequestTimeoutException;
+import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
@@ -61,7 +61,7 @@ public class Pane extends JPanel {
 	protected TYPE type = TYPE.VIEWER;
 
 	// for viewers
-	private LocalFilesystem lf = new LocalFilesystem(true, true);
+	private LocalFS lf = new LocalFS(true, true);
 
 	private int cid;
 	private int fmid;
@@ -103,7 +103,7 @@ public class Pane extends JPanel {
 						}
 						default: {
 							type = TYPE.CLIENT;
-							cid = ViewerStore.Profiles.getClient(name).getCvid();
+							cid = ViewerStore.Profiles.getClient(name).getCid();
 							System.out.println("Found cid: " + cid);
 							fmid = ViewerCommands.getFileHandle(cid);
 							break;
@@ -308,7 +308,7 @@ public class Pane extends JPanel {
 				rs = ViewerCommands.fm_file_info(cid, path);
 				break;
 			case VIEWER:
-				rs = LocalFilesystem.getInfo(path);
+				rs = LocalFS.getInfo(path);
 				break;
 
 			}

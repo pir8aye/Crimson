@@ -33,7 +33,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.fm.LocalFilesystem;
+import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
@@ -100,7 +100,7 @@ public class DeleteConfirmation extends JPanel {
 						case SERVER:
 							return ViewerCommands.fm_delete(cid, targets, chckbxOverwrite.isSelected());
 						case VIEWER:
-							return LocalFilesystem.delete(targets, chckbxOverwrite.isSelected());
+							return LocalFS.delete(targets, chckbxOverwrite.isSelected());
 						default:
 							return null;
 

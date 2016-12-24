@@ -132,11 +132,9 @@ class ProfileTM extends AbstractTableModel {
 		}
 		switch (headers[columnIndex]) {
 		case "ClientID": {
-			return "" + p.getCvid();
+			return "" + p.getCid();
 		}
-		case "Hostname": {
-			return p.getHostname();
-		}
+
 		}
 		return null;
 	}

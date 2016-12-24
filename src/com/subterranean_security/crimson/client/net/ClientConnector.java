@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Platform;
 import com.subterranean_security.crimson.core.net.BasicConnector;
 import com.subterranean_security.crimson.core.net.ConnectionState;
+import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
@@ -89,7 +89,7 @@ public class ClientConnector extends BasicConnector {
 		case NO_AUTH:
 			setState(ConnectionState.AUTHENTICATED);
 			handle.write(Message.newBuilder().setId(IDGen.get())
-					.setMiAuthRequest(auth.setPd(Platform.Advanced.getFullProfile())).build());
+					.setMiAuthRequest(auth.setPd(Platform.getBasicInfo())).build());
 
 			break;
 		case PASSWORD:

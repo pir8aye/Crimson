@@ -33,6 +33,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -125,13 +126,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 				setControlsEnabled(false);
 				barShutdown.setIndeterminate(true);
-				console.addLine("Sending shutdown signal to client: " + profile.getHostname());
+				console.addLine("Sending shutdown signal to client: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
 
 				new SwingWorker<Outcome, Void>() {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.changeClientState(profile.getCvid(), StateType.SHUTDOWN);
+						return ViewerCommands.changeClientState(profile.getCid(), StateType.SHUTDOWN);
 					}
 
 					protected void done() {
@@ -177,13 +178,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 				setControlsEnabled(false);
 				barRestart.setIndeterminate(true);
-				console.addLine("Sending restart signal to client: " + profile.getHostname());
+				console.addLine("Sending restart signal to client: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
 
 				new SwingWorker<Outcome, Void>() {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.changeClientState(profile.getCvid(), StateType.RESTART);
+						return ViewerCommands.changeClientState(profile.getCid(), StateType.RESTART);
 					}
 
 					protected void done() {
@@ -229,13 +230,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 				setControlsEnabled(false);
 				barStandby.setIndeterminate(true);
-				console.addLine("Sending standby signal to client: " + profile.getHostname());
+				console.addLine("Sending standby signal to client: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
 
 				new SwingWorker<Outcome, Void>() {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.changeClientState(profile.getCvid(), StateType.STANDBY);
+						return ViewerCommands.changeClientState(profile.getCid(), StateType.STANDBY);
 					}
 
 					protected void done() {
@@ -281,13 +282,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 				setControlsEnabled(false);
 				barHibernate.setIndeterminate(true);
-				console.addLine("Sending hibernate signal to client: " + profile.getHostname());
+				console.addLine("Sending hibernate signal to client: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
 
 				new SwingWorker<Outcome, Void>() {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.changeClientState(profile.getCvid(), StateType.HIBERNATE);
+						return ViewerCommands.changeClientState(profile.getCid(), StateType.HIBERNATE);
 					}
 
 					protected void done() {
@@ -335,13 +336,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				setControlsEnabled(false);
 				barKill.setIndeterminate(true);
-				console.addLine("Sending kill signal to client: " + profile.getHostname());
+				console.addLine("Sending kill signal to client: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
 
 				new SwingWorker<Outcome, Void>() {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.changeClientState(profile.getCvid(), StateType.KILL);
+						return ViewerCommands.changeClientState(profile.getCid(), StateType.KILL);
 					}
 
 					protected void done() {
@@ -384,13 +385,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				setControlsEnabled(false);
 				barRestartClient.setIndeterminate(true);
-				console.addLine("Sending restart signal to client: " + profile.getHostname());
+				console.addLine("Sending restart signal to client: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
 
 				new SwingWorker<Outcome, Void>() {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.changeClientState(profile.getCvid(), StateType.RESTART_PROCESS);
+						return ViewerCommands.changeClientState(profile.getCid(), StateType.RESTART_PROCESS);
 					}
 
 					protected void done() {
@@ -443,7 +444,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.updateClient(profile.getCvid());
+						return ViewerCommands.updateClient(profile.getCid());
 					}
 
 					protected void done() {
@@ -502,13 +503,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 							return;
 						}
 						barUninstall.setIndeterminate(true);
-						console.addLine("Sending uninstall signal to client: " + profile.getHostname());
+						console.addLine("Sending uninstall signal to client: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
 
 						new SwingWorker<Outcome, Void>() {
 
 							@Override
 							protected Outcome doInBackground() throws Exception {
-								return ViewerCommands.changeClientState(profile.getCvid(), StateType.UNINSTALL);
+								return ViewerCommands.changeClientState(profile.getCid(), StateType.UNINSTALL);
 							}
 
 							protected void done() {

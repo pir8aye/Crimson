@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.BasicConnector;
+import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
@@ -167,8 +168,8 @@ public final class ViewerStore {
 		public static ClientProfile getClient(String hostname) {
 			for (int i = 0; i < clients.size(); i++) {
 
-				if (clients.get(i).getHostname().equalsIgnoreCase(hostname)) {
-					return clients.get(i).reinit();
+				if (clients.get(i).getAttr(SimpleAttribute.NET_HOSTNAME).equalsIgnoreCase(hostname)) {
+					return clients.get(i);
 				}
 			}
 			return null;
@@ -177,8 +178,8 @@ public final class ViewerStore {
 		public static ClientProfile getClient(int cid) {
 			for (int i = 0; i < clients.size(); i++) {
 
-				if (clients.get(i).getCvid() == cid) {
-					return clients.get(i).reinit();
+				if (clients.get(i).getCid() == cid) {
+					return clients.get(i);
 				}
 			}
 			return null;
@@ -235,37 +236,44 @@ public final class ViewerStore {
 				// add new profile
 				cp = new ClientProfile(change.getCvid());
 				cp.amalgamate(change);
-				clients.add(cp.reinit());
-				MainFrame.main.panel.console.addLine("New client connection from: " + cp.getExtIp(), LineType.GREEN);
+				clients.add(cp);
+				MainFrame.main.panel.console.addLine(
+						"New client connection from: " + cp.getAttr(SimpleAttribute.NET_EXTERNALIP), LineType.GREEN);
 			}
+			cp.initialize();
 
-			if (change.hasOnline()) {
-				if (change.getOnline()) {
+			if (change.containsStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal())) {
+				if (change.getStrAttrOrDefault(SimpleAttribute.CLIENT_ONLINE.ordinal(), "").equals("1")) {
 					if (MainFrame.main.panel.listLoaded)
 						MainFrame.main.panel.list.addOrUpdate(cp);
 					if (MainFrame.main.panel.graphLoaded)
 						MainFrame.main.panel.graph.addClient(cp);
 
 					for (ClientCPFrame ccpf : UIStore.clientControlPanels) {
-						if (ccpf.profile.getCvid() == cp.getCvid()) {
+						if (ccpf.profile.getCid() == cp.getCid()) {
 							ccpf.clientOnline();
 						}
 					}
 				} else {
+					// Remove client from table and detail if applicable
 					if (MainFrame.main.panel.listLoaded) {
 						MainFrame.main.panel.list.removeClient(cp);
 						ClientProfile detailTarget = MainFrame.main.dp.getTarget();
-						if (detailTarget != null && cp.getCvid() == detailTarget.getCvid()) {
+						if (detailTarget != null && cp.getCid() == detailTarget.getCid()) {
 							MainFrame.main.dp.closeDetail();
 							MainFrame.main.panel.console.addLine(
-									"The client (" + detailTarget.getExtIp() + ") has disconnected", LineType.ORANGE);
+									"The client (" + cp.getAttr(SimpleAttribute.NET_EXTERNALIP) + ") has disconnected",
+									LineType.ORANGE);
 						}
 					}
+
+					// Remove client from graph
 					if (MainFrame.main.panel.graphLoaded)
 						MainFrame.main.panel.graph.removeClient(cp);
 
+					// Send offline message to any open control panels
 					for (ClientCPFrame ccpf : UIStore.clientControlPanels) {
-						if (ccpf.profile.getCvid() == cp.getCvid()) {
+						if (ccpf.profile.getCid() == cp.getCid()) {
 							ccpf.clientOffline();
 						}
 					}
