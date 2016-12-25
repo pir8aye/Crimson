@@ -40,7 +40,7 @@ public abstract class InfoSlave extends Stream {
 	private EV_ProfileDelta.Builder pd;
 	private AttributeGroupContainer.Builder lastCpuUsage;
 	private AttributeGroupContainer.Builder lastCpuTemp;
-	private int whichCPU = 0;// TODO set according to group id in param
+	private int whichCPU = 0;
 
 	public InfoSlave(Param p) {
 		param = p;
@@ -95,7 +95,6 @@ public abstract class InfoSlave extends Stream {
 		// cpu usage
 		if (param.getInfoParam().hasCpuUsage()) {
 			String coreUsage = CPU.getTotalUsage(whichCPU);
-			System.out.println("coreUsage: " + coreUsage);
 			if (!lastCpuUsage.getValue().equals(coreUsage)) {
 				pd.addGroupAttr(lastCpuUsage.setValue(coreUsage));
 			}
