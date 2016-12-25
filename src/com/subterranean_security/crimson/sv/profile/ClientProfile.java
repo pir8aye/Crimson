@@ -87,6 +87,12 @@ public class ClientProfile implements Serializable {
 		return getModernAttributesOfGroup(GroupAttributeType.CPU).iterator().next();
 	}
 
+	public ArrayList<AttributeGroup> getAttributeGroupList(GroupAttributeType g) {
+		ArrayList<AttributeGroup> list = new ArrayList<AttributeGroup>();
+		list.addAll(groups.get(g.ordinal()).values());
+		return list;
+	}
+
 	// Transient attributes
 	private transient ImageIcon ipLocationIcon;
 	private transient ImageIcon osTypeIcon;

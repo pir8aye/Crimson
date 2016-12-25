@@ -35,10 +35,13 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
+import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
+import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.cv.ui.remote.ep.Settings;
+import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 
@@ -65,8 +68,8 @@ public class RDPanel extends JPanel {
 		this.fullSettings = fullSettings;
 		this.cvid = cvid;
 
-		// TODO!!! settings null!
-		settings = new Settings(null, this, fullSettings);
+		settings = new Settings(ViewerStore.Profiles.getClient(cvid).getAttributeGroupList(GroupAttributeType.DISP),
+				this, fullSettings);
 		init();
 
 	}
@@ -129,6 +132,9 @@ public class RDPanel extends JPanel {
 
 					@Override
 					protected Void doInBackground() throws Exception {
+						// TODO attempt to get high quality version using a
+						// traditional screenshot if the panel resolution is
+						// less than the client resolution
 						File file = new File(
 								System.getProperty("user.home") + "/Crimson/" + new Date().getTime() + ".jpg");
 						file.getParentFile().mkdirs();
@@ -277,7 +283,10 @@ public class RDPanel extends JPanel {
 					stop();
 				} else {
 					running = true;
-					rdArea.setMonitorSize(settings.getDisplay().getWidth(), settings.getDisplay().getHeight());
+					rdArea.setMonitorSize(
+							Integer.parseInt(settings.getDisplay().queryAttribute(AttributeGroupType.DISP_WIDTH).get()),
+							Integer.parseInt(
+									settings.getDisplay().queryAttribute(AttributeGroupType.DISP_HEIGHT).get()));
 
 					btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
 					btnToggle.setToolTipText("Stop");

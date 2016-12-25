@@ -89,7 +89,7 @@ public class ClientConnector extends BasicConnector {
 		case NO_AUTH:
 			setState(ConnectionState.AUTHENTICATED);
 			handle.write(Message.newBuilder().setId(IDGen.get())
-					.setMiAuthRequest(auth.setPd(Platform.getBasicInfo())).build());
+					.setMiAuthRequest(auth.setPd(Platform.fig())).build());
 
 			break;
 		case PASSWORD:

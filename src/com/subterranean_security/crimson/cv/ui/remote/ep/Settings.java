@@ -28,7 +28,8 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import com.subterranean_security.crimson.core.proto.RepeatableAttributes.Display;
+import com.subterranean_security.crimson.core.profile.group.AttributeGroup;
+import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam.RMethod;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel;
@@ -37,7 +38,7 @@ public class Settings extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<Display> displays;
+	private ArrayList<AttributeGroup> displays;
 	private String[] displayStrings;
 
 	private String[] methodStrings = new String[] { "Simple Poll (slowest)", "Native Hook (fastest)" };
@@ -55,7 +56,7 @@ public class Settings extends JPanel {
 
 	private boolean full;
 
-	public Settings(ArrayList<Display> displays, RDPanel parent, boolean full) {
+	public Settings(ArrayList<AttributeGroup> displays, RDPanel parent, boolean full) {
 		this.displays = displays;
 		this.parent = parent;
 		this.full = full;
@@ -83,8 +84,9 @@ public class Settings extends JPanel {
 	private void loadSettings() {
 		displayStrings = new String[displays.size()];
 		for (int i = 0; i < displays.size(); i++) {
-			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " (" + displays.get(i).getWidth() + " x "
-					+ displays.get(i).getHeight() + ")";
+			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " ("
+					+ displays.get(i).queryAttribute(AttributeGroupType.DISP_WIDTH).get() + " x "
+					+ displays.get(i).queryAttribute(AttributeGroupType.DISP_HEIGHT).get() + ")";
 		}
 
 		if (parent.stream != null) {
@@ -114,10 +116,10 @@ public class Settings extends JPanel {
 	}
 
 	public String getMonitor() {
-		return getDisplay().getId();
+		return getDisplay().queryAttribute(AttributeGroupType.DISP_ID).get();
 	}
 
-	public Display getDisplay() {
+	public AttributeGroup getDisplay() {
 		return displays.get(monitorBox.getSelectedIndex());
 	}
 

@@ -6,7 +6,7 @@ public enum AttributeGroupType {
 	// GPU Attributes
 	GPU_VENDOR, GPU_MODEL, GPU_RAM, GPU_TEMP,
 	// Display Attributes
-	DISP_ID, DISP_X, DISP_Y,
+	DISP_ID, DISP_TYPE, DISP_WIDTH, DISP_HEIGHT, DISP_MEMORY, DISP_REFRESH_RATE, DISP_BIT_DEPTH,
 	// Network Interface Attributes
 	NIC_NAME, NIC_IP, NIC_MAC, NIC_MASK, NIC_SPEED,
 	// Filesystem Attributes

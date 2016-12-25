@@ -18,10 +18,6 @@
 
 package com.subterranean_security.crimson.core.platform;
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.util.ArrayList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +26,7 @@ import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.platform.info.CPU;
+import com.subterranean_security.crimson.core.platform.info.DISP;
 import com.subterranean_security.crimson.core.platform.info.IPLocation;
 import com.subterranean_security.crimson.core.platform.info.Java;
 import com.subterranean_security.crimson.core.platform.info.Linux;
@@ -43,7 +40,6 @@ import com.subterranean_security.crimson.core.platform.info.WIN;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
-import com.subterranean_security.crimson.core.proto.RepeatableAttributes.Display;
 
 public final class Platform {
 
@@ -63,19 +59,10 @@ public final class Platform {
 		}
 	}
 
-	public static ArrayList<Display> getDisplays() {
-		ArrayList<Display> displays = new ArrayList<Display>();
-		if (!GraphicsEnvironment.isHeadless()) {
-			for (GraphicsDevice dev : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
-				displays.add(Display.newBuilder().setId(dev.getIDstring())
-						.setWidth(dev.getDefaultConfiguration().getBounds().width)
-						.setHeight(dev.getDefaultConfiguration().getBounds().height).build());
-			}
-		}
-		return displays;
-	}
-
-	public static EV_ProfileDelta getBasicInfo() {
+	/**
+	 * First Info Gather
+	 */
+	public static EV_ProfileDelta fig() {
 
 		EV_ProfileDelta.Builder info = EV_ProfileDelta.newBuilder();
 
@@ -106,6 +93,7 @@ public final class Platform {
 		}
 
 		info.addAllGroupAttr(CPU.getAttributes());
+		info.addAllGroupAttr(DISP.getAttributes());
 
 		if (Common.instance == Instance.CLIENT) {
 			info.setKeyloggerState(Keylogger.isLogging() ? State.ONLINE : State.OFFLINE);

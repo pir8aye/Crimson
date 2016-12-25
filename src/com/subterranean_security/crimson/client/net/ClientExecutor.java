@@ -282,7 +282,7 @@ public class ClientExecutor extends BasicExecutor {
 				if (flag) {
 					connector.setState(ConnectionState.AUTHENTICATED);
 
-					oneway.setPd(Platform.getBasicInfo());
+					oneway.setPd(Platform.fig());
 				} else {
 					// TODO handle more
 					connector.setState(ConnectionState.CONNECTED);
