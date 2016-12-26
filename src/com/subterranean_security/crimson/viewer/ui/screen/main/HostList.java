@@ -35,6 +35,7 @@ import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.screen.settings.ListHeaderPopup;
 
 public class HostList extends JPanel {
 
@@ -87,6 +88,15 @@ public class HostList extends JPanel {
 
 				}
 
+			}
+		});
+		table.getTableHeader().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					ListHeaderPopup popup = new ListHeaderPopup(ViewerStore.Databases.local);
+					popup.show(table.getTableHeader(), e.getX(), e.getY());
+				}
 			}
 		});
 
