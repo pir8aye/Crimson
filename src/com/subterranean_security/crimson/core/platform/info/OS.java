@@ -114,7 +114,6 @@ public final class OS {
 
 		public String getLapisName(ARCH arch) {
 			switch (this) {
-
 			case SOL:
 			case BSD:
 			case LIN:
@@ -126,10 +125,15 @@ public final class OS {
 				default:
 					return null;
 				}
-
 			case OSX:
-				return null;
-
+				switch (arch) {
+				case X64:
+					return "libcrimson64.dylib";
+				case X86:
+					return "libcrimson32.dylib";
+				default:
+					return null;
+				}
 			case WIN:
 				switch (arch) {
 				case X64:
@@ -146,7 +150,6 @@ public final class OS {
 
 		public String getJDBCName(ARCH arch) {
 			switch (this) {
-
 			case SOL:
 			case BSD:
 			case LIN:
@@ -158,10 +161,15 @@ public final class OS {
 				default:
 					return null;
 				}
-
 			case OSX:
-				return null;
-
+				switch (arch) {
+				case X64:
+					return "libjdbc64.jnilib";
+				case X86:
+					return "libjdbc32.jnilib";
+				default:
+					return null;
+				}
 			case WIN:
 				switch (arch) {
 				case X64:
