@@ -18,41 +18,54 @@
 package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JTree;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 
 import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.screen.settings.panels.SPanelGeneral;
+import com.subterranean_security.crimson.viewer.ui.screen.settings.panels.SPanelGraph;
+import com.subterranean_security.crimson.viewer.ui.screen.settings.panels.SPanelHostList;
+import com.subterranean_security.crimson.viewer.ui.screen.settings.panels.SPanelPolicy;
 
 public class SettingsDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 
-	public final SettingsPanel settingsPanel = new SettingsPanel(this, false);
-	public final HPanel hp = new HPanel(settingsPanel);
+	private JTree tree = new JTree();
+	private JPanel cards = new JPanel();
 
-	private Dimension size = new Dimension(550, 260);
+	private HashMap<Panels, SPanel> panels = new HashMap<Panels, SPanel>();
+
+	private JPanel mainPanel = new JPanel(new BorderLayout());
+
+	public final HPanel hp = new HPanel(mainPanel);
 
 	public SettingsDialog() {
-		setTitle("Settings");
-		setSize(size);
-		setMinimumSize(size);
-		setPreferredSize(size);
-		setResizable(true);
-		setLocationRelativeTo(null);
-		setIconImages(UIUtil.getIconList());
-		getContentPane().setLayout(new BorderLayout());
-		getContentPane().add(hp);
+		init();
 
-		// load values from databases
-		settingsPanel.setValues(ViewerStore.Databases.local);
+		// load values from database
+		for (SPanel tab : panels.values()) {
+			tab.setValues(ViewerStore.Databases.local);
+		}
 
 		JButton cancel = new JButton("Cancel");
 		cancel.addActionListener(new ActionListener() {
@@ -60,7 +73,6 @@ public class SettingsDialog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-
 			}
 		});
 		JButton save = new JButton("Save");
@@ -69,7 +81,10 @@ public class SettingsDialog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// save to databases
-				settingsPanel.save(ViewerStore.Databases.local);
+				for (SPanel tab : panels.values()) {
+					tab.saveValues(ViewerStore.Databases.local);
+				}
+
 				dispose();
 
 			}
@@ -81,6 +96,152 @@ public class SettingsDialog extends JDialog {
 		hp.hmenu.setDesc("Change both local and server settings");
 
 		hp.setHMenuHeight(50);
+	}
+
+	private void init() {
+		setTitle("Settings");
+		setSize(UICommon.dim_settings);
+		setMinimumSize(UICommon.dim_settings);
+		setPreferredSize(UICommon.dim_settings);
+		setLocationRelativeTo(null);
+		setIconImages(UIUtil.getIconList());
+		setResizable(true);
+
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+		getContentPane().setLayout(new BorderLayout());
+		getContentPane().add(hp);
+
+		cards.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		cards.setLayout(new CardLayout(0, 0));
+		mainPanel.add(cards, BorderLayout.CENTER);
+
+		tree.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+
+		tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Settings") {
+
+			private static final long serialVersionUID = 1L;
+
+			{
+				for (Panels p : Panels.values()) {
+					this.add(new DefaultMutableTreeNode(p));
+				}
+			}
+		}));
+		tree.setCellRenderer(new DefaultTreeCellRenderer() {
+
+			private static final long serialVersionUID = 1L;
+
+			private ImageIcon root = UIUtil.getIcon("icons16/general/setting_tools.png");
+
+			private ImageIcon general = UIUtil.getIcon("icons16/general/mixer.png");
+			private ImageIcon host_list = UIUtil.getIcon("icons16/general/view_list.png");
+			private ImageIcon host_graph = UIUtil.getIcon("icons16/general/view_graph.png");
+			private ImageIcon policy = UIUtil.getIcon("icons16/general/clipboard_invoice.png");
+
+			@Override
+			public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
+					boolean isLeaf, int row, boolean focused) {
+				Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+				if (userObject instanceof Panels) {
+
+					Panels type = (Panels) userObject;
+
+					super.getTreeCellRendererComponent(tree, type.toString(), selected, expanded, isLeaf, row, focused);
+					switch (type) {
+					case GENERAL:
+						setIcon(general);
+						break;
+					case HOST_LIST:
+						setIcon(host_list);
+						break;
+					case HOST_GRAPH:
+						setIcon(host_graph);
+						break;
+					case POLICY:
+						setIcon(policy);
+						break;
+					default:
+						break;
+
+					}
+
+				} else {
+					super.getTreeCellRendererComponent(tree, userObject, selected, expanded, isLeaf, row, focused);
+					setIcon(root);
+				}
+				return this;
+
+			}
+		});
+		tree.addTreeSelectionListener(new TreeListener());
+
+		mainPanel.add(tree, BorderLayout.WEST);
+
+		for (Panels p : Panels.values()) {
+			switch (p) {
+			case GENERAL:
+				SPanelGeneral general = new SPanelGeneral();
+				cards.add(p.toString(), general);
+				panels.put(p, general);
+				break;
+			case HOST_LIST:
+				SPanelHostList list = new SPanelHostList();
+				cards.add(p.toString(), list);
+				panels.put(p, list);
+				break;
+			case HOST_GRAPH:
+				SPanelGraph graph = new SPanelGraph();
+				cards.add(p.toString(), graph);
+				panels.put(p, graph);
+				break;
+			case POLICY:
+				SPanelPolicy policy = new SPanelPolicy();
+				cards.add(p.toString(), policy);
+				panels.put(p, policy);
+				break;
+			default:
+				break;
+
+			}
+		}
+
+	}
+
+	class TreeListener implements TreeSelectionListener {
+
+		@Override
+		public void valueChanged(TreeSelectionEvent e) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+			if (node == null || node.getUserObject() instanceof String) {
+				return;
+			}
+
+			((CardLayout) cards.getLayout()).show(cards, node.getUserObject().toString());
+
+		}
+
+	}
+
+	public enum Panels {
+		GENERAL, HOST_LIST, HOST_GRAPH, POLICY;
+
+		@Override
+		public String toString() {
+			switch (this) {
+			case GENERAL:
+				return "General";
+			case HOST_LIST:
+				return "Host List";
+			case HOST_GRAPH:
+				return "Host Graph";
+			case POLICY:
+				return "Policy";
+			default:
+				return null;
+
+			}
+		}
 	}
 
 }

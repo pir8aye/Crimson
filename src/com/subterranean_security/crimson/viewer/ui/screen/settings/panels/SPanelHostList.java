@@ -15,61 +15,64 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.settings;
+package com.subterranean_security.crimson.viewer.ui.screen.settings.panels;
 
-import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.util.HashMap;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.profile.AbstractAttribute;
-import com.subterranean_security.crimson.core.profile.ComplexAttribute;
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
+import com.subterranean_security.crimson.core.storage.LViewerDB;
+import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.ui.screen.settings.ListHeaderPopup;
+import com.subterranean_security.crimson.viewer.ui.screen.settings.SPanel;
+import java.awt.Font;
+import java.awt.Insets;
 
-public class HostListHeaders extends JPanel {
+public class SPanelHostList extends JPanel implements SPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public HashMap<AbstractAttribute, JCheckBox> boxes = new HashMap<AbstractAttribute, JCheckBox>();
+	public SPanelHostList() {
+		init();
+	}
 
-	public HostListHeaders() {
+	private void init() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		JPanel static_panel = new JPanel();
 		static_panel.setBorder(new TitledBorder(null, "General", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		add(static_panel);
-		GridBagLayout gbl_static_panel = new GridBagLayout();
-		gbl_static_panel.columnWidths = new int[] { 173, 173, 173, 0 };
-		gbl_static_panel.rowHeights = new int[] { 25, 25, 25, 25, 25, 0, 0 };
-		gbl_static_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gbl_static_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		static_panel.setLayout(gbl_static_panel);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(null, "List Headers", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(panel);
+		
+				JButton btnTest = new JButton("Modify Headers");
+				btnTest.setMargin(new Insets(2, 4, 2, 4));
+				btnTest.setFont(new Font("Dialog", Font.BOLD, 10));
+				panel.add(btnTest);
+				btnTest.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						ListHeaderPopup popup = new ListHeaderPopup(ViewerStore.Databases.local);
+						popup.show(btnTest, 0, 0);
+					}
+				});
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
-			JCheckBox jcb = new JCheckBox(sa.toString());
-			jcb.setFont(new Font("Dialog", Font.BOLD, 10));
-			static_panel.add(jcb);
-			boxes.put(sa, jcb);
-		}
+	}
 
-		for (ComplexAttribute ca : ComplexAttribute.values()) {
-			JCheckBox jcb = new JCheckBox(ca.toString());
-			jcb.setFont(new Font("Dialog", Font.BOLD, 10));
-			static_panel.add(jcb);
-			boxes.put(ca, jcb);
-		}
+	@Override
+	public void setValues(LViewerDB db) {
+		// TODO Auto-generated method stub
 
-		//
-		// GridBagConstraints gbc_chckbxCountry = new GridBagConstraints();
-		// gbc_chckbxCountry.fill = GridBagConstraints.BOTH;
-		// gbc_chckbxCountry.insets = new Insets(0, 0, 5, 5);
-		// gbc_chckbxCountry.gridx = 0;
-		// gbc_chckbxCountry.gridy = 0;
-		// static_panel.add(chckbxCountry, gbc_chckbxCountry);
+	}
+
+	@Override
+	public void saveValues(LViewerDB db) {
+		// TODO Auto-generated method stub
 
 	}
 
