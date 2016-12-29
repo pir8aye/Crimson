@@ -112,6 +112,15 @@ public final class OS {
 			}
 		}
 
+		public String getJavaw() {
+			switch (this) {
+			case WIN:
+				return "javaw";
+			default:
+				return "java";
+			}
+		}
+
 		public String getLapisName(ARCH arch) {
 			switch (this) {
 			case SOL:
