@@ -21,8 +21,6 @@ public final class Native {
 
 	public static native String getActiveWindow();
 
-	public static native long getSystemUptime();
-
 	public static native long getCpuTemp();
 
 	public static native void poweroff();
@@ -34,6 +32,8 @@ public final class Native {
 	public static native void hibernate();
 
 	public static native String execute(String cmd);
+
+	public static native void system(String cmd);
 
 	public static native void startRD();
 

@@ -17,14 +17,6 @@ JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Nati
 
 /*
  * Class:     com_subterranean_security_crimson_core_util_Native
- * Method:    getSystemUptime
- * Signature: ()J
- */
-JNIEXPORT jlong JNICALL Java_com_subterranean_1security_crimson_core_util_Native_getSystemUptime
-  (JNIEnv *, jclass);
-
-/*
- * Class:     com_subterranean_security_crimson_core_util_Native
  * Method:    getCpuTemp
  * Signature: ()J
  */
@@ -69,6 +61,14 @@ JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Native_execute
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_subterranean_security_crimson_core_util_Native
+ * Method:    system
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_system
   (JNIEnv *, jclass, jstring);
 
 /*

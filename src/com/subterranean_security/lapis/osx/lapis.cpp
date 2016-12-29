@@ -15,12 +15,6 @@ JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Nati
 	return env->NewStringUTF(buffer);
 }
 
-// DELETE ME
-JNIEXPORT jlong JNICALL Java_com_subterranean_1security_crimson_core_util_Native_getSystemUptime(
-		JNIEnv *env, jclass cls) {
-	return 0;
-}
-
 JNIEXPORT jlong JNICALL Java_com_subterranean_1security_crimson_core_util_Native_getCpuTemp(
 		JNIEnv *env, jclass cls) {
 	return 0;
@@ -61,4 +55,9 @@ JNIEXPORT jstring JNICALL Java_com_subterranean_1security_crimson_core_util_Nati
 	exec(env->GetStringUTFChars(cmd, NULL), buffer);
 
 	return env->NewStringUTF(buffer);
+}
+
+JNIEXPORT void JNICALL Java_com_subterranean_1security_crimson_core_util_Native_system(
+		JNIEnv *env, jclass cls, jstring cmd) {
+		system(env->GetStringUTFChars(cmd, NULL));
 }
