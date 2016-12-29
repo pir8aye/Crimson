@@ -206,25 +206,29 @@ public class Installer {
 
 		}
 
-		return execute(client);
-	}
-
-	private static boolean execute(File f) {
-		// TODO platform independence
-		try {
-			if (!debug) {
-				Runtime.getRuntime().exec("javaw -jar " + f.getAbsolutePath());
+		if (!debug) {
+			try {
+				Runtime.getRuntime().exec(os.getJavaw() + " -jar " + client.getAbsolutePath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
 			}
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
 		}
+
 		return true;
 	}
 
 	public enum OSFAMILY {
 		BSD, OSX, SOL, LIN, WIN, UNSUPPORTED;
+
+		public String getJavaw() {
+			switch (this) {
+			case WIN:
+				return "javaw";
+			default:
+				return "java";
+			}
+		}
 	}
 }
