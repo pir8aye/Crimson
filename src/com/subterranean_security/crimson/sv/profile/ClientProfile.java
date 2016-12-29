@@ -201,21 +201,17 @@ public class ClientProfile implements Serializable {
 		if (osTypeIcon == null && getAttr(SimpleAttribute.OS_NAME) != null) {
 			String icon = getAttr(SimpleAttribute.OS_NAME).replaceAll(" ", "_").toLowerCase();
 
+			// filtering
 			if (icon.contains("ubuntu")) {
 				icon = "ubuntu";
 			}
 
-			try {
-				osTypeIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
-				osMonitorIcon = UIUtil.getIcon("icons16/platform/" + icon + ".png");
+			// load icons or fallbacks
+			osTypeIcon = UIUtil.getIconOrFallback("icons16/platform/" + icon + ".png",
+					"icons16/platform/" + getAttr(SimpleAttribute.OS_FAMILY).toLowerCase() + ".png");
+			osMonitorIcon = UIUtil.getIconOrFallback("icons32/platform/monitors/" + icon + ".png",
+					"icons32/platform/monitors/" + getAttr(SimpleAttribute.OS_FAMILY).toLowerCase() + ".png");
 
-			} catch (NullPointerException e) {
-				Reporter.report(Reporter.newReport().setCrComment("No OS icon found: " + icon).build());
-
-				// fall back to os family
-				osTypeIcon = UIUtil.getIcon("icons16/platform/" + getAttr(SimpleAttribute.OS_FAMILY) + ".png");
-				osMonitorIcon = UIUtil.getIcon("icons16/platform/" + getAttr(SimpleAttribute.OS_FAMILY) + ".png");
-			}
 			osTypeIcon.setDescription(getAttr(SimpleAttribute.OS_NAME));
 			osMonitorIcon.setDescription(getAttr(SimpleAttribute.NET_HOSTNAME));
 

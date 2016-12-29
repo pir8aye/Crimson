@@ -69,6 +69,17 @@ public final class UIUtil {
 		}
 	}
 
+	public static ImageIcon getIconOrFallback(String preferred, String fallback) {
+		ImageIcon icon = getIcon(preferred);
+		if (icon == null) {
+			icon = getIcon(fallback);
+		}
+		if (icon == null) {
+			icon = new ImageIcon();
+		}
+		return icon;
+	}
+
 	public static void adaptPlatform() {
 		switch (Platform.osFamily) {
 
@@ -81,7 +92,15 @@ public final class UIUtil {
 				log.warn("Failed to set GTK LookAndFeel");
 			}
 			break;
-
+		case OSX:
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+					| UnsupportedLookAndFeelException e) {
+				log.warn("Failed to set system LookAndFeel");
+			}
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Crimson");
+			break;
 		default:
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
