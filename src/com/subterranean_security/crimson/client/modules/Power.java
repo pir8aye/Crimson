@@ -1,14 +1,30 @@
+/******************************************************************************
+ *                                                                            *
+ *                    Copyright 2016 Subterranean Security                    *
+ *                                                                            *
+ *  Licensed under the Apache License, Version 2.0 (the "License");           *
+ *  you may not use this file except in compliance with the License.          *
+ *  You may obtain a copy of the License at                                   *
+ *                                                                            *
+ *      http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                            *
+ *  Unless required by applicable law or agreed to in writing, software       *
+ *  distributed under the License is distributed on an "AS IS" BASIS,         *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *  See the License for the specific language governing permissions and       *
+ *  limitations under the License.                                            *
+ *                                                                            *
+ *****************************************************************************/
 package com.subterranean_security.crimson.client.modules;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 
 import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.HCP;
 
 public final class Power {
 
@@ -34,10 +50,11 @@ public final class Power {
 		}
 
 		try {
-			return Outcome.newBuilder().setResult(CUtil.Misc.runBackgroundCommand(command, 1)).build();
-		} catch (IOException e) {
+			HCP.run(HCP.HCP_BASE, command, 1);
+		} catch (Exception e) {
 			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
 		}
+		return Outcome.newBuilder().setResult(true).build();
 	}
 
 	public static Outcome restart() {
@@ -58,10 +75,11 @@ public final class Power {
 		}
 
 		try {
-			return Outcome.newBuilder().setResult(CUtil.Misc.runBackgroundCommand(command, 1)).build();
-		} catch (IOException e) {
+			HCP.run(HCP.HCP_BASE, command, 1);
+		} catch (Exception e) {
 			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
 		}
+		return Outcome.newBuilder().setResult(true).build();
 	}
 
 	public static Outcome hibernate() {
@@ -82,10 +100,11 @@ public final class Power {
 		}
 
 		try {
-			return Outcome.newBuilder().setResult(CUtil.Misc.runBackgroundCommand(command, 1)).build();
-		} catch (IOException e) {
+			HCP.run(HCP.HCP_BASE, command, 1);
+		} catch (Exception e) {
 			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
 		}
+		return Outcome.newBuilder().setResult(true).build();
 	}
 
 	public static Outcome standby() {
@@ -103,56 +122,49 @@ public final class Power {
 		}
 
 		try {
-			return Outcome.newBuilder().setResult(CUtil.Misc.runBackgroundCommand(command, 1)).build();
-		} catch (IOException e) {
+			HCP.run(HCP.HCP_BASE, command, 1);
+		} catch (Exception e) {
 			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
 		}
+		return Outcome.newBuilder().setResult(true).build();
 	}
 
 	public static Outcome uninstall() {
-		String command = "";
+		String[] auxilaryCmd = new String[] {};
 		switch (Platform.osFamily) {
-		case BSD:
-			command = "rmdir /S /Q" + Client.ic.getPathBsd();
-			break;
-		case LIN:
-			command = "rmdir /S /Q" + Client.ic.getPathLin();
-			break;
-		case OSX:
-			command = "rmdir /S /Q" + Client.ic.getPathOsx();
-			break;
-		case SOL:
-			command = "rmdir /S /Q" + Client.ic.getPathSol();
-			break;
 		case WIN:
-			command = "rmdir /S /Q" + Client.ic.getPathWin();
-			// TODO append reg key deletion
-			// reg delete HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v
-			// client.jar /f
+			try {
+				auxilaryCmd = new String[] { "reg delete HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v "
+						+ new File(Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())
+								.getName()
+						+ " /f" };
+			} catch (URISyntaxException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			break;
 		default:
 			break;
 		}
 
 		try {
-			return Outcome.newBuilder().setResult(CUtil.Misc.runBackgroundCommand(command, 1)).build();
-		} catch (IOException e) {
+			HCP.uninstall(new String[] { Common.Directories.base.getAbsolutePath() }, auxilaryCmd, 5);
+		} catch (Exception e) {
 			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
 		}
+		return Outcome.newBuilder().setResult(true).build();
 	}
 
 	public static Outcome restartProcess() {
 		try {
-			return Outcome.newBuilder()
-					.setResult(CUtil.Misc.runBackgroundCommand((Platform.osFamily == OSFAMILY.WIN) ? "javaw -jar "
-							: "java -jar " + new File(
-									Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())
-											.getAbsolutePath(),
-							1))
-					.build();
-		} catch (IOException | URISyntaxException e) {
+			HCP.run(HCP.HCP_BASE, Platform.osFamily.getJavaw() + " -jar \""
+					+ new File(Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())
+							.getAbsolutePath()
+					+ "\"", 4);
+		} catch (Exception e) {
 			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
 		}
+		return Outcome.newBuilder().setResult(true).build();
 	}
 
 }

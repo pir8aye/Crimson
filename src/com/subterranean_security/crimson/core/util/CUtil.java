@@ -537,94 +537,25 @@ public enum CUtil {
 			return sw.toString();
 		}
 
-		public static void runBackgroundCommand(String c) throws IOException {
-			runBackgroundCommand(c, 0);
-		}
-
-		public static boolean runBackgroundCommand(String c, int sleep) throws IOException {
+		public static void runBackground0(String c, int sleep) {
 			String command = "";
 			switch (Platform.osFamily) {
 			case SOL:
 			case BSD:
-			case LIN:
-				command = "nohup sleep " + sleep + " && \"" + c + "\" &";
-				break;
 			case OSX:
+			case LIN:
+				command = "nohup sleep " + sleep + " && " + c + " >/dev/null 2>&1 &";
 				break;
 			case WIN:
 				String sleepCommand = "PING -n " + (sleep + 1) + " 127.0.0.1>nul";
-				command = "cmd /c start cmd /k \"" + sleepCommand + " && " + c + "\"";
+				command = "start " + sleepCommand + " && " + c;
 				break;
 			default:
-				return false;
-
-			}
-			log.debug("Running background command: \"" + command + "\"");
-			return Runtime.getRuntime().exec(command).isAlive();
-		}
-
-		public static void runBackgroundScript(ArrayList<String> lines) {
-			String scriptEnding = "";
-			switch (Platform.osFamily) {
-			case WIN:
-				scriptEnding = ".bat";
-				break;
-			default:
-				scriptEnding = ".sh";
-				break;
-
-			}
-
-			File root = CUtil.Files.Temp.getDir();
-			root.mkdirs();
-			File script = new File(root.getAbsoluteFile() + File.separator + "script" + scriptEnding);
-			try {
-				script.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 				return;
+
 			}
-			try {
-				PrintWriter pw = new PrintWriter(script);
-
-				// add sleep
-				switch (Platform.osFamily) {
-				case WIN:
-					pw.println("PING -n 4 127.0.0.1>nul");
-					break;
-				default:
-					pw.println("sleep 3");
-					break;
-
-				}
-
-				for (String s : lines) {
-					pw.println(s);
-				}
-				pw.println("exit");
-				pw.close();
-
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			try {
-				switch (Platform.osFamily) {
-				case WIN:
-					Runtime.getRuntime().exec("cmd /c start cmd /k " + script.getAbsolutePath());
-					break;
-				default:
-					Runtime.getRuntime().exec("sh " + script.getAbsolutePath());
-					break;
-
-				}
-
-			} catch (Exception e) {
-				log.error("Could not run script");
-			}
-
+			log.debug("Running background command: (" + command + ")");
+			Native.system(command);
 		}
 
 		public static int rand(int lower, int upper) {
@@ -870,47 +801,6 @@ public enum CUtil {
 			Arrays.fill(charBuffer.array(), '\u0000');
 			Arrays.fill(byteBuffer.array(), (byte) 0);
 			return bytes;
-		}
-
-		public static double stringSimilarity(String s1, String s2) {
-			String longer = s1, shorter = s2;
-			if (s1.length() < s2.length()) {
-				longer = s2;
-				shorter = s1;
-			}
-			int longerLength = longer.length();
-			if (longerLength == 0) {
-				return 1.0;
-			}
-
-			return (longerLength - getLevenshteinDistance(longer, shorter)) / (double) longerLength;
-
-		}
-
-		public static int getLevenshteinDistance(String s1, String s2) {
-			s1 = s1.toLowerCase();
-			s2 = s2.toLowerCase();
-
-			int[] costs = new int[s2.length() + 1];
-			for (int i = 0; i <= s1.length(); i++) {
-				int lastValue = i;
-				for (int j = 0; j <= s2.length(); j++) {
-					if (i == 0)
-						costs[j] = j;
-					else {
-						if (j > 0) {
-							int newValue = costs[j - 1];
-							if (s1.charAt(i - 1) != s2.charAt(j - 1))
-								newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-							costs[j - 1] = lastValue;
-							lastValue = newValue;
-						}
-					}
-				}
-				if (i > 0)
-					costs[s2.length()] = lastValue;
-			}
-			return costs[s2.length()];
 		}
 
 	}

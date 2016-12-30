@@ -42,7 +42,6 @@ import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
@@ -68,6 +67,7 @@ import com.subterranean_security.crimson.core.stream.remote.RemoteSlave;
 import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.HCP;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sc.Logsystem;
 
@@ -205,8 +205,11 @@ public class ClientExecutor extends BasicExecutor {
 			return;
 		}
 
-		connector.handle.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid())
-				.setRsChangeClientState(RS_ChangeClientState.newBuilder().setOutcome(outcome)).build());
+		if (outcome != null) {
+			connector.handle.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid())
+					.setRsChangeClientState(RS_ChangeClientState.newBuilder().setOutcome(outcome)).build());
+
+		}
 
 		if (outcome.getResult()) {
 			System.exit(0);
@@ -321,9 +324,9 @@ public class ClientExecutor extends BasicExecutor {
 
 	private void rq_file_handle(Message m) {
 		log.debug("rq_file_handle");
-		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
-				.setRsFileHandle(RS_FileHandle.newBuilder()
-						.setFmid(ClientStore.LocalFilesystems.add(new LocalFS(true, true)))));
+		ClientStore.Connections
+				.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid()).setRsFileHandle(
+						RS_FileHandle.newBuilder().setFmid(ClientStore.LocalFilesystems.add(new LocalFS(true, true)))));
 	}
 
 	private void rq_advanced_file_info(Message m) {
@@ -335,8 +338,8 @@ public class ClientExecutor extends BasicExecutor {
 	private void rq_delete(Message m) {
 		log.debug("rq_delete");
 		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
-				.setRsDelete(RS_Delete.newBuilder().setOutcome(
-						LocalFS.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))));
+				.setRsDelete(RS_Delete.newBuilder()
+						.setOutcome(LocalFS.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))));
 	}
 
 	private void assign_1w(Message m) {
@@ -374,9 +377,9 @@ public class ClientExecutor extends BasicExecutor {
 		try {
 			CUtil.Files.writeFile(m.getRsGenerate().getInstaller().toByteArray(),
 					new File(temp.getAbsolutePath() + "/installer.jar"));
-			CUtil.Misc.runBackgroundCommand(
-					((Platform.osFamily == OSFAMILY.WIN && !Common.isDebugMode()) ? "javaw" : "java") + " -jar \""
-							+ temp.getAbsolutePath() + "/installer.jar\" update");
+
+			HCP.update(new File(temp.getAbsolutePath() + "/installer.jar").getAbsolutePath(), new String[] {},
+					new String[] {}, 2);
 			System.exit(0);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

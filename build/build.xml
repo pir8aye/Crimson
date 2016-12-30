@@ -68,7 +68,7 @@
 
 		<exec executable="${script.dir}/jni-win.sh" />
 		<exec executable="${script.dir}/jni-lin.sh" />
-
+		<exec executable="${script.dir}/jni-osx.sh" />
 	</target>
 
 	<target name="copymisc" depends="jni">
@@ -79,6 +79,20 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
+
+		<!-- Generate HCP -->
+		<jar destfile="${lib.dir}/java/c01.jar">
+			<fileset dir="${bin.dir}">
+				<include name="**/com/subterranean_security/crimson/hcp/**" />
+			</fileset>
+
+			<manifest>
+				<attribute name="CID" value="c01" />
+				<attribute name="Main-Class" value="${hcp.main}" />
+				<attribute name="Build-Number" value="${build.number}" />
+				<attribute name="Crimson-Version" value="${crimson.version}" />
+			</manifest>
+		</jar>
 
 		<!-- Create SC library -->
 		<jar destfile="${lib.dir}/java/c02.jar">

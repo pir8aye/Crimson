@@ -7,11 +7,11 @@
 	<JAR>
 
 		<Lib CID="c01">
-			<Name></Name>
-			<CVersion></CVersion>
-			<EVersion></EVersion>
-			<License></License>
-			<Requisites></Requisites>
+			<Name>HCP</Name>
+			<CVersion>1</CVersion>
+			<EVersion>1</EVersion>
+			<License>Apache 2</License>
+			<Requisites>SVCI</Requisites>
 		</Lib>
 
 		<Lib CID="c02">
