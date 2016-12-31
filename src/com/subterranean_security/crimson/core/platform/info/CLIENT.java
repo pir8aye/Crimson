@@ -15,48 +15,60 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.storage;
+package com.subterranean_security.crimson.core.platform.info;
 
-import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
-import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.client.Client;
 
-public class ClientDB extends Database {
-
-	public String master;
-
-	public ClientDB(File dfile) throws Exception {
-
-		if (!dfile.exists()) {
-			// copy the template
-			CUtil.Files.extract("com/subterranean_security/crimson/core/storage/viewer-template.db",
-					dfile.getAbsolutePath());
-		}
-		init(dfile);
-		if (isFirstRun()) {
-			this.hardReset();
-		}
-
+public class CLIENT {
+	private CLIENT() {
 	}
 
-	@Override
-	public void softReset() {
+	private static ArrayList<String> status = new ArrayList<String>();
 
-		this.storeObject("login-times", new ArrayList<Long>());
-		this.storeObject("login-ips", new ArrayList<String>());
-
-		this.storeObject("keylogger.buffer", new MemList<EV_KEvent>());
-		super.softReset();
+	public static String getStatus() {
+		if (status.size() > 0) {
+			String stat = "";
+			for (String s : status) {
+				stat += ";" + s;
+			}
+			return stat.substring(1);
+		} else {
+			return "IDLE";
+		}
 	}
 
-	@Override
-	public void hardReset() {
-		this.storeObject("install.timestamp", new Date().getTime());
-		this.softReset();
-		super.hardReset();
+	public static void addStatus(String s) {
+		status.add(s);
+	}
+
+	public static void cancelStatus(String s) {
+		Iterator<String> it = status.iterator();
+		while (it.hasNext()) {
+			if (it.next().equals(s)) {
+				it.remove();
+			}
+		}
+	}
+
+	public static String getBasePath() {
+		try {
+			return CLIENT.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+		} catch (URISyntaxException e) {
+			return "N/A";
+		}
+	}
+
+	public static String getInstallDate() {
+		try {
+			return new Date(Client.clientDB.getLong("install.timestamp")).toString();
+		} catch (Exception e) {
+			return "N/A";
+		}
 	}
 
 }

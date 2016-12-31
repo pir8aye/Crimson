@@ -74,6 +74,7 @@ message InfoParam {
 	optional string if_id = 8;
 	optional bool if_rx_speed = 9;
 	optional bool if_tx_speed = 10;
+	optional bool client_status = 11;
 }
 
 message RemoteParam {

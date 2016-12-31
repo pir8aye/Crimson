@@ -49,11 +49,11 @@ public final class UICommon {
 	public static final Dimension dim_about = new Dimension(630, 370);
 	public static final Dimension dim_main = new Dimension(620, 310);
 	public static final Dimension dim_btn_up = new Dimension(40, 17);
-	public static final Dimension dim_control_panel = new Dimension(575, 300);
+	public static final Dimension dim_control_panel = new Dimension(594, 300);
 	public static final Dimension dim_filemanager = new Dimension(600, 350);
 	public static final Dimension dim_networkmanager = new Dimension(573, 600);
 	public static final Dimension dim_usermanager = new Dimension(450, 400);
-	public static final Dimension dim_control_button = new Dimension(100, 27);
+	public static final Dimension dim_control_button = new Dimension(100, 26);
 	public static final Dimension dim_generation_report = new Dimension(450, 300);
 	public static final Dimension dim_settings = new Dimension(550, 300);
 

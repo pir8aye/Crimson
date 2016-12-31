@@ -139,11 +139,12 @@ public class ClientProfile implements Serializable {
 	}
 
 	public String getAttr(SimpleAttribute attribute) {
+		return getAttribute(attribute).get();
+	}
+
+	public Attribute getAttribute(SimpleAttribute attribute) {
 		createAttributeIfRequired(attribute);
-		// System.out.println("Getting simple attribute (" +
-		// attribute.toSuperString() + "<>"
-		// + attributes.get(attribute).get() + ")");
-		return attributes.get(attribute).get();
+		return attributes.get(attribute);
 	}
 
 	public void setAttr(SimpleAttribute attribute, String value) {
@@ -298,13 +299,32 @@ public class ClientProfile implements Serializable {
 
 	public Date getLastUpdate() {
 		Date d = new Date(0);
+
+		// Simple Attributes
 		for (Attribute a : attributes.values()) {
 			if (a.getTimestamp().after(d)) {
 				d = a.getTimestamp();
 			}
 		}
 
-		log.debug("Found last update date: {}", d);
+		// Attribute Groups
+		for (GroupAttributeType gat : GroupAttributeType.values()) {
+			HashMap<String, AttributeGroup> map = groups.get(gat.ordinal());
+			for (String gid : map.keySet()) {
+				AttributeGroup ag = map.get(gid);
+				if (ag.isModern()) {
+					HashMap<AttributeGroupType, Attribute> amap = ag.getAttributeMap();
+					for (AttributeGroupType agt : amap.keySet()) {
+						Attribute a = amap.get(agt);
+						if (a.getTimestamp().after(d)) {
+							d = a.getTimestamp();
+						}
+					}
+				}
+
+			}
+		}
+
 		return d;
 	}
 

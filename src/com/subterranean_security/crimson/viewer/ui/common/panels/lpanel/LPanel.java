@@ -1,6 +1,7 @@
 package com.subterranean_security.crimson.viewer.ui.common.panels.lpanel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.ArrayList;
@@ -27,6 +28,11 @@ public class LPanel extends JPanel {
 
 	private JPanel tail;
 
+	public LPanel(Color bg) {
+		this();
+		tail.setBackground(bg);
+	}
+
 	public LPanel() {
 		setLayout(new BorderLayout());
 		tail = new JPanel(new BorderLayout());
@@ -38,6 +44,7 @@ public class LPanel extends JPanel {
 	public void addPanel(JPanel panel) {
 		tail.add(panel, BorderLayout.NORTH);
 		JPanel jp = new JPanel(new BorderLayout());
+		jp.setBackground(tail.getBackground());
 		tail.add(jp, BorderLayout.CENTER);
 		tail = jp;
 	}

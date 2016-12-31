@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.core.stream.info;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.platform.info.CLIENT;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.RAM;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
@@ -115,6 +116,16 @@ public abstract class InfoSlave extends Stream {
 				pd.putStrAttr(SimpleAttribute.OS_ACTIVE_WINDOW.ordinal(), activeWindow);
 			} else {
 				pd.removeStrAttr(SimpleAttribute.OS_ACTIVE_WINDOW.ordinal());
+			}
+		}
+
+		// client status
+		if (param.getInfoParam().hasClientStatus()) {
+			String clientStatus = CLIENT.getStatus();
+			if (!pd.getStrAttrOrDefault(SimpleAttribute.CLIENT_STATUS.ordinal(), "").equals(clientStatus)) {
+				pd.putStrAttr(SimpleAttribute.CLIENT_STATUS.ordinal(), clientStatus);
+			} else {
+				pd.removeStrAttr(SimpleAttribute.CLIENT_STATUS.ordinal());
 			}
 		}
 

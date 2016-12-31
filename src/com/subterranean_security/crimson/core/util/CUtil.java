@@ -537,27 +537,6 @@ public enum CUtil {
 			return sw.toString();
 		}
 
-		public static void runBackground0(String c, int sleep) {
-			String command = "";
-			switch (Platform.osFamily) {
-			case SOL:
-			case BSD:
-			case OSX:
-			case LIN:
-				command = "nohup sleep " + sleep + " && " + c + " >/dev/null 2>&1 &";
-				break;
-			case WIN:
-				String sleepCommand = "PING -n " + (sleep + 1) + " 127.0.0.1>nul";
-				command = "start " + sleepCommand + " && " + c;
-				break;
-			default:
-				return;
-
-			}
-			log.debug("Running background command: (" + command + ")");
-			Native.system(command);
-		}
-
 		public static int rand(int lower, int upper) {
 			return rand.nextInt(upper - lower + 1) + lower;
 		}

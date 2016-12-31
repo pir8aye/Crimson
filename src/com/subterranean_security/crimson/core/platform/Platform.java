@@ -22,6 +22,7 @@ import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.platform.info.CLIENT;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.DISP;
 import com.subterranean_security.crimson.core.platform.info.IPLocation;
@@ -111,6 +112,12 @@ public final class Platform {
 			return RAM.getClientUsage();
 		case CLIENT_VERSION:
 			return Common.version;
+		case CLIENT_BASE_PATH:
+			return CLIENT.getBasePath();
+		case CLIENT_INSTALL_DATE:
+			return CLIENT.getInstallDate();
+		case CLIENT_STATUS:
+			return CLIENT.getStatus();
 		case IPLOC_CITY:
 			return IPLocation.getCity();
 		case IPLOC_COUNTRY:
