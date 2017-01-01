@@ -34,12 +34,6 @@ message EV_ProfileDelta {
 	
 	// Nonstring attributes
 	optional bool fig = 5;
-
-	
-	// Keylogger options
-	optional FLUSH_METHOD flush_method = 43;
-	optional int32 flush_value = 44;
-	optional State keylogger_state = 45;
 	
 }
 

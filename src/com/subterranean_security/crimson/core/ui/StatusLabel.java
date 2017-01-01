@@ -40,16 +40,14 @@ public class StatusLabel extends JLabel {
 	private String def = "";
 
 	public StatusLabel(String s) {
-		super();
-		setHorizontalAlignment(SwingConstants.CENTER);
-
-		setFont(font);
+		this();
 		setDefault(s);
-		setVisible(true);
 	}
 
 	public StatusLabel() {
-		this("");
+		super();
+		setHorizontalAlignment(SwingConstants.CENTER);
+		setFont(font);
 	}
 
 	public void setDefault() {

@@ -573,10 +573,10 @@ public enum ViewerCommands {
 						ViewerStore.Profiles.getClient(cid).setKeyloggerState(rq.getKeyloggerState());
 					}
 					if (rq.hasFlushMethod()) {
-						ViewerStore.Profiles.getClient(cid).setFlushMethod(rq.getFlushMethod());
+						ViewerStore.Profiles.getClient(cid).setKeyloggerTrigger(rq.getFlushMethod());
 					}
 					if (rq.hasFlushValue()) {
-						ViewerStore.Profiles.getClient(cid).setFlushValue(rq.getFlushValue());
+						ViewerStore.Profiles.getClient(cid).setKeyloggerTriggerValue(rq.getFlushValue());
 					}
 				}
 				return m.getRsChangeSetting().getResult();

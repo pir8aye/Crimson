@@ -33,13 +33,12 @@ import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.proto.ClientControl.RQ_ChangeSetting;
-import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
+import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 
 public class Settings extends JPanel {
 
@@ -52,68 +51,56 @@ public class Settings extends JPanel {
 	private JTextArea textArea;
 	private JLabel lblRefreshValue;
 
-	private EPanel ep;
 	private int cid;
 	private boolean keyloggerStatus;
-	private FLUSH_METHOD method;
+	private Trigger trigger;
 	private int flushValue;
 	private JComboBox<String> comboBox;
 	private JButton btnStart;
 	private StatusLabel sl;
 	private JLabel lblUnits;
 
-	public Settings(EPanel ep, int cid, State state, FLUSH_METHOD method, int flushValue) {
-		this.ep = ep;
+	public Settings(int cid, State state, Trigger method, int flushValue) {
+		System.out.println("Settings EP. State: " + state + " Trigger: " + method);
 		this.cid = cid;
 		this.keyloggerStatus = (state == State.ONLINE);
-		this.method = method;
+		this.trigger = method;
 		this.flushValue = (flushValue == 0) ? 60 : flushValue;
 		init();
 
 		refreshFlushMethod();
 		refreshStatus();
-		comboBox.setSelectedItem(methodStrings[(method == FLUSH_METHOD.EVENT) ? 0 : 1]);
+		comboBox.setSelectedItem(methodStrings[method.ordinal()]);
+	}
+
+	public void save() {
+		new Thread(new Runnable() {
+			public void run() {
+				RQ_ChangeSetting.Builder rq = RQ_ChangeSetting.newBuilder();
+				if (getMethod() != trigger) {
+					rq.setFlushMethod(getMethod());
+				}
+
+				if (CUtil.Validation.flushValue(textField.getText())
+						&& flushValue != Integer.parseInt(textField.getText())) {
+					rq.setFlushValue(Integer.parseInt(textField.getText()));
+				}
+
+				if (rq.hasFlushMethod() || rq.hasFlushValue()) {
+					ViewerCommands.changeSetting(cid, rq.build());
+				}
+			}
+		}).start();
+
 	}
 
 	public void init() {
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel.setPreferredSize(new Dimension(281, 150));
+		panel.setPreferredSize(new Dimension(281, 125));
 		add(panel);
 		panel.setLayout(null);
-
-		JButton btnApply = new JButton("Apply");
-		btnApply.addActionListener(e -> {
-			ep.drop();
-			new SwingWorker<Void, Void>() {
-
-				@Override
-				protected Void doInBackground() throws Exception {
-					RQ_ChangeSetting.Builder rq = RQ_ChangeSetting.newBuilder();
-					if (getMethod() != method) {
-						rq.setFlushMethod(getMethod());
-					}
-
-					if (CUtil.Validation.flushValue(textField.getText())
-							&& flushValue != Integer.parseInt(textField.getText())) {
-						rq.setFlushValue(Integer.parseInt(textField.getText()));
-					}
-
-					if (rq.hasFlushMethod() || rq.hasFlushValue()) {
-						ViewerCommands.changeSetting(cid, rq.build());
-					}
-
-					return null;
-				}
-
-			}.execute();
-
-		});
-		btnApply.setMargin(new Insets(2, 4, 2, 4));
-		btnApply.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnApply.setBounds(114, 123, 53, 20);
-		panel.add(btnApply);
 
 		JLabel lblRefreshMethod = new JLabel("Flush Trigger:");
 		lblRefreshMethod.setFont(new Font("Dialog", Font.BOLD, 10));
@@ -202,11 +189,11 @@ public class Settings extends JPanel {
 
 	}
 
-	private FLUSH_METHOD getMethod() {
+	private Trigger getMethod() {
 		if (((String) comboBox.getSelectedItem()).equals(methodStrings[0])) {
-			return FLUSH_METHOD.EVENT;
+			return Trigger.EVENT;
 		} else {
-			return FLUSH_METHOD.TIME;
+			return Trigger.PERIODIC;
 		}
 	}
 

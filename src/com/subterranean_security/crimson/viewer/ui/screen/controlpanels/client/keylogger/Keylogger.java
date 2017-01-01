@@ -151,9 +151,10 @@ public class Keylogger extends JPanel implements CPPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (ep.isOpen() && ep.getEP() != null && ep.getEP() instanceof Settings) {
 					ep.drop();
+					((Settings) ep.getEP()).save();
 				} else {
-					ep.raise(new Settings(ep, profile.getCid(), profile.getKeyloggerState(), profile.getFlushMethod(),
-							profile.getFlushValue()), 160);
+					ep.raise(new Settings(profile.getCid(), profile.getKeyloggerState(), profile.getKeyloggerTrigger(),
+							profile.getKeyloggerTriggerValue()), 140);
 				}
 
 			}

@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.profile;
 
+import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 
 public enum SimpleAttribute implements AbstractAttribute {
@@ -38,6 +39,8 @@ public enum SimpleAttribute implements AbstractAttribute {
 	USER_NAME, USER_HOME, USER_STATUS,
 	// Client attributes
 	CLIENT_CID, CLIENT_VERSION, CLIENT_INSTALL_DATE, CLIENT_BASE_PATH, CLIENT_STATUS, CLIENT_ONLINE, CLIENT_CPU_USAGE, CLIENT_RAM_USAGE,
+	// Keylogger attributes
+	KEYLOGGER_TRIGGER, KEYLOGGER_TRIGGER_VALUE, KEYLOGGER_STATE,
 	// Linux specific attributes
 	LINUX_WM, LINUX_DISTRO, LINUX_SHELL, LINUX_PACKAGES, LINUX_TERMINAL, LINUX_KERNEL,
 	// Windows specific attributes
@@ -125,8 +128,12 @@ public enum SimpleAttribute implements AbstractAttribute {
 		return super.toString();
 	}
 
-	public boolean valid(OSFAMILY os) {
+	public boolean valid(OSFAMILY os, Instance instance) {
 		switch (this) {
+		case KEYLOGGER_STATE:
+		case KEYLOGGER_TRIGGER:
+		case KEYLOGGER_TRIGGER_VALUE:
+			return instance == Instance.CLIENT;
 		case LINUX_DISTRO:
 		case LINUX_KERNEL:
 		case LINUX_PACKAGES:
@@ -139,8 +146,9 @@ public enum SimpleAttribute implements AbstractAttribute {
 		case WIN_POWERSHELL_VERSION:
 		case WIN_SERIAL:
 			return os == OSFAMILY.WIN;
+		default:
+			return true;
 		}
-		return true;
 	}
 
 	public static final SimpleAttribute[] ordinal = SimpleAttribute.values();

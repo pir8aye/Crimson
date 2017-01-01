@@ -39,7 +39,7 @@ import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
 import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
+import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.keylogger.Log;
@@ -47,6 +47,10 @@ import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
+/**
+ * @author Tyler Cook
+ *
+ */
 public class ClientProfile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -153,9 +157,6 @@ public class ClientProfile implements Serializable {
 	}
 
 	// Keylogger options
-	private FLUSH_METHOD flushMethod;
-	private int flushValue;
-	private State keyloggerState;
 	private Log keylog;
 
 	public ClientProfile(int cid) {
@@ -250,30 +251,6 @@ public class ClientProfile implements Serializable {
 
 	public void setMessageLatency(int messageLatency) {
 		this.messageLatency = messageLatency;
-	}
-
-	public FLUSH_METHOD getFlushMethod() {
-		return flushMethod;
-	}
-
-	public void setFlushMethod(FLUSH_METHOD flushMethod) {
-		this.flushMethod = flushMethod;
-	}
-
-	public int getFlushValue() {
-		return flushValue;
-	}
-
-	public void setFlushValue(int flushValue) {
-		this.flushValue = flushValue;
-	}
-
-	public State getKeyloggerState() {
-		return keyloggerState;
-	}
-
-	public void setKeyloggerState(State keyloggerState) {
-		this.keyloggerState = keyloggerState;
 	}
 
 	public int getCid() {
@@ -403,19 +380,53 @@ public class ClientProfile implements Serializable {
 
 		}
 
-		if (c.hasKeyloggerState()) {
-			setKeyloggerState(c.getKeyloggerState());
-		}
-		if (c.hasFlushMethod()) {
-			setFlushMethod(c.getFlushMethod());
-		}
-		if (c.hasFlushValue()) {
-			setFlushValue(c.getFlushValue());
-		}
-
 		// TODO make amalgamation time available in some other way
 		// log.debug("Profile amalgamated in {} ms", new Date().getTime() -
 		// start.getTime());
+	}
+
+	/*
+	 * 
+	 * Convenience methods for attributes requiring type conversion
+	 * 
+	 */
+
+	public Trigger getKeyloggerTrigger() {
+		switch (getAttr(SimpleAttribute.KEYLOGGER_TRIGGER)) {
+		case "0":
+			return Trigger.EVENT;
+		case "1":
+			return Trigger.PERIODIC;
+		}
+		return null;
+	}
+
+	public void setKeyloggerTrigger(Trigger trigger) {
+		setAttr(SimpleAttribute.KEYLOGGER_TRIGGER, "" + trigger.ordinal());
+	}
+
+	public int getKeyloggerTriggerValue() {
+		return Integer.parseInt(getAttr(SimpleAttribute.KEYLOGGER_TRIGGER_VALUE));
+	}
+
+	public void setKeyloggerTriggerValue(int triggerValue) {
+		setAttr(SimpleAttribute.KEYLOGGER_TRIGGER_VALUE, "" + triggerValue);
+	}
+
+	public State getKeyloggerState() {
+		switch (getAttr(SimpleAttribute.KEYLOGGER_STATE)) {
+		case "0":
+			return State.UNINSTALLED;
+		case "1":
+			return State.OFFLINE;
+		case "2":
+			return State.ONLINE;
+		}
+		return null;
+	}
+
+	public void setKeyloggerState(State keyloggerState) {
+		setAttr(SimpleAttribute.KEYLOGGER_STATE, "" + keyloggerState.ordinal());
 	}
 
 }

