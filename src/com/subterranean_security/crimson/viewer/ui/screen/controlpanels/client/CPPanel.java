@@ -27,4 +27,8 @@ public interface CPPanel {
 
 	public void serverOnline();
 
+	public void tabOpened();
+
+	public void tabClosed();
+
 }

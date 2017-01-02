@@ -249,6 +249,14 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 				return;
 			}
 
+			for (Panels panel : panels.keySet()) {
+				if (panel == (Panels) node.getUserObject()) {
+					panels.get(panel).tabOpened();
+				} else {
+					panels.get(panel).tabClosed();
+				}
+			}
+
 			((CardLayout) cards.getLayout()).show(cards, node.getUserObject().toString());
 
 		}
@@ -306,5 +314,15 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 				}
 			}
 		}).start();
+	}
+
+	@Override
+	public void tabOpened() {
+		// ignore
+	}
+
+	@Override
+	public void tabClosed() {
+		// ignore
 	}
 }

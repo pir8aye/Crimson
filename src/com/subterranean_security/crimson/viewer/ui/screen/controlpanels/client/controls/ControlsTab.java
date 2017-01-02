@@ -41,6 +41,7 @@ import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.StateType;
@@ -93,7 +94,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 		init();
 		refreshStatusConsole();
 		refreshControls();
-		startStreaming();
+		startStreamingStatus();
 	}
 
 	public void setControlsEnabled(boolean e) {
@@ -482,6 +483,10 @@ public class ControlsTab extends JPanel implements CPPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				setControlsEnabled(false);
 				barUpdate.setIndeterminate(true);
+				stopStreamingStatus();
+				clientStatusConsole.updateValue(0, "UPDATING...");
+				console.addLine("Updating client (" + profile.getAttr(SimpleAttribute.CLIENT_VERSION) + " -> "
+						+ Common.version + ")", LineType.BLUE);
 
 				new SwingWorker<Outcome, Void>() {
 
@@ -491,17 +496,38 @@ public class ControlsTab extends JPanel implements CPPanel {
 					}
 
 					protected void done() {
+						Outcome outcome = null;
 						try {
-							Outcome outcome = get();
-							if (!outcome.getResult()) {
-								console.addLine("Update failed: " + outcome.getComment(), LineType.ORANGE);
-							}
+							outcome = get();
 						} catch (InterruptedException | ExecutionException e) {
-							console.addLine("Update failed: " + e.getMessage(), LineType.ORANGE);
+							outcome = Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
 						}
 
 						setControlsEnabled(true);
 						barUpdate.setIndeterminate(false);
+
+						if (!outcome.getResult()) {
+							console.addLine("Update failed: " + outcome.getComment(), LineType.ORANGE);
+						} else {
+							console.addLine("Update succeeded", LineType.GREEN);
+							clientStatusConsole.updateValue(0, "RESTARTING CLIENT...");
+							barUpdate.setValue(100);
+							new SwingWorker<Void, Void>() {
+
+								@Override
+								protected Void doInBackground() throws Exception {
+									Thread.sleep(500);
+									return null;
+								}
+
+								@Override
+								protected void done() {
+									barUpdate.setValue(0);
+								}
+
+							}.execute();
+						}
+
 					};
 
 				}.execute();
@@ -651,10 +677,8 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 	}
 
-	private boolean streaming = false;
-
 	private InfoMaster im = null;
-	private Timer refreshTimer = new Timer();
+	private Timer refreshTimer = null;
 	private TimerTask task = new TimerTask() {
 
 		@Override
@@ -664,23 +688,46 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 	};
 
-	public void startStreaming() {
-		if (!streaming) {
-			streaming = true;
+	public void startStreamingStatus() {
+		if (im == null) {
 			im = new InfoMaster(InfoParam.newBuilder().setClientStatus(true).build(), profile.getCid(), 1000);
 			StreamStore.addStream(im);
-
-			refreshTimer.schedule(task, 0, 1000);
+			startRefreshingStatus();
 		}
 	}
 
-	public void stopStreaming() {
-		if (streaming) {
-			streaming = false;
-			refreshTimer.cancel();
+	public void startRefreshingStatus() {
+		if (refreshTimer == null) {
+			refreshTimer = new Timer();
+			refreshTimer.schedule(task, 0, 1000);
+		}
+
+	}
+
+	public void stopStreamingStatus() {
+		if (im != null) {
 			StreamStore.removeStreamBySID(im.getStreamID());
 			im = null;
+			startRefreshingStatus();
 		}
+	}
+
+	public void stopRefreshingStatus() {
+		if (refreshTimer != null) {
+			refreshTimer.cancel();
+			refreshTimer = null;
+		}
+
+	}
+
+	@Override
+	public void tabOpened() {
+		startStreamingStatus();
+	}
+
+	@Override
+	public void tabClosed() {
+		stopStreamingStatus();
 	}
 
 }

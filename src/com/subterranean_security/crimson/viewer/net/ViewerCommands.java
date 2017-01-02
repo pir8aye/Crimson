@@ -482,7 +482,7 @@ public enum ViewerCommands {
 		} else {
 			try {
 				Message m = ViewerRouter.routeAndWait(Message.newBuilder()
-						.setRqGenerate(RQ_Generate.newBuilder().setSendToCid(cid).setInternalConfig(client)), 4);
+						.setRqGenerate(RQ_Generate.newBuilder().setSendToCid(cid).setInternalConfig(client)), 15);
 				if (m == null) {
 					outcome.setResult(false).setComment("No response");
 				} else {

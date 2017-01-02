@@ -180,4 +180,16 @@ public class Logs extends JPanel implements CPPanel {
 
 	}
 
+	@Override
+	public void tabOpened() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void tabClosed() {
+		// TODO Auto-generated method stub
+
+	}
+
 }
