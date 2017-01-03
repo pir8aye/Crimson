@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net;
 
-import java.net.InetSocketAddress;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -38,7 +37,6 @@ public class Receptor implements AutoCloseable {
 
 	// Buffers
 	public final BlockingQueue<Message> uq = new LinkedBlockingQueue<Message>();
-	public final BlockingQueue<Message> nq = new LinkedBlockingQueue<Message>();
 	public final BlockingHashMap<Integer, Message> cq = new BlockingHashMap<Integer, Message>();
 
 	public ServerHandler handle;
@@ -79,7 +77,7 @@ public class Receptor implements AutoCloseable {
 	}
 
 	public String getRemoteAddress() {
-		return ((InetSocketAddress) handle.channel.remoteAddress()).getAddress().getHostAddress();
+		return handle.getRemoteAddress();
 	}
 
 	public void setCvid(int cvid) {

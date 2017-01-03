@@ -36,13 +36,10 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.storage.MemList;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
-import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.Crypto;
 import com.subterranean_security.crimson.server.net.Receptor;
@@ -51,7 +48,6 @@ import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
 public final class ServerStore {
 
@@ -127,8 +123,8 @@ public final class ServerStore {
 				Authentication.refreshVisibilityPermissions(r.getCvid());
 				Profiles.getClient(r.getCvid()).setOnline(true);
 				sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
-						Message.newBuilder().setUrgent(true).setEvProfileDelta(EV_ProfileDelta.newBuilder()
-								.setCvid(r.getCvid()).putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "1")));
+						Message.newBuilder().setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid())
+								.putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "1")));
 			}
 			receptors.put(r.getCvid(), r);
 		}
@@ -145,8 +141,8 @@ public final class ServerStore {
 					clients--;
 					Profiles.getClient(cvid).setOnline(false);
 					sendToViewersWithAuthorityOverClient(cvid, Perm.client.visibility,
-							Message.newBuilder().setUrgent(true).setEvProfileDelta(EV_ProfileDelta.newBuilder()
-									.setCvid(cvid).putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "0")));
+							Message.newBuilder().setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(cvid)
+									.putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "0")));
 				}
 				r.close();
 			}
@@ -272,7 +268,7 @@ public final class ServerStore {
 			System.gc();
 
 			// update viewers
-			ServerStore.Connections.sendToAll(Instance.VIEWER, Message.newBuilder().setUrgent(true)
+			ServerStore.Connections.sendToAll(Instance.VIEWER, Message.newBuilder()
 					.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addAuthMethod(am)).build());
 			return outcome.setResult(true).build();
 		}

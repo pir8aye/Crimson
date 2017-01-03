@@ -94,7 +94,7 @@ public class SubscriberSlave extends Stream {
 			StreamStore.removeStreamBySID(getStreamID());
 			return;
 		}
-		r.handle.write(Message.newBuilder().setUrgent(true).setSid(param.getCID()).setEvKevent(k).build());
+		r.handle.write(Message.newBuilder().setSid(param.getCID()).setEvKevent(k).build());
 
 	}
 

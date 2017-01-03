@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.net;
 
+import java.net.InetSocketAddress;
+
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
 import io.netty.channel.Channel;
@@ -28,6 +30,14 @@ public abstract class BasicHandler extends SimpleChannelInboundHandler<Message> 
 
 	public void write(Message msg) {
 		channel.writeAndFlush(msg);
+	}
+
+	public void write(Message.Builder msg) {
+		channel.writeAndFlush(msg.build());
+	}
+
+	public String getRemoteAddress() {
+		return ((InetSocketAddress) channel.remoteAddress()).getAddress().getHostAddress();
 	}
 
 }

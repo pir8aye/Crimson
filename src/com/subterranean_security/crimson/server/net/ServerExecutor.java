@@ -99,9 +99,10 @@ public class ServerExecutor extends BasicExecutor {
 	private int authID;
 
 	public ServerExecutor(Receptor r) {
+		super();
 		receptor = r;
 
-		ubt = new Thread(new Runnable() {
+		dispatchThread = new Thread(new Runnable() {
 			public void run() {
 				while (!Thread.interrupted()) {
 					Message m;
@@ -110,107 +111,81 @@ public class ServerExecutor extends BasicExecutor {
 					} catch (InterruptedException e) {
 						return;
 					}
-					if (m.hasRid() && m.getRid() != 0) {
-						// route
-						try {
-							ServerStore.Connections.getConnection(m.getRid()).handle.write(m);
-						} catch (NullPointerException e) {
-							log.debug("Could not forward message to CVID: {}", m.getRid());
-							receptor.handle.write(Message.newBuilder().setUrgent(true)
-									.setEvEndpointClosed(EV_EndpointClosed.newBuilder().setCVID(m.getRid())).build());
-						}
-					} else if (m.hasEvProfileDelta()) {
-						ev_profileDelta(m.getEvProfileDelta());
-					} else if (m.hasEvKevent()) {
-						ev_kevent(m);
-					}
-
-					ReferenceCountUtil.release(m);
-				}
-			}
-
-		});
-		ubt.start();
-
-		nbt = new Thread(new Runnable() {
-			public void run() {
-				while (!Thread.interrupted()) {
-					Message m;
-					try {
-						m = receptor.nq.take();
-					} catch (InterruptedException e) {
-						return;
-					}
-					if (m.hasRid() && m.getRid() != 0) {
-						// route
-						try {
-							ServerStore.Connections.getConnection(m.getRid()).handle.write(m);
-						} catch (NullPointerException e) {
-							log.debug("Could not forward message to CVID: {}", m.getRid());
-						}
-					} else if (m.hasRqLogin()) {
-						new Thread(new Runnable() {
-							public void run() {
-								rq_login(m);
+					pool.submit(() -> {
+						if (m.hasRid() && m.getRid() != 0) {
+							// route
+							try {
+								ServerStore.Connections.getConnection(m.getRid()).handle.write(m);
+							} catch (NullPointerException e) {
+								log.debug("Could not forward message to CVID: {}", m.getRid());
+								receptor.handle.write(Message.newBuilder()
+										.setEvEndpointClosed(EV_EndpointClosed.newBuilder().setCVID(m.getRid()))
+										.build());
 							}
-						}).start();
+						} else if (m.hasEvProfileDelta()) {
+							ev_profileDelta(m.getEvProfileDelta());
+						} else if (m.hasEvKevent()) {
+							ev_kevent(m);
+						} else if (m.hasRqLogin()) {
+							rq_login(m);
+						} else if (m.hasRqGenerate()) {
+							rq_generate(m);
+						} else if (m.hasRqGroupChallenge()) {
+							rq_group_challenge(m);
+						} else if (m.hasMiAuthRequest()) {
+							mi_auth_request(m);
+						} else if (m.hasMiChallengeresult()) {
+							mi_challenge_result(m);
+						} else if (m.hasRqFileListing()) {
+							rq_file_listing(m);
+						} else if (m.hasRsFileListing()) {
+							rs_file_listing(m);
+						} else if (m.hasRqAdvancedFileInfo()) {
+							rq_advanced_file_info(m);
+						} else if (m.hasMiStreamStart()) {
+							mi_stream_start(m);
+						} else if (m.hasMiStreamStop()) {
+							mi_stream_stop(m);
+						} else if (m.hasRqAddListener()) {
+							rq_add_listener(m);
+						} else if (m.hasRqRemoveListener()) {
+							rq_remove_listener(m);
+						} else if (m.hasRqAddUser()) {
+							rq_add_user(m);
+						} else if (m.hasRqEditUser()) {
+							rq_edit_user(m);
+						} else if (m.hasRqChangeServerState()) {
+							rq_change_server_state(m);
+						} else if (m.hasRqChangeClientState()) {
+							rq_change_client_state(m);
+						} else if (m.hasRqFileHandle()) {
+							rq_file_handle(m);
+						} else if (m.hasRsFileHandle()) {
+							rs_file_handle(m);
+						} else if (m.hasRqDelete()) {
+							rq_delete(m);
+						} else if (m.hasRqKeyUpdate()) {
+							rq_key_update(m);
+						} else if (m.hasMiTriggerProfileDelta()) {
+							mi_trigger_profile_delta(m);
+						} else if (m.hasRqCreateAuthMethod()) {
+							rq_create_auth_method(m);
+						} else if (m.hasRqRemoveAuthMethod()) {
+							rq_remove_auth_method(m);
+						} else if (m.hasRqLogs()) {
+							rq_logs(m);
+						} else {
+							receptor.cq.put(m.getId(), m);
+						}
 
-					} else if (m.hasRqGenerate()) {
-						rq_generate(m);
-					} else if (m.hasRqGroupChallenge()) {
-						rq_group_challenge(m);
-					} else if (m.hasMiAuthRequest()) {
-						mi_auth_request(m);
-					} else if (m.hasMiChallengeresult()) {
-						mi_challenge_result(m);
-					} else if (m.hasRqFileListing()) {
-						rq_file_listing(m);
-					} else if (m.hasRsFileListing()) {
-						rs_file_listing(m);
-					} else if (m.hasRqAdvancedFileInfo()) {
-						rq_advanced_file_info(m);
-					} else if (m.hasMiStreamStart()) {
-						mi_stream_start(m);
-					} else if (m.hasMiStreamStop()) {
-						mi_stream_stop(m);
-					} else if (m.hasRqAddListener()) {
-						rq_add_listener(m);
-					} else if (m.hasRqRemoveListener()) {
-						rq_remove_listener(m);
-					} else if (m.hasRqAddUser()) {
-						rq_add_user(m);
-					} else if (m.hasRqEditUser()) {
-						rq_edit_user(m);
-					} else if (m.hasRqChangeServerState()) {
-						rq_change_server_state(m);
-					} else if (m.hasRqChangeClientState()) {
-						rq_change_client_state(m);
-					} else if (m.hasRqFileHandle()) {
-						rq_file_handle(m);
-					} else if (m.hasRsFileHandle()) {
-						rs_file_handle(m);
-					} else if (m.hasRqDelete()) {
-						rq_delete(m);
-					} else if (m.hasRqKeyUpdate()) {
-						rq_key_update(m);
-					} else if (m.hasMiTriggerProfileDelta()) {
-						mi_trigger_profile_delta(m);
-					} else if (m.hasRqCreateAuthMethod()) {
-						rq_create_auth_method(m);
-					} else if (m.hasRqRemoveAuthMethod()) {
-						rq_remove_auth_method(m);
-					} else if (m.hasRqLogs()) {
-						rq_logs(m);
-					} else {
-						receptor.cq.put(m.getId(), m);
-					}
-
-					ReferenceCountUtil.release(m);
+						ReferenceCountUtil.release(m);
+					});
 				}
 			}
 
 		});
-		nbt.start();
+		dispatchThread.start();
+
 	}
 
 	private void ev_kevent(Message m) {
@@ -256,7 +231,7 @@ public class ServerExecutor extends BasicExecutor {
 
 		ServerStore.Profiles.getClient(receptor.getCvid()).amalgamate(pd);
 		Connections.sendToViewersWithAuthorityOverClient(receptor.getCvid(), Perm.client.visibility,
-				Message.newBuilder().setUrgent(true).setEvProfileDelta(pd));
+				Message.newBuilder().setEvProfileDelta(pd));
 	}
 
 	private void mi_trigger_profile_delta(Message m) {
@@ -266,16 +241,15 @@ public class ServerExecutor extends BasicExecutor {
 			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
 				if (pt.getCvid() == cp.getCid()) {
 					log.debug("Updating client in viewer");
-					receptor.handle.write(Message.newBuilder().setUrgent(true)
-							.setEvProfileDelta(cp.getUpdates(new Date(pt.getTimestamp()))).build());
+					receptor.handle.write(
+							Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(pt.getTimestamp()))).build());
 					flag = false;
 					continue;
 				}
 			}
 			if (flag) {
 				log.debug("Sending new client to viewer");
-				receptor.handle.write(
-						Message.newBuilder().setUrgent(true).setEvProfileDelta(cp.getUpdates(new Date(0))).build());
+				receptor.handle.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(0))).build());
 			}
 
 		}
@@ -326,32 +300,27 @@ public class ServerExecutor extends BasicExecutor {
 			RQ_GroupChallenge rq = RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
 			receptor.handle.write(Message.newBuilder().setId(mSeqID).setRqGroupChallenge(rq).build());
 
-			new Thread(new Runnable() {
-				public void run() {
-					try {
-						RS_GroupChallenge rs = receptor.cq.take(mSeqID, 7, TimeUnit.SECONDS).getRsGroupChallenge();
-						boolean flag = rs.getResult().equals(Crypto.hashSign(magic, group.getGroupKey()));
-						try {
-							group.destroy();
-						} catch (DestroyFailedException e) {
-						}
-
-						if (flag) {
-							receptor.setState(ConnectionState.AUTH_STAGE2);
-						} else {
-							log.info("Challenge 1 failed");
-							receptor.setState(ConnectionState.CONNECTED);
-						}
-						receptor.handle.write(Message.newBuilder().setId(mSeqID)
-								.setMiChallengeresult(MI_GroupChallengeResult.newBuilder().setResult(flag).build())
-								.build());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						log.debug("Failed to get challenge from client");
-					}
+			try {
+				RS_GroupChallenge rs = receptor.cq.take(mSeqID, 7, TimeUnit.SECONDS).getRsGroupChallenge();
+				boolean flag = rs.getResult().equals(Crypto.hashSign(magic, group.getGroupKey()));
+				try {
+					group.destroy();
+				} catch (DestroyFailedException e) {
 				}
-			}).start();
+
+				if (flag) {
+					receptor.setState(ConnectionState.AUTH_STAGE2);
+				} else {
+					log.info("Challenge 1 failed");
+					receptor.setState(ConnectionState.CONNECTED);
+				}
+				receptor.handle.write(Message.newBuilder().setId(mSeqID)
+						.setMiChallengeresult(MI_GroupChallengeResult.newBuilder().setResult(flag).build()).build());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				log.debug("Failed to get challenge from client");
+			}
 
 			break;
 
@@ -408,7 +377,7 @@ public class ServerExecutor extends BasicExecutor {
 		ClientProfile cp = ServerStore.Profiles.getClient(rq.getCid());
 		if (cp != null) {
 			for (EV_KEvent k : cp.getKeylog().getEventsAfter(target)) {
-				receptor.handle.write(Message.newBuilder().setUrgent(true).setSid(rq.getCid()).setEvKevent(k).build());
+				receptor.handle.write(Message.newBuilder().setSid(rq.getCid()).setEvKevent(k).build());
 			}
 			receptor.handle.write(Message.newBuilder().setId(m.getId())
 					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(true)).build());
@@ -691,7 +660,7 @@ public class ServerExecutor extends BasicExecutor {
 		receptor.handle.write(Message.newBuilder().setId(m.getId())
 				.setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
 		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));
-		Message update = Message.newBuilder().setUrgent(true).setEvServerProfileDelta(
+		Message update = Message.newBuilder().setEvServerProfileDelta(
 				EV_ServerProfileDelta.newBuilder().addListener(m.getRqAddListener().getConfig())).build();
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
 
@@ -709,7 +678,7 @@ public class ServerExecutor extends BasicExecutor {
 		ServerStore.Databases.system.addLocalUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
 				new ViewerPermissions(m.getRqAddUser().getPermissionsList()));
 
-		Message update = Message.newBuilder().setUrgent(true)
+		Message update = Message.newBuilder()
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder()
 						.addViewerUser(EV_ViewerProfileDelta.newBuilder().setUser(m.getRqAddUser().getUser())
 								.addAllViewerPermissions(m.getRqAddUser().getPermissionsList())))
@@ -748,7 +717,7 @@ public class ServerExecutor extends BasicExecutor {
 
 		}
 
-		Message update = Message.newBuilder().setUrgent(true)
+		Message update = Message.newBuilder()
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addViewerUser(b)).build();
 
 		ServerStore.Connections.sendToAll(Instance.VIEWER, update);

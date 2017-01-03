@@ -135,8 +135,8 @@ public class RemoteSlave extends Stream {
 	public void send() {
 
 		if (uQueue.size() != 0) {
-			ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setSid(Common.cvid)
-					.setRid(param.getVID()).setEvStreamData(uQueue.poll()));
+			ClientStore.Connections.route(
+					Message.newBuilder().setSid(Common.cvid).setRid(param.getVID()).setEvStreamData(uQueue.poll()));
 		}
 
 	}

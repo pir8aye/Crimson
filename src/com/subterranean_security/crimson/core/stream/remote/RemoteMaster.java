@@ -40,7 +40,7 @@ public class RemoteMaster extends Stream {
 
 			while (!Thread.interrupted()) {
 				try {
-					ViewerRouter.route(Message.newBuilder().setUrgent(true).setRid(cid)
+					ViewerRouter.route(Message.newBuilder().setRid(cid)
 							.setEvStreamData(
 									EV_StreamData.newBuilder().setStreamID(getStreamID()).setEventData(queue.take()))
 							.build());

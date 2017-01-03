@@ -35,8 +35,8 @@ public class CInfoSlave extends InfoSlave {
 	public void send() {
 		EV_ProfileDelta pd = gather();
 		if (pd.getStrAttrCount() != 0 && pd.getGroupAttrCount() != 0) {
-			ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setSid(Common.cvid)
-					.setRid(param.getVID()).setEvProfileDelta(pd));
+			ClientStore.Connections
+					.route(Message.newBuilder().setSid(Common.cvid).setRid(param.getVID()).setEvProfileDelta(pd));
 		}
 	}
 

@@ -37,17 +37,20 @@ public class ViewerExecutor extends BasicExecutor {
 	private ViewerConnector connector;
 
 	public ViewerExecutor(ViewerConnector vc) {
+		super();
 		connector = vc;
 
-		ubt = new Thread(new Runnable() {
-			public void run() {
-				while (!Thread.currentThread().isInterrupted()) {
-					Message m;
-					try {
-						m = connector.uq.take();
-					} catch (InterruptedException e) {
-						return;
-					}
+		dispatchThread = new Thread(() -> {
+			while (!Thread.currentThread().isInterrupted()) {
+				Message m;
+				try {
+					m = connector.mq.take();
+				} catch (InterruptedException e) {
+					log.error("Message dispatch thread interrupted");
+					return;
+				}
+
+				pool.submit(() -> {
 					if (m.hasEvStreamData()) {
 						Stream s = StreamStore.getStream(m.getEvStreamData().getStreamID());
 						if (s != null) {
@@ -63,32 +66,18 @@ public class ViewerExecutor extends BasicExecutor {
 						ViewerStore.Profiles.update(m.getEvViewerProfileDelta());
 					} else if (m.hasEvKevent()) {
 						ev_kevent(m);
-					}
-					ReferenceCountUtil.release(m);
-				}
-			}
-		});
-		ubt.start();
-
-		nbt = new Thread(new Runnable() {
-			public void run() {
-				while (!Thread.currentThread().isInterrupted()) {
-					Message m;
-					try {
-						m = connector.nq.take();
-					} catch (InterruptedException e) {
-						return;
-					}
-					if (m.hasMiAssignCvid()) {
+					} else if (m.hasMiAssignCvid()) {
 						assign_1w(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
+					ReferenceCountUtil.release(m);
+				});
 
-				}
 			}
 		});
-		nbt.start();
+		dispatchThread.start();
+
 	}
 
 	private void assign_1w(Message m) {

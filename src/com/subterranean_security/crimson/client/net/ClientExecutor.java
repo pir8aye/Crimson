@@ -79,41 +79,26 @@ public class ClientExecutor extends BasicExecutor {
 	private ClientConnector connector;
 
 	public ClientExecutor(ClientConnector vc) {
+		super();
 		connector = vc;
 
-		ubt = new Thread(new Runnable() {
-			public void run() {
-				while (!Thread.currentThread().isInterrupted()) {
-					Message m;
-					try {
-						m = connector.uq.take();
-					} catch (InterruptedException e) {
-						return;
-					}
+		dispatchThread = new Thread(() -> {
+			while (!Thread.currentThread().isInterrupted()) {
+				Message m;
+				try {
+					m = connector.mq.take();
+				} catch (InterruptedException e) {
+					return;
+				}
+
+				pool.submit(() -> {
 					if (m.hasEvStreamData()) {
 						ev_stream_data(m);
 					} else if (m.hasEvEndpointClosed()) {
 						ev_endpoint_closed(m);
 					} else if (m.hasEvChatMessage()) {
 						ev_chat_message(m);
-					}
-
-					ReferenceCountUtil.release(m);
-				}
-			}
-		});
-		ubt.start();
-
-		nbt = new Thread(new Runnable() {
-			public void run() {
-				while (!Thread.currentThread().isInterrupted()) {
-					Message m;
-					try {
-						m = connector.nq.take();
-					} catch (InterruptedException e) {
-						return;
-					}
-					if (m.hasRqGroupChallenge()) {
+					} else if (m.hasRqGroupChallenge()) {
 						rq_group_challenge(m);
 					} else if (m.hasMiChallengeresult()) {
 						challengeResult_1w(m);
@@ -150,11 +135,12 @@ public class ClientExecutor extends BasicExecutor {
 					}
 
 					ReferenceCountUtil.release(m);
-
-				}
+				});
 			}
+
 		});
-		nbt.start();
+		dispatchThread.start();
+
 	}
 
 	private void ev_stream_data(Message m) {

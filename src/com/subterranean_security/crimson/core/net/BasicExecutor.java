@@ -17,19 +17,32 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.net;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 public abstract class BasicExecutor {
 
-	protected Thread nbt;
-	protected Thread ubt;
+	protected Thread dispatchThread;
+	protected ExecutorService pool;
+
+	public BasicExecutor() {
+		pool = Executors.newCachedThreadPool();
+	}
 
 	public void stop() {
-		if (nbt != null) {
-			nbt.interrupt();
-			nbt = null;
+		if (dispatchThread != null) {
+			dispatchThread.interrupt();
+			dispatchThread = null;
 		}
-		if (ubt != null) {
-			ubt.interrupt();
-			ubt = null;
+
+		try {
+			pool.shutdown();
+			pool.awaitTermination(5, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+		} finally {
+			pool.shutdownNow();
+			pool = null;
 		}
 
 	}

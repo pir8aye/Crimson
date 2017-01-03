@@ -20,7 +20,6 @@ import "net/sequences/State.proto";
 import "net/sequences/Screenshot.proto";
 
 message Message {
-	optional bool urgent = 1;
 	optional int32 id = 2;
 	
 	optional int32 rid = 3;

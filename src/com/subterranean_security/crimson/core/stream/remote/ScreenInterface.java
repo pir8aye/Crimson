@@ -115,7 +115,7 @@ public final class ScreenInterface {
 				}
 
 				// slowest
-				ClientStore.Connections.route(Message.newBuilder().setUrgent(true).setSid(Common.cvid).setRid(rId)
+				ClientStore.Connections.route(Message.newBuilder().setSid(Common.cvid).setRid(rId)
 						.setEvStreamData(EV_StreamData.newBuilder().setStreamID(streamId).setDirtyBlock(db)));
 
 			}

@@ -118,24 +118,6 @@ public class ClientProfile implements Serializable {
 		this.authID = authID;
 	}
 
-	public void setOnline(boolean online) {
-		boolean state = getOnline();
-		if (online) {
-			if (!state) {
-				attributes.get(SimpleAttribute.CLIENT_ONLINE).set("1");
-			}
-		} else {
-			if (state) {
-				attributes.get(SimpleAttribute.CLIENT_ONLINE).set("0");
-			}
-		}
-
-	}
-
-	public boolean getOnline() {
-		return attributes.get(SimpleAttribute.CLIENT_ONLINE).equals("1");
-	}
-
 	private void createAttributeIfRequired(SimpleAttribute attribute) {
 		if (!attributes.containsKey(attribute)) {
 			// TODO TrackedAttribute
@@ -432,6 +414,24 @@ public class ClientProfile implements Serializable {
 
 	public OSFAMILY getOSFamily() {
 		return OSFAMILY.valueOf(getAttr(SimpleAttribute.OS_FAMILY).toUpperCase());
+	}
+
+	public void setOnline(boolean online) {
+		boolean state = getOnline();
+		if (online) {
+			if (!state) {
+				attributes.get(SimpleAttribute.CLIENT_ONLINE).set("1");
+			}
+		} else {
+			if (state) {
+				attributes.get(SimpleAttribute.CLIENT_ONLINE).set("0");
+			}
+		}
+
+	}
+
+	public boolean getOnline() {
+		return attributes.get(SimpleAttribute.CLIENT_ONLINE).equals("1");
 	}
 
 }

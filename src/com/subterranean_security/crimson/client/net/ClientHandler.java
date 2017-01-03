@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.core.net.BasicHandler;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.viewer.net.ViewerHandler;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -70,12 +69,7 @@ public class ClientHandler extends BasicHandler {
 			log.debug("RECEIVE \n{}", msg.toString());
 		}
 
-		if (msg.hasUrgent()) {
-			connector.uq.add(msg);
-		} else {
-			connector.nq.add(msg);
-		}
-
+		connector.mq.add(msg);
 	}
 
 }

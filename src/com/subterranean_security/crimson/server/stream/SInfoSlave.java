@@ -41,7 +41,7 @@ public class SInfoSlave extends InfoSlave {
 			StreamStore.removeStreamBySID(getStreamID());
 			return;
 		}
-		r.handle.write(Message.newBuilder().setUrgent(true).setRid(param.getCID()).setSid(param.getVID())
+		r.handle.write(Message.newBuilder().setRid(param.getCID()).setSid(param.getVID())
 				.setEvServerProfileDelta(gatherServerInfo()).build());
 
 	}
