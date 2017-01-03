@@ -229,10 +229,17 @@ public final class ViewerStore {
 		}
 
 		public static void update(EV_ProfileDelta change) {
+			boolean onlineChanged = false;
+
 			ClientProfile cp = getClient(change.getCvid());
 			if (cp != null) {
+				onlineChanged = change.containsStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal())
+						&& !change.getStrAttrOrDefault(SimpleAttribute.CLIENT_ONLINE.ordinal(), "")
+								.equals(cp.getAttr(SimpleAttribute.CLIENT_ONLINE));
 				cp.amalgamate(change);
 			} else {
+				onlineChanged = change.containsStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal());
+
 				// add new profile
 				cp = new ClientProfile(change.getCvid());
 				cp.amalgamate(change);
@@ -242,45 +249,52 @@ public final class ViewerStore {
 			}
 			cp.initialize();
 
-			if (change.containsStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal())) {
+			if (onlineChanged) {
 				if (change.getStrAttrOrDefault(SimpleAttribute.CLIENT_ONLINE.ordinal(), "").equals("1")) {
-					if (MainFrame.main.panel.listLoaded)
-						MainFrame.main.panel.list.addOrUpdate(cp);
-					if (MainFrame.main.panel.graphLoaded)
-						MainFrame.main.panel.graph.addClient(cp);
-
-					for (ClientCPFrame ccpf : UIStore.clientControlPanels) {
-						if (ccpf.profile.getCid() == cp.getCid()) {
-							ccpf.clientOnline();
-						}
-					}
+					clientNowOnline(cp);
 				} else {
-					// Remove client from table and detail if applicable
-					if (MainFrame.main.panel.listLoaded) {
-						MainFrame.main.panel.list.removeClient(cp);
-						ClientProfile detailTarget = MainFrame.main.dp.getTarget();
-						if (detailTarget != null && cp.getCid() == detailTarget.getCid()) {
-							MainFrame.main.dp.closeDetail();
-							MainFrame.main.panel.console.addLine(
-									"The client (" + cp.getAttr(SimpleAttribute.NET_EXTERNALIP) + ") has disconnected",
-									LineType.ORANGE);
-						}
-					}
-
-					// Remove client from graph
-					if (MainFrame.main.panel.graphLoaded)
-						MainFrame.main.panel.graph.removeClient(cp);
-
-					// Send offline message to any open control panels
-					for (ClientCPFrame ccpf : UIStore.clientControlPanels) {
-						if (ccpf.profile.getCid() == cp.getCid()) {
-							ccpf.clientOffline();
-						}
-					}
-
+					clientNowOffline(cp);
 				}
 			}
 
+		}
+
+		public static void clientNowOnline(ClientProfile cp) {
+			if (MainFrame.main.panel.listLoaded)
+				MainFrame.main.panel.list.addClient(cp);
+			if (MainFrame.main.panel.graphLoaded)
+				MainFrame.main.panel.graph.addClient(cp);
+
+			for (ClientCPFrame ccpf : UIStore.clientControlPanels) {
+				if (ccpf.profile.getCid() == cp.getCid()) {
+					ccpf.clientOnline();
+				}
+			}
+		}
+
+		public static void clientNowOffline(ClientProfile cp) {
+			// Remove client from table and detail if applicable
+			if (MainFrame.main.panel.listLoaded) {
+				MainFrame.main.panel.list.removeClient(cp);
+				ClientProfile detailTarget = MainFrame.main.dp.getTarget();
+				if (detailTarget != null && cp.getCid() == detailTarget.getCid()) {
+					MainFrame.main.dp.closeDetail();
+					MainFrame.main.panel.console.addLine(
+							"The client (" + cp.getAttr(SimpleAttribute.NET_EXTERNALIP) + ") has disconnected",
+							LineType.ORANGE);
+				}
+			}
+
+			// Remove client from graph
+			if (MainFrame.main.panel.graphLoaded)
+				MainFrame.main.panel.graph.removeClient(cp);
+
+			// Send offline message to any open control panels
+			for (ClientCPFrame ccpf : UIStore.clientControlPanels) {
+				if (ccpf.profile.getCid() == cp.getCid()) {
+					ccpf.clientOffline();
+				}
+			}
 		}
 
 	}

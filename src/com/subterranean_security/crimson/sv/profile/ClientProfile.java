@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.Reporter;
+import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.profile.group.AttributeGroup;
 import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
@@ -427,6 +428,10 @@ public class ClientProfile implements Serializable {
 
 	public void setKeyloggerState(State keyloggerState) {
 		setAttr(SimpleAttribute.KEYLOGGER_STATE, "" + keyloggerState.ordinal());
+	}
+
+	public OSFAMILY getOSFamily() {
+		return OSFAMILY.valueOf(getAttr(SimpleAttribute.OS_FAMILY).toUpperCase());
 	}
 
 }

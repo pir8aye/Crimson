@@ -105,15 +105,19 @@ public class HostList extends JPanel {
 		add(jsp, BorderLayout.CENTER);
 	}
 
-	public void addOrUpdate(ClientProfile cp) {
+	public void addClient(ClientProfile cp) {
 		cp.loadIcons();
+		tm.add(cp);
+	}
+
+	// TODO only update cell
+	public void updateField(ClientProfile cp, AbstractAttribute aa) {
 		for (int i = 0; i < tm.getClientList().size(); i++) {
 			if (cp.getCid() == tm.getClientList().get(i).getCid()) {
 				tm.fireTableRowsUpdated(i, i);
 				return;
 			}
 		}
-		tm.add(cp);
 	}
 
 	public void removeClient(ClientProfile cp) {

