@@ -17,37 +17,18 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.platform.info;
 
-public final class IPLocation {
-	private IPLocation() {
+public final class MOBO {
+	private MOBO() {
 	}
 
-	public static String getCity() {
+	public static String getManufacturer() {
 		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
-	public static String getCountry() {
+	public static String getModel() {
 		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
-	public static String getCountryCode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getLatitude() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getLongitude() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getRegion() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

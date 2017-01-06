@@ -71,10 +71,14 @@ message InfoParam {
 	optional bool ram_usage = 5;
 	optional bool crimson_ram_usage = 6;
 	optional bool crimson_cpu_usage = 7;
-	optional string if_id = 8;
-	optional bool if_rx_speed = 9;
-	optional bool if_tx_speed = 10;
-	optional bool client_status = 11;
+	optional string nic_id = 8;
+	optional bool nic_rx_speed = 9;
+	optional bool nic_rx_bytes = 10;
+	optional bool nic_rx_packets = 11;
+	optional bool nic_tx_speed = 12;
+	optional bool nic_tx_bytes = 13;
+	optional bool nic_tx_packets = 14;
+	optional bool client_status = 15;
 }
 
 message RemoteParam {

@@ -17,9 +17,9 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.platform.info;
 
-public final class User {
+public final class USER {
 
-	private User() {
+	private USER() {
 	}
 
 	public static String getName() {

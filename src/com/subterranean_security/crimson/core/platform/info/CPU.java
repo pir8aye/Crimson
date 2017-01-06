@@ -23,6 +23,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+import org.hyperic.sigar.Cpu;
+import org.hyperic.sigar.CpuInfo;
+import org.hyperic.sigar.CpuPerc;
+import org.hyperic.sigar.SigarException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
@@ -32,20 +39,64 @@ import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.Native;
 
 public final class CPU {
+	private static final Logger log = LoggerFactory.getLogger(CPU.class);
+
 	private CPU() {
 	}
 
+	/*
+	 * SIGAR objects
+	 */
+
+	private static Cpu timing;
+	private static CpuInfo[] general;
+	private static CpuPerc[] percentage;
+
+	public static void initialize() {
+
+		try {
+			timing = SigarStore.getSigar().getCpu();
+		} catch (SigarException e) {
+			log.error("Failed to collect CPU timing information");
+		}
+
+		try {
+			general = SigarStore.getSigar().getCpuInfoList();
+		} catch (SigarException e) {
+			log.error("Failed to collect general CPU information");
+		}
+
+		try {
+			percentage = SigarStore.getSigar().getCpuPercList();
+		} catch (SigarException e) {
+			log.error("Failed to collect CPU percentage information");
+		}
+	}
+
+	public static void refreshPercentages() {
+		try {
+			percentage = SigarStore.getSigar().getCpuPercList();
+		} catch (SigarException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/*
+	 * Information retrieval
+	 */
+
 	public static String getClientUsage() {
-		SigarStore.refreshProcessCpu();
-		return String.format("%5.2f", SigarStore.getProcessCpu().getPercent() * 100);
+		CRIMSON.refreshProcessCpu();
+		return String.format("%5.2f", CRIMSON.getProcessCpu().getPercent() * 100);
 	}
 
 	public static int getCount() {
-		return SigarStore.getCpuInfos().length;
+		return general.length;
 	}
 
 	public static String getPrimaryVendor() {
-		if (SigarStore.getCpuInfos().length > 0) {
+		if (general.length > 0) {
 			return getVendor(0);
 		} else {
 			return "";
@@ -53,11 +104,11 @@ public final class CPU {
 	}
 
 	public static String getVendor(int i) {
-		return SigarStore.getCpuInfos()[i].getVendor();
+		return general[i].getVendor();
 	}
 
 	public static String getPrimaryModel() {
-		if (SigarStore.getCpuInfos().length > 0) {
+		if (general.length > 0) {
 			return getModel(0);
 		} else {
 			return "";
@@ -65,7 +116,7 @@ public final class CPU {
 	}
 
 	public static String getModel(int i) {
-		String model = SigarStore.getCpuInfos()[i].getModel().replaceAll("\\(.+?\\)", "");
+		String model = general[i].getModel().replaceAll("\\(.+?\\)", "");
 		try {
 			model = model.substring(0, model.indexOf("CPU @")).trim();
 		} catch (Exception e) {
@@ -75,20 +126,20 @@ public final class CPU {
 	}
 
 	public static String getMaxFrequency(int i) {
-		return CUtil.UnitTranslator.translateCpuFrequency(SigarStore.getCpuInfos()[i].getMhz());
+		return CUtil.UnitTranslator.translateCpuFrequency(general[i].getMhz());
 	}
 
 	public static String getCores(int i) {
-		return "" + SigarStore.getCpuInfos()[i].getTotalCores();
+		return "" + general[i].getTotalCores();
 	}
 
 	public static String getCache(int i) {
-		return CUtil.UnitTranslator.translateCacheSize(SigarStore.getCpuInfos()[i].getCacheSize());
+		return CUtil.UnitTranslator.translateCacheSize(general[i].getCacheSize());
 	}
 
 	public static String getTotalUsage(int i) {
-		SigarStore.refreshCpuPerc();
-		return String.format("%5.2f", SigarStore.getCpuPercs()[i].getCombined() * 100);
+		refreshPercentages();
+		return String.format("%5.2f", percentage[i].getCombined() * 100);
 	}
 
 	public static String computeGID(int i) {
@@ -115,23 +166,19 @@ public final class CPU {
 	}
 
 	public static ArrayList<AttributeGroupContainer> getAttributes() {
-		ArrayList<AttributeGroupContainer> attributes = new ArrayList<AttributeGroupContainer>();
-		for (int i = 0; i < SigarStore.getCpuInfos().length; i++) {
+		ArrayList<AttributeGroupContainer> a = new ArrayList<AttributeGroupContainer>();
+		for (int i = 0; i < general.length; i++) {
 			AttributeGroupContainer.Builder template = AttributeGroupContainer.newBuilder()
 					.setGroupType(GroupAttributeType.CPU.ordinal()).setGroupId(computeGID(i));
 
-			attributes.add(
-					template.setAttributeType(AttributeGroupType.CPU_CORES.ordinal()).setValue(getCores(i)).build());
-			attributes.add(
-					template.setAttributeType(AttributeGroupType.CPU_MODEL.ordinal()).setValue(getModel(i)).build());
-			attributes.add(
-					template.setAttributeType(AttributeGroupType.CPU_VENDOR.ordinal()).setValue(getVendor(i)).build());
-			attributes.add(
-					template.setAttributeType(AttributeGroupType.CPU_CACHE.ordinal()).setValue(getCache(i)).build());
-			attributes.add(template.setAttributeType(AttributeGroupType.CPU_FREQUENCY_MAX.ordinal())
-					.setValue(getMaxFrequency(i)).build());
+			a.add(template.setAttributeType(AttributeGroupType.CPU_CORES.ordinal()).setValue(getCores(i)).build());
+			a.add(template.setAttributeType(AttributeGroupType.CPU_MODEL.ordinal()).setValue(getModel(i)).build());
+			a.add(template.setAttributeType(AttributeGroupType.CPU_VENDOR.ordinal()).setValue(getVendor(i)).build());
+			a.add(template.setAttributeType(AttributeGroupType.CPU_CACHE.ordinal()).setValue(getCache(i)).build());
+			a.add(template.setAttributeType(AttributeGroupType.CPU_FREQUENCY_MAX.ordinal()).setValue(getMaxFrequency(i))
+					.build());
 		}
-		return attributes;
+		return a;
 	}
 
 	public static class LinuxTemperature {

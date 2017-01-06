@@ -77,13 +77,13 @@ public final class Reporter {
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setJreVersion(Java.getVersion());
+			rb.setJreVersion(JAVA.getVersion());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Java version: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setJreVendor(Java.getVendor());
+			rb.setJreVendor(JAVA.getVendor());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Java vendor: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));

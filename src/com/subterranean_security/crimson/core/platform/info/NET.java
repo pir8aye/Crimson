@@ -17,73 +17,76 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.platform.info;
 
-import java.io.File;
-import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
+import org.hyperic.sigar.NetInfo;
+import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.util.CUtil;
 
-public final class Linux {
-	private Linux() {
+public final class NET {
+	private static final Logger log = LoggerFactory.getLogger(NET.class);
+
+	private NET() {
 	}
 
-	private static final Logger log = LoggerFactory.getLogger(Linux.class);
+	/*
+	 * SIGAR objects
+	 */
 
-	public static String getWM() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	private static NetInfo netInfo;
 
-	public static String getTerminal() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getShell() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getPackages() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getKernel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getDistro() {
-		File os_release = new File("/etc/os-release");
-
-		if (os_release.exists() && os_release.canRead()) {
-			try {
-				for (String s : CUtil.Files.readFileLines(os_release)) {
-					s = s.trim();
-					if (s.toUpperCase().startsWith("PRETTY_NAME")) {
-						return s.substring(s.indexOf("\"") + 1, s.lastIndexOf("\""));
-					}
-				}
-			} catch (IOException e) {
-				log.warn("Failed to read os-release");
-			}
+	public static void initialize() {
+		try {
+			netInfo = SigarStore.getSigar().getNetInfo();
+		} catch (SigarException e1) {
+			log.error("Failed to open collection on network information");
 		}
-
-		File issue = new File("/etc/issue");
-
-		if (issue.exists() && issue.canRead()) {
-			try {
-				for (String s : CUtil.Files.readFileLines(issue)) {
-					return s.trim();
-				}
-			} catch (IOException e) {
-				log.warn("Failed to read issue");
-			}
-		}
-
-		return "Unknown Linux";
 	}
+
+	public static void refreshNetInfo() {
+		try {
+			netInfo.gather(SigarStore.getSigar());
+		} catch (SigarException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/*
+	 * Information retrieval
+	 */
+
+	public static String getHostname() {
+		try {
+			return InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			return "unknown";
+		}
+	}
+
+	public static String getFQDN() {
+		return netInfo.getDomainName();
+	}
+
+	public static String getDNS1() {
+		return netInfo.getPrimaryDns();
+	}
+
+	public static String getDNS2() {
+		return netInfo.getSecondaryDns();
+	}
+
+	public static String getDefaultGateway() {
+		return netInfo.getDefaultGateway();
+	}
+
+	public static String getExternalIP() {
+		return CUtil.Network.getEIP();
+	}
+
 }

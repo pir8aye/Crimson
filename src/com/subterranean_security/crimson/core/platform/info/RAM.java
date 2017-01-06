@@ -17,12 +17,47 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.platform.info;
 
+import org.hyperic.sigar.Mem;
+import org.hyperic.sigar.SigarException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.util.CUtil;
 
 public final class RAM {
+	private static final Logger log = LoggerFactory.getLogger(RAM.class);
+
 	private RAM() {
 	}
+
+	/*
+	 * SIGAR objects
+	 */
+
+	private static Mem mem;
+
+	public static void initialize() {
+		try {
+			mem = SigarStore.getSigar().getMem();
+		} catch (SigarException e) {
+			log.error("Failed to collect memory information");
+		}
+
+	}
+
+	public static void refreshMem() {
+		try {
+			mem.gather(SigarStore.getSigar());
+		} catch (SigarException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/*
+	 * Information retrieval
+	 */
 
 	// Try biosdecode/dmidecode
 	public static String getFrequency() {
@@ -34,17 +69,17 @@ public final class RAM {
 	}
 
 	public static String getSize() {
-		return CUtil.UnitTranslator.translateMemSize(SigarStore.getMem().getTotal());
+		return CUtil.UnitTranslator.translateMemSize(mem.getTotal());
 	}
 
 	public static String getUsage() {
-		SigarStore.refreshMem();
-		return CUtil.UnitTranslator.translateMemSize(SigarStore.getMem().getActualUsed());
+		refreshMem();
+		return CUtil.UnitTranslator.translateMemSize(mem.getActualUsed());
 	}
 
 	public static String getClientUsage() {
-		SigarStore.refreshProcessMem();
-		return CUtil.UnitTranslator.translateMemSize(SigarStore.getProcessMem().getResident());
+		CRIMSON.refreshProcessMem();
+		return CUtil.UnitTranslator.translateMemSize(CRIMSON.getProcessMem().getResident());
 	}
 
 }

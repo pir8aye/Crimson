@@ -1,166 +1,66 @@
+/******************************************************************************
+ *                                                                            *
+ *                    Copyright 2016 Subterranean Security                    *
+ *                                                                            *
+ *  Licensed under the Apache License, Version 2.0 (the "License");           *
+ *  you may not use this file except in compliance with the License.          *
+ *  You may obtain a copy of the License at                                   *
+ *                                                                            *
+ *      http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                            *
+ *  Unless required by applicable law or agreed to in writing, software       *
+ *  distributed under the License is distributed on an "AS IS" BASIS,         *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *  See the License for the specific language governing permissions and       *
+ *  limitations under the License.                                            *
+ *                                                                            *
+ *****************************************************************************/
 package com.subterranean_security.crimson.core.platform;
 
 import java.io.File;
 
-import org.hyperic.sigar.CpuInfo;
-import org.hyperic.sigar.CpuPerc;
-import org.hyperic.sigar.Mem;
-import org.hyperic.sigar.NetInfo;
-import org.hyperic.sigar.OperatingSystem;
-import org.hyperic.sigar.ProcCpu;
-import org.hyperic.sigar.ProcMem;
 import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
-import org.hyperic.sigar.Uptime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.platform.info.CPU;
+import com.subterranean_security.crimson.core.platform.info.CRIMSON;
+import com.subterranean_security.crimson.core.platform.info.NET;
+import com.subterranean_security.crimson.core.platform.info.NIC;
+import com.subterranean_security.crimson.core.platform.info.OS;
+import com.subterranean_security.crimson.core.platform.info.RAM;
 
 public final class SigarStore {
+	private static final Logger log = LoggerFactory.getLogger(SigarStore.class);
 
 	private SigarStore() {
 	}
 
 	private static Sigar sigar;
 
-	// SIGAR objects
-	private static OperatingSystem os;
-	private static Uptime uptime;
-	private static Mem mem;
-	private static CpuInfo[] cpuInfo;
-	private static CpuPerc[] cpuPerc;
-	private static NetInfo netInfo;
-
-	public static void refreshOperatingSystem() {
-		try {
-			os.gather(sigar);
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public static OperatingSystem getOperatingSystem() {
-		return os;
-	}
-
-	public static Uptime getUptime() {
-		try {
-			uptime.gather(sigar);
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return uptime;
-	}
-
-	public static void refreshMem() {
-		try {
-			mem.gather(sigar);
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public static Mem getMem() {
-		return mem;
-	}
-
-	public static CpuInfo[] getCpuInfos() {
-		return cpuInfo;
-	}
-
-	public static void refreshCpuPerc() {
-		try {
-			cpuPerc = sigar.getCpuPercList();
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public static CpuPerc[] getCpuPercs() {
-		return cpuPerc;
-	}
-
-	public static void refreshNetInfo() {
-		try {
-			netInfo.gather(sigar);
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public static NetInfo getNetInfo() {
-		return netInfo;
-	}
-
-	// Crimson Process
-	private static long pID = 0;
-	private static ProcMem processMem;
-	private static ProcCpu processCpu;
-
-	public static long getPID() {
-		return pID;
-	}
-
-	public static void refreshProcessMem() {
-		try {
-			processMem.gather(sigar, pID);
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public static void refreshProcessCpu() {
-		try {
-			processCpu.gather(sigar, pID);
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public static ProcMem getProcessMem() {
-		return processMem;
-	}
-
-	public static ProcCpu getProcessCpu() {
-		return processCpu;
-	}
-
 	public static void loadSigar() {
 		System.setProperty("java.library.path",
 				new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/" + Platform.osFamily.toString())
 						.getAbsolutePath());
 
-		sigar = new Sigar();
-
-		// Initialize memory information
 		try {
-			uptime = sigar.getUptime();
-			mem = sigar.getMem();
-			pID = sigar.getPid();
-			processMem = sigar.getProcMem(pID);
-			processCpu = sigar.getProcCpu(pID);
-			os = OperatingSystem.getInstance();
-			cpuInfo = sigar.getCpuInfoList();
-			cpuPerc = sigar.getCpuPercList();
-		} catch (SigarException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			sigar = new Sigar();
+		} catch (Exception e) {
+			log.error("Sigar failed to autoload!");
+			return;
 		}
 
-		// Initialize general network information
-		try {
-			netInfo = sigar.getNetInfo();
-		} catch (SigarException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		initialize();
+	}
 
+	public static void initialize() {
+		CPU.initialize();
+		CRIMSON.initialize();
+		NET.initialize();
+		NIC.initialize();
+		OS.initialize();
+		RAM.initialize();
 	}
 
 	public static Sigar getSigar() {

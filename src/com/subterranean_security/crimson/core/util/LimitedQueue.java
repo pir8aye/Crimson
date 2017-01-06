@@ -15,60 +15,26 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.util;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 
-import com.subterranean_security.crimson.client.Client;
+public class LimitedQueue<K> extends ArrayList<K> {
 
-public class CLIENT {
-	private CLIENT() {
+	private static final long serialVersionUID = 1L;
+
+	private int size;
+
+	public LimitedQueue(int size) {
+		this.size = size;
 	}
 
-	private static ArrayList<String> status = new ArrayList<String>();
-
-	public static String getStatus() {
-		if (status.size() > 0) {
-			String stat = "";
-			for (String s : status) {
-				stat += ";" + s;
-			}
-			return stat.substring(1);
-		} else {
-			return "IDLE";
+	public boolean add(K k) {
+		boolean r = super.add(k);
+		if (size() > size) {
+			removeRange(0, size() - size - 1);
 		}
-	}
-
-	public static void addStatus(String s) {
-		status.add(s);
-	}
-
-	public static void cancelStatus(String s) {
-		Iterator<String> it = status.iterator();
-		while (it.hasNext()) {
-			if (it.next().equals(s)) {
-				it.remove();
-			}
-		}
-	}
-
-	public static String getBasePath() {
-		try {
-			return CLIENT.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-		} catch (URISyntaxException e) {
-			return "N/A";
-		}
-	}
-
-	public static String getInstallDate() {
-		try {
-			return new Date(Client.clientDB.getLong("install.timestamp")).toString();
-		} catch (Exception e) {
-			return "N/A";
-		}
+		return r;
 	}
 
 }

@@ -17,47 +17,73 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.platform.info;
 
-import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.platform.Platform.ARCH;
+import java.io.File;
+import java.io.IOException;
 
-public final class Java {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	private Java() {
+import com.subterranean_security.crimson.core.util.CUtil;
+
+public final class LIN {
+	private LIN() {
 	}
 
-	public static String getVersion() {
-		return System.getProperty("java.version");
+	private static final Logger log = LoggerFactory.getLogger(LIN.class);
+
+	public static String getWM() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static String getVendor() {
-		return System.getProperty("java.vendor");
+	public static String getTerminal() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static String getHome() {
-		return System.getProperty("java.home");
+	public static String getShell() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static String getStartTime() {
-		return Common.start.toString();
+	public static String getPackages() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static String getArch() {
-		return System.getProperty("os.arch");
+	public static String getKernel() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static ARCH getARCH() {
-		String arch = getArch().toLowerCase();
+	public static String getDistro() {
+		File os_release = new File("/etc/os-release");
 
-		if (arch.equals("sparc")) {
-			return ARCH.SPARC;
-		} else if (arch.equals("x86") || arch.equals("i386") || arch.equals("i486") || arch.equals("i586")
-				|| arch.equals("i686")) {
-			return ARCH.X86;
-		} else if (arch.equals("x86_64") || arch.equals("amd64") || arch.equals("k8")) {
-			return ARCH.X64;
-		} else {
-			return ARCH.UNSUPPORTED;
+		if (os_release.exists() && os_release.canRead()) {
+			try {
+				for (String s : CUtil.Files.readFileLines(os_release)) {
+					s = s.trim();
+					if (s.toUpperCase().startsWith("PRETTY_NAME")) {
+						return s.substring(s.indexOf("\"") + 1, s.lastIndexOf("\""));
+					}
+				}
+			} catch (IOException e) {
+				log.warn("Failed to read os-release");
+			}
 		}
-	}
 
+		File issue = new File("/etc/issue");
+
+		if (issue.exists() && issue.canRead()) {
+			try {
+				for (String s : CUtil.Files.readFileLines(issue)) {
+					return s.trim();
+				}
+			} catch (IOException e) {
+				log.warn("Failed to read issue");
+			}
+		}
+
+		return "Unknown Linux";
+	}
 }

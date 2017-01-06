@@ -21,15 +21,65 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.hyperic.sigar.OperatingSystem;
+import org.hyperic.sigar.SigarException;
+import org.hyperic.sigar.Uptime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.platform.Platform.ARCH;
 import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.util.Native;
 
 public final class OS {
+	private static final Logger log = LoggerFactory.getLogger(OS.class);
 
 	private OS() {
 	}
+
+	/*
+	 * SIGAR objects
+	 */
+
+	private static OperatingSystem os;
+	private static Uptime uptime;
+
+	public static void initialize() {
+		try {
+			uptime = SigarStore.getSigar().getUptime();
+		} catch (SigarException e) {
+			log.error("Failed to collect uptime information");
+		}
+		os = OperatingSystem.getInstance();
+	}
+
+	public static void refreshOperatingSystem() {
+		try {
+			os.gather(SigarStore.getSigar());
+		} catch (SigarException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static OperatingSystem getOperatingSystem() {
+		return os;
+	}
+
+	public static Uptime getUptime() {
+		try {
+			uptime.gather(SigarStore.getSigar());
+		} catch (SigarException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return uptime;
+	}
+
+	/*
+	 * Information retrieval
+	 */
 
 	public static String getLanguage() {
 		return new Locale(System.getProperty("user.language")).getDisplayName();
@@ -40,7 +90,7 @@ public final class OS {
 	}
 
 	public static String getArch() {
-		return SigarStore.getOperatingSystem().getArch();
+		return os.getArch();
 	}
 
 	public static String getActiveWindow() {
@@ -48,7 +98,7 @@ public final class OS {
 	}
 
 	public static String getEndian() {
-		return SigarStore.getOperatingSystem().getCpuEndian();
+		return os.getCpuEndian();
 	}
 
 	public static String getVirtualization() {
@@ -57,7 +107,7 @@ public final class OS {
 	}
 
 	public static String getStartTime() {
-		return new Date(System.currentTimeMillis() - (long) (SigarStore.getUptime().getUptime() * 1000)).toString();
+		return new Date(System.currentTimeMillis() - (long) (uptime.getUptime() * 1000)).toString();
 	}
 
 	public static OSFAMILY getFamily() {
@@ -81,7 +131,7 @@ public final class OS {
 
 		switch (Platform.osFamily) {
 		case LIN:
-			return Linux.getDistro();
+			return LIN.getDistro();
 		default:
 			return System.getProperty("os.name");
 

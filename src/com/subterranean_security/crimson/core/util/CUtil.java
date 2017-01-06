@@ -1125,15 +1125,41 @@ public enum CUtil {
 
 	public static class UnitTranslator {
 
+		public static String translateNicOutput(long l) {
+			if (l < 1024) {
+				return String.format("%.2f  B", l / 1.0);
+			} else if (l < 1048576) {
+				return String.format("%.2f KB", l / 1024.0);
+			} else if (l < 1073741824) {
+				return String.format("%.2f MB", l / (1048576.0));
+			} else if (l < 1099511627776L) {
+				return String.format("%.2f GB", l / (1073741824.0));
+			} else {
+				return String.format("%.2f TB", l / (1099511627776L));
+			}
+		}
+
+		public static String translateNicSpeed(double l) {
+			if (l < 1024) {
+				return String.format("%.2f   B/s", l / 1.0);
+			} else if (l < 1048576) {
+				return String.format("%.2f KiB/s", l / 1024.0);
+			} else if (l < 1073741824) {
+				return String.format("%.2f MiB/s", l / (1048576.0));
+			} else {
+				return String.format("%.2f GiB/s", l / (1073741824.0));
+			}
+		}
+
 		public static String translateDispMemSize(int l) {
 			if (l < 1024) {
 				return String.format("%.2f  B", l / 1.0);
-			} else if (l < 1024 * 1024) {
+			} else if (l < 1048576) {
 				return String.format("%.2f KB", l / 1024.0);
-			} else if (l < 1024 * 1024 * 1024) {
-				return String.format("%.2f MB", l / (1024.0 * 1024.0));
+			} else if (l < 1073741824) {
+				return String.format("%.2f MB", l / (1048576.0));
 			} else {
-				return String.format("%.2f GB", l / (1024.0 * 1024.0 * 1024.0));
+				return String.format("%.2f GB", l / (1073741824.0));
 			}
 		}
 
@@ -1162,6 +1188,7 @@ public enum CUtil {
 				return String.format("%.2f GHz", l / 1000.0);
 			}
 		}
+
 	}
 
 	public static class Logging {

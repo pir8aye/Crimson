@@ -17,43 +17,37 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.platform.info;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import com.subterranean_security.crimson.core.platform.SigarStore;
-import com.subterranean_security.crimson.core.util.CUtil;
-
-public final class Net {
-
-	private Net() {
+public final class IPLOC {
+	private IPLOC() {
 	}
 
-	public static String getHostname() {
-		try {
-			return InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			return "unknown";
-		}
+	public static String getCity() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static String getFQDN() {
-		return SigarStore.getNetInfo().getDomainName();
+	public static String getCountry() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static String getDNS1() {
-		return SigarStore.getNetInfo().getPrimaryDns();
+	public static String getCountryCode() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static String getDNS2() {
-		return SigarStore.getNetInfo().getSecondaryDns();
+	public static String getLatitude() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static String getDefaultGateway() {
-		return SigarStore.getNetInfo().getDefaultGateway();
+	public static String getLongitude() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public static String getExternalIP() {
-		return CUtil.Network.getEIP();
+	public static String getRegion() {
+		// TODO Auto-generated method stub
+		return null;
 	}
-
 }
