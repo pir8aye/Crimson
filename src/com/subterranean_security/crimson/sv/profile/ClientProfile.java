@@ -92,6 +92,10 @@ public class ClientProfile implements Serializable {
 		return getModernAttributesOfGroup(GroupAttributeType.CPU).iterator().next();
 	}
 
+	public AttributeGroup getPrimaryNIC() {
+		return getModernAttributesOfGroup(GroupAttributeType.NIC).iterator().next();
+	}
+
 	public ArrayList<AttributeGroup> getAttributeGroupList(GroupAttributeType g) {
 		ArrayList<AttributeGroup> list = new ArrayList<AttributeGroup>();
 		list.addAll(groups.get(g.ordinal()).values());

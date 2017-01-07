@@ -32,10 +32,14 @@ public class StatStream {
 	private double conversion;
 
 	public StatStream(double conversion, int keep, int period, Callable<Long> c) {
-		points = new LimitedQueue<Long>(keep);
-		times = new LimitedQueue<Long>(keep);
+		this(conversion, keep);
 		this.c = c;
 		this.period = period;
+	}
+
+	public StatStream(double conversion, int keep) {
+		points = new LimitedQueue<Long>(keep);
+		times = new LimitedQueue<Long>(keep);
 		this.conversion = conversion;
 	}
 
@@ -50,15 +54,13 @@ public class StatStream {
 				public void run() {
 					try {
 						long d = c.call();
-						System.out.println("d = " + d);
-						points.add(d);
 						times.add(System.currentTimeMillis());
+						points.add(d);
+
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
-					System.out.println("Speed = " + getInstantaneousSpeed());
 
 				}
 
@@ -81,7 +83,7 @@ public class StatStream {
 			long n = points.get(s - 1) - points.get(s - 2);
 			long d = times.get(s - 1) - times.get(s - 2);
 
-			return (n / d) * conversion;
+			return (n * conversion / d);
 		}
 	}
 

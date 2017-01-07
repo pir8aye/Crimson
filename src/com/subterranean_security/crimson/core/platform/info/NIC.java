@@ -44,6 +44,9 @@ public class NIC {
 	private static ArrayList<NetInterfaceStat> stat;
 
 	public static void initialize() {
+		config = new ArrayList<NetInterfaceConfig>();
+		stat = new ArrayList<NetInterfaceStat>();
+
 		String[] everyNic = null;
 		try {
 			everyNic = SigarStore.getSigar().getNetInterfaceList();
@@ -64,7 +67,14 @@ public class NIC {
 				return;
 			}
 
-			if (!nic.getAddress().equals("0.0.0.0") || !containsMAC(nic.getHwaddr())) {
+			// TODO KEEP LOOPBACK!!!
+			if (nic.getAddress().equals("127.0.0.1")) {
+				continue;
+			}
+
+			// TODO unconnected interfaces may also be 0.0.0.0
+			// figure out how to filter non-physical interfaces
+			if (!nic.getAddress().equals("0.0.0.0")) {
 				config.add(nic);
 				stat.add(nis);
 			}
@@ -82,12 +92,12 @@ public class NIC {
 		return false;
 	}
 
-	public static int getNicCount() {
+	public static int getCount() {
 		return config.size();
 	}
 
 	public static String computeGID(int i) {
-		return GroupAttributeType.NIC.ordinal() + getMAC(i);
+		return GroupAttributeType.NIC.ordinal() + getMAC(i).replaceAll(":", "");
 	}
 
 	public static void refresh(int i) {
@@ -141,7 +151,7 @@ public class NIC {
 
 	public static ArrayList<AttributeGroupContainer> getAttributes() {
 		ArrayList<AttributeGroupContainer> a = new ArrayList<AttributeGroupContainer>();
-		for (int i = 0; i < getNicCount(); i++) {
+		for (int i = 0; i < getCount(); i++) {
 			AttributeGroupContainer.Builder template = AttributeGroupContainer.newBuilder()
 					.setGroupType(GroupAttributeType.NIC.ordinal()).setGroupId(computeGID(i));
 

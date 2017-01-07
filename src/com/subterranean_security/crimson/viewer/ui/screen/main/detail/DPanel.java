@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common.panels.dpanel;
+package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
@@ -37,10 +37,10 @@ import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.lpanel.LPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Preview;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.Processor;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.WorldMap;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules.NetInterfaces;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules.Preview;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules.Processor;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules.WorldMap;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -192,6 +192,7 @@ class Detail extends JPanel {
 	}
 
 	private boolean processor = false;
+	private boolean nic = false;
 	private boolean preview = false;
 	private boolean map = false;
 
@@ -205,6 +206,11 @@ class Detail extends JPanel {
 
 		if (processor) {
 			Processor p = new Processor();
+			modules.add(p);
+			listPanel.addPanel(p);
+		}
+		if (nic) {
+			NetInterfaces p = new NetInterfaces();
 			modules.add(p);
 			listPanel.addPanel(p);
 		}
@@ -226,6 +232,7 @@ class Detail extends JPanel {
 
 		try {
 			processor = ViewerStore.Databases.local.getBoolean("detail.processor");
+			nic = ViewerStore.Databases.local.getBoolean("detail.nic");
 			preview = ViewerStore.Databases.local.getBoolean("detail.preview");
 			map = ViewerStore.Databases.local.getBoolean("detail.map");
 		} catch (Exception e1) {
@@ -317,6 +324,59 @@ class Detail extends JPanel {
 
 		});
 		menu.add(toggleProcessor);
+
+		//
+		JButton toggleNic = new JButton();
+		if (nic) {
+			toggleNic.setIcon(UIUtil.getIcon("icons16/general/processor_del.png"));
+		} else {
+			toggleNic.setIcon(UIUtil.getIcon("icons16/general/processor_add.png"));
+		}
+		toggleNic.setToolTipText("Toggle Network Adapter");
+		toggleNic.setMargin(new Insets(1, 1, 1, 1));
+		toggleNic.addActionListener((ActionEvent e) -> {
+
+			toggleNic.setEnabled(false);
+
+			new SwingWorker<Void, Void>() {
+				@Override
+				protected Void doInBackground() throws Exception {
+					ViewerStore.Databases.local.storeObject("detail.nic", nic = !nic);
+					return null;
+				}
+
+				protected void done() {
+					if (nic) {
+						toggleNic.setIcon(UIUtil.getIcon("icons16/general/processor_del.png"));
+
+						// add processor module
+						NetInterfaces p = new NetInterfaces();
+						p.setTarget(target);
+						p.setShowing(true);
+						modules.add(p);
+						listPanel.addPanel(p);
+					} else {
+						toggleNic.setIcon(UIUtil.getIcon("icons16/general/processor_add.png"));
+
+						// remove module
+						for (DModule dm : modules) {
+							if (dm instanceof NetInterfaces) {
+								listPanel.removePanel((Processor) dm);
+								modules.remove(dm);
+								dm.setShowing(false);
+								break;
+							}
+						}
+					}
+					toggleNic.setEnabled(true);
+					listPanel.revalidate();
+					listPanel.repaint();
+				};
+			}.execute();
+
+		});
+		menu.add(toggleNic);
+		//
 
 		JButton togglePreview = new JButton();
 		if (preview) {

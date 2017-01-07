@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
+package com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -42,46 +42,75 @@ import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
+import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
 
 import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
+import info.monitorenter.gui.chart.rangepolicies.RangePolicyMinimumViewport;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
 import info.monitorenter.util.Range;
 
-public class Processor extends JPanel implements DModule {
+public class NetInterfaces extends JPanel implements DModule {
 
 	private static final long serialVersionUID = 1L;
 
 	private long updatePeriod = 900;
 
-	private ITrace2D trace = new Trace2DLtd(60);
+	private ITrace2D tx = new Trace2DLtd(60);
+	private ITrace2D rx = new Trace2DLtd(60);
 
 	private boolean showing = false;
 
 	private JLabel val_usage;
 
-	private JLabel lblTemperatureVar;
+	private JLabel lblTypeVar;
 
 	private Chart2D chart;
 
-	private JLabel lblFrequencyVar;
+	private JLabel lblMacVar;
 
-	public Processor() {
+	public NetInterfaces() {
+		initChart();
+		init();
+	}
+
+	public void initChart() {
+		tx.setColor(Color.RED);
+		rx.setColor(Color.GREEN);
+
+		chart = new Chart2D();
+		chart.setUseAntialiasing(true);
+		chart.setBackground(Color.WHITE);
+		chart.getAxisX().setVisible(false);
+		chart.getAxisY().setRangePolicy(new RangePolicyMinimumViewport(new Range(0, 1024)));
+		chart.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(0, 60)));
+		chart.getAxisX().setPaintGrid(false);
+		chart.getAxisX().setPaintScale(false);
+		chart.getAxisY().setVisible(false);
+		chart.getAxisY().setPaintGrid(true);
+		chart.getAxisY().setPaintScale(false);
+		chart.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		chart.setPaintLabels(false);
+		chart.setAutoscrolls(true);
+		chart.addTrace(tx);
+		chart.addTrace(rx);
+	}
+
+	public void init() {
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Processor", TitledBorder.CENTER,
-				TitledBorder.TOP, null, new Color(51, 51, 51)));
+		panel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Primary Network Interface",
+				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWeights = new double[] { 1.0 };
 		gbl_panel.rowHeights = new int[] { 57, 0, 0, 0 };
 		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
-
-		trace.setColor(Color.RED);
 
 		JPanel panel_3 = new JPanel();
 		panel_3.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -98,27 +127,12 @@ public class Processor extends JPanel implements DModule {
 		gbl_panel_3.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 		panel_3.setLayout(gbl_panel_3);
 
-		chart = new Chart2D();
 		GridBagConstraints gbc_chart = new GridBagConstraints();
 		gbc_chart.insets = new Insets(0, 0, 5, 0);
 		gbc_chart.fill = GridBagConstraints.BOTH;
 		gbc_chart.gridx = 0;
 		gbc_chart.gridy = 0;
 		panel_3.add(chart, gbc_chart);
-		chart.setUseAntialiasing(true);
-		chart.setBackground(Color.WHITE);
-		chart.getAxisX().setVisible(false);
-		chart.getAxisY().setRangePolicy(new RangePolicyFixedViewport(new Range(0, 100)));
-		chart.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(0, 60)));
-		chart.getAxisX().setPaintGrid(false);
-		chart.getAxisX().setPaintScale(false);
-		chart.getAxisY().setVisible(false);
-		chart.getAxisY().setPaintGrid(true);
-		chart.getAxisY().setPaintScale(false);
-		chart.addTrace(trace);
-		chart.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		chart.setPaintLabels(false);
-		chart.setAutoscrolls(true);
 
 		val_usage = new JLabel("Loading...");
 		val_usage.setFont(new Font("Dialog", Font.BOLD, 9));
@@ -142,62 +156,62 @@ public class Processor extends JPanel implements DModule {
 		gbl_panel_2.rowWeights = new double[] { 0.0, 0.0, 0.0 };
 		panel_2.setLayout(gbl_panel_2);
 
-		JLabel lblModel = new JLabel("Model:");
-		lblModel.setFont(new Font("Dialog", Font.BOLD, 9));
-		GridBagConstraints gbc_lblModel = new GridBagConstraints();
-		gbc_lblModel.fill = GridBagConstraints.BOTH;
-		gbc_lblModel.insets = new Insets(0, 0, 5, 5);
-		gbc_lblModel.gridx = 0;
-		gbc_lblModel.gridy = 0;
-		panel_2.add(lblModel, gbc_lblModel);
+		JLabel lblIp = new JLabel("IP:");
+		lblIp.setFont(new Font("Dialog", Font.BOLD, 9));
+		GridBagConstraints gbc_lblIp = new GridBagConstraints();
+		gbc_lblIp.fill = GridBagConstraints.BOTH;
+		gbc_lblIp.insets = new Insets(0, 0, 5, 5);
+		gbc_lblIp.gridx = 0;
+		gbc_lblIp.gridy = 0;
+		panel_2.add(lblIp, gbc_lblIp);
 
-		lblModelVar = new JLabel("Loading...");
-		lblModelVar.setFont(new Font("Dialog", Font.BOLD, 9));
-		lblModelVar.setHorizontalAlignment(SwingConstants.TRAILING);
-		GridBagConstraints gbc_lblModelVar = new GridBagConstraints();
-		gbc_lblModelVar.fill = GridBagConstraints.BOTH;
-		gbc_lblModelVar.insets = new Insets(0, 0, 5, 0);
-		gbc_lblModelVar.gridx = 1;
-		gbc_lblModelVar.gridy = 0;
-		panel_2.add(lblModelVar, gbc_lblModelVar);
+		lblIpVar = new JLabel("Loading...");
+		lblIpVar.setFont(new Font("Dialog", Font.BOLD, 9));
+		lblIpVar.setHorizontalAlignment(SwingConstants.TRAILING);
+		GridBagConstraints gbc_lblIpVar = new GridBagConstraints();
+		gbc_lblIpVar.fill = GridBagConstraints.BOTH;
+		gbc_lblIpVar.insets = new Insets(0, 0, 5, 0);
+		gbc_lblIpVar.gridx = 1;
+		gbc_lblIpVar.gridy = 0;
+		panel_2.add(lblIpVar, gbc_lblIpVar);
 
-		JLabel lblFrequency = new JLabel("Frequency:");
-		lblFrequency.setFont(new Font("Dialog", Font.BOLD, 9));
-		GridBagConstraints gbc_lblFrequency = new GridBagConstraints();
-		gbc_lblFrequency.fill = GridBagConstraints.BOTH;
-		gbc_lblFrequency.insets = new Insets(0, 0, 5, 5);
-		gbc_lblFrequency.gridx = 0;
-		gbc_lblFrequency.gridy = 1;
-		panel_2.add(lblFrequency, gbc_lblFrequency);
+		JLabel lblMac = new JLabel("MAC:");
+		lblMac.setFont(new Font("Dialog", Font.BOLD, 9));
+		GridBagConstraints gbc_lblMac = new GridBagConstraints();
+		gbc_lblMac.fill = GridBagConstraints.BOTH;
+		gbc_lblMac.insets = new Insets(0, 0, 5, 5);
+		gbc_lblMac.gridx = 0;
+		gbc_lblMac.gridy = 1;
+		panel_2.add(lblMac, gbc_lblMac);
 
-		lblFrequencyVar = new JLabel("Loading...");
-		lblFrequencyVar.setFont(new Font("Dialog", Font.BOLD, 9));
-		lblFrequencyVar.setHorizontalAlignment(SwingConstants.TRAILING);
-		GridBagConstraints gbc_lblFrequencyVar = new GridBagConstraints();
-		gbc_lblFrequencyVar.fill = GridBagConstraints.BOTH;
-		gbc_lblFrequencyVar.insets = new Insets(0, 0, 5, 0);
-		gbc_lblFrequencyVar.gridx = 1;
-		gbc_lblFrequencyVar.gridy = 1;
-		panel_2.add(lblFrequencyVar, gbc_lblFrequencyVar);
+		lblMacVar = new JLabel("Loading...");
+		lblMacVar.setFont(new Font("Dialog", Font.BOLD, 9));
+		lblMacVar.setHorizontalAlignment(SwingConstants.TRAILING);
+		GridBagConstraints gbc_lblMacVar = new GridBagConstraints();
+		gbc_lblMacVar.fill = GridBagConstraints.BOTH;
+		gbc_lblMacVar.insets = new Insets(0, 0, 5, 0);
+		gbc_lblMacVar.gridx = 1;
+		gbc_lblMacVar.gridy = 1;
+		panel_2.add(lblMacVar, gbc_lblMacVar);
 
-		JLabel lblTemperature = new JLabel("Core Temp:");
-		lblTemperature.setFont(new Font("Dialog", Font.BOLD, 9));
-		GridBagConstraints gbc_lblTemperature = new GridBagConstraints();
-		gbc_lblTemperature.fill = GridBagConstraints.BOTH;
-		gbc_lblTemperature.insets = new Insets(0, 0, 5, 5);
-		gbc_lblTemperature.gridx = 0;
-		gbc_lblTemperature.gridy = 2;
-		panel_2.add(lblTemperature, gbc_lblTemperature);
+		JLabel lblType = new JLabel("Type:");
+		lblType.setFont(new Font("Dialog", Font.BOLD, 9));
+		GridBagConstraints gbc_lblType = new GridBagConstraints();
+		gbc_lblType.fill = GridBagConstraints.BOTH;
+		gbc_lblType.insets = new Insets(0, 0, 5, 5);
+		gbc_lblType.gridx = 0;
+		gbc_lblType.gridy = 2;
+		panel_2.add(lblType, gbc_lblType);
 
-		lblTemperatureVar = new JLabel("Loading...");
-		lblTemperatureVar.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblTemperatureVar.setFont(new Font("Dialog", Font.BOLD, 9));
-		GridBagConstraints gbc_lblTemperatureVar = new GridBagConstraints();
-		gbc_lblTemperatureVar.fill = GridBagConstraints.BOTH;
-		gbc_lblTemperatureVar.insets = new Insets(0, 0, 5, 0);
-		gbc_lblTemperatureVar.gridx = 1;
-		gbc_lblTemperatureVar.gridy = 2;
-		panel_2.add(lblTemperatureVar, gbc_lblTemperatureVar);
+		lblTypeVar = new JLabel("Loading...");
+		lblTypeVar.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblTypeVar.setFont(new Font("Dialog", Font.BOLD, 9));
+		GridBagConstraints gbc_lblTypeVar = new GridBagConstraints();
+		gbc_lblTypeVar.fill = GridBagConstraints.BOTH;
+		gbc_lblTypeVar.insets = new Insets(0, 0, 5, 0);
+		gbc_lblTypeVar.gridx = 1;
+		gbc_lblTypeVar.gridy = 2;
+		panel_2.add(lblTypeVar, gbc_lblTypeVar);
 
 		JPanel panel_1 = new JPanel();
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
@@ -221,24 +235,40 @@ public class Processor extends JPanel implements DModule {
 					double time = System.currentTimeMillis() - start.getTime();
 
 					if (System.currentTimeMillis() - last.getTime() > updatePeriod * 2) {
-						trace.addPoint(time - 1, Double.NaN);
+						tx.addPoint(time - 1, Double.NaN);
+						rx.addPoint(time - 1, Double.NaN);
 					}
 
-					// usage
-					double usage = Double.parseDouble(
-							profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TOTAL_USAGE).get());
+					Attribute txAttribute = profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_TX_SPEED);
+					Attribute rxAttribute = profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_RX_SPEED);
+					String txs = "loading";
+					String rxs = "loading";
+					double t;
+					double r;
+					if (txAttribute != null && rxAttribute != null) {
+						txs = txAttribute.get();
+						rxs = rxAttribute.get();
 
-					val_usage.setText(String.format("Average Utilization: %5.2f%%", usage));
+						String[] tParts = txs.split(" ");
+						String[] rParts = rxs.split(" ");
+						t = Double.parseDouble(tParts[0]);
+						r = Double.parseDouble(rParts[0]);
+					} else {
+						t = Double.NaN;
+						r = Double.NaN;
+					}
+
+					val_usage.setText(String.format("DN: %s UP: %s", rxs, txs));
 
 					last = new Date();
-					trace.addPoint(time, usage);
+					tx.addPoint(time, t);
+					rx.addPoint(time, r);
 					chart.getAxisX().getRangePolicy().setRange(new Range(time, time - (60 * updatePeriod)));
 
 					// set dynamic attributes
 					// temperature
 					if (profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP) != null) {
-						lblTemperatureVar
-								.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP).get());
+						lblTypeVar.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP).get());
 					}
 
 				}
@@ -252,22 +282,22 @@ public class Processor extends JPanel implements DModule {
 	private InfoMaster im;
 	private Timer updateTimer = new Timer();
 
-	private JLabel lblModelVar;
+	private JLabel lblIpVar;
 
 	@Override
 	public void setTarget(ClientProfile p) {
 
 		// clear chart only if the new profile differs from the old
 		if ((profile != null) && p.getCid() != profile.getCid()) {
-			trace.removeAllPoints();
+			tx.removeAllPoints();
+			rx.removeAllPoints();
 		}
 
 		profile = p;
 
 		// set static attributes
-		lblModelVar.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_VENDOR).get() + " "
-				+ profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_MODEL).get());
-		lblFrequencyVar.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_FREQUENCY_MAX).get());
+		lblIpVar.setText(profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_IP).get());
+		lblMacVar.setText(profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_MAC).get());
 
 	}
 
@@ -281,8 +311,8 @@ public class Processor extends JPanel implements DModule {
 
 		@Override
 		protected void done() {
-			if (lblTemperatureVar.getText().equals("Loading...")) {
-				lblTemperatureVar.setText("N/A");
+			if (lblTypeVar.getText().equals("Loading...")) {
+				lblTypeVar.setText("N/A");
 			}
 		};
 
@@ -292,8 +322,8 @@ public class Processor extends JPanel implements DModule {
 	public void setShowing(boolean showing) {
 		this.showing = showing;
 		if (showing) {
-			im = new InfoMaster(InfoParam.newBuilder().setCpuUsage(true).setCpuTemp(true).build(), profile.getCid(),
-					(int) updatePeriod);
+			im = new InfoMaster(InfoParam.newBuilder().setNicRxSpeed(true).setNicTxSpeed(true).build(),
+					profile.getCid(), (int) updatePeriod);
 			StreamStore.addStream(im);
 
 			// launch timeout

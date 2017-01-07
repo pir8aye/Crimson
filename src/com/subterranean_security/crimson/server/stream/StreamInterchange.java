@@ -15,56 +15,12 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
+package com.subterranean_security.crimson.server.stream;
 
-import javax.swing.JPanel;
-
-import com.subterranean_security.crimson.sv.profile.ClientProfile;
-
-public class WorldMap extends JPanel implements DModule {
-
-	private static final long serialVersionUID = 1L;
-
-	@Override
-	public void setTarget(ClientProfile p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void updateGraphics() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setShowing(boolean showing) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public int getWeight() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int compareTo(DModule o) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getDWidth() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public boolean isDetailOpen() {
-		// TODO Auto-generated method stub
-		return false;
+//TODO
+// Use this class to prevent querying the client for stream data more than necessary
+public class StreamInterchange {
+	private StreamInterchange() {
 	}
 
 }

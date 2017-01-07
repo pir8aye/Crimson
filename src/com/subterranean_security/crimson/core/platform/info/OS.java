@@ -110,23 +110,6 @@ public final class OS {
 		return new Date(System.currentTimeMillis() - (long) (uptime.getUptime() * 1000)).toString();
 	}
 
-	public static OSFAMILY getFamily() {
-		String name = System.getProperty("os.name").toLowerCase();
-		if (name.endsWith("bsd")) {
-			return OSFAMILY.BSD;
-		} else if (name.equals("mac os x")) {
-			return OSFAMILY.OSX;
-		} else if (name.equals("solaris") || name.equals("sunos")) {
-			return OSFAMILY.SOL;
-		} else if (name.equals("linux")) {
-			return OSFAMILY.LIN;
-		} else if (name.startsWith("windows")) {
-			return OSFAMILY.WIN;
-		} else {
-			return OSFAMILY.UNSUPPORTED;
-		}
-	}
-
 	public static String getName() {
 
 		switch (Platform.osFamily) {
@@ -143,6 +126,23 @@ public final class OS {
 		@Override
 		public String toString() {
 			return super.toString().toLowerCase();
+		}
+
+		public static OSFAMILY get() {
+			String name = System.getProperty("os.name").toLowerCase();
+			if (name.endsWith("bsd")) {
+				return OSFAMILY.BSD;
+			} else if (name.equals("mac os x")) {
+				return OSFAMILY.OSX;
+			} else if (name.equals("solaris") || name.equals("sunos")) {
+				return OSFAMILY.SOL;
+			} else if (name.equals("linux")) {
+				return OSFAMILY.LIN;
+			} else if (name.startsWith("windows")) {
+				return OSFAMILY.WIN;
+			} else {
+				return OSFAMILY.UNSUPPORTED;
+			}
 		}
 
 		public String toName() {

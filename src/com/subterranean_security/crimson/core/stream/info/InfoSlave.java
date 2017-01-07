@@ -109,6 +109,21 @@ public abstract class InfoSlave extends Stream {
 
 	private void initializeNIC() {
 		String nicID = null;
+		if (param.getInfoParam().hasNicId()) {
+			nicID = param.getInfoParam().getNicId();
+			for (int i = 0; i < NIC.getCount(); i++) {
+				if (nicID.equals(NIC.computeGID(i))) {
+					whichNIC = i;
+					break;
+				}
+			}
+			// TODO check if for loop actually found the correct row
+			// If not, the supplied nicID is no longer attached
+		} else {
+			// calculate the primary nic id
+			nicID = NIC.computeGID(0);
+			whichNIC = 0;
+		}
 
 		if (param.getInfoParam().hasNicRxBytes()) {
 			lastRxBytes = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.NIC.ordinal())
@@ -138,6 +153,14 @@ public abstract class InfoSlave extends Stream {
 		if (param.getInfoParam().hasNicTxSpeed()) {
 			lastTxSpeed = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.NIC.ordinal())
 					.setGroupId(nicID).setAttributeType(AttributeGroupType.NIC_TX_SPEED.ordinal());
+		}
+
+		if (param.getInfoParam().hasNicRxBytes() || param.getInfoParam().hasNicRxSpeed()) {
+			rxSpeed = new StatStream(1000, 60);
+		}
+
+		if (param.getInfoParam().hasNicTxBytes() || param.getInfoParam().hasNicTxSpeed()) {
+			txSpeed = new StatStream(1000, 60);
 		}
 	}
 

@@ -45,7 +45,7 @@ public final class Platform {
 	}
 
 	public static final ARCH javaArch = JAVA.getARCH();
-	public static final OSFAMILY osFamily = OS.getFamily();
+	public static final OSFAMILY osFamily = OSFAMILY.get();
 
 	public enum ARCH {
 		X86, X64, SPARC, UNSUPPORTED;
