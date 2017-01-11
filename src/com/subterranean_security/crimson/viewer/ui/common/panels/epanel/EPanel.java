@@ -232,7 +232,6 @@ public class EPanel extends SLPanel {
 						@Override
 						public void done() {
 							movingMain.setAction(actionDN);
-							movingMain.enableAction();
 						}
 					})).play();
 		}
@@ -246,7 +245,6 @@ public class EPanel extends SLPanel {
 						@Override
 						public void done() {
 							movingMain.setAction(actionUP);
-
 						}
 					})).play();
 		}

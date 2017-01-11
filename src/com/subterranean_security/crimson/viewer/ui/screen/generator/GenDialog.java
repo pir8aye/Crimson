@@ -18,8 +18,8 @@
 package com.subterranean_security.crimson.viewer.ui.screen.generator;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +39,8 @@ import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HiddenMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.NormalMenu;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public class GenDialog extends JDialog {
@@ -48,6 +50,10 @@ public class GenDialog extends JDialog {
 	private GenPanel gp = new GenPanel();
 
 	public GenDialog() {
+		init();
+	}
+
+	private void init() {
 		setTitle("Generator");
 		setIconImages(UIUtil.getIconList());
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -56,8 +62,14 @@ public class GenDialog extends JDialog {
 		getContentPane().setLayout(new BorderLayout(0, 0));
 
 		hp = new HPanel(gp);
+		hp.init(initNormalMenu(), initHiddenMenu());
+		hp.setHMenuHeight(72);
 
-		final JButton btn_gen = new JButton("Generate");
+		getContentPane().add(hp);
+	}
+
+	private NormalMenu initNormalMenu() {
+		JButton btn_gen = new JButton("Generate");
 		btn_gen.setPreferredSize(new Dimension(75, 25));
 		btn_gen.setMargin(new Insets(2, 5, 2, 5));
 		btn_gen.addActionListener(new ActionListener() {
@@ -110,11 +122,15 @@ public class GenDialog extends JDialog {
 				}).start();
 			}
 		});
-		Component[] buttons = { Box.createHorizontalStrut(btn_gen.getPreferredSize().width), Box.createHorizontalGlue(),
-				hp.initBtnUP(), Box.createHorizontalGlue(), btn_gen };
-		hp.nmenu.setButtons(buttons);
 
-		final JButton btn_loadProfile = new JButton("Load Profile");
+		NormalMenu nmenu = new NormalMenu();
+		nmenu.setButtons(Box.createHorizontalStrut(btn_gen.getPreferredSize().width), Box.createHorizontalGlue(),
+				hp.getUpBtn(), Box.createHorizontalGlue(), btn_gen);
+		return nmenu;
+	}
+
+	private HiddenMenu initHiddenMenu() {
+		JButton btn_loadProfile = new JButton("Load Profile");
 		btn_loadProfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// if (LoadDialog.global == null) {
@@ -125,7 +141,7 @@ public class GenDialog extends JDialog {
 			}
 		});
 
-		final JButton btn_newProfile = new JButton("Create Profile");
+		JButton btn_newProfile = new JButton("Create Profile");
 		btn_newProfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// if (CreateDialog.global == null) {
@@ -136,7 +152,7 @@ public class GenDialog extends JDialog {
 			}
 		});
 
-		final JButton btn_newListener = new JButton("Create Corresponding Listener");
+		JButton btn_newListener = new JButton("Create Corresponding Listener");
 		btn_newListener.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				new Thread(new Runnable() {
@@ -147,15 +163,12 @@ public class GenDialog extends JDialog {
 			}
 		});
 
-		hp.hmenu.addButton(btn_loadProfile);
-		hp.hmenu.addButton(btn_newProfile);
-		hp.hmenu.addButton(btn_newListener);
+		JButton help = new JButton("Show Help");
+		help.setFont(new Font("Dialog", Font.BOLD, 9));
+		help.setMargin(new Insets(0, 5, 0, 5));
 
-		hp.hmenu.setDesc(
-				"Use this dialog to generate an installer in the format of your choice.  The installer can then be used to install Crimson on clients.  The jar output type is most commonly used.");
-
-		hp.setHMenuHeight(50);
-		getContentPane().add(hp);
+		HiddenMenu hmenu = new HiddenMenu(true, help);
+		return hmenu;
 	}
 
 	@Override

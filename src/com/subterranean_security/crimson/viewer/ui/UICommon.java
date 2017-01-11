@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
+import javax.swing.ImageIcon;
 import javax.swing.border.LineBorder;
 
 public final class UICommon {
@@ -59,4 +60,9 @@ public final class UICommon {
 
 	// borders
 	public static final LineBorder basic = new LineBorder(new Color(184, 207, 229));
+
+	// icons
+	public static final ImageIcon hmenu_open = UIUtil.getIcon("icons16/general/open_hmenu.png");
+	public static final ImageIcon hmenu_close = UIUtil.getIcon("icons16/general/close_hmenu.png");
+
 }

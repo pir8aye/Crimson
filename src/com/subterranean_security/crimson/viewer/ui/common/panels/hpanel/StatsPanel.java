@@ -17,19 +17,21 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.common.panels.hpanel;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.RAM;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.ui.common.components.piestat.PieStat;
 
 public class StatsPanel extends JPanel {
 
@@ -37,35 +39,65 @@ public class StatsPanel extends JPanel {
 
 	private JLabel lblCpu;
 	private JLabel lblMem;
-	private JLabel lblConnection;
+	private JLabel lblCon;
 
-	private PieStat ps;
+	private static final int statWidth = 80;
+	private static final int statHeight = 12;
 
 	public StatsPanel() {
-		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		setLayout(null);
+		init();
+	}
 
-		ps = new PieStat(17);
-		ps.setBounds(2, 2, 17, 17);
-		add(ps);
+	private void init() {
+		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 2));
 
 		lblMem = new JLabel("MEM:");
+		lblMem.setForeground(new Color(0, 204, 204));
+		lblMem.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMem.setToolTipText("Total memory usage of the Crimson process");
-		lblMem.setFont(new Font("Dialog", Font.BOLD, 9));
+		lblMem.setFont(new Font("Monospaced", Font.PLAIN, 9));
 		lblMem.setBounds(84, 3, 77, 15);
-		add(lblMem);
 
-		lblConnection = new JLabel("Connections: ");
-		lblConnection.setToolTipText("Total established network connections");
-		lblConnection.setFont(new Font("Dialog", Font.BOLD, 9));
-		lblConnection.setBounds(163, 3, 89, 15);
-		add(lblConnection);
+		lblCon = new JLabel("Connections: ");
+		lblCon.setForeground(new Color(0, 204, 204));
+		lblCon.setHorizontalAlignment(SwingConstants.CENTER);
+		lblCon.setToolTipText("Total established network connections");
+		lblCon.setFont(new Font("Monospaced", Font.PLAIN, 9));
+		lblCon.setBounds(163, 3, 89, 15);
 
 		lblCpu = new JLabel("CPU:");
-		lblCpu.setToolTipText("Total CPU utilization");
-		lblCpu.setFont(new Font("Dialog", Font.BOLD, 9));
+		lblCpu.setFont(new Font("Monospaced", Font.PLAIN, 9));
+		lblCpu.setForeground(new Color(0, 204, 204));
+		lblCpu.setHorizontalAlignment(SwingConstants.CENTER);
+		lblCpu.setToolTipText("Total CPU utilization of the Crimson process");
 		lblCpu.setBounds(23, 3, 66, 15);
-		add(lblCpu);
+
+		JPanel panel = new JPanel(new BorderLayout(0, 0));
+		panel.setBackground(Color.DARK_GRAY);
+		panel.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		panel.add(lblCpu, BorderLayout.CENTER);
+		panel.add(Box.createVerticalStrut(statHeight), BorderLayout.WEST);
+		panel.add(Box.createHorizontalStrut(statWidth), BorderLayout.NORTH);
+		add(panel);
+
+		JPanel panel_1 = new JPanel();
+		panel_1.setBackground(Color.DARK_GRAY);
+		panel_1.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		panel_1.setLayout(new BorderLayout(0, 0));
+		panel_1.add(lblMem);
+		panel_1.add(Box.createVerticalStrut(statHeight), BorderLayout.WEST);
+		panel_1.add(Box.createHorizontalStrut(statWidth), BorderLayout.NORTH);
+		add(panel_1);
+
+		JPanel panel_2 = new JPanel();
+		panel_2.setBackground(Color.DARK_GRAY);
+		panel_2.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		panel_2.setLayout(new BorderLayout(0, 0));
+		panel_2.add(lblCon);
+		panel_2.add(Box.createVerticalStrut(statHeight), BorderLayout.WEST);
+		panel_2.add(Box.createHorizontalStrut(statWidth), BorderLayout.NORTH);
+		add(panel_2);
 
 	}
 
@@ -73,25 +105,20 @@ public class StatsPanel extends JPanel {
 
 	public void start() {
 		stop();
-		timer = new Timer(150, (e) -> {
+		timer = new Timer(750, (e) -> {
 
-			double point = Double.parseDouble(CPU.getTotalUsage(0));
-			lblCpu.setText("CPU: " + point + "%");
-			ps.addPoint(point);
-
+			lblCpu.setText(String.format("CPU: %6.2f%%", Double.parseDouble(CPU.getClientUsage())));
 			lblMem.setText("MEM: " + RAM.getClientUsage());
-			lblConnection.setText("Connections: " + ViewerStore.Connections.getSize());
+			lblCon.setText("Connections: " + ViewerStore.Connections.getSize());
 
 		});
 		timer.setInitialDelay(0);
 		timer.start();
-		ps.startCPUStat();
 	}
 
 	public void stop() {
 		if (timer != null) {
 			timer.stop();
-			ps.stop();
 			timer = null;
 		}
 	}

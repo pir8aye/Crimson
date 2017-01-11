@@ -18,9 +18,11 @@
 package com.subterranean_security.crimson.viewer.ui.screen.netman;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Font;
+import java.awt.Insets;
 
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -31,23 +33,33 @@ import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HiddenMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.NormalMenu;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.auth.AuthPanel;
 
 public class NetMan extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane = new JPanel();
-	private HPanel hp = new HPanel(contentPane);
+	private HPanel hp;
 	public ListenerPanel lp;
 
 	public NetMan() {
+		init();
+	}
+
+	private void init() {
 		setIconImages(UIUtil.getIconList());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setMinimumSize(UICommon.dim_networkmanager);
 		setTitle("Network Manager");
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(hp);
+
 		contentPane.setLayout(new BorderLayout());
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		hp = new HPanel(contentPane);
+		hp.init(initNormalMenu(), initHiddenMenu());
+		hp.setHMenuHeight(72);
+		setContentPane(hp);
 
 		StatsPanel sp = new StatsPanel();
 		sp.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -64,12 +76,21 @@ public class NetMan extends JFrame {
 		tabbedPane.add(ap);
 		tabbedPane.setTitleAt(1, "Authentication");
 
-		Component[] buttons = { Box.createHorizontalGlue(), hp.initBtnUP(), Box.createHorizontalGlue() };
-		hp.nmenu.setButtons(buttons);
+	}
 
-		hp.hmenu.setDesc("Manages listeners and authentication on the server.  At least one listener must be defined.");
+	private NormalMenu initNormalMenu() {
+		NormalMenu nmenu = new NormalMenu();
+		nmenu.setButtons(Box.createHorizontalGlue(), hp.getUpBtn(), Box.createHorizontalGlue());
+		return nmenu;
+	}
 
-		hp.setHMenuHeight(50);
+	private HiddenMenu initHiddenMenu() {
+		JButton help = new JButton("Show Help");
+		help.setFont(new Font("Dialog", Font.BOLD, 9));
+		help.setMargin(new Insets(0, 5, 0, 5));
+
+		HiddenMenu hmenu = new HiddenMenu(true, help);
+		return hmenu;
 	}
 
 	@Override

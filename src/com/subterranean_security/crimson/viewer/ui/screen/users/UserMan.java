@@ -18,21 +18,25 @@
 package com.subterranean_security.crimson.viewer.ui.screen.users;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Font;
+import java.awt.Insets;
 
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HiddenMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.NormalMenu;
 
 public class UserMan extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	public UsersPanel up = new UsersPanel();
-	private HPanel hp = new HPanel(up);
+	private HPanel hp;
 
 	public UserMan() {
 		setTitle("Users and Groups");
@@ -42,14 +46,29 @@ public class UserMan extends JFrame {
 		setSize(UICommon.dim_usermanager);
 		setMinimumSize(UICommon.dim_usermanager);
 		getContentPane().setLayout(new BorderLayout());
+
+		hp = new HPanel(up);
+		hp.init(initNormalMenu(), initHiddenMenu());
+		hp.setHMenuHeight(72);
+
 		getContentPane().add(hp, BorderLayout.CENTER);
 
-		Component[] buttons = { Box.createHorizontalGlue(), hp.initBtnUP(), Box.createHorizontalGlue() };
-		hp.nmenu.setButtons(buttons);
+	}
 
-		hp.hmenu.setDesc("Manages users on the server. At least one user must have super permissions");
+	private NormalMenu initNormalMenu() {
+		NormalMenu nmenu = new NormalMenu();
+		nmenu.setButtons(Box.createHorizontalGlue(), hp.getUpBtn(), Box.createHorizontalGlue());
+		return nmenu;
+	}
 
-		hp.setHMenuHeight(50);
+	private HiddenMenu initHiddenMenu() {
+		JButton help = new JButton("Show Help");
+		help.setFont(new Font("Dialog", Font.BOLD, 9));
+		help.setMargin(new Insets(0, 5, 0, 5));
+
+		HiddenMenu hmenu = new HiddenMenu(true, help);
+
+		return hmenu;
 	}
 
 	@Override

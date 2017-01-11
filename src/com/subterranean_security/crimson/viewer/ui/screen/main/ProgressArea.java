@@ -74,12 +74,11 @@ public class ProgressArea extends JPanel {
 		public void run() {
 			slPanel.createTransition().push(
 					new SLKeyframe(p1Cfg, 0.7f).setStartSide(SLSide.RIGHT, note).setCallback(new SLKeyframe.Callback() {
-				@Override
-				public void done() {
-					main.setAction(p1BackAction);
-					main.enableAction();
-				}
-			})).play();
+						@Override
+						public void done() {
+							main.setAction(p1BackAction);
+						}
+					})).play();
 		}
 	};
 
@@ -89,12 +88,11 @@ public class ProgressArea extends JPanel {
 
 			slPanel.createTransition().push(
 					new SLKeyframe(mainCfg, 0.5f).setEndSide(SLSide.RIGHT, note).setCallback(new SLKeyframe.Callback() {
-				@Override
-				public void done() {
-					main.setAction(p1Action);
-
-				}
-			})).play();
+						@Override
+						public void done() {
+							main.setAction(p1Action);
+						}
+					})).play();
 		}
 	};
 

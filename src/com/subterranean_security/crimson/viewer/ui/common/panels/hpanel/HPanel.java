@@ -21,13 +21,10 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
@@ -49,10 +46,8 @@ public class HPanel extends SLPanel {
 	private MovingPanel movingBar; // for normal menu
 	private MovingPanel movingMain; // for content
 
-	public HiddenMenu hmenu = new HiddenMenu();
-	public NormalMenu nmenu = new NormalMenu();
-
-	private JButton btnUp;
+	public HiddenMenu hmenu;
+	public NormalMenu nmenu;
 
 	private static int transitionTime = 900;
 
@@ -60,20 +55,30 @@ public class HPanel extends SLPanel {
 
 	private boolean moving = false;
 
+	public boolean isMoving() {
+		return moving;
+	}
+
 	public HPanel(JPanel main) {
 		thisHP = this;
 
-		movingBar = new MovingPanel(nmenu);
-		movingHMenu = new MovingPanel(hmenu);
 		movingMain = new MovingPanel(main);
 		movingMain.setAction(actionUP);
+
+	}
+
+	public void init(NormalMenu n, HiddenMenu h) {
+		hmenu = h;
+		nmenu = n;
+
+		movingBar = new MovingPanel(nmenu);
+		movingHMenu = new MovingPanel(hmenu);
 
 		pos1 = new SLConfig(this).gap(0, 0).row(8f).row(nMenuHeight).col(1f).place(0, 0, movingMain).place(1, 0,
 				movingBar);
 
 		this.setTweenManager(SLAnimator.createTweenManager());
 		this.initialize(pos1);
-
 	}
 
 	public void setHMenuHeight(int h) {
@@ -81,54 +86,17 @@ public class HPanel extends SLPanel {
 				.place(1, 0, movingBar).place(2, 0, movingHMenu);
 	}
 
-	ImageIcon open = UIUtil.getIcon("icons16/general/open_hmenu.png");
-	ImageIcon close = UIUtil.getIcon("icons16/general/close_hmenu.png");
-
-	public JButton initBtnUP() {
-		btnUp = new JButton(open);
-		btnUp.setPreferredSize(UICommon.dim_btn_up);
-		btnUp.setMargin(new Insets(2, 0, 2, 0));
-		btnUp.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if (!moving) {
-					moving = true;
-					movingMain.runAction();
-
-					if (btnUp.getIcon().equals(open)) {
-						btnUp.setIcon(close);
-					} else {
-						btnUp.setIcon(open);
-					}
-					new ButtonWorker().execute();
-				}
-
-			}
-		});
-		return btnUp;
-	}
-
-	class ButtonWorker extends SwingWorker<Void, Void> {
-		protected Void doInBackground() throws Exception {
-
-			Thread.sleep(transitionTime);
-			return null;
-		}
-
-		protected void done() {
-			moving = false;
-		}
-	}
-
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
+			moving = true;
 			thisHP.createTransition()
 					.push(new SLKeyframe(pos2, transitionTime / 1000f).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							hmenu.nowShowing();
 							movingMain.setAction(actionDN);
-							movingMain.enableAction();
+							moving = false;
 						}
 					})).play();
 		}
@@ -137,15 +105,38 @@ public class HPanel extends SLPanel {
 	private final Runnable actionDN = new Runnable() {
 		@Override
 		public void run() {
+			moving = true;
 			thisHP.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
 					.setEndSide(SLSide.BOTTOM, movingHMenu).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							hmenu.nowClosed();
 							movingMain.setAction(actionUP);
+							moving = false;
 						}
 					})).play();
 		}
 	};
+
+	public JButton getUpBtn() {
+		JButton btnUp = new JButton(UICommon.hmenu_open);
+		btnUp.setPreferredSize(UICommon.dim_btn_up);
+		btnUp.setMargin(new Insets(2, 0, 2, 0));
+		btnUp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (!isMoving()) {
+					movingMain.runAction();
+
+					if (btnUp.getIcon().equals(UICommon.hmenu_open)) {
+						btnUp.setIcon(UICommon.hmenu_close);
+					} else {
+						btnUp.setIcon(UICommon.hmenu_open);
+					}
+				}
+
+			}
+		});
+		return btnUp;
+	}
 
 }

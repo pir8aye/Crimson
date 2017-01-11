@@ -29,21 +29,26 @@ public class NormalMenu extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public NormalMenu() {
-		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
-		setLayout(new BorderLayout(0, 0));
+	private Box bar = new Box(BoxLayout.X_AXIS);
 
+	public NormalMenu() {
+		init();
 	}
 
-	public void setButtons(Component[] buttons) {
-		Box bar = new Box(BoxLayout.X_AXIS);
+	private void init() {
+		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		setLayout(new BorderLayout(0, 0));
+		add(bar, BorderLayout.CENTER);
+	}
 
+	public void setButtons(Component... buttons) {
+		bar.removeAll();
 		bar.add(Box.createHorizontalStrut(5));
 		for (Component c : buttons) {
 			bar.add(c);
 		}
 		bar.add(Box.createHorizontalStrut(5));
-		add(bar, BorderLayout.CENTER);
+
 	}
 
 }

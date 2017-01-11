@@ -26,7 +26,6 @@ import java.awt.Graphics2D;
 import javax.swing.JPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
-import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenManager;
 
 public class MovingPanel extends JPanel {
@@ -37,8 +36,6 @@ public class MovingPanel extends JPanel {
 
 	private static final TweenManager tweenManager = SLAnimator.createTweenManager();
 	private Runnable action;
-	private boolean actionEnabled = true;
-	private boolean hover = false;
 	private int borderThickness = 2;
 
 	public MovingPanel(JPanel panel) {
@@ -50,26 +47,6 @@ public class MovingPanel extends JPanel {
 
 	public void setAction(Runnable action) {
 		this.action = action;
-	}
-
-	public void enableAction() {
-		actionEnabled = true;
-		if (hover)
-			showBorder();
-	}
-
-	public void disableAction() {
-		actionEnabled = false;
-	}
-
-	private void showBorder() {
-		tweenManager.killTarget(borderThickness);
-		Tween.to(MovingPanel.this, Accessor.BORDER_THICKNESS, 0.4f).target(10).start(tweenManager);
-	}
-
-	private void hideBorder() {
-		tweenManager.killTarget(borderThickness);
-		Tween.to(MovingPanel.this, Accessor.BORDER_THICKNESS, 0.4f).target(2).start(tweenManager);
 	}
 
 	@Override

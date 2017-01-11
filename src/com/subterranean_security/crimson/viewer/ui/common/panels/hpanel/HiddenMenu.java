@@ -19,18 +19,12 @@ package com.subterranean_security.crimson.viewer.ui.common.panels.hpanel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.FlowLayout;
+import java.awt.Font;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JWindow;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
@@ -38,103 +32,55 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.exception.InvalidObjectException;
 import com.subterranean_security.crimson.core.util.ObjectTransfer;
-import com.subterranean_security.crimson.viewer.ui.UICommon;
 
 public class HiddenMenu extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel buttons;
-	private JTextArea textArea;
 	private JPanel btn;
 	private StatsPanel stats;
-	private JPanel help;
-
-	private boolean help_added = false;
-	private boolean stats_added = false;
-	private boolean options_added = false;
 
 	public int maxHeight = 150;
 
+	public HiddenMenu(boolean stats, JButton... hBtns) {
+
+		init();
+		if (hBtns.length > 0) {
+			initBtns(hBtns);
+		}
+		if (stats) {
+			initStats();
+		}
+	}
+
 	public HiddenMenu() {
+		this(true);
+	}
+
+	private void initStats() {
+		stats = new StatsPanel();
+		stats.setPreferredSize(new Dimension(200, 25));
+		add(stats, BorderLayout.SOUTH);
+	}
+
+	private void initBtns(JButton[] btns) {
+		JPanel buttons = new JPanel();
+		buttons.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Additional Actions",
+				TitledBorder.LEADING, TitledBorder.TOP, new Font("Dialog", Font.BOLD, 10), new Color(51, 51, 51)));
+		buttons.setLayout(new BorderLayout(0, 0));
+
+		btn = new JPanel(new FlowLayout(FlowLayout.LEFT, 7, 2));
+		buttons.add(btn, BorderLayout.CENTER);
+		add(buttons);
+
+		for (JButton jb : btns) {
+			btn.add(jb);
+		}
+	}
+
+	private void init() {
 		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		setLayout(new BorderLayout());
 
-		buttons = new JPanel();
-		buttons.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Options", TitledBorder.LEADING,
-				TitledBorder.TOP, null, new Color(51, 51, 51)));
-		buttons.setLayout(new BorderLayout(0, 0));
-
-		btn = new JPanel();
-		buttons.add(btn, BorderLayout.CENTER);
-		btn.setLayout(new BoxLayout(btn, BoxLayout.X_AXIS));
-
-		help = new JPanel();
-		help.setMaximumSize(new Dimension(32767, 200));
-		help.setBorder(new TitledBorder(UICommon.basic, "Help", TitledBorder.LEADING, TitledBorder.TOP,
-				UICommon.font_title_hmenu_help, null));
-
-		help.setLayout(new BorderLayout(0, 0));
-
-		textArea = new JTextArea();
-		textArea.setOpaque(false);
-		textArea.setMinimumSize(new Dimension(200, 40));
-		textArea.setFont(UICommon.font_text_help);
-		textArea.setEditable(false);
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-
-		JScrollPane jsp = new JScrollPane(textArea);
-		jsp.setMaximumSize(new Dimension(200, 200));
-		jsp.setMinimumSize(new Dimension(200, 40));
-		help.add(jsp);
-
-		Component horizontalStrut = Box.createHorizontalStrut(10);
-		horizontalStrut.setMaximumSize(new Dimension(25, 5));
-		help.add(horizontalStrut, BorderLayout.WEST);
-		Component horizontalStrut_1 = Box.createHorizontalStrut(10);
-		horizontalStrut_1.setMaximumSize(new Dimension(25, 5));
-		help.add(horizontalStrut_1, BorderLayout.EAST);
-	}
-
-	public void setDesc(String d) {
-		if (!help_added) {
-			add(help, BorderLayout.CENTER);
-			help_added = true;
-		}
-		textArea.setText(d);
-	}
-
-	public void addStats() {
-		if (!stats_added) {
-			stats = new StatsPanel();
-			stats.setPreferredSize(new Dimension(200, 21));
-			stats.setSize(new Dimension(200, 21));
-			stats.setMaximumSize(new Dimension(200, 21));
-			add(stats, BorderLayout.SOUTH);
-			stats_added = true;
-		}
-	}
-
-	public void addButton(JButton jb) {
-		if (!options_added) {
-			add(buttons);
-			options_added = true;
-		}
-		jb.setMargin(new Insets(0, 2, 0, 2));
-		btn.add(Box.createHorizontalStrut(5));
-		btn.add(jb);
-
-	}
-
-	public void addWebsiteButton() {
-		JButton jb = new JButton("Visit Website");
-		jb.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				// vist website
-			}
-		});
-
-		btn.add(jb);
 	}
 
 	public void nowShowing() {
@@ -167,8 +113,6 @@ public class HiddenMenu extends JPanel {
 		test.getContentPane().add(clone);
 		test.setVisible(true);
 		h += clone.stats.getHeight();
-		h += clone.buttons.getHeight();
-		h += clone.help.getHeight();
 
 		test.removeAll();
 		test = null;

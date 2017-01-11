@@ -18,19 +18,23 @@
 package com.subterranean_security.crimson.viewer.ui.screen.login;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Font;
+import java.awt.Insets;
 
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HiddenMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.NormalMenu;
 
 public class LoginDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	public final LoginPanel loginPanel = new LoginPanel(this);
-	public final HPanel hp = new HPanel(loginPanel);
+	private HPanel hp;
 
 	public LoginDialog(boolean localServer) {
 
@@ -44,26 +48,51 @@ public class LoginDialog extends JDialog {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		getContentPane().setLayout(new BorderLayout());
+
+		hp = new HPanel(loginPanel);
+		hp.init(initNormalMenu(), initHiddenMenu());
+		hp.setHMenuHeight(72);
 		getContentPane().add(hp);
 
-		Component[] buttons = { loginPanel.btn_cancel, Box.createHorizontalGlue(), hp.initBtnUP(),
-				Box.createHorizontalGlue(), loginPanel.btn_login };
-		hp.nmenu.setButtons(buttons);
+	}
 
-		hp.hmenu.setDesc(
-				"Enter the IP address or DNS name of a Crimson server. If the server is installed locally, select \"Local Server\" from the server selection dropdown.");
+	private NormalMenu initNormalMenu() {
 
-		hp.hmenu.addStats();
-		hp.setHMenuHeight(80);
+		NormalMenu nmenu = new NormalMenu();
+		nmenu.setButtons(loginPanel.btn_cancel, Box.createHorizontalGlue(), hp.getUpBtn(), Box.createHorizontalGlue(),
+				loginPanel.btn_login);
+		return nmenu;
+	}
+
+	private HiddenMenu initHiddenMenu() {
+		JButton login = new JButton("Skip Login");
+		login.setToolTipText("Continue without logging into a server");
+		login.setFont(new Font("Dialog", Font.BOLD, 9));
+		login.setMargin(new Insets(0, 5, 0, 5));
+
+		JButton help = new JButton("Show Help");
+		help.setToolTipText("Show interface help");
+		help.setFont(new Font("Dialog", Font.BOLD, 9));
+		help.setMargin(new Insets(0, 5, 0, 5));
+
+		JButton website = new JButton("Website");
+		website.setToolTipText("Open the website");
+		website.setFont(new Font("Dialog", Font.BOLD, 9));
+		website.setMargin(new Insets(0, 5, 0, 5));
+
+		HiddenMenu hmenu = new HiddenMenu(true, login, help, website);
+		return hmenu;
 	}
 
 	@Override
 	public void dispose() {
-		super.dispose();
-		if (!loginPanel.result) {
+		if (loginPanel.result) {
+			hp.hmenu.nowClosed();
+			super.dispose();
+		} else {
 			System.exit(0);
 		}
-		hp.hmenu.nowClosed();
+
 	}
 
 }

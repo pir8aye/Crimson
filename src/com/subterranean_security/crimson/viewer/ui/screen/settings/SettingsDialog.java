@@ -20,6 +20,8 @@ package com.subterranean_security.crimson.viewer.ui.screen.settings;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -41,6 +43,8 @@ import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HiddenMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.NormalMenu;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.panels.SPanelGeneral;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.panels.SPanelGraph;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.panels.SPanelHostList;
@@ -57,7 +61,7 @@ public class SettingsDialog extends JDialog {
 
 	private JPanel mainPanel = new JPanel(new BorderLayout());
 
-	public final HPanel hp = new HPanel(mainPanel);
+	private HPanel hp;
 
 	public SettingsDialog() {
 		init();
@@ -67,6 +71,9 @@ public class SettingsDialog extends JDialog {
 			tab.setValues(ViewerStore.Databases.local);
 		}
 
+	}
+
+	private NormalMenu initNormalMenu() {
 		JButton cancel = new JButton("Cancel");
 		cancel.addActionListener(new ActionListener() {
 
@@ -90,12 +97,18 @@ public class SettingsDialog extends JDialog {
 			}
 		});
 
-		Component[] buttons = { cancel, Box.createHorizontalGlue(), hp.initBtnUP(), Box.createHorizontalGlue(), save };
-		hp.nmenu.setButtons(buttons);
+		NormalMenu nmenu = new NormalMenu();
+		nmenu.setButtons(cancel, Box.createHorizontalGlue(), hp.getUpBtn(), Box.createHorizontalGlue(), save);
+		return nmenu;
+	}
 
-		hp.hmenu.setDesc("Change both local and server settings");
+	private HiddenMenu initHiddenMenu() {
+		JButton help = new JButton("Show Help");
+		help.setFont(new Font("Dialog", Font.BOLD, 9));
+		help.setMargin(new Insets(0, 5, 0, 5));
 
-		hp.setHMenuHeight(50);
+		HiddenMenu hmenu = new HiddenMenu(true, help);
+		return hmenu;
 	}
 
 	private void init() {
@@ -110,6 +123,10 @@ public class SettingsDialog extends JDialog {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		getContentPane().setLayout(new BorderLayout());
+
+		hp = new HPanel(mainPanel);
+		hp.init(initNormalMenu(), initHiddenMenu());
+		hp.setHMenuHeight(72);
 		getContentPane().add(hp);
 
 		cards.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));

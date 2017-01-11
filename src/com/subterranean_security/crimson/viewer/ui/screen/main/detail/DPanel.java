@@ -106,9 +106,7 @@ public class DPanel extends SLPanel {
 				// refreshWidth();
 
 				// move the detail panel out
-				moving = true;
 				movingMain.runAction();
-				new EndMotion().execute();
 				showing = true;
 			}
 
@@ -121,9 +119,7 @@ public class DPanel extends SLPanel {
 	public void closeDetail() {
 		if (showing && !moving) {
 			// move the detail panel back
-			moving = true;
 			movingMain.runAction();
-			new EndMotion().execute();
 			detail.nowClosed();
 			showing = false;
 
@@ -131,28 +127,16 @@ public class DPanel extends SLPanel {
 
 	}
 
-	class EndMotion extends SwingWorker<Void, Void> {
-		protected Void doInBackground() throws Exception {
-
-			Thread.sleep(transitionTime);
-			return null;
-		}
-
-		protected void done() {
-			moving = false;
-		}
-	}
-
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
-
+			moving = true;
 			thisDP.createTransition().push(new SLKeyframe(pos2, transitionTime / 1000f)
 					.setStartSide(SLSide.RIGHT, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							movingMain.setAction(actionDN);
-							movingMain.enableAction();
+							moving = false;
 						}
 					})).play();
 		}
@@ -161,13 +145,13 @@ public class DPanel extends SLPanel {
 	private final Runnable actionDN = new Runnable() {
 		@Override
 		public void run() {
-
+			moving = true;
 			thisDP.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
 					.setEndSide(SLSide.RIGHT, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							movingMain.setAction(actionUP);
-
+							moving = false;
 						}
 					})).play();
 		}
