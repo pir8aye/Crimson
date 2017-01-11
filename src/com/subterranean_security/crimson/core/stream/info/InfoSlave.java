@@ -202,7 +202,7 @@ public abstract class InfoSlave extends Stream {
 
 		// nic rx speed
 		if (param.getInfoParam().hasNicRxSpeed()) {
-			String nicRxSpeed = CUtil.UnitTranslator.translateNicSpeed(param.getInfoParam().hasNicRxBytes()
+			String nicRxSpeed = CUtil.UnitTranslator.nicSpeed(param.getInfoParam().hasNicRxBytes()
 					? rxSpeed.getInstantaneousSpeed() : rxSpeed.addPoint(NIC.getRxBytes(whichNIC)));
 			if (!lastRxSpeed.getValue().equals(nicRxSpeed)) {
 				pd.addGroupAttr(lastRxSpeed.setValue(nicRxSpeed));
@@ -229,7 +229,7 @@ public abstract class InfoSlave extends Stream {
 
 		// nic tx speed
 		if (param.getInfoParam().hasNicTxSpeed()) {
-			String nicTxSpeed = CUtil.UnitTranslator.translateNicSpeed(param.getInfoParam().hasNicTxBytes()
+			String nicTxSpeed = CUtil.UnitTranslator.nicSpeed(param.getInfoParam().hasNicTxBytes()
 					? txSpeed.getInstantaneousSpeed() : txSpeed.addPoint(NIC.getTxBytes(whichNIC)));
 			if (!lastTxSpeed.getValue().equals(nicTxSpeed)) {
 				pd.addGroupAttr(lastTxSpeed.setValue(nicTxSpeed));

@@ -17,10 +17,15 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
@@ -140,6 +145,23 @@ public final class UIUtil {
 		g2d.dispose();
 
 		return dimg;
+	}
+
+	public static void disableMouse(Component... components) {
+		for (Component c : components) {
+			if (c instanceof Container) {
+				disableMouse(((Container) c).getComponents());
+			}
+			for (MouseListener l : c.getMouseListeners()) {
+				c.removeMouseListener(l);
+			}
+			for (MouseMotionListener l : c.getMouseMotionListeners()) {
+				c.removeMouseMotionListener(l);
+			}
+			for (MouseWheelListener l : c.getMouseWheelListeners()) {
+				c.removeMouseWheelListener(l);
+			}
+		}
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.subterranean_security.crimson.viewer.ui.common.panels.lpanel;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.ArrayList;
@@ -28,23 +27,21 @@ public class LPanel extends JPanel {
 
 	private JPanel tail;
 
-	public LPanel(Color bg) {
-		this();
-		tail.setBackground(bg);
+	public LPanel() {
+		super(new BorderLayout());
+		init();
 	}
 
-	public LPanel() {
-		setLayout(new BorderLayout());
+	private void init() {
 		tail = new JPanel(new BorderLayout());
 		JScrollPane jsp = new JScrollPane(tail);
 		jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		this.add(jsp, BorderLayout.CENTER);
+		add(jsp, BorderLayout.CENTER);
 	}
 
 	public void addPanel(JPanel panel) {
 		tail.add(panel, BorderLayout.NORTH);
 		JPanel jp = new JPanel(new BorderLayout());
-		jp.setBackground(tail.getBackground());
 		tail.add(jp, BorderLayout.CENTER);
 		tail = jp;
 	}

@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.lpanel.LPanel;
 
 public class StatusConsole extends JPanel {
@@ -42,16 +43,25 @@ public class StatusConsole extends JPanel {
 	private ArrayList<JLabel> values = new ArrayList<JLabel>();
 
 	public StatusConsole(String[] fields) {
-		setLayout(new BorderLayout(0, 0));
+		super(new BorderLayout());
+		init(fields);
+		UIUtil.disableMouse(this);
+	}
 
-		LPanel list = new LPanel(bg);
-		list.setForeground(bg);
+	private void init(String[] fields) {
+
+		setForeground(bg);
+		setBackground(bg);
+
+		LPanel list = new LPanel();
 		list.setBackground(bg);
+		list.setForeground(bg);
+
 		for (String f : fields) {
 			JPanel panel = new JPanel();
 			panel.setBackground(bg);
 			panel.setLayout(new BorderLayout(0, 0));
-			JLabel property = new JLabel(" " + f);
+			JLabel property = new JLabel(f);
 			property.setFont(new Font("Monospaced", Font.PLAIN, 10));
 			property.setForeground(blue);
 			panel.add(property, BorderLayout.WEST);
@@ -59,18 +69,26 @@ public class StatusConsole extends JPanel {
 			value.setFont(new Font("Monospaced", Font.PLAIN, 10));
 			value.setForeground(blue);
 			value.setHorizontalAlignment(SwingConstants.RIGHT);
-			panel.add(value, BorderLayout.CENTER);
-			panel.add(Box.createHorizontalStrut(4), BorderLayout.EAST);
+
+			panel.add(Box.createHorizontalStrut(4), BorderLayout.CENTER);
+			panel.add(value, BorderLayout.EAST);
+
 			list.addPanel(panel);
 			values.add(value);
 		}
 
+		add(Box.createHorizontalStrut(4), BorderLayout.WEST);
 		add(list, BorderLayout.CENTER);
+		add(Box.createHorizontalStrut(4), BorderLayout.EAST);
 
 	}
 
 	public void updateValue(int i, String value) {
 		values.get(i).setText(value);
+	}
+
+	public String getValue(int i) {
+		return values.get(i).getText();
 	}
 
 	public enum LineType {

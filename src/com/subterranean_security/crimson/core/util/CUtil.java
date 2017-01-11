@@ -1125,6 +1125,53 @@ public enum CUtil {
 
 	public static class UnitTranslator {
 
+		private static double parseNumeric(String s) throws NumberFormatException, IndexOutOfBoundsException {
+			return Double.parseDouble(s.substring(0, s.indexOf(' ')));
+		}
+
+		private static long parseUnitMultiplier(String s) {
+			switch (s.substring(1 + s.lastIndexOf(' ')).toLowerCase()) {
+			case "b":
+			case "b/s":
+			case "hz":
+				return 1L;
+
+			case "kb":
+			case "kb/s":
+			case "khz":
+				return 1000L;
+			case "kib":
+			case "kib/s":
+				return 1024L;
+
+			case "mb":
+			case "mb/s":
+			case "mhz":
+				return 1000000L;
+			case "mib":
+			case "mib/s":
+				return 1048576L;
+
+			case "gb":
+			case "gb/s":
+			case "ghz":
+				return 1000000000L;
+			case "gib":
+			case "gib/s":
+				return 1073741824L;
+
+			case "tb":
+			case "tb/s":
+			case "thz":
+				return 1000000000000L;
+			case "tib":
+			case "tib/s":
+				return 1099511627776L;
+
+			}
+			return 0;
+		}
+
 		public static String translateNicOutput(long l) {
 			if (l < 1024) {
 				return String.format("%.2f  B", l / 1.0);
@@ -1139,7 +1186,31 @@ public enum CUtil {
 			}
 		}
 
-		public static String translateNicSpeed(double l) {
+		public static double nicSpeed(String l) {
+			double d = 0;
+
+			// parse numeric
+			try {
+				d = parseNumeric(l);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// parse unit
+			long multiplier = 0;
+
+			try {
+				multiplier = parseUnitMultiplier(l);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return d * multiplier;
+		}
+
+		public static String nicSpeed(double l) {
 			if (l < 1024) {
 				return String.format("%.2f   B/s", l / 1.0);
 			} else if (l < 1048576) {

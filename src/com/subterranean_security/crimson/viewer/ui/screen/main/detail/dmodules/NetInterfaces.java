@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -41,8 +42,10 @@ import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
+import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
+import com.subterranean_security.crimson.viewer.ui.common.components.StatusConsole;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
 
 import info.monitorenter.gui.chart.Chart2D;
@@ -65,11 +68,7 @@ public class NetInterfaces extends JPanel implements DModule {
 
 	private JLabel val_usage;
 
-	private JLabel lblTypeVar;
-
 	private Chart2D chart;
-
-	private JLabel lblMacVar;
 
 	public NetInterfaces() {
 		initChart();
@@ -77,8 +76,8 @@ public class NetInterfaces extends JPanel implements DModule {
 	}
 
 	public void initChart() {
-		tx.setColor(Color.RED);
-		rx.setColor(Color.GREEN);
+		tx.setColor(new Color(251, 0, 24));
+		rx.setColor(new Color(0, 215, 123));
 
 		chart = new Chart2D();
 		chart.setUseAntialiasing(true);
@@ -102,15 +101,15 @@ public class NetInterfaces extends JPanel implements DModule {
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Primary Network Interface",
+		mainPanel = new JPanel();
+		mainPanel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Primary Network Interface",
 				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		add(panel);
+		add(mainPanel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWeights = new double[] { 1.0 };
-		gbl_panel.rowHeights = new int[] { 57, 0, 0, 0 };
-		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 1.0, Double.MIN_VALUE };
-		panel.setLayout(gbl_panel);
+		gbl_panel.rowHeights = new int[] { 57, 0, 0 };
+		gbl_panel.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+		mainPanel.setLayout(gbl_panel);
 
 		JPanel panel_3 = new JPanel();
 		panel_3.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -119,7 +118,7 @@ public class NetInterfaces extends JPanel implements DModule {
 		gbc_panel_3.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_3.gridx = 0;
 		gbc_panel_3.gridy = 0;
-		panel.add(panel_3, gbc_panel_3);
+		mainPanel.add(panel_3, gbc_panel_3);
 		GridBagLayout gbl_panel_3 = new GridBagLayout();
 		gbl_panel_3.columnWidths = new int[] { 0, 0 };
 		gbl_panel_3.rowHeights = new int[] { 57, 0, 0 };
@@ -141,84 +140,20 @@ public class NetInterfaces extends JPanel implements DModule {
 		gbc_lblNewLabel_5.gridy = 1;
 		panel_3.add(val_usage, gbc_lblNewLabel_5);
 
-		JPanel panel_2 = new JPanel();
-		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
-		gbc_panel_2.insets = new Insets(0, 0, 5, 0);
-		gbc_panel_2.anchor = GridBagConstraints.NORTH;
-		gbc_panel_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_panel_2.gridx = 0;
-		gbc_panel_2.gridy = 1;
-		panel.add(panel_2, gbc_panel_2);
-		GridBagLayout gbl_panel_2 = new GridBagLayout();
-		gbl_panel_2.columnWidths = new int[] { 65, 45, 0 };
-		gbl_panel_2.rowHeights = new int[] { 15, 15, 15 };
-		gbl_panel_2.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
-		gbl_panel_2.rowWeights = new double[] { 0.0, 0.0, 0.0 };
-		panel_2.setLayout(gbl_panel_2);
-
-		JLabel lblIp = new JLabel("IP:");
-		lblIp.setFont(new Font("Dialog", Font.BOLD, 9));
-		GridBagConstraints gbc_lblIp = new GridBagConstraints();
-		gbc_lblIp.fill = GridBagConstraints.BOTH;
-		gbc_lblIp.insets = new Insets(0, 0, 5, 5);
-		gbc_lblIp.gridx = 0;
-		gbc_lblIp.gridy = 0;
-		panel_2.add(lblIp, gbc_lblIp);
-
-		lblIpVar = new JLabel("Loading...");
-		lblIpVar.setFont(new Font("Dialog", Font.BOLD, 9));
-		lblIpVar.setHorizontalAlignment(SwingConstants.TRAILING);
-		GridBagConstraints gbc_lblIpVar = new GridBagConstraints();
-		gbc_lblIpVar.fill = GridBagConstraints.BOTH;
-		gbc_lblIpVar.insets = new Insets(0, 0, 5, 0);
-		gbc_lblIpVar.gridx = 1;
-		gbc_lblIpVar.gridy = 0;
-		panel_2.add(lblIpVar, gbc_lblIpVar);
-
-		JLabel lblMac = new JLabel("MAC:");
-		lblMac.setFont(new Font("Dialog", Font.BOLD, 9));
-		GridBagConstraints gbc_lblMac = new GridBagConstraints();
-		gbc_lblMac.fill = GridBagConstraints.BOTH;
-		gbc_lblMac.insets = new Insets(0, 0, 5, 5);
-		gbc_lblMac.gridx = 0;
-		gbc_lblMac.gridy = 1;
-		panel_2.add(lblMac, gbc_lblMac);
-
-		lblMacVar = new JLabel("Loading...");
-		lblMacVar.setFont(new Font("Dialog", Font.BOLD, 9));
-		lblMacVar.setHorizontalAlignment(SwingConstants.TRAILING);
-		GridBagConstraints gbc_lblMacVar = new GridBagConstraints();
-		gbc_lblMacVar.fill = GridBagConstraints.BOTH;
-		gbc_lblMacVar.insets = new Insets(0, 0, 5, 0);
-		gbc_lblMacVar.gridx = 1;
-		gbc_lblMacVar.gridy = 1;
-		panel_2.add(lblMacVar, gbc_lblMacVar);
-
-		JLabel lblType = new JLabel("Type:");
-		lblType.setFont(new Font("Dialog", Font.BOLD, 9));
-		GridBagConstraints gbc_lblType = new GridBagConstraints();
-		gbc_lblType.fill = GridBagConstraints.BOTH;
-		gbc_lblType.insets = new Insets(0, 0, 5, 5);
-		gbc_lblType.gridx = 0;
-		gbc_lblType.gridy = 2;
-		panel_2.add(lblType, gbc_lblType);
-
-		lblTypeVar = new JLabel("Loading...");
-		lblTypeVar.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblTypeVar.setFont(new Font("Dialog", Font.BOLD, 9));
-		GridBagConstraints gbc_lblTypeVar = new GridBagConstraints();
-		gbc_lblTypeVar.fill = GridBagConstraints.BOTH;
-		gbc_lblTypeVar.insets = new Insets(0, 0, 5, 0);
-		gbc_lblTypeVar.gridx = 1;
-		gbc_lblTypeVar.gridy = 2;
-		panel_2.add(lblTypeVar, gbc_lblTypeVar);
-
 		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 		gbc_panel_1.fill = GridBagConstraints.BOTH;
 		gbc_panel_1.gridx = 0;
-		gbc_panel_1.gridy = 2;
-		panel.add(panel_1, gbc_panel_1);
+		gbc_panel_1.gridy = 1;
+		mainPanel.add(panel_1, gbc_panel_1);
+		panel_1.setLayout(new BorderLayout(0, 0));
+
+		statusConsole = new StatusConsole(new String[] { "MAC", "IP", "Netmask" });
+		for (int i = 0; i < 3; i++) {
+			statusConsole.updateValue(i, "Loading...");
+		}
+		panel_1.add(statusConsole, BorderLayout.CENTER);
 
 		startUpdater();
 	}
@@ -249,10 +184,8 @@ public class NetInterfaces extends JPanel implements DModule {
 						txs = txAttribute.get();
 						rxs = rxAttribute.get();
 
-						String[] tParts = txs.split(" ");
-						String[] rParts = rxs.split(" ");
-						t = Double.parseDouble(tParts[0]);
-						r = Double.parseDouble(rParts[0]);
+						t = CUtil.UnitTranslator.nicSpeed(txs);
+						r = CUtil.UnitTranslator.nicSpeed(rxs);
 					} else {
 						t = Double.NaN;
 						r = Double.NaN;
@@ -265,12 +198,6 @@ public class NetInterfaces extends JPanel implements DModule {
 					rx.addPoint(time, r);
 					chart.getAxisX().getRangePolicy().setRange(new Range(time, time - (60 * updatePeriod)));
 
-					// set dynamic attributes
-					// temperature
-					if (profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP) != null) {
-						lblTypeVar.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP).get());
-					}
-
 				}
 
 			}
@@ -281,8 +208,6 @@ public class NetInterfaces extends JPanel implements DModule {
 	private ClientProfile profile;
 	private InfoMaster im;
 	private Timer updateTimer = new Timer();
-
-	private JLabel lblIpVar;
 
 	@Override
 	public void setTarget(ClientProfile p) {
@@ -296,9 +221,14 @@ public class NetInterfaces extends JPanel implements DModule {
 		profile = p;
 
 		// set static attributes
-		lblIpVar.setText(profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_IP).get());
-		lblMacVar.setText(profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_MAC).get());
+		statusConsole.updateValue(0, profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_MAC).get());
+		statusConsole.updateValue(1, profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_IP).get());
+		statusConsole.updateValue(2, profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_MASK).get());
 
+		// set title
+		mainPanel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)),
+				profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_DESC).get(), TitledBorder.CENTER,
+				TitledBorder.TOP, null, new Color(51, 51, 51)));
 	}
 
 	private SwingWorker<Void, Void> timeout = new SwingWorker<Void, Void>() {
@@ -311,12 +241,19 @@ public class NetInterfaces extends JPanel implements DModule {
 
 		@Override
 		protected void done() {
-			if (lblTypeVar.getText().equals("Loading...")) {
-				lblTypeVar.setText("N/A");
+			for (int i = 0; i < 3; i++) {
+				if (statusConsole.getValue(i).equals("Loading...")) {
+					statusConsole.updateValue(i, "N/A");
+				}
 			}
+
 		};
 
 	};
+
+	private JPanel mainPanel;
+
+	private StatusConsole statusConsole;
 
 	@Override
 	public void setShowing(boolean showing) {

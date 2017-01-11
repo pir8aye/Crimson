@@ -328,9 +328,9 @@ class Detail extends JPanel {
 		//
 		JButton toggleNic = new JButton();
 		if (nic) {
-			toggleNic.setIcon(UIUtil.getIcon("icons16/general/processor_del.png"));
+			toggleNic.setIcon(UIUtil.getIcon("icons16/general/nic_del.png"));
 		} else {
-			toggleNic.setIcon(UIUtil.getIcon("icons16/general/processor_add.png"));
+			toggleNic.setIcon(UIUtil.getIcon("icons16/general/nic_add.png"));
 		}
 		toggleNic.setToolTipText("Toggle Network Adapter");
 		toggleNic.setMargin(new Insets(1, 1, 1, 1));
@@ -347,7 +347,7 @@ class Detail extends JPanel {
 
 				protected void done() {
 					if (nic) {
-						toggleNic.setIcon(UIUtil.getIcon("icons16/general/processor_del.png"));
+						toggleNic.setIcon(UIUtil.getIcon("icons16/general/nic_del.png"));
 
 						// add processor module
 						NetInterfaces p = new NetInterfaces();
@@ -356,12 +356,12 @@ class Detail extends JPanel {
 						modules.add(p);
 						listPanel.addPanel(p);
 					} else {
-						toggleNic.setIcon(UIUtil.getIcon("icons16/general/processor_add.png"));
+						toggleNic.setIcon(UIUtil.getIcon("icons16/general/nic_add.png"));
 
 						// remove module
 						for (DModule dm : modules) {
 							if (dm instanceof NetInterfaces) {
-								listPanel.removePanel((Processor) dm);
+								listPanel.removePanel((NetInterfaces) dm);
 								modules.remove(dm);
 								dm.setShowing(false);
 								break;
