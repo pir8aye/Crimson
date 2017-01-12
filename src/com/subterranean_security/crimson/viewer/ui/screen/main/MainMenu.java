@@ -56,7 +56,7 @@ public class MainMenu extends JPanel {
 	}
 
 	public void closeControls() {
-		mnControls.setSelected(false);
+		MenuSelectionManager.defaultManager().clearSelectedPath();
 	}
 
 	public void init() {
