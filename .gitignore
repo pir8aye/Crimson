@@ -2,7 +2,7 @@
 /build/bin
 /build/platform
 /build/build.number
-/build/version.properties
+/build/config/version.properties
 /scripts/
 /.classpath
 /.project
