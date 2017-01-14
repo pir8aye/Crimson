@@ -22,8 +22,9 @@ import java.io.File;
 import java.util.Date;
 
 import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.platform.SigarStore;
-import com.subterranean_security.crimson.core.platform.info.*;
+import com.subterranean_security.crimson.core.platform.info.CPU;
+import com.subterranean_security.crimson.core.platform.info.JAVA;
+import com.subterranean_security.crimson.core.platform.info.OS;
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.core.util.DateUtil;
 import com.subterranean_security.crimson.core.util.FileUtil;
@@ -31,21 +32,35 @@ import com.subterranean_security.services.Services;
 
 /**
  * 
- * Securely sends a report to Subterranean Security using the Services library
+ * Securely sends an error report to Subterranean Security using the proprietary
+ * Services library
  * 
  * @author Tyler Cook
  *
  */
 public final class Reporter {
-
 	private Reporter() {
 	}
 
-	public static void report(final MI_Report r) {
+	private static MI_Report last = null;
+
+	public static void report(MI_Report r) {
+
+		// ignore duplicates
+		if (last != null && last.getCrStackTrace().equals(r.getCrStackTrace())) {
+			return;
+		} else {
+			last = r;
+		}
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				Services.sendReport(r);
+				try {
+					Services.sendReport(r);
+				} catch (Exception e) {
+					// ignore to prevent amplification
+				}
 			}
 		}).start();
 	}
