@@ -50,7 +50,7 @@ public enum ViewerRouter {
 
 	public static Message routeAndWait(Message.Builder m, int timeout) throws InterruptedException {
 		if (!m.hasId()) {
-			m.setId(IDGen.get());
+			m.setId(IDGen.msg());
 		}
 		route(m);
 		return getReponse(m.getRid(), m.getId(), timeout);

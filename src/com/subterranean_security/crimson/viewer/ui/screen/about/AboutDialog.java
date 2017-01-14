@@ -44,7 +44,8 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.DateUtil;
+import com.subterranean_security.crimson.core.util.JarUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -63,7 +64,7 @@ public class AboutDialog extends JDialog {
 
 		@Override
 		public void run() {
-			lbl_uptime.setText(CUtil.Misc.datediff(Common.start, new Date()));
+			lbl_uptime.setText(DateUtil.datediff(Common.start, new Date()));
 
 		}
 
@@ -361,13 +362,13 @@ public class AboutDialog extends JDialog {
 
 	private void setStaticValues() {
 		try {
-			buildNo = CUtil.Misc.getManifestAttr("Build-Number");
+			buildNo = JarUtil.getManifestValue("Build-Number");
 		} catch (IOException e) {
 			buildNo = "unknown";
 		}
 
 		try {
-			buildTime = CUtil.Misc.getManifestAttr("Build-Time");
+			buildTime = JarUtil.getManifestValue("Build-Time");
 		} catch (IOException e) {
 			buildTime = "unknown";
 		}

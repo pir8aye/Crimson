@@ -28,8 +28,8 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
@@ -257,7 +257,7 @@ public class AddListener extends JPanel {
 										.setViewerAcceptor(chckbxAcceptViewers.isSelected())
 										.setLocalhostExclusive(chckbxRestrictToLocalhost.isSelected())
 										.setPort(Integer.parseInt(fld_port.getText()))
-										.setOwner((String) owner.getSelectedItem()).setId(IDGen.getListenerID())
+										.setOwner((String) owner.getSelectedItem()).setId(IDGen.listener())
 										.build());
 								resetEPanels();
 								ep.drop();
@@ -282,7 +282,7 @@ public class AddListener extends JPanel {
 	}
 
 	public boolean verify() {
-		if (!CUtil.Validation.port(fld_port.getText())) {
+		if (!Validation.port(fld_port.getText())) {
 			sl.setBad("Invalid port");
 			return false;
 		}

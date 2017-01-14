@@ -15,13 +15,15 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.util;
+package com.subterranean_security.crimson.core.misc;
 
 import java.io.File;
 import java.io.IOException;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.platform.Platform;
+import com.subterranean_security.crimson.core.util.FileUtil;
+import com.subterranean_security.crimson.core.util.TempUtil;
 
 public class HCP {
 	private HCP() {
@@ -74,10 +76,10 @@ public class HCP {
 	}
 
 	private static void launchAnon(String input) {
-		File tmp = new File(CUtil.Files.Temp.getDir().getAbsolutePath() + "/hcp.jar");
+		File tmp = new File(TempUtil.getDir().getAbsolutePath() + "/hcp.jar");
 		System.out.println("Installing HCP: " + tmp.getAbsolutePath());
 		try {
-			CUtil.Files.copyFile(new File(Common.Directories.base.getAbsolutePath() + "/lib/java/c01.jar"), tmp);
+			FileUtil.copy(new File(Common.Directories.base.getAbsolutePath() + "/lib/java/c01.jar"), tmp);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

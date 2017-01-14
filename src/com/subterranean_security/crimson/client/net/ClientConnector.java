@@ -26,13 +26,13 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.BasicConnector;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
-import com.subterranean_security.crimson.core.util.AuthenticationGroup;
 import com.subterranean_security.crimson.core.util.IDGen;
 
 import io.netty.bootstrap.Bootstrap;
@@ -84,11 +84,11 @@ public class ClientConnector extends BasicConnector {
 			} catch (DestroyFailedException e) {
 			}
 			setState(ConnectionState.AUTH_STAGE1);
-			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
+			handle.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());
 			break;
 		case NO_AUTH:
 			setState(ConnectionState.AUTHENTICATED);
-			handle.write(Message.newBuilder().setId(IDGen.get())
+			handle.write(Message.newBuilder().setId(IDGen.msg())
 					.setMiAuthRequest(auth.setPd(Platform.fig())).build());
 
 			break;
@@ -96,7 +96,7 @@ public class ClientConnector extends BasicConnector {
 			auth.setPassword(Client.ic.getPassword());
 
 			setState(ConnectionState.AUTH_STAGE1);
-			handle.write(Message.newBuilder().setId(IDGen.get()).setMiAuthRequest(auth).build());
+			handle.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());
 			break;
 		default:
 			break;

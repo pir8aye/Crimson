@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.storage.MemMap;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.DateUtil;
 
 public class Log implements Serializable {
 
@@ -44,7 +44,7 @@ public class Log implements Serializable {
 		synchronized (pages) {
 			for (Date d : pages.keyset()) {
 				// only optimize if page is old
-				if (!CUtil.Misc.isSameDay(now, d)) {
+				if (!DateUtil.isSameDay(now, d)) {
 					try {
 						pages.get(d).optimize();
 					} catch (Exception e) {
@@ -90,7 +90,7 @@ public class Log implements Serializable {
 		boolean flag = false;
 
 		for (Date d : pages.keyset()) {
-			if (CUtil.Misc.isSameDay(d, target)) {
+			if (DateUtil.isSameDay(d, target)) {
 				flag = true;
 				try {
 					pages.get(d).addEvent(evKevent);

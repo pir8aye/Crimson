@@ -10,7 +10,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.platform.info.NET;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
@@ -119,7 +119,7 @@ public class StatsPanel extends JPanel {
 
 	public void refresh() {
 		label_5.setText(ViewerStore.Connections.getVC(0).getRemoteAddress());
-		label_3.setText(CUtil.Network.getIIP());
+		label_3.setText(NET.getDefaultInternalIP());
 		label_1.setText("" + ViewerStore.Profiles.getServer().listeners.size());
 		lblNewLabel.setText("" + ViewerStore.Profiles.getServer().getConnectedClients());
 		lblVal.setText("" + ViewerStore.Profiles.getServer().getConnectedUsers());
@@ -127,7 +127,7 @@ public class StatsPanel extends JPanel {
 
 			@Override
 			protected String doInBackground() throws Exception {
-				return CUtil.Network.getEIP();
+				return NET.getExternalIP();
 			}
 
 			protected void done() {

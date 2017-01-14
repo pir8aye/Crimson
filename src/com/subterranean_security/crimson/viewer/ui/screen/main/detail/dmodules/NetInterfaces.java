@@ -42,7 +42,7 @@ import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.viewer.ui.common.components.StatusConsole;
@@ -184,8 +184,8 @@ public class NetInterfaces extends JPanel implements DModule {
 						txs = txAttribute.get();
 						rxs = rxAttribute.get();
 
-						t = CUtil.UnitTranslator.nicSpeed(txs);
-						r = CUtil.UnitTranslator.nicSpeed(rxs);
+						t = UnitTranslator.nicSpeed(txs);
+						r = UnitTranslator.nicSpeed(rxs);
 					} else {
 						t = Double.NaN;
 						r = Double.NaN;

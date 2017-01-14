@@ -28,7 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.DataViewer;
@@ -82,7 +82,7 @@ public class Report extends JDialog {
 		}
 		if (gr.hasFileSize()) {
 			v.add(new String[] { "Output Size: ",
-					CUtil.Misc.familiarize(gr.getFileSize(), CUtil.Misc.BYTES) + " (" + gr.getFileSize() + " bytes)" });
+					UnitTranslator.familiarize(gr.getFileSize(), UnitTranslator.BYTES) + " (" + gr.getFileSize() + " bytes)" });
 		}
 		if (gr.hasComment()) {
 			v.add(new String[] { "Comment", gr.getComment() });

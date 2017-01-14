@@ -35,8 +35,9 @@ import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
 import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.Native;
+import com.subterranean_security.crimson.core.util.UnitTranslator;
 
 public final class CPU {
 	private static final Logger log = LoggerFactory.getLogger(CPU.class);
@@ -126,7 +127,7 @@ public final class CPU {
 	}
 
 	public static String getMaxFrequency(int i) {
-		return CUtil.UnitTranslator.translateCpuFrequency(general[i].getMhz());
+		return UnitTranslator.translateCpuFrequency(general[i].getMhz());
 	}
 
 	public static String getCores(int i) {
@@ -134,7 +135,7 @@ public final class CPU {
 	}
 
 	public static String getCache(int i) {
-		return CUtil.UnitTranslator.translateCacheSize(general[i].getCacheSize());
+		return UnitTranslator.translateCacheSize(general[i].getCacheSize());
 	}
 
 	public static String getTotalUsage(int i) {
@@ -194,7 +195,7 @@ public final class CPU {
 				// get core hwmon directory
 				for (File probe : new File("/sys/class/hwmon").listFiles()) {
 					try {
-						if (CUtil.Files.readFileString(new File(probe.getAbsolutePath() + "/name"))
+						if (FileUtil.readFileString(new File(probe.getAbsolutePath() + "/name"))
 								.contains("coretemp")) {
 							core = probe;
 							break;

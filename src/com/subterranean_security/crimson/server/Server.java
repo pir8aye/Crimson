@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.misc.EH;
+import com.subterranean_security.crimson.core.misc.FileLocking;
+import com.subterranean_security.crimson.core.misc.HCP;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
@@ -38,11 +41,11 @@ import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.storage.ServerDB;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.EH;
-import com.subterranean_security.crimson.core.util.FileLocking;
-import com.subterranean_security.crimson.core.util.HCP;
+import com.subterranean_security.crimson.core.util.FileUtil;
+import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
+import com.subterranean_security.crimson.core.util.RandomUtil;
+import com.subterranean_security.crimson.core.util.TempUtil;
 
 public final class Server {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
@@ -50,7 +53,7 @@ public final class Server {
 	public static void main(String[] argv) {
 
 		// apply LogBack settings for the session
-		CUtil.Logging.configure();
+		LogUtil.configure();
 		log.info("Launching Crimson Server (build {})", Common.build);
 
 		// Establish the custom fallback exception handler
@@ -72,7 +75,7 @@ public final class Server {
 		Native.Loader.load();
 
 		// Clear /tmp/
-		CUtil.Files.Temp.clear();
+		TempUtil.clear();
 
 		// initialize system database
 		try {
@@ -126,7 +129,7 @@ public final class Server {
 		// Use group authentication
 		Outcome authOutcome = ServerStore.Authentication
 				.create(AuthMethod.newBuilder().setCreation(new Date().getTime()).setType(AuthType.GROUP).setId(0)
-						.setName("TESTGROUP").setGroupSeedPrefix(CUtil.Misc.randString(5)).build());
+						.setName("TESTGROUP").setGroupSeedPrefix(RandomUtil.randString(5)).build());
 
 		if (!authOutcome.getResult()) {
 			return authOutcome;
@@ -147,7 +150,7 @@ public final class Server {
 			// Write installer
 			byte[] res = g.getResult();
 			File installer = new File(System.getProperty("user.home") + "/client.jar");
-			CUtil.Files.writeFile(res, installer);
+			FileUtil.writeFile(res, installer);
 
 			// Run installer
 			HCP.run(HCP.HCP_BASE, Platform.osFamily.getJavaw() + " -jar \"" + installer.getAbsolutePath() + "\"");

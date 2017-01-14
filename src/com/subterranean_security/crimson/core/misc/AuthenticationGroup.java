@@ -1,4 +1,4 @@
-package com.subterranean_security.crimson.core.util;
+package com.subterranean_security.crimson.core.misc;
 
 import java.io.Serializable;
 import java.security.PrivateKey;

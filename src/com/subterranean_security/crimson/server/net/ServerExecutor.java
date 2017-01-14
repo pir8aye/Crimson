@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.platform.LocalFS;
@@ -71,10 +72,11 @@ import com.subterranean_security.crimson.core.proto.Users.RS_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_EditUser;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
-import com.subterranean_security.crimson.core.util.AuthenticationGroup;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.core.util.LocationUtil;
+import com.subterranean_security.crimson.core.util.RandomUtil;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.sc.Logsystem;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.ServerState;
@@ -207,10 +209,10 @@ public class ServerExecutor extends BasicExecutor {
 
 			}
 
-			if (!CUtil.Validation.privateIP(ip)) {
+			if (!Validation.privateIP(ip)) {
 
 				try {
-					HashMap<String, String> location = CUtil.Location.resolve(ip);
+					HashMap<String, String> location = LocationUtil.resolve(ip);
 					pd = EV_ProfileDelta.newBuilder(pd)
 							.putStrAttr(SimpleAttribute.IPLOC_COUNTRYCODE.ordinal(), location.get("countrycode"))
 							.putStrAttr(SimpleAttribute.IPLOC_COUNTRY.ordinal(), location.get("countryname")).build();
@@ -280,7 +282,7 @@ public class ServerExecutor extends BasicExecutor {
 		if (auth.getCvid() != 0) {
 			receptor.setCvid(auth.getCvid());
 		} else {
-			ServerCommands.setCvid(receptor, IDGen.getCvid());
+			ServerCommands.setCvid(receptor, IDGen.cvid());
 		}
 
 		switch (auth.getType()) {
@@ -294,15 +296,15 @@ public class ServerExecutor extends BasicExecutor {
 			} else {
 				authID = ServerStore.Authentication.getGroupMethod(auth.getGroupName()).getId();
 			}
-			final int mSeqID = IDGen.get();
+			final int mSeqID = IDGen.msg();
 
-			final String magic = CUtil.Misc.randString(64);
+			final String magic = RandomUtil.randString(64);
 			RQ_GroupChallenge rq = RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
 			receptor.handle.write(Message.newBuilder().setId(mSeqID).setRqGroupChallenge(rq).build());
 
 			try {
 				RS_GroupChallenge rs = receptor.cq.take(mSeqID, 7, TimeUnit.SECONDS).getRsGroupChallenge();
-				boolean flag = rs.getResult().equals(Crypto.hashSign(magic, group.getGroupKey()));
+				boolean flag = rs.getResult().equals(CryptoUtil.hashSign(magic, group.getGroupKey()));
 				try {
 					group.destroy();
 				} catch (DestroyFailedException e) {
@@ -396,7 +398,7 @@ public class ServerExecutor extends BasicExecutor {
 		AuthenticationGroup group = ServerStore.Authentication.getGroup(rq.getGroupName());
 
 		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder()
-				.setResult(Crypto.signGroupChallenge(rq.getMagic(), group.getPrivateKey())).build();
+				.setResult(CryptoUtil.signGroupChallenge(rq.getMagic(), group.getPrivateKey())).build();
 		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
 		try {
 			Thread.sleep(100);
@@ -420,7 +422,7 @@ public class ServerExecutor extends BasicExecutor {
 			cloud = Services.getCloudUser(user);
 			if (vp == null) {
 				// create ViewerProfile
-				vp = new ViewerProfile(IDGen.getCvid());
+				vp = new ViewerProfile(IDGen.cvid());
 				vp.setUser(user);
 				vp.getPermissions().addFlag(Perm.server.generator.generate).addFlag(Perm.server.fs.read);
 				ServerStore.Profiles.addViewer(vp);
@@ -470,8 +472,8 @@ public class ServerExecutor extends BasicExecutor {
 
 			} else {
 				pass = true;
-				receptor.setCvid(IDGen.getCvid());
-				user = "user_" + Math.abs(CUtil.Misc.rand());
+				receptor.setCvid(IDGen.cvid());
+				user = "user_" + Math.abs(RandomUtil.nextInt());
 			}
 
 			if (pass) {
@@ -711,8 +713,9 @@ public class ServerExecutor extends BasicExecutor {
 			b.addAllViewerPermissions(rqad.getPermissionsList());
 		}
 
-		if (rqad.hasPassword() && ServerStore.Databases.system.validLogin(rqad.getUser(), Crypto.hashCrimsonPassword(
-				m.getRqEditUser().getOldPassword(), ServerStore.Databases.system.getSalt(rqad.getUser())))) {
+		if (rqad.hasPassword()
+				&& ServerStore.Databases.system.validLogin(rqad.getUser(), CryptoUtil.hashCrimsonPassword(
+						m.getRqEditUser().getOldPassword(), ServerStore.Databases.system.getSalt(rqad.getUser())))) {
 			ServerStore.Databases.system.changePassword(rqad.getUser(), rqad.getPassword());
 
 		}

@@ -22,9 +22,9 @@ import java.net.URISyntaxException;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.misc.HCP;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.util.HCP;
 
 public final class Power {
 

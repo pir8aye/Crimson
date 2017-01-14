@@ -23,6 +23,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
@@ -42,16 +45,16 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 
-public final class Crypto {
-
-	private Crypto() {
+public final class CryptoUtil {
+	private CryptoUtil() {
 	}
 
 	public static String hash(String type, char[] target) throws NoSuchAlgorithmException {
-		byte[] t = CUtil.Misc.toBytes(target);
+		byte[] t = toBytes(target);
 
 		MessageDigest digest;
 
@@ -103,7 +106,7 @@ public final class Crypto {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new String(B64.encode(hash));
+		return new String(B64Util.encode(hash));
 	}
 
 	public static String hashOpencartPassword(String pass, String salt) {
@@ -117,18 +120,18 @@ public final class Crypto {
 	}
 
 	public static String genSalt() {
-		return CUtil.Misc.randString(8);
+		return RandomUtil.randString(8);
 	}
 
 	public static String hashSign(String magic, String key) {
 		try {
 
-			return new String(B64.encode(hash("SHA-256", (magic + key).getBytes())));
+			return new String(B64Util.encode(hash("SHA-256", (magic + key).getBytes())));
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return CUtil.Misc.randString(8);
+		return RandomUtil.randString(8);
 	}
 
 	public static String hashSign(String magic, byte[] key) {
@@ -141,7 +144,7 @@ public final class Crypto {
 			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
 			dsa.initSign(pkey);
 			dsa.update(magic.getBytes());
-			return new String(B64.encode(dsa.sign()));
+			return new String(B64Util.encode(dsa.sign()));
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -167,7 +170,7 @@ public final class Crypto {
 			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
 			dsa.initVerify(pkey);
 			dsa.update(magic.getBytes());
-			return dsa.verify(B64.decode(signature));
+			return dsa.verify(B64Util.decode(signature));
 		} catch (InvalidKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -203,8 +206,8 @@ public final class Crypto {
 			for (int i = 0; i < seedSuffix.length; i++) {
 				seed[seedPrefix.length + i] = seedSuffix[i];
 			}
-			CUtil.Misc.clearByte(seedSuffix);
-			CUtil.Misc.clearByte(seedPrefix);
+			RandomUtil.clearByte(seedSuffix);
+			RandomUtil.clearByte(seedPrefix);
 			random.setSeed(seed);
 
 			generator.initialize(1024, random);
@@ -225,7 +228,7 @@ public final class Crypto {
 
 		try {
 			PrintWriter pw = new PrintWriter(output);
-			pw.println(B64.encode(am.toByteArray()));
+			pw.println(B64Util.encode(am.toByteArray()));
 
 			pw.close();
 		} catch (FileNotFoundException e) {
@@ -238,7 +241,7 @@ public final class Crypto {
 
 		try (BufferedReader br = new BufferedReader(new FileReader(input))) {
 
-			return AuthMethod.parseFrom(B64.decode(br.readLine()));
+			return AuthMethod.parseFrom(B64Util.decode(br.readLine()));
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -251,6 +254,15 @@ public final class Crypto {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public static byte[] toBytes(char[] chars) {
+		CharBuffer charBuffer = CharBuffer.wrap(chars);
+		ByteBuffer byteBuffer = Charset.forName("UTF-8").encode(charBuffer);
+		byte[] bytes = Arrays.copyOfRange(byteBuffer.array(), byteBuffer.position(), byteBuffer.limit());
+		Arrays.fill(charBuffer.array(), '\u0000');
+		Arrays.fill(byteBuffer.array(), (byte) 0);
+		return bytes;
 	}
 
 }

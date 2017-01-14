@@ -33,9 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.misc.ObjectTransfer;
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.ObjectTransfer;
+import com.subterranean_security.crimson.core.util.RandomUtil;
 
 public abstract class Database extends Thread implements AutoCloseable {
 	private static final Logger log = LoggerFactory.getLogger(Database.class);
@@ -352,7 +352,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 	private int reserveRow() {
 		try {
-			String placeholder = CUtil.Misc.randString(64);
+			String placeholder = RandomUtil.randString(64);
 			PreparedStatement stmt = db.prepareStatement("INSERT INTO heap(Data) VALUES (?)");
 			stmt.setBytes(1, placeholder.getBytes());
 			stmt.executeUpdate();

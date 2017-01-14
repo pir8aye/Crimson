@@ -12,7 +12,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.JarUtil;
+import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 
 public class FTab extends JPanel {
@@ -46,14 +47,14 @@ public class FTab extends JPanel {
 		this.outputSize = outputSize;
 		init();
 		try {
-			win_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-win-size"));
-			lin_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-lin-size"));
-			osx_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-osx-size"));
-			sol_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-sol-size"));
-			bsd_size = Long.parseLong(CUtil.Misc.getManifestAttr("jni-bsd-size"));
-			jnativehook_size = Long.parseLong(CUtil.Misc.getManifestAttr("jnativehook-size"));
-			client_size = CUtil.Files.getResourceSize("/com/subterranean_security/crimson/server/res/bin/client.jar")
-					+ Long.parseLong(CUtil.Misc.getManifestAttr("client-lib-size"));
+			win_size = Long.parseLong(JarUtil.getManifestValue("jni-win-size"));
+			lin_size = Long.parseLong(JarUtil.getManifestValue("jni-lin-size"));
+			osx_size = Long.parseLong(JarUtil.getManifestValue("jni-osx-size"));
+			sol_size = Long.parseLong(JarUtil.getManifestValue("jni-sol-size"));
+			bsd_size = Long.parseLong(JarUtil.getManifestValue("jni-bsd-size"));
+			jnativehook_size = Long.parseLong(JarUtil.getManifestValue("jnativehook-size"));
+			client_size = JarUtil.getResourceSize("/com/subterranean_security/crimson/server/res/bin/client.jar")
+					+ Long.parseLong(JarUtil.getManifestValue("client-lib-size"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -65,49 +66,49 @@ public class FTab extends JPanel {
 	private void refresh() {
 		long total = client_size;
 		if (chckbxWindows.isSelected()) {
-			lblWin.setText(CUtil.Misc.familiarize(win_size, CUtil.Misc.BYTES));
+			lblWin.setText(UnitTranslator.familiarize(win_size, UnitTranslator.BYTES));
 			total += win_size;
 		} else {
 			lblWin.setText("0 KB");
 		}
 
 		if (chckbxLinux.isSelected()) {
-			lblLin.setText(CUtil.Misc.familiarize(lin_size, CUtil.Misc.BYTES));
+			lblLin.setText(UnitTranslator.familiarize(lin_size, UnitTranslator.BYTES));
 			total += lin_size;
 		} else {
 			lblLin.setText("0 KB");
 		}
 
 		if (chckbxOsX.isSelected()) {
-			lblOsx.setText(CUtil.Misc.familiarize(osx_size, CUtil.Misc.BYTES));
+			lblOsx.setText(UnitTranslator.familiarize(osx_size, UnitTranslator.BYTES));
 			total += osx_size;
 		} else {
 			lblOsx.setText("0 KB");
 		}
 
 		if (chckbxSolaris.isSelected()) {
-			lblSol.setText(CUtil.Misc.familiarize(sol_size, CUtil.Misc.BYTES));
+			lblSol.setText(UnitTranslator.familiarize(sol_size, UnitTranslator.BYTES));
 			total += sol_size;
 		} else {
 			lblSol.setText("0 KB");
 		}
 
 		if (chckbxBsd.isSelected()) {
-			lblBsd.setText(CUtil.Misc.familiarize(bsd_size, CUtil.Misc.BYTES));
+			lblBsd.setText(UnitTranslator.familiarize(bsd_size, UnitTranslator.BYTES));
 			total += bsd_size;
 		} else {
 			lblBsd.setText("0 KB");
 		}
 
 		if (chckbxKeylogger.isSelected()) {
-			lblKeylogger.setText(CUtil.Misc.familiarize(jnativehook_size, CUtil.Misc.BYTES));
+			lblKeylogger.setText(UnitTranslator.familiarize(jnativehook_size, UnitTranslator.BYTES));
 			total += jnativehook_size;
 		} else {
 			lblKeylogger.setText("0 KB");
 		}
 
-		lblTotal.setText("Output size: " + CUtil.Misc.familiarize(total, CUtil.Misc.BYTES));
-		outputSize.setText("Approximate output size: " + CUtil.Misc.familiarize(total, CUtil.Misc.BYTES));
+		lblTotal.setText("Output size: " + UnitTranslator.familiarize(total, UnitTranslator.BYTES));
+		outputSize.setText("Approximate output size: " + UnitTranslator.familiarize(total, UnitTranslator.BYTES));
 
 	}
 

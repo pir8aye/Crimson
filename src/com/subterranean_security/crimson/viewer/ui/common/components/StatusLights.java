@@ -25,7 +25,7 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.RandomUtil;
 
 public class StatusLights extends JComponent {
 
@@ -144,7 +144,7 @@ public class StatusLights extends JComponent {
 					while (!Thread.currentThread().isInterrupted()) {
 
 						try {
-							switch (CUtil.Misc.rand(0, 2)) {
+							switch (RandomUtil.rand(0, 2)) {
 							case 0: {
 								TOP = randomColor();
 								repaint();
@@ -189,7 +189,7 @@ public class StatusLights extends JComponent {
 					while (!Thread.currentThread().isInterrupted()) {
 
 						try {
-							switch (CUtil.Misc.rand(0, 2)) {
+							switch (RandomUtil.rand(0, 2)) {
 							case 0: {
 								TOP = c;
 								repaint();
@@ -285,7 +285,7 @@ public class StatusLights extends JComponent {
 	}
 
 	private static Color randomColor() {
-		switch (CUtil.Misc.rand(0, 5)) {
+		switch (RandomUtil.rand(0, 5)) {
 		case 0: {
 			return Color.CYAN;
 		}

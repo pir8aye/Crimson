@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Log.LogType;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.FileUtil;
 
 public enum Logsystem {
 	;
@@ -35,7 +35,7 @@ public enum Logsystem {
 		}
 		System.out.println("Reading log at location: " + location);
 		try {
-			return CUtil.Files.readFileString(new File(location));
+			return FileUtil.readFileString(new File(location));
 		} catch (IOException e) {
 			return null;
 		}

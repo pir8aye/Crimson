@@ -37,7 +37,7 @@ import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 
 public class Settings extends JPanel {
@@ -81,7 +81,7 @@ public class Settings extends JPanel {
 					rq.setFlushMethod(getMethod());
 				}
 
-				if (CUtil.Validation.flushValue(textField.getText())
+				if (Validation.flushValue(textField.getText())
 						&& flushValue != Integer.parseInt(textField.getText())) {
 					rq.setFlushValue(Integer.parseInt(textField.getText()));
 				}

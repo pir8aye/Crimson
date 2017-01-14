@@ -30,8 +30,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.exception.InvalidObjectException;
-import com.subterranean_security.crimson.core.util.ObjectTransfer;
+import com.subterranean_security.crimson.core.misc.ObjectTransfer;
 
 public class HiddenMenu extends JPanel {
 
@@ -103,7 +102,7 @@ public class HiddenMenu extends JPanel {
 		HiddenMenu clone = null;
 		try {
 			clone = (HiddenMenu) ObjectTransfer.Default.deserialize(ObjectTransfer.Default.serialize(this));
-		} catch (InvalidObjectException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

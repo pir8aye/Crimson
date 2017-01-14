@@ -38,8 +38,8 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.CryptoUtil;
+import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -180,7 +180,7 @@ public class ATab extends JPanel {
 		JButton btnRandom_1 = new JButton("Randomize");
 		btnRandom_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				fld_group_name.setText("Grp-" + CUtil.Misc.randString(5));
+				fld_group_name.setText("Grp-" + RandomUtil.randString(5));
 			}
 		});
 		btnRandom_1.setMargin(new Insets(2, 2, 2, 2));
@@ -308,8 +308,8 @@ public class ATab extends JPanel {
 		}
 
 		private void hash() {
-			last = Crypto.hashSign(last, CUtil.Misc.randString(rand.nextInt(upper - lower + 1) + lower))
-					.replaceAll("\\+|/", CUtil.Misc.randString(1));
+			last = CryptoUtil.hashSign(last, RandomUtil.randString(rand.nextInt(upper - lower + 1) + lower))
+					.replaceAll("\\+|/", RandomUtil.randString(1));
 		}
 
 		private void display(int delay) {
@@ -345,7 +345,7 @@ public class ATab extends JPanel {
 
 	public String getGroupPrefix() {
 		try {
-			return Crypto.hash("SHA-256", key_prefix.getText().toCharArray());
+			return CryptoUtil.hash("SHA-256", key_prefix.getText().toCharArray());
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

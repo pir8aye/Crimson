@@ -18,7 +18,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
@@ -212,7 +212,7 @@ public class Relogin extends JPanel {
 
 	private boolean testValues() {
 
-		return CUtil.Validation.password(fld_pass);
+		return Validation.password(fld_pass);
 
 	}
 

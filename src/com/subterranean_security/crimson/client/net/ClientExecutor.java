@@ -38,6 +38,8 @@ import com.subterranean_security.crimson.client.modules.Power;
 import com.subterranean_security.crimson.client.modules.QuickScreenshot;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
+import com.subterranean_security.crimson.core.misc.HCP;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.platform.LocalFS;
@@ -64,11 +66,11 @@ import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteSlave;
-import com.subterranean_security.crimson.core.util.AuthenticationGroup;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.Crypto;
-import com.subterranean_security.crimson.core.util.HCP;
+import com.subterranean_security.crimson.core.util.CryptoUtil;
+import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.core.util.RandomUtil;
+import com.subterranean_security.crimson.core.util.TempUtil;
 import com.subterranean_security.crimson.sc.Logsystem;
 
 import io.netty.util.ReferenceCountUtil;
@@ -215,7 +217,7 @@ public class ClientExecutor extends BasicExecutor {
 		} catch (DestroyFailedException e1) {
 		}
 
-		String result = Crypto.hashSign(m.getRqGroupChallenge().getMagic(), groupKey);
+		String result = CryptoUtil.hashSign(m.getRqGroupChallenge().getMagic(), groupKey);
 		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder().setResult(result).build();
 		connector.handle.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
 	}
@@ -240,9 +242,9 @@ public class ClientExecutor extends BasicExecutor {
 		}
 
 		// Send authentication challenge
-		final int id = IDGen.get();
+		final int id = IDGen.msg();
 
-		final String magic = CUtil.Misc.randString(64);
+		final String magic = RandomUtil.randString(64);
 		RQ_GroupChallenge rq = RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
 		connector.handle.write(Message.newBuilder().setId(id).setRqGroupChallenge(rq).build());
 
@@ -252,7 +254,7 @@ public class ClientExecutor extends BasicExecutor {
 				try {
 					Message rs = connector.cq.take(id, 7, TimeUnit.SECONDS);
 					if (rs != null) {
-						if (!Crypto.verifyGroupChallenge(magic, groupKey, rs.getRsGroupChallenge().getResult())) {
+						if (!CryptoUtil.verifyGroupChallenge(magic, groupKey, rs.getRsGroupChallenge().getResult())) {
 							log.info("Server challenge failed");
 							flag = false;
 						}
@@ -359,9 +361,9 @@ public class ClientExecutor extends BasicExecutor {
 		// TODO flush any pending data
 
 		// update client
-		File temp = CUtil.Files.Temp.getDir();
+		File temp = TempUtil.getDir();
 		try {
-			CUtil.Files.writeFile(m.getRsGenerate().getInstaller().toByteArray(),
+			FileUtil.writeFile(m.getRsGenerate().getInstaller().toByteArray(),
 					new File(temp.getAbsolutePath() + "/installer.jar"));
 
 			HCP.update(new File(temp.getAbsolutePath() + "/installer.jar").getAbsolutePath(), new String[] {},

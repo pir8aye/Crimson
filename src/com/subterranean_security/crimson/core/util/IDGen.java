@@ -17,40 +17,44 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
-import java.util.Random;
+/**
+ * 
+ * This class is the central generator for ID numbers.
+ * 
+ * @author Tyler Cook
+ *
+ */
+public final class IDGen {
+	private IDGen() {
+	}
 
-public enum IDGen {
-	;
 	private static int counter = 0;
 
-	public static int get() {
-		counter++;
+	public static int msg() {
 		if (counter == 16) {
 			counter = 0;
 		}
-		return counter;
+		return ++counter;
 	}
 
-	private static Random random = new Random();
-
-	public static int getCvid() {
-		return random.nextInt();
+	public static int cvid() {
+		return RandomUtil.nextInt();
 	}
 
-	public static int getFmid() {
-		return random.nextInt();
+	public static int fm() {
+		return RandomUtil.nextInt();
 	}
 
-	public static int getStreamid() {
-		return random.nextInt();
+	public static int stream() {
+		return RandomUtil.nextInt();
 	}
 
-	public static int getListenerID() {
-		return Math.abs(random.nextInt());
+	public static int listener() {
+		return Math.abs(RandomUtil.nextInt());
 	}
 
-	public static int getAuthMethodID() {
-		return Math.abs(random.nextInt());
+	public static int authenticationMethod() {
+		return Math.abs(RandomUtil.nextInt());
 	}
 
 }

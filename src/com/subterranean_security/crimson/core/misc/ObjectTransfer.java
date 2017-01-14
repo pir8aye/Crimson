@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.util;
+package com.subterranean_security.crimson.core.misc;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-
-import com.subterranean_security.crimson.core.exception.InvalidObjectException;
 
 public enum ObjectTransfer {
 	;
@@ -65,16 +63,16 @@ public enum ObjectTransfer {
 			return serialize((Serializable) o);
 		}
 
-		public static Serializable deserialize(byte[] object) throws InvalidObjectException {
+		public static Serializable deserialize(byte[] object) throws Exception {
 			if (object == null) {
-				throw new InvalidObjectException();
+				throw new Exception();
 			}
 			ObjectInputStream ois = null;
 			try {
 				ois = new ObjectInputStream(new ByteArrayInputStream(object));
 				return (Serializable) ois.readObject();
 			} catch (IllegalArgumentException | IOException | ClassNotFoundException e1) {
-				throw new InvalidObjectException();
+				throw new Exception();
 			} finally {
 				try {
 					ois.close();

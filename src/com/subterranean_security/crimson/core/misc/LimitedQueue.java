@@ -15,48 +15,26 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.storage;
+package com.subterranean_security.crimson.core.misc;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 
-import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
-import com.subterranean_security.crimson.core.util.JarUtil;
+public class LimitedQueue<K> extends ArrayList<K> {
 
-public class ClientDB extends Database {
+	private static final long serialVersionUID = 1L;
 
-	public String master;
+	private int size;
 
-	public ClientDB(File dfile) throws Exception {
-
-		if (!dfile.exists()) {
-			// copy the template
-			JarUtil.extract("com/subterranean_security/crimson/core/storage/viewer-template.db",
-					dfile.getAbsolutePath());
-		}
-		init(dfile);
-		if (isFirstRun()) {
-			this.hardReset();
-		}
-
+	public LimitedQueue(int size) {
+		this.size = size;
 	}
 
-	@Override
-	public void softReset() {
-
-		this.storeObject("login-times", new ArrayList<Long>());
-		this.storeObject("login-ips", new ArrayList<String>());
-
-		this.storeObject("keylogger.buffer", new MemList<EV_KEvent>());
-		super.softReset();
-	}
-
-	@Override
-	public void hardReset() {
-		this.storeObject("install.timestamp", new Date().getTime());
-		this.softReset();
-		super.hardReset();
+	public boolean add(K k) {
+		boolean r = super.add(k);
+		if (size() > size) {
+			removeRange(0, size() - size - 1);
+		}
+		return r;
 	}
 
 }

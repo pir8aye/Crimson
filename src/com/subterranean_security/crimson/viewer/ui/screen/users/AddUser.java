@@ -39,7 +39,7 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
@@ -308,7 +308,7 @@ public class AddUser extends JDialog {
 	}
 
 	private boolean verify() {
-		if (!CUtil.Validation.username(textField.getText())) {
+		if (!Validation.username(textField.getText())) {
 			sl.setBad("Invalid Username");
 			return false;
 		}
@@ -321,7 +321,7 @@ public class AddUser extends JDialog {
 			}
 		}
 
-		if (!CUtil.Validation.password(passwordField)) {
+		if (!Validation.password(passwordField)) {
 			sl.setBad("Invalid Password");
 			return false;
 		}

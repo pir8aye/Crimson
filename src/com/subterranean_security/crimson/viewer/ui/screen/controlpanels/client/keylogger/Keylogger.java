@@ -28,8 +28,8 @@ import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
+import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
-import com.subterranean_security.crimson.core.util.EH;
 import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;

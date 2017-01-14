@@ -45,7 +45,7 @@ public class SubscriberSlave extends Stream {
 	}
 
 	public SubscriberSlave(SubscriberParam sp) {
-		this(Param.newBuilder().setSubscriberParam(sp).setStreamID(IDGen.getStreamid()).setVID(Common.cvid).build());
+		this(Param.newBuilder().setSubscriberParam(sp).setStreamID(IDGen.stream()).setVID(Common.cvid).build());
 	}
 
 	@Override

@@ -29,9 +29,10 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.core.util.JarUtil;
+import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -44,7 +45,7 @@ public class ServerDB extends Database {
 		if (!dfile.exists()) {
 			// copy the template
 			log.debug("Copying database template to: " + dfile.getAbsolutePath());
-			CUtil.Files.extract("com/subterranean_security/crimson/core/storage/server-template.db",
+			JarUtil.extract("com/subterranean_security/crimson/core/storage/server-template.db",
 					dfile.getAbsolutePath());
 		}
 		init(dfile);
@@ -117,8 +118,8 @@ public class ServerDB extends Database {
 	}
 
 	public boolean changePassword(String user, String password) {
-		String salt = Crypto.genSalt();
-		String hash = Crypto.hashCrimsonPassword(password, salt);
+		String salt = CryptoUtil.genSalt();
+		String hash = CryptoUtil.hashCrimsonPassword(password, salt);
 
 		try {
 			PreparedStatement stmt = db.prepareStatement("UPDATE users SET Salt=?,Hash=? WHERE Username=?;");
@@ -162,9 +163,9 @@ public class ServerDB extends Database {
 			return false;
 		}
 
-		String salt = Crypto.genSalt();
-		String hash = Crypto.hashCrimsonPassword(password, salt);
-		String UID = CUtil.Misc.randString(4);
+		String salt = CryptoUtil.genSalt();
+		String hash = CryptoUtil.hashCrimsonPassword(password, salt);
+		String UID = RandomUtil.randString(4);
 
 		try {
 			PreparedStatement stmt = db
@@ -182,7 +183,7 @@ public class ServerDB extends Database {
 
 		try {
 			ClientDB udb = new ClientDB(new File(dfile.getParent() + File.separator + UID + ".db"));
-			udb.master = Crypto.hashCrimsonPassword(password.toCharArray(), salt);
+			udb.master = CryptoUtil.hashCrimsonPassword(password.toCharArray(), salt);
 			udb.close();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -191,7 +192,7 @@ public class ServerDB extends Database {
 		}
 
 		// create ViewerProfile
-		ViewerProfile vp = new ViewerProfile(IDGen.getCvid());
+		ViewerProfile vp = new ViewerProfile(IDGen.cvid());
 		vp.setUser(user);
 		vp.setPermissions(permissions);
 

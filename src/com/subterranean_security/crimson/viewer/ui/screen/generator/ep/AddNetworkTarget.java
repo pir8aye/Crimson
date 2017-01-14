@@ -14,7 +14,7 @@ import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.NTab;
 
@@ -100,11 +100,11 @@ public class AddNetworkTarget extends JPanel {
 	}
 
 	private boolean verify() {
-		if (!CUtil.Validation.dns(textField.getText()) && !CUtil.Validation.ip(textField.getText())) {
+		if (!Validation.dns(textField.getText()) && !Validation.ip(textField.getText())) {
 			lbl_status.setBad("Invalid server address");
 			return false;
 		}
-		if (!CUtil.Validation.port(textField_1.getText())) {
+		if (!Validation.port(textField_1.getText())) {
 			lbl_status.setBad("Invalid port");
 			return false;
 		}

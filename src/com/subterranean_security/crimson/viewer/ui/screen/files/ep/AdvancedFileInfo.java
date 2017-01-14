@@ -29,17 +29,16 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.exception.InvalidObjectException;
+import com.subterranean_security.crimson.core.misc.ObjectTransfer;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
-import com.subterranean_security.crimson.core.util.B64;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.ObjectTransfer;
+import com.subterranean_security.crimson.core.util.B64Util;
+import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.viewer.ui.common.components.DataViewer;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
-import javax.swing.SwingConstants;
 
 public class AdvancedFileInfo extends JPanel {
 
@@ -57,7 +56,7 @@ public class AdvancedFileInfo extends JPanel {
 		dv.addRow(new String[] { "Filename", rs.getName() });
 		dv.addRow(new String[] { "Path", rs.getPath() });
 		dv.addRow(new String[] { "Size",
-				CUtil.Misc.familiarize(rs.getSize(), CUtil.Misc.BYTES) + " (" + rs.getSize() + " bytes)" });
+				UnitTranslator.familiarize(rs.getSize(), UnitTranslator.BYTES) + " (" + rs.getSize() + " bytes)" });
 		if (rs.hasCtime())
 			dv.addRow(new String[] { "Creation Time", new Date(rs.getCtime()).toString() });
 		if (rs.hasMtime())
@@ -78,8 +77,8 @@ public class AdvancedFileInfo extends JPanel {
 		lblIcon.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblIcon);
 		try {
-			lblIcon.setIcon((Icon) ObjectTransfer.Default.deserialize(B64.decode(rs.getLocalIcon())));
-		} catch (InvalidObjectException e) {
+			lblIcon.setIcon((Icon) ObjectTransfer.Default.deserialize(B64Util.decode(rs.getLocalIcon())));
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

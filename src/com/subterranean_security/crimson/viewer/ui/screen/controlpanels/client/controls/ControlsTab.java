@@ -48,7 +48,7 @@ import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.DateUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
@@ -615,14 +615,14 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 	public void refreshStatusConsole() {
 		try {
-			powerStatusConsole.updateValue(0, CUtil.Misc.datediff(new Date(),
+			powerStatusConsole.updateValue(0, DateUtil.datediff(new Date(),
 					uptimeFormat.parse(profile.getAttr(SimpleAttribute.OS_START_TIME))));
 		} catch (ParseException e) {
 			powerStatusConsole.updateValue(0, "N/A");
 		}
 
 		clientStatusConsole.updateValue(0, profile.getAttr(SimpleAttribute.CLIENT_STATUS));
-		clientStatusConsole.updateValue(3, CUtil.Misc.datediff(new Date(), profile.getLastUpdate()));
+		clientStatusConsole.updateValue(3, DateUtil.datediff(new Date(), profile.getLastUpdate()));
 	}
 
 	public void refreshControls() {

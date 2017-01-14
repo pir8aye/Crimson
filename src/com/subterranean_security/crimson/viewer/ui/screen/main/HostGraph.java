@@ -34,7 +34,7 @@ import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import com.subterranean_security.crimson.core.profile.AbstractAttribute;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.JarUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
@@ -160,7 +160,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 			String iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
 					+ p.getAttr(SimpleAttribute.OS_NAME).replaceAll(" ", "_").toLowerCase() + ".png";
 
-			if (CUtil.Files.getResourceSize(iconLocation) == 0) {
+			if (JarUtil.getResourceSize(iconLocation) == 0) {
 				iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
 						+ p.getAttr(SimpleAttribute.OS_FAMILY) + ".png";
 			}

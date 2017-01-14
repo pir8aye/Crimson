@@ -55,7 +55,7 @@ public class RemoteMaster extends Stream {
 	public RemoteMaster(RemoteParam rp, int cid, RDArea rda) {
 		this.rda = rda;
 		this.cid = cid;
-		param = Param.newBuilder().setPeriod(100).setRemoteParam(rp).setStreamID(IDGen.getStreamid()).setCID(cid)
+		param = Param.newBuilder().setPeriod(100).setRemoteParam(rp).setStreamID(IDGen.stream()).setCID(cid)
 				.setVID(Common.cvid).build();
 		eventThread.start();
 	}

@@ -17,7 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.platform.info;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 
 import org.hyperic.sigar.NetInfo;
@@ -26,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.platform.SigarStore;
-import com.subterranean_security.crimson.core.util.CUtil;
 
 public final class NET {
 	private static final Logger log = LoggerFactory.getLogger(NET.class);
@@ -85,8 +88,40 @@ public final class NET {
 		return netInfo.getDefaultGateway();
 	}
 
+	/**
+	 * Gets the default external IP by querying Amazon's IP service
+	 * 
+	 * @return
+	 */
 	public static String getExternalIP() {
-		return CUtil.Network.getEIP();
+
+		String extip = "";
+		try (BufferedReader in = new BufferedReader(
+				new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream()))) {
+			extip = in.readLine();
+		} catch (IOException e) {
+			// may not be connected to the internet
+			extip = "Unknown";
+		}
+
+		if (extip == null) {
+			extip = "Unknown";
+		}
+		return extip;
+
+	}
+
+	/**
+	 * Get the default internal IP address
+	 * 
+	 * @return
+	 */
+	public static String getDefaultInternalIP() {
+		try {
+			return InetAddress.getLocalHost().getHostAddress();
+		} catch (Exception e) {
+			return "Unknown";
+		}
 	}
 
 }

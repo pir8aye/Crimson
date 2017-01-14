@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.platform.Platform.ARCH;
-import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.util.Native;
+import com.subterranean_security.crimson.core.platform.SigarStore;
 
 public final class OS {
 	private static final Logger log = LoggerFactory.getLogger(OS.class);

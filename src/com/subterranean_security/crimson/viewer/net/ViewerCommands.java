@@ -64,8 +64,8 @@ import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.proto.Update.RQ_GetClientConfig;
 import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RQ_EditUser;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.CryptoUtil;
+import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -78,7 +78,7 @@ public enum ViewerCommands {
 	private static final Logger log = LoggerFactory.getLogger(ViewerCommands.class);
 
 	public static boolean login(String user, String pass) {
-		int id = IDGen.get();
+		int id = IDGen.msg();
 
 		ViewerRouter.route(Message.newBuilder().setId(id).setRqLogin(RQ_Login.newBuilder().setUsername(user)).build());
 
@@ -89,8 +89,8 @@ public enum ViewerCommands {
 				return false;
 			} else if (lcrq.hasRqLoginChallenge()) {
 				RQ_LoginChallenge challenge = lcrq.getRqLoginChallenge();
-				String result = challenge.getCloud() ? Crypto.hashOpencartPassword(pass, challenge.getSalt())
-						: Crypto.hashCrimsonPassword(pass, challenge.getSalt());
+				String result = challenge.getCloud() ? CryptoUtil.hashOpencartPassword(pass, challenge.getSalt())
+						: CryptoUtil.hashCrimsonPassword(pass, challenge.getSalt());
 				ViewerRouter.route(Message.newBuilder().setId(id)
 						.setRsLoginChallenge(RS_LoginChallenge.newBuilder().setResult(result)).build());
 			} else if (lcrq.hasRsLogin()) {
@@ -317,7 +317,7 @@ public enum ViewerCommands {
 	}
 
 	public static void generate(ClientConfig config, String output, Date creation) {
-		int id = IDGen.get();
+		int id = IDGen.msg();
 		RQ_Generate.Builder rq = RQ_Generate.newBuilder().setInternalConfig(config);
 
 		ViewerRouter.route(Message.newBuilder().setId(id).setRqGenerate(rq).build());
@@ -337,7 +337,7 @@ public enum ViewerCommands {
 
 				if (gr.getResult()) {
 					MainFrame.main.np.addNote("info", "Generation complete!", "Click for report", r);
-					CUtil.Files.writeFile(rs.getRsGenerate().getInstaller().toByteArray(), new File(output));
+					FileUtil.writeFile(rs.getRsGenerate().getInstaller().toByteArray(), new File(output));
 				} else {
 					MainFrame.main.np.addNote("error", "Generation failed!", "Click for report", r);
 					log.error("Could not generate an installer");
@@ -512,7 +512,7 @@ public enum ViewerCommands {
 			file.getParentFile().mkdirs();
 			if (m != null) {
 				outcome.setComment(file.getAbsolutePath());
-				CUtil.Files.writeFile(m.getRsQuickScreenshot().getBin().toByteArray(), file);
+				FileUtil.writeFile(m.getRsQuickScreenshot().getBin().toByteArray(), file);
 				outcome.setResult(file.exists());
 
 			} else {

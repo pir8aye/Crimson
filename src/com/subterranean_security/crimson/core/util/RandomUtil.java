@@ -17,81 +17,63 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Callable;
+import java.util.Random;
 
-public class StatStream {
-
-	// parallel
-	private LimitedQueue<Long> points;
-	private LimitedQueue<Long> times;
-
-	private Callable<Long> c;
-	private int period;
-	private double conversion;
-
-	public StatStream(double conversion, int keep, int period, Callable<Long> c) {
-		this(conversion, keep);
-		this.c = c;
-		this.period = period;
+public final class RandomUtil {
+	private RandomUtil() {
 	}
 
-	public StatStream(double conversion, int keep) {
-		points = new LimitedQueue<Long>(keep);
-		times = new LimitedQueue<Long>(keep);
-		this.conversion = conversion;
+	private static Random insecureRandom = new Random();
+
+	public static int rand(int lower, int upper) {
+		return insecureRandom.nextInt(upper - lower + 1) + lower;
 	}
 
-	private Timer timer = null;
+	public static long rand(long lower, long upper) {
+		return nextLong(upper - lower + 1) + lower;
+	}
 
-	public void start() {
-		if (timer == null) {
-			timer = new Timer();
-			timer.schedule(new TimerTask() {
+	public static long nextLong(long n) {
+		// error checking and 2^x checking removed for simplicity.
+		long bits, val;
+		do {
+			bits = (insecureRandom.nextLong() << 1) >>> 1;
+			val = bits % n;
+		} while (bits - val + (n - 1) < 0L);
+		return val;
+	}
 
-				@Override
-				public void run() {
-					try {
-						long d = c.call();
-						times.add(System.currentTimeMillis());
-						points.add(d);
+	/**
+	 * Generates a random ASCII string of given length
+	 *
+	 * @param characters
+	 *            length of string
+	 * @return random string
+	 */
+	public static String randString(int characters) {
+		StringBuffer filename = new StringBuffer();
+		for (int i = 0; i < characters; i++) {
+			// append a random character
+			char c = (char) (insecureRandom.nextInt(25) + 97);
+			filename.append(c);
+		}
 
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+		return filename.toString();
+	}
 
-				}
+	public static int nextInt() {
+		return insecureRandom.nextInt();
+	}
 
-			}, 0, period);
+	public static void clearChar(char[] a) {
+		for (int i = 0; i < a.length; i++) {
+			a[i] = (char) insecureRandom.nextInt();
 		}
 	}
 
-	public void stop() {
-		if (timer != null) {
-			timer.cancel();
-			timer = null;
+	public static void clearByte(byte[] a) {
+		for (int i = 0; i < a.length; i++) {
+			a[i] = (byte) insecureRandom.nextInt();
 		}
 	}
-
-	public double getInstantaneousSpeed() {
-		int s = points.size();
-		if (s < 2) {
-			return 0;
-		} else {
-			long n = points.get(s - 1) - points.get(s - 2);
-			long d = times.get(s - 1) - times.get(s - 2);
-
-			return (n * conversion / d);
-		}
-	}
-
-	public double addPoint(long l) {
-		times.add(System.currentTimeMillis());
-		points.add(l);
-
-		return getInstantaneousSpeed();
-	}
-
 }

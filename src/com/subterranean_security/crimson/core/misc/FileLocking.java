@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.util;
+package com.subterranean_security.crimson.core.misc;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +32,9 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.util.B64Util;
+import com.subterranean_security.crimson.core.util.RandomUtil;
+import com.subterranean_security.crimson.core.util.TempUtil;
 
 /**
  * Locks a file in the system temp directory to prevent multiple instances of
@@ -70,11 +73,11 @@ public enum FileLocking {
 			break;
 
 		}
-		base += CUtil.Misc.randString(lockBaseSize);
+		base += RandomUtil.randString(lockBaseSize);
 
 		try {
 
-			file = CUtil.Files.Temp.getFile(hashBase(base));
+			file = TempUtil.getFile(hashBase(base));
 
 			channel = new RandomAccessFile(file, "rw").getChannel();
 			lock = channel.tryLock();
@@ -174,7 +177,7 @@ public enum FileLocking {
 		try {
 			digest = MessageDigest.getInstance("MD5");
 			digest.update(base.getBytes());
-			second = B64.encodeString(new String(digest.digest())).replaceAll("[/\\+=]", "");
+			second = B64Util.encodeString(new String(digest.digest())).replaceAll("[/\\+=]", "");
 
 		} catch (NoSuchAlgorithmException e1) {
 			log.warn("MD5 hashing algorithm missing!");

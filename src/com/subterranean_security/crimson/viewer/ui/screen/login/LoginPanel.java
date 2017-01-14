@@ -55,7 +55,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
@@ -437,19 +437,19 @@ public class LoginPanel extends JPanel {
 
 	private boolean testValues(String server, String port, String user) {
 		removeErrorBorders();
-		if (!CUtil.Validation.port(port)) {
+		if (!Validation.port(port)) {
 			setPortError();
 			return false;
 		}
-		if (!CUtil.Validation.password(fld_pass)) {
+		if (!Validation.password(fld_pass)) {
 			setPassError();
 			return false;
 		}
-		if (!CUtil.Validation.username(user)) {
+		if (!Validation.username(user)) {
 			setUserError();
 			return false;
 		}
-		if (!CUtil.Validation.dns(server) && !CUtil.Validation.ip(server)) {
+		if (!Validation.dns(server) && !Validation.ip(server)) {
 			setServerError();
 			return false;
 		}

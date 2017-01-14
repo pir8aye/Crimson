@@ -47,9 +47,10 @@ import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.core.util.RandomUtil;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
@@ -116,10 +117,10 @@ public class CreateGroup extends JPanel {
 						sl.setInfo("Creating group");
 						timer.cancel();
 						Outcome outcome = ViewerCommands.createAuthMethod(
-								AuthMethod.newBuilder().setId(IDGen.getAuthMethodID()).setCreation(new Date().getTime())
+								AuthMethod.newBuilder().setId(IDGen.authenticationMethod()).setCreation(new Date().getTime())
 										.addOwner(ViewerStore.Profiles.getLocalViewer().getUser())
 										.setType(AuthType.GROUP).setName(textField.getText())
-										.setGroupSeedPrefix(key_prefix.getText() + CUtil.Misc.randString(32)).build());
+										.setGroupSeedPrefix(key_prefix.getText() + RandomUtil.randString(32)).build());
 						if (outcome.getResult()) {
 							sl.setGood("Group created successfully");
 							try {
@@ -219,7 +220,7 @@ public class CreateGroup extends JPanel {
 	}
 
 	private boolean testValues() {
-		if (!CUtil.Validation.groupname(textField.getText())) {
+		if (!Validation.groupname(textField.getText())) {
 			sl.setBad("Invalid group name");
 			return false;
 		}
@@ -247,8 +248,8 @@ public class CreateGroup extends JPanel {
 		}
 
 		private void hash() {
-			last = Crypto.hashSign(last, CUtil.Misc.randString(rand.nextInt(upper - lower + 1) + lower))
-					.replaceAll("\\+|/", CUtil.Misc.randString(1));
+			last = CryptoUtil.hashSign(last, RandomUtil.randString(rand.nextInt(upper - lower + 1) + lower))
+					.replaceAll("\\+|/", RandomUtil.randString(1));
 		}
 
 		private void display(int delay) {

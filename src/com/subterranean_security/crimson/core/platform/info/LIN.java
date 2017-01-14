@@ -23,7 +23,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.FileUtil;
 
 public final class LIN {
 	private LIN() {
@@ -61,7 +61,7 @@ public final class LIN {
 
 		if (os_release.exists() && os_release.canRead()) {
 			try {
-				for (String s : CUtil.Files.readFileLines(os_release)) {
+				for (String s : FileUtil.readFileLines(os_release)) {
 					s = s.trim();
 					if (s.toUpperCase().startsWith("PRETTY_NAME")) {
 						return s.substring(s.indexOf("\"") + 1, s.lastIndexOf("\""));
@@ -76,7 +76,7 @@ public final class LIN {
 
 		if (issue.exists() && issue.canRead()) {
 			try {
-				for (String s : CUtil.Files.readFileLines(issue)) {
+				for (String s : FileUtil.readFileLines(issue)) {
 					return s.trim();
 				}
 			} catch (IOException e) {

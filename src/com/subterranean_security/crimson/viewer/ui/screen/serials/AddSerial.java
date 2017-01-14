@@ -43,7 +43,7 @@ import javax.swing.border.EtchedBorder;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.viewer.Viewer;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
@@ -282,7 +282,7 @@ public class AddSerial extends JPanel {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						if (!CUtil.Validation.serial(getKey())) {
+						if (!Validation.serial(getKey())) {
 							return Outcome.newBuilder().setResult(false).setComment("Invalid key").build();
 						}
 						return Services.activate(getKey());
@@ -389,6 +389,6 @@ public class AddSerial extends JPanel {
 	}
 
 	private void refreshKey() {
-		btnApply.setEnabled(CUtil.Validation.serial(getKey()));
+		btnApply.setEnabled(Validation.serial(getKey()));
 	}
 }

@@ -15,9 +15,40 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
+package com.subterranean_security.crimson.core.util;
 
-package com.subterranean_security.crimson.core.exception;
+public final class VersionUtil {
+	private VersionUtil() {
+	}
 
-public class InvalidObjectException extends Exception {
-	private static final long serialVersionUID = 1L;
+	/**
+	 * Version format: X.X.X.X[-xxxx]
+	 * 
+	 * @param v1
+	 * @param v2
+	 * @return true if v1 is newer than v2
+	 */
+	public static boolean isNewerVersion(String v1, String v2) {
+		String[] pv1 = v1.split("-");
+
+		String[] pv2 = v2.split("-");
+
+		if (pv1.length == 2 && pv2.length == 2) {
+			// simply compare build numbers
+			return Integer.parseInt(pv1[1]) > Integer.parseInt(pv2[1]);
+		}
+		String[] ppv1 = pv1[0].split("\\.");
+		String[] ppv2 = pv2[0].split("\\.");
+
+		for (int i = 0; i < 4; i++) {
+			if (Integer.parseInt(ppv1[i]) > Integer.parseInt(ppv2[i])) {
+				return true;
+			} else if (Integer.parseInt(ppv1[i]) < Integer.parseInt(ppv2[i])) {
+				return false;
+			}
+		}
+
+		return false;
+	}
+
 }

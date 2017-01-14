@@ -33,13 +33,13 @@ import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.misc.ObjectTransfer;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.util.B64;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.B64Util;
+import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.core.util.ObjectTransfer;
 
 /**
  * This class provides convenient access to the local filesystem.
@@ -70,7 +70,7 @@ public class LocalFS {
 
 	public LocalFS(String start) {
 		ref = Paths.get(start);
-		fmid = IDGen.getFmid();
+		fmid = IDGen.fm();
 		log.debug("Initialized local filesystem handle (FMID: {}, PATH: {})", fmid, pwd());
 	}
 
@@ -136,7 +136,7 @@ public class LocalFS {
 
 		RS_AdvancedFileInfo.Builder rs = RS_AdvancedFileInfo.newBuilder();
 		rs.setLocalIcon(new String(
-				B64.encode(ObjectTransfer.Default.serialize(FileSystemView.getFileSystemView().getSystemIcon(f)))));
+				B64Util.encode(ObjectTransfer.Default.serialize(FileSystemView.getFileSystemView().getSystemIcon(f)))));
 		rs.setName(f.getName());
 		rs.setPath(f.getParent());
 		rs.setSize(f.length());
@@ -156,7 +156,7 @@ public class LocalFS {
 	public static Outcome delete(Iterable<String> targets, boolean overwrite) {
 		Outcome.Builder outcome = Outcome.newBuilder().setResult(true);
 		for (String s : targets) {
-			if (!CUtil.Files.delete(new File(s), overwrite)) {
+			if (!FileUtil.delete(new File(s), overwrite)) {
 				outcome.setResult(false);
 			}
 		}

@@ -37,7 +37,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class FileTable extends JPanel {
@@ -121,8 +121,8 @@ public class FileTable extends JPanel {
 				if (i2.contains("item")) {
 					i2 = "" + (Long.parseLong(i2.substring(0, i2.indexOf(' '))) - 10000000) + " items";
 				}
-				return Long.compare(CUtil.Misc.defamiliarize(i1, CUtil.Misc.BYTES),
-						CUtil.Misc.defamiliarize(i2, CUtil.Misc.BYTES));
+				return Long.compare(UnitTranslator.defamiliarize(i1, UnitTranslator.BYTES),
+						UnitTranslator.defamiliarize(i2, UnitTranslator.BYTES));
 
 			}
 		});
@@ -302,7 +302,7 @@ class FileItem {
 			this.size = size + ((size == 1) ? " item " : " items");
 			icon = UIUtil.getIcon("icons16/files/file_extension_folder.png");
 		} else {
-			this.size = CUtil.Misc.familiarize(size, CUtil.Misc.BYTES);
+			this.size = UnitTranslator.familiarize(size, UnitTranslator.BYTES);
 
 			icon = UIUtil.getIcon("icons16/files/file_extension_" + name.substring(name.lastIndexOf('.') + 1) + ".png");
 			if (icon == null) {

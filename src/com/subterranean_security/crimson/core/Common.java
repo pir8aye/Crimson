@@ -29,7 +29,7 @@ import com.subterranean_security.cinstaller.Main;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.storage.Database;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.JarUtil;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
@@ -67,19 +67,19 @@ public final class Common {
 
 	private static Instance discoverInstance() {
 
-		if (CUtil.Misc.findClass("com.subterranean_security.crimson.server.Server")) {
+		if (JarUtil.classExists("com.subterranean_security.crimson.server.Server")) {
 			return Instance.SERVER;
 		}
-		if (CUtil.Misc.findClass("com.subterranean_security.crimson.viewer.Viewer")) {
+		if (JarUtil.classExists("com.subterranean_security.crimson.viewer.Viewer")) {
 			return Instance.VIEWER;
 		}
-		if (CUtil.Misc.findClass("com.subterranean_security.crimson.client.Client")) {
+		if (JarUtil.classExists("com.subterranean_security.crimson.client.Client")) {
 			return Instance.CLIENT;
 		}
-		if (CUtil.Misc.findClass("com.subterranean_security.cinstaller.Main")) {
+		if (JarUtil.classExists("com.subterranean_security.cinstaller.Main")) {
 			return Instance.INSTALLER;
 		}
-		if (CUtil.Misc.findClass("com.subterranean_security.viridian.Main")) {
+		if (JarUtil.classExists("com.subterranean_security.viridian.Main")) {
 			return Instance.VIRIDIAN;
 		}
 		System.exit(0);
@@ -123,8 +123,8 @@ public final class Common {
 	static {
 
 		try {
-			version = CUtil.Misc.getManifestAttr("Crimson-Version");
-			build = Integer.parseInt(CUtil.Misc.getManifestAttr("Build-Number"));
+			version = JarUtil.getManifestValue("Crimson-Version");
+			build = Integer.parseInt(JarUtil.getManifestValue("Build-Number"));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

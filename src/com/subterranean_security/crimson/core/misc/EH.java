@@ -15,26 +15,44 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.util;
+package com.subterranean_security.crimson.core.misc;
 
-import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class LimitedQueue<K> extends ArrayList<K> {
+import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.util.MiscUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
+import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
+import com.subterranean_security.crimson.core.Reporter;
 
-	private static final long serialVersionUID = 1L;
+public class EH implements Thread.UncaughtExceptionHandler {
 
-	private int size;
+	private static final Logger log = LoggerFactory.getLogger(EH.class);
 
-	public LimitedQueue(int size) {
-		this.size = size;
+	@Override
+	public void uncaughtException(Thread thread, Throwable t) {
+
+		if (Common.instance == Instance.VIEWER) {
+			try {
+				MainFrame.main.panel.console.addLine("An unexpected exception has occurred", LineType.ORANGE);
+			} catch (Exception e) {
+
+			}
+		}
+
+		log.debug(MiscUtil.getStack(t));
+
+		Thread.currentThread().getStackTrace();// TODO send
+
+		Reporter.report(Reporter.newReport().setCrStackTrace(MiscUtil.getStack(t)).build());
+
 	}
 
-	public boolean add(K k) {
-		boolean r = super.add(k);
-		if (size() > size) {
-			removeRange(0, size() - size - 1);
-		}
-		return r;
+	public static void handle(Throwable t) {
+		log.debug(MiscUtil.getStack(t));
+		Reporter.report(Reporter.newReport().setCrStackTrace(MiscUtil.getStack(t)).build());
 	}
 
 }

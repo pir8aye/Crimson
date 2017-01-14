@@ -42,8 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.CryptoUtil;
+import com.subterranean_security.crimson.core.util.RandomUtil;
 
 public final class UIUtil {
 
@@ -122,11 +122,11 @@ public final class UIUtil {
 		char[] password = field.getPassword();
 		String hash = null;
 		try {
-			hash = Crypto.hash("SHA-256", password);
+			hash = CryptoUtil.hash("SHA-256", password);
 		} catch (NoSuchAlgorithmException e) {
 
 		}
-		CUtil.Misc.clearChar(password);
+		RandomUtil.clearChar(password);
 		return hash;
 	}
 

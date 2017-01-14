@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.platform.SigarStore;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.UnitTranslator;
 
 public final class RAM {
 	private static final Logger log = LoggerFactory.getLogger(RAM.class);
@@ -69,17 +69,17 @@ public final class RAM {
 	}
 
 	public static String getSize() {
-		return CUtil.UnitTranslator.translateMemSize(mem.getTotal());
+		return UnitTranslator.translateMemSize(mem.getTotal());
 	}
 
 	public static String getUsage() {
 		refreshMem();
-		return CUtil.UnitTranslator.translateMemSize(mem.getActualUsed());
+		return UnitTranslator.translateMemSize(mem.getActualUsed());
 	}
 
 	public static String getClientUsage() {
 		CRIMSON.refreshProcessMem();
-		return CUtil.UnitTranslator.translateMemSize(CRIMSON.getProcessMem().getResident());
+		return UnitTranslator.translateMemSize(CRIMSON.getProcessMem().getResident());
 	}
 
 }

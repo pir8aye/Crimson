@@ -9,7 +9,7 @@ import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
 import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.UnitTranslator;
 
 public final class DISP {
 	private DISP() {
@@ -60,7 +60,7 @@ public final class DISP {
 	}
 
 	public static String getMemory(int i) {
-		return CUtil.UnitTranslator.translateDispMemSize(devices[i].getAvailableAcceleratedMemory());
+		return UnitTranslator.translateDispMemSize(devices[i].getAvailableAcceleratedMemory());
 	}
 
 	public static String getBitDepth(int i) {

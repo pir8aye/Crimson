@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
@@ -40,8 +41,7 @@ import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.storage.MemList;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
-import com.subterranean_security.crimson.core.util.AuthenticationGroup;
-import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.sv.permissions.Perm;
@@ -255,7 +255,7 @@ public final class ServerStore {
 
 			if (am.getType() == AuthType.GROUP) {
 				am = AuthMethod.newBuilder().mergeFrom(am).setGroup(
-						Databases.system.store(Crypto.generateGroup(am.getName(), am.getGroupSeedPrefix().getBytes())))
+						Databases.system.store(CryptoUtil.generateGroup(am.getName(), am.getGroupSeedPrefix().getBytes())))
 						.build();
 			}
 			methods.add(am);

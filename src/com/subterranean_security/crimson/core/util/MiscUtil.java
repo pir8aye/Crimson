@@ -17,41 +17,60 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
 
-import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
-import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
-import com.subterranean_security.crimson.core.Reporter;
-
-public class EH implements Thread.UncaughtExceptionHandler {
-
-	private static final Logger log = LoggerFactory.getLogger(EH.class);
-
-	@Override
-	public void uncaughtException(Thread thread, Throwable t) {
-
-		if (Common.instance == Instance.VIEWER) {
-			try {
-				MainFrame.main.panel.console.addLine("An unexpected exception has occurred", LineType.ORANGE);
-			} catch (Exception e) {
-
-			}
-		}
-
-		log.debug(CUtil.Misc.getStack(t));
-
-		Thread.currentThread().getStackTrace();// TODO send
-
-		Reporter.report(Reporter.newReport().setCrStackTrace(CUtil.Misc.getStack(t)).build());
-
+public final class MiscUtil {
+	private MiscUtil() {
 	}
 
-	public static void handle(Throwable t) {
-		log.debug(CUtil.Misc.getStack(t));
-		Reporter.report(Reporter.newReport().setCrStackTrace(CUtil.Misc.getStack(t)).build());
+	public static String getStack(Throwable e) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		e.printStackTrace(pw);
+		return sw.toString();
+	}
+
+	public static byte[] compress(byte[] target) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			OutputStream out = new DeflaterOutputStream(baos);
+			out.write(target);
+			out.close();
+		} catch (IOException e) {
+			throw new AssertionError(e);
+		}
+		return baos.toByteArray();
+	}
+
+	public static byte[] decompress(byte[] bytes) {
+		InputStream in = new InflaterInputStream(new ByteArrayInputStream(bytes));
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			byte[] buffer = new byte[8192];
+			int len;
+			while ((len = in.read(buffer)) > 0)
+				baos.write(buffer, 0, len);
+			return baos.toByteArray();
+		} catch (IOException e) {
+			throw new AssertionError(e);
+		}
+	}
+
+	public static double average(ArrayList<Double> list) {
+		double sum = 0;
+		for (double d : list) {
+			sum += d;
+		}
+		return sum / list.size();
 	}
 
 }

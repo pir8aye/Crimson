@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Common.Instance;
-import com.subterranean_security.crimson.core.util.CUtil;
-import com.subterranean_security.crimson.core.util.EH;
-import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.crimson.core.misc.EH;
+import com.subterranean_security.crimson.core.misc.FileLocking;
+import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.viewer.ViewerStore.Databases;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -52,7 +52,7 @@ public class Viewer {
 			return;
 		}
 
-		CUtil.Logging.configure();
+		LogUtil.configure();
 
 		// Establish the custom fallback exception handler
 		Thread.setDefaultUncaughtExceptionHandler(new EH());

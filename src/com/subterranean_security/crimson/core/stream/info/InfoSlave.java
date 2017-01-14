@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.core.stream.info;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.misc.StatStream;
 import com.subterranean_security.crimson.core.platform.info.CRIMSON;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.NIC;
@@ -31,10 +32,9 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.Native;
-import com.subterranean_security.crimson.core.util.StatStream;
+import com.subterranean_security.crimson.core.util.UnitTranslator;
 
 public abstract class InfoSlave extends Stream {
 
@@ -75,7 +75,7 @@ public abstract class InfoSlave extends Stream {
 	}
 
 	public InfoSlave(InfoParam ip) {
-		this(Param.newBuilder().setInfoParam(ip).setStreamID(IDGen.getStreamid()).setVID(Common.cvid).build());
+		this(Param.newBuilder().setInfoParam(ip).setStreamID(IDGen.stream()).setVID(Common.cvid).build());
 	}
 
 	private void initializeCPU() {
@@ -194,7 +194,7 @@ public abstract class InfoSlave extends Stream {
 		if (param.getInfoParam().hasNicRxBytes()) {
 			long l = NIC.getRxBytes(whichNIC);
 			rxSpeed.addPoint(l);
-			String nicRxBytes = CUtil.UnitTranslator.translateNicOutput(l);
+			String nicRxBytes = UnitTranslator.translateNicOutput(l);
 			if (!lastRxBytes.getValue().equals(nicRxBytes)) {
 				pd.addGroupAttr(lastRxBytes.setValue(nicRxBytes));
 			}
@@ -202,7 +202,7 @@ public abstract class InfoSlave extends Stream {
 
 		// nic rx speed
 		if (param.getInfoParam().hasNicRxSpeed()) {
-			String nicRxSpeed = CUtil.UnitTranslator.nicSpeed(param.getInfoParam().hasNicRxBytes()
+			String nicRxSpeed = UnitTranslator.nicSpeed(param.getInfoParam().hasNicRxBytes()
 					? rxSpeed.getInstantaneousSpeed() : rxSpeed.addPoint(NIC.getRxBytes(whichNIC)));
 			if (!lastRxSpeed.getValue().equals(nicRxSpeed)) {
 				pd.addGroupAttr(lastRxSpeed.setValue(nicRxSpeed));
@@ -221,7 +221,7 @@ public abstract class InfoSlave extends Stream {
 		if (param.getInfoParam().hasNicTxBytes()) {
 			long l = NIC.getTxBytes(whichNIC);
 			txSpeed.addPoint(l);
-			String nicTxBytes = CUtil.UnitTranslator.translateNicOutput(l);
+			String nicTxBytes = UnitTranslator.translateNicOutput(l);
 			if (!lastTxBytes.getValue().equals(nicTxBytes)) {
 				pd.addGroupAttr(lastTxBytes.setValue(nicTxBytes));
 			}
@@ -229,7 +229,7 @@ public abstract class InfoSlave extends Stream {
 
 		// nic tx speed
 		if (param.getInfoParam().hasNicTxSpeed()) {
-			String nicTxSpeed = CUtil.UnitTranslator.nicSpeed(param.getInfoParam().hasNicTxBytes()
+			String nicTxSpeed = UnitTranslator.nicSpeed(param.getInfoParam().hasNicTxBytes()
 					? txSpeed.getInstantaneousSpeed() : txSpeed.addPoint(NIC.getTxBytes(whichNIC)));
 			if (!lastTxSpeed.getValue().equals(nicTxSpeed)) {
 				pd.addGroupAttr(lastTxSpeed.setValue(nicTxSpeed));

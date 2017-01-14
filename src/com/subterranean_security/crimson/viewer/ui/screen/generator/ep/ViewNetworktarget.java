@@ -19,7 +19,7 @@ import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.NetUtil;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.ProgressLabel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
@@ -158,7 +158,7 @@ public class ViewNetworktarget extends JPanel {
 			@Override
 			protected String doInBackground() throws Exception {
 				Thread.sleep(1000);
-				double ping = CUtil.Network.ping(server);
+				double ping = NetUtil.ping(server);
 				if (ping == 0 && !lblServerAddress.getText().contains("127.0.0.1")) {
 					return "error";
 				} else {
@@ -187,7 +187,7 @@ public class ViewNetworktarget extends JPanel {
 		new SwingWorker<String, Void>() {
 			@Override
 			protected String doInBackground() throws Exception {
-				return CUtil.Network.testPortVisibility(server, port) ? "Visible" : "Not Visible";
+				return NetUtil.testPortVisibility(server, port) ? "Visible" : "Not Visible";
 			}
 
 			protected void done() {

@@ -20,7 +20,7 @@ package com.subterranean_security.crimson.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.crimson.core.misc.FileLocking;
 
 public class ShutdownHook extends Thread {
 

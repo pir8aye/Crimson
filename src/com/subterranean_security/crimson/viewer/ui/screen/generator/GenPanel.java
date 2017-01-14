@@ -59,7 +59,8 @@ import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.RandomUtil;
+import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
@@ -444,7 +445,7 @@ public class GenPanel extends JPanel {
 		btnRandom.setPreferredSize(new Dimension(55, 17));
 		btnRandom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				setCreationDate(new Date(CUtil.Misc.rand(0L, new Date().getTime())));
+				setCreationDate(new Date(RandomUtil.rand(0L, new Date().getTime())));
 			}
 		});
 		pl_timestamps.setLayout(null);
@@ -673,27 +674,27 @@ public class GenPanel extends JPanel {
 		}
 
 		// test paths
-		if (config.hasPathWin() && !CUtil.Validation.path(config.getPathWin())) {
+		if (config.hasPathWin() && !Validation.path(config.getPathWin())) {
 			lbl_status.setBad("Invalid Windows install path");
 			return false;
 		}
 
-		if (config.hasPathLin() && !CUtil.Validation.path(config.getPathLin())) {
+		if (config.hasPathLin() && !Validation.path(config.getPathLin())) {
 			lbl_status.setBad("Invalid Linux install path");
 			return false;
 		}
 
-		if (config.hasPathOsx() && !CUtil.Validation.path(config.getPathOsx())) {
+		if (config.hasPathOsx() && !Validation.path(config.getPathOsx())) {
 			lbl_status.setBad("Invalid OSX install path");
 			return false;
 		}
 
-		if (config.hasPathSol() && !CUtil.Validation.path(config.getPathSol())) {
+		if (config.hasPathSol() && !Validation.path(config.getPathSol())) {
 			lbl_status.setBad("Invalid Solaris install path");
 			return false;
 		}
 
-		if (config.hasPathBsd() && !CUtil.Validation.path(config.getPathBsd())) {
+		if (config.hasPathBsd() && !Validation.path(config.getPathBsd())) {
 			lbl_status.setBad("Invalid BSD install path");
 			return false;
 		}

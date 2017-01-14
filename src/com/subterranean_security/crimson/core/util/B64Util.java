@@ -22,7 +22,7 @@
 // - renamed some entities
 package com.subterranean_security.crimson.core.util;
 
-public class B64 {
+public class B64Util {
 	// Mapping table from 6-bit nibbles to Base64 characters.
 	private static final char[] map1 = new char[64];
 	// Mapping table from Base64 characters to 6-bit nibbles.

@@ -20,7 +20,7 @@ package com.subterranean_security.crimson.core.storage;
 import java.io.File;
 import java.util.ArrayList;
 
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.JarUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
 public class LViewerDB extends Database {
@@ -28,7 +28,7 @@ public class LViewerDB extends Database {
 
 		if (!dfile.exists()) {
 			// copy the template
-			CUtil.Files.extract("com/subterranean_security/crimson/core/storage/lviewer-template.db",
+			JarUtil.extract("com/subterranean_security/crimson/core/storage/lviewer-template.db",
 					dfile.getAbsolutePath());
 		}
 		init(dfile);

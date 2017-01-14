@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
-import com.subterranean_security.crimson.core.util.Crypto;
+import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -94,7 +94,7 @@ public class AuthPanel extends JPanel {
 
 						if (jfc.showDialog(UIStore.netMan, "Import") == JFileChooser.APPROVE_OPTION) {
 							File file = jfc.getSelectedFile();
-							AuthMethod am = Crypto.importGroup(file);
+							AuthMethod am = CryptoUtil.importGroup(file);
 							ViewerCommands.createAuthMethod(am);
 						}
 
@@ -126,7 +126,7 @@ public class AuthPanel extends JPanel {
 							if (!file.getAbsolutePath().endsWith(".cg")) {
 								file = new File(file.getAbsolutePath() + ".cg");
 							}
-							Crypto.exportGroup(authTable.getSelected(), file);
+							CryptoUtil.exportGroup(authTable.getSelected(), file);
 						}
 						btnExport.setEnabled(true);
 					}

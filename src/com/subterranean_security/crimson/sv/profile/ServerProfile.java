@@ -20,16 +20,13 @@ package com.subterranean_security.crimson.sv.profile;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
-import com.subterranean_security.crimson.core.util.CUtil;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 
 public class ServerProfile implements Serializable {

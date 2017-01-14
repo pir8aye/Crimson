@@ -18,7 +18,7 @@
 package com.subterranean_security.crimson.viewer;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.util.FileLocking;
+import com.subterranean_security.crimson.core.misc.FileLocking;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.relogin.Relogin;

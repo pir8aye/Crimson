@@ -26,7 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import com.subterranean_security.crimson.core.util.CUtil;
+import com.subterranean_security.crimson.core.util.JarUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -61,7 +61,7 @@ public class MainFrame extends JFrame {
 
 		String buildNo = null;
 		try {
-			buildNo = CUtil.Misc.getManifestAttr("Build-Number");
+			buildNo = JarUtil.getManifestValue("Build-Number");
 		} catch (IOException e) {
 
 		}
