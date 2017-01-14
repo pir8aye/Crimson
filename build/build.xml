@@ -63,7 +63,23 @@
 
 	</target>
 
-	<target name="jar.hcp" depends="copy-other">
+	<target name="jar.core" depends="copy-other">
+		<description>Build core jar</description>
+		<echo message="[BUILD] Building Core library" />
+		<jar destfile="${lib.dir}/java/c00.jar">
+			<fileset dir="${bin.dir}">
+				<include name="**/com/subterranean_security/crimson/core/**" />
+			</fileset>
+
+			<manifest>
+				<attribute name="CID" value="c00" />
+				<attribute name="Build-Number" value="${build.number}" />
+				<attribute name="Crimson-Version" value="${crimson.version}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="jar.hcp" depends="jar.core">
 		<description>Build hcp jar</description>
 		<echo message="[BUILD] Building HCP library" />
 		<jar destfile="${lib.dir}/java/c01.jar">
@@ -145,15 +161,14 @@
 		<echo message="[BUILD] Building Client" />
 
 		<!-- Generate class path -->
-		<exec executable="scripts/resolve-cp.sh" outputproperty="client.cp">
+		<exec executable="${buildscript.dir}/resolve-cp.sh" outputproperty="client.cp">
 			<arg value="C" />
 		</exec>
 
 		<jar destfile="${serverres.dir}/client.jar">
 			<fileset dir="${bin.dir}">
 				<include name="**/com/subterranean_security/crimson/client/**" />
-				<include name="**/com/subterranean_security/crimson/core/**" />
-				<include name="**/com/subterranean_security/lapis/bin/**" />
+				<include name="**/com/subterranean_security/crimson/nucleus/**" />
 			</fileset>
 
 			<manifest>
@@ -161,7 +176,7 @@
 				<attribute name="Class-Path" value="${client.cp}" />
 				<attribute name="Build-Number" value="${build.number}" />
 				<attribute name="Crimson-Version" value="${crimson.version}" />
-				<attribute name="Instance" value="Client" />
+				<attribute name="Instance" value="CLIENT" />
 			</manifest>
 		</jar>
 	</target>
@@ -171,14 +186,14 @@
 		<echo message="[BUILD] Building Server" />
 
 		<!-- Generate class path -->
-		<exec executable="scripts/resolve-cp.sh" outputproperty="server.cp">
+		<exec executable="${buildscript.dir}/resolve-cp.sh" outputproperty="server.cp">
 			<arg value="S" />
 		</exec>
 
 		<jar destfile="${installres.dir}/Crimson-Server.jar">
 			<fileset dir="${bin.dir}">
 				<include name="**/com/subterranean_security/crimson/server/**" />
-				<include name="**/com/subterranean_security/crimson/core/**" />
+				<include name="**/com/subterranean_security/crimson/nucleus/**" />
 			</fileset>
 
 			<manifest>
@@ -188,7 +203,7 @@
 				<attribute name="Build-Number" value="${build.number}" />
 				<attribute name="Crimson-Version" value="${crimson.version}" />
 				<attribute name="Application-Name" value="Crimson" />
-				<attribute name="Instance" value="Server" />
+				<attribute name="Instance" value="SERVER" />
 			</manifest>
 		</jar>
 	</target>
@@ -198,7 +213,7 @@
 		<echo message="[BUILD] Building Viewer" />
 
 		<!-- Generate class path -->
-		<exec executable="scripts/resolve-cp.sh" outputproperty="viewer.cp">
+		<exec executable="${buildscript.dir}/resolve-cp.sh" outputproperty="viewer.cp">
 			<arg value="V" />
 		</exec>
 
@@ -219,13 +234,13 @@
 		<length property="jni-sol.size" mode="all">
 			<fileset dir="${lib.dir}" includes="**/jni/sol/**" />
 		</length>
-		<exec executable="scripts/resolve-lib-size.sh" outputproperty="client-lib.size">
+		<exec executable="${buildscript.dir}/resolve-lib-size.sh" outputproperty="client-lib.size">
 		</exec>
 
 		<jar destfile="${installres.dir}/Crimson-Viewer.jar">
 			<fileset dir="${bin.dir}">
 				<include name="**/com/subterranean_security/crimson/viewer/**" />
-				<include name="**/com/subterranean_security/crimson/core/**" />
+				<include name="**/com/subterranean_security/crimson/nucleus/**" />
 			</fileset>
 
 			<manifest>
@@ -235,7 +250,7 @@
 				<attribute name="Build-Number" value="${build.number}" />
 				<attribute name="Crimson-Version" value="${crimson.version}" />
 				<attribute name="Application-Name" value="Crimson" />
-				<attribute name="Instance" value="Viewer" />
+				<attribute name="Instance" value="VIEWER" />
 				<attribute name="SplashScreen-Image" value="com/subterranean_security/crimson/viewer/ui/res/image/splash/splash.png" />
 
 				<!-- File sizes -->
@@ -256,10 +271,10 @@
 
 		<zip destfile="${installres.dir}/lib.zip" basedir="${lib.dir}" />
 
-		<jar destfile="${dist.dir}/CInstaller.jar">
+		<jar destfile="${bin.dir}/CInstaller.jar">
 			<fileset dir="${bin.dir}">
 				<include name="**/com/subterranean_security/cinstaller/**" />
-				<include name="**/com/subterranean_security/crimson/core/**" />
+				<include name="**/com/subterranean_security/crimson/nucleus/**" />
 			</fileset>
 
 			<manifest>
@@ -267,6 +282,7 @@
 				<attribute name="Build-Time" value="${build.time}" />
 				<attribute name="Build-Number" value="${build.number}" />
 				<attribute name="Crimson-Version" value="${crimson.version}" />
+				<attribute name="Instance" value="INSTALLER" />
 				<attribute name="SplashScreen-Image" value="com/subterranean_security/cinstaller/res/img/splash.png" />
 			</manifest>
 		</jar>
@@ -281,14 +297,14 @@
 		<echo message="[BUILD] Building Viridian" />
 
 		<!-- Generate class path -->
-		<exec executable="scripts/resolve-cp.sh" outputproperty="viridian.cp">
+		<exec executable="${buildscript.dir}/resolve-cp.sh" outputproperty="viridian.cp">
 			<arg value="Q" />
 		</exec>
 
-		<jar destfile="${dist.dir}/Viridian.jar">
+		<jar destfile="${bin.dir}/Viridian.jar">
 			<fileset dir="${bin.dir}">
 				<include name="**/com/subterranean_security/viridian/**" />
-				<include name="**/com/subterranean_security/crimson/core/**" />
+				<include name="**/com/subterranean_security/crimson/nucleus/**" />
 			</fileset>
 
 			<manifest>
@@ -296,88 +312,25 @@
 				<attribute name="Class-Path" value="${viridian.cp} ../../../usr/share/java/mysql.jar" />
 				<attribute name="Build-Number" value="${build.number}" />
 				<attribute name="Crimson-Version" value="${crimson.version}" />
+				<attribute name="Instance" value="VIRIDIAN" />
 
 			</manifest>
 		</jar>
 	</target>
 
-
-	<target name="optimize" depends="jar.viridian">
-		<description>Optimize</description>
-		<echo message="[OPTIMIZE] Optimizing Jars" />
-
-		<mkdir dir="${optimized.dir}" />
-		<mkdir dir="${optimized.dir}/lib" />
-
-		<taskdef resource="proguard/ant/task.properties" classpath="${project.dir}/build/lib/proguard.jar" />
-
-		<proguard configuration="${project.dir}/build/config/proguard.conf" printmapping="/home/subterranean/codemap-${build.number}.txt">
-			<injar name="${dist.dir}/Viridian.jar" />
-			<injar name="${dist.dir}/CInstaller.jar" />
-			<injar name="${installres.dir}/Crimson-Viewer.jar" />
-			<injar name="${installres.dir}/Crimson-Server.jar" />
-			<injar name="${serverres.dir}/client.jar" />
-			<outjar name="${optimized.dir}" />
-
-			<injar name="${lib.dir}/java/c01.jar" />
-			<injar name="${lib.dir}/java/c02.jar" />
-			<injar name="${lib.dir}/java/c03.jar" />
-			<injar name="${lib.dir}/java/c04.jar" />
-			<injar name="${lib.dir}/java/c05.jar" />
-			<injar name="${lib.dir}/java/c06.jar" />
-			<injar name="${lib.dir}/java/c07.jar" />
-			<injar name="${lib.dir}/java/c08.jar" />
-			<injar name="${lib.dir}/java/c09.jar" />
-			<injar name="${lib.dir}/java/c10.jar" />
-			<injar name="${lib.dir}/java/c11.jar" />
-			<injar name="${lib.dir}/java/c12.jar" />
-			<injar name="${lib.dir}/java/c13.jar" />
-			<injar name="${lib.dir}/java/c14.jar" />
-			<injar name="${lib.dir}/java/c15.jar" />
-			<injar name="${lib.dir}/java/c16.jar" />
-			<injar name="${lib.dir}/java/c17.jar" />
-			<injar name="${lib.dir}/java/c18.jar" />
-			<injar name="${lib.dir}/java/c19.jar" />
-			<injar name="${lib.dir}/java/c20.jar" />
-			<outjar name="${optimized.dir}/lib" />
-
-			<libraryjar name="${java.home}/lib/rt.jar" />
-		</proguard>
-
-		<!-- Repopulate serverres with optimized jars -->
-		<copy file="${optimized.dir}/client.jar" todir="${serverres.dir}" />
-
-		<!-- Inject serverres -->
-		<jar destfile="${optimized.dir}/Crimson-Server.jar" update="true">
-			<zipfileset prefix="com/subterranean_security/crimson/server/res/bin/" dir="${serverres.dir}" />
-		</jar>
-
-		<!-- Repopulate installres with optimized jars -->
-		<zip destfile="${installres.dir}/lib.zip" basedir="${optimized.dir}/lib" />
-		<copy file="${optimized.dir}/Crimson-Server.jar" todir="${installres.dir}" />
-		<copy file="${optimized.dir}/Crimson-Viewer.jar" todir="${installres.dir}" />
-
-		<!-- Inject installres -->
-		<jar destfile="${optimized.dir}/CInstaller.jar" update="true">
-			<zipfileset prefix="com/subterranean_security/cinstaller/res/bin/" dir="${installres.dir}" />
-		</jar>
-
-		<copy file="${optimized.dir}/Viridian.jar" todir="${dist.dir}" />
-		<copy file="${optimized.dir}/CInstaller.jar" todir="${dist.dir}" />
-
-	</target>
-
 	<target name="distribute" depends="jar.viridian">
 		<description>Distribute</description>
 		<echo message="[BUILD] Distributing results" />
-		<copy file="${dist.dir}/Viridian.jar" todir="/srv/http/dist/" />
+		<copy file="${bin.dir}/CInstaller.jar" todir="${dist.dir}" />
+		<copy file="${bin.dir}/Viridian.jar" todir="${dist.dir}" />
 		<copy file="${dist.dir}/CInstaller.jar" todir="/srv/http/dist/" />
+		<copy file="${bin.dir}/Viridian.jar" todir="/srv/http/dist/" />
+
 		<copy file="${bin.dir}/com/subterranean_security/cinstaller/res/bin/lib.zip" todir="/srv/http/dist/" />
 
 	</target>
 
 	<target name="main" depends="distribute">
-		<description>Main target</description>
 	</target>
 
 </project>

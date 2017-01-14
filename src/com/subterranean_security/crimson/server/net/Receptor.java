@@ -24,15 +24,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thavam.util.concurrent.BlockingHashMap;
 
-import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
 
 public class Receptor implements AutoCloseable {
 
 	private static final Logger log = LoggerFactory.getLogger(Receptor.class);
 
-	private Instance instance;
+	private Nucleus.Instance instance;
 	private int cvid;
 
 	// Buffers
@@ -64,11 +65,11 @@ public class Receptor implements AutoCloseable {
 		executor = null;
 	}
 
-	public Instance getInstance() {
+	public Nucleus.Instance getInstance() {
 		return instance;
 	}
 
-	public void setInstance(Instance i) {
+	public void setInstance(Nucleus.Instance i) {
 		instance = i;
 	}
 

@@ -15,11 +15,17 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.util;
+package com.subterranean_security.crimson.nucleus;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,34 +35,68 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Common.Instance;
-
-public final class JavaLibraries {
-	private JavaLibraries() {
+public final class Nucleus {
+	private Nucleus() {
 	}
 
-	public static boolean loadTemporarily(File temp) {
-		JarUtil.extract("com/subterranean_security/cinstaller/res/bin/lib.zip", temp.getAbsolutePath() + "/lib.zip");
+	public enum Instance {
+		SERVER, CLIENT, VIEWER, INSTALLER, VIRIDIAN;
+
+		public String getLabel() {
+			switch (this) {
+			case CLIENT:
+				return "C";
+			case INSTALLER:
+				return "I";
+			case SERVER:
+				return "S";
+			case VIEWER:
+				return "V";
+			case VIRIDIAN:
+				return "Q";
+			default:
+				return null;
+
+			}
+		}
+	}
+
+	public static Nucleus.Instance discoverInstance() {
+
 		try {
-			FileUtil.unzip(temp.getAbsolutePath() + "/lib.zip", temp.getAbsolutePath());
+			return Instance.valueOf(JarUtil.getManifestValue("Instance",
+					new File(Nucleus.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())));
+		} catch (IOException e) {
+			System.exit(0);
+		} catch (URISyntaxException e) {
+			System.exit(0);
+		} catch (Throwable t) {
+			System.exit(0);
+		}
+
+		return null;
+	}
+
+	public static boolean loadTemporarily(String libZip, File temp) {
+		JarUtil.extract(libZip, temp.getAbsolutePath() + "/lib.zip");
+		try {
+			unzip(temp.getAbsolutePath() + "/lib.zip", temp.getAbsolutePath());
 		} catch (IOException e2) {
 			return false;
 		}
 
 		// load java libraries
 		try {
-			for (String lib : getRequisites(Common.instance)) {
+			for (String lib : getInstancePrerequisites(discoverInstance())) {
 				JarUtil.load(temp.getAbsolutePath() + "/java/" + lib + ".jar");
 			}
-
 		} catch (Exception e1) {
 			return false;
 		}
 		return true;
 	}
 
-	public static ArrayList<String> getRequisites(Instance instance) {
+	public static ArrayList<String> getInstancePrerequisites(Nucleus.Instance instance) {
 		ArrayList<Element> elements = null;
 		try {
 			elements = readDependancyXML();
@@ -67,7 +107,6 @@ public final class JavaLibraries {
 
 		ArrayList<String> req = new ArrayList<String>();
 		for (Element e : elements) {
-
 			if (e.getElementsByTagName("Requisites").item(0).getTextContent().contains(instance.getLabel())) {
 				req.add(e.getAttribute("CID"));
 			}
@@ -79,8 +118,8 @@ public final class JavaLibraries {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 
-		Document doc = builder.parse(JavaLibraries.class.getClassLoader()
-				.getResourceAsStream("com/subterranean_security/crimson/core/res/xml/Dependancies.xml"));
+		Document doc = builder.parse(Nucleus.class.getClassLoader()
+				.getResourceAsStream("com/subterranean_security/crimson/nucleus/Dependancies.xml"));
 
 		doc.getDocumentElement().normalize();
 		NodeList nList = doc.getElementsByTagName("Lib");
@@ -94,6 +133,39 @@ public final class JavaLibraries {
 		}
 
 		return elements;
+	}
+
+	/**
+	 * REPLICATED FROM FILEUTIL
+	 */
+	private static void unzip(String zipFilePath, String destDirectory) throws IOException {
+		File destDir = new File(destDirectory);
+		if (!destDir.exists()) {
+			destDir.mkdir();
+		}
+		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+		ZipEntry entry = zipIn.getNextEntry();
+		// iterates over entries in the zip file
+		while (entry != null) {
+			String filePath = destDirectory + File.separator + entry.getName();
+			if (!entry.isDirectory()) {
+				// if the entry is a file, extracts it
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+				byte[] bytesIn = new byte[4096];
+				int read = 0;
+				while ((read = zipIn.read(bytesIn)) != -1) {
+					bos.write(bytesIn, 0, read);
+				}
+				bos.close();
+			} else {
+				// if the entry is a directory, make the directory
+				File dir = new File(filePath);
+				dir.mkdir();
+			}
+			zipIn.closeEntry();
+			entry = zipIn.getNextEntry();
+		}
+		zipIn.close();
 	}
 
 }

@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.util;
+package com.subterranean_security.crimson.nucleus;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,10 +30,7 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.server.Server;
-import com.subterranean_security.crimson.viewer.Viewer;
 
 public final class JarUtil {
 	private JarUtil() {
@@ -48,32 +45,10 @@ public final class JarUtil {
 	public static String getManifestValue(String attr) throws IOException {
 		try {
 			return getManifestValue(attr,
-					new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
+					new File(Nucleus.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
 		} catch (Throwable e1) {
 		}
 
-		try {
-			return getManifestValue(attr,
-					new File(Viewer.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
-		} catch (Throwable e1) {
-		}
-
-		try {
-			return getManifestValue(attr,
-					new File(Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
-		} catch (Throwable e1) {
-		}
-
-		try {
-			return getManifestValue(attr, new File(com.subterranean_security.cinstaller.Main.class.getProtectionDomain()
-					.getCodeSource().getLocation().toURI().getPath()));
-		} catch (Throwable e1) {
-		}
-		try {
-			return getManifestValue(attr, new File(com.subterranean_security.viridian.Main.class.getProtectionDomain()
-					.getCodeSource().getLocation().toURI().getPath()));
-		} catch (Throwable e1) {
-		}
 		return null;
 
 	}
@@ -175,16 +150,16 @@ public final class JarUtil {
 		}
 	}
 
+	public static URL[] getClassPath() {
+		return ((URLClassLoader) ClassLoader.getSystemClassLoader()).getURLs();
+	}
+
 	public static boolean classExists(String c) {
 		try {
-			Class.forName(c, false, JarUtil.class.getClassLoader());
+			Class.forName(c, false, Nucleus.class.getClassLoader());
 		} catch (Throwable t) {
 			return false;
 		}
 		return true;
-	}
-
-	public static URL[] getClassPath() {
-		return ((URLClassLoader) ClassLoader.getSystemClassLoader()).getURLs();
 	}
 }

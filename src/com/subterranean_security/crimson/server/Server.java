@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.misc.FileLocking;
 import com.subterranean_security.crimson.core.misc.HCP;
@@ -46,6 +45,7 @@ import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
+import com.subterranean_security.crimson.nucleus.Nucleus;
 
 public final class Server {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
@@ -63,7 +63,7 @@ public final class Server {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Try to get a lock or exit
-		if (!FileLocking.lock(Instance.SERVER)) {
+		if (!FileLocking.lock(Nucleus.Instance.SERVER)) {
 			log.error("A Crimson server is already running in another process");
 			System.exit(0);
 		}

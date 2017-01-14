@@ -20,7 +20,7 @@ package com.subterranean_security.crimson.core.storage;
 import java.io.File;
 import java.util.ArrayList;
 
-import com.subterranean_security.crimson.core.util.JarUtil;
+import com.subterranean_security.crimson.nucleus.JarUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
 public class LViewerDB extends Database {

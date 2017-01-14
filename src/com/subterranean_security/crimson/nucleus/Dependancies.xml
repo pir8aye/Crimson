@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <DependancyInfo>
 
-	<CrimsonVersion>1.0.0.0</CrimsonVersion>
-
 	<!-- S = Server, V = Viewer, C = Client, Q = Viridian, I = Installer -->
 	<JAR>
+
+		<Lib CID="c00">
+			<Name>Crimson Core</Name>
+			<CVersion>1</CVersion>
+			<EVersion>1</EVersion>
+			<License>Apache 2</License>
+			<Requisites>SVCIQ</Requisites>
+		</Lib>
 
 		<Lib CID="c01">
 			<Name>HCP</Name>

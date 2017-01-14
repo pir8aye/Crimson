@@ -17,8 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.profile;
 
-import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
 
 public enum SimpleAttribute implements AbstractAttribute {
 	// Meta attributes

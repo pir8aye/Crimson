@@ -12,8 +12,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.util.JarUtil;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
+import com.subterranean_security.crimson.nucleus.JarUtil;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 
 public class FTab extends JPanel {

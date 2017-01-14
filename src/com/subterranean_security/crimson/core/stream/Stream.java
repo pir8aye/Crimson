@@ -21,11 +21,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
 import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
 import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
 public abstract class Stream {
@@ -63,7 +64,7 @@ public abstract class Stream {
 
 	public void start() {
 		running = true;
-		if (Common.instance == Instance.VIEWER) {
+		if (Common.instance == Nucleus.Instance.VIEWER) {
 			ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
 					.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
 		}
@@ -73,7 +74,7 @@ public abstract class Stream {
 	public void stop() {
 		running = false;
 		timer.cancel();
-		if (Common.instance == Instance.VIEWER) {
+		if (Common.instance == Nucleus.Instance.VIEWER) {
 			ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
 					.setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
 		}

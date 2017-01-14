@@ -29,62 +29,19 @@ import com.subterranean_security.cinstaller.Main;
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.storage.Database;
-import com.subterranean_security.crimson.core.util.JarUtil;
+import com.subterranean_security.crimson.nucleus.JarUtil;
+import com.subterranean_security.crimson.nucleus.Nucleus;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 
 public final class Common {
-
 	private Common() {
-	}
-
-	public enum Instance {
-		SERVER, CLIENT, VIEWER, INSTALLER, VIRIDIAN;
-
-		public String getLabel() {
-			switch (this) {
-			case CLIENT:
-				return "C";
-			case INSTALLER:
-				return "I";
-			case SERVER:
-				return "S";
-			case VIEWER:
-				return "V";
-			case VIRIDIAN:
-				return "Q";
-			default:
-				return null;
-
-			}
-		}
 	}
 
 	/**
 	 * Identifies this instance based on available packages
 	 */
-	public static final Instance instance = discoverInstance();
-
-	private static Instance discoverInstance() {
-
-		if (JarUtil.classExists("com.subterranean_security.crimson.server.Server")) {
-			return Instance.SERVER;
-		}
-		if (JarUtil.classExists("com.subterranean_security.crimson.viewer.Viewer")) {
-			return Instance.VIEWER;
-		}
-		if (JarUtil.classExists("com.subterranean_security.crimson.client.Client")) {
-			return Instance.CLIENT;
-		}
-		if (JarUtil.classExists("com.subterranean_security.cinstaller.Main")) {
-			return Instance.INSTALLER;
-		}
-		if (JarUtil.classExists("com.subterranean_security.viridian.Main")) {
-			return Instance.VIRIDIAN;
-		}
-		System.exit(0);
-		return null;
-	}
+	public static final Nucleus.Instance instance = Nucleus.discoverInstance();
 
 	/**
 	 * Initialization Timestamp
@@ -176,7 +133,7 @@ public final class Common {
 			if (!varLog.exists()) {
 				varLog.mkdirs();
 			}
-			if (Common.instance != Instance.INSTALLER) {
+			if (Common.instance != Nucleus.Instance.INSTALLER) {
 				if ((!base.canRead() || !base.canWrite())) {
 					log.error("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
 
@@ -187,12 +144,12 @@ public final class Common {
 		}
 
 		private static File discoverBaseDir() {
-			if (Common.instance == Instance.INSTALLER) {
+			if (Common.instance == Nucleus.Instance.INSTALLER) {
 				return null;
 			}
 
 			try {
-				String bpath = Common.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+				String bpath = Nucleus.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 				File f = new File(bpath).getParentFile();
 				if (!f.exists() || !f.isDirectory()) {
 					log.error("Base directory does not exist: " + f.getAbsolutePath());
@@ -205,14 +162,14 @@ public final class Common {
 		}
 
 		private static File discoverTmpDir() {
-			if (Common.instance == Instance.INSTALLER) {
+			if (Common.instance == Nucleus.Instance.INSTALLER) {
 				return null;
 			}
 			return new File(System.getProperty("java.io.tmpdir"));
 		}
 
 		private static File discoverVarDir() {
-			if (Common.instance == Instance.INSTALLER) {
+			if (Common.instance == Nucleus.Instance.INSTALLER) {
 				return null;
 			}
 			switch (Platform.osFamily) {
@@ -226,10 +183,10 @@ public final class Common {
 		}
 
 		private static File discoverLogDir() {
-			if (Common.instance == Instance.INSTALLER) {
+			if (Common.instance == Nucleus.Instance.INSTALLER) {
 				return new File(Main.temp.getAbsolutePath() + "/log");
 			}
-			if (Common.instance == Instance.VIRIDIAN) {
+			if (Common.instance == Nucleus.Instance.VIRIDIAN) {
 				return new File("/var/log/viridian");
 			}
 			return new File(var.getAbsolutePath() + "/log");

@@ -25,7 +25,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
@@ -42,6 +41,8 @@ import com.subterranean_security.crimson.core.storage.MemList;
 import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
+import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.sv.permissions.Perm;
@@ -116,7 +117,7 @@ public final class ServerStore {
 
 		public static void add(Receptor r) {
 			log.debug("Adding receptor (CVID: {})", r.getCvid());
-			if (r.getInstance() == Instance.VIEWER) {
+			if (r.getInstance() == Nucleus.Instance.VIEWER) {
 				users++;
 			} else {
 				clients++;
@@ -135,7 +136,7 @@ public final class ServerStore {
 			// remove receptor
 			if (receptors.containsKey(cvid)) {
 				Receptor r = receptors.remove(cvid);
-				if (r.getInstance() == Instance.VIEWER) {
+				if (r.getInstance() == Nucleus.Instance.VIEWER) {
 					users--;
 				} else {
 					clients--;
@@ -165,7 +166,7 @@ public final class ServerStore {
 			return clients;
 		}
 
-		public static void sendToAll(Instance i, Message m) {
+		public static void sendToAll(Nucleus.Instance i, Message m) {
 			for (int cvid : getKeySet()) {
 				if (receptors.get(cvid).getInstance() == i) {
 					receptors.get(cvid).handle.write(m);
@@ -175,7 +176,7 @@ public final class ServerStore {
 
 		public static void sendToViewersWithAuthorityOverClient(int cid, int perm, Message.Builder m) {
 			for (int cvid : getKeySet()) {
-				if (receptors.get(cvid).getInstance() == Instance.VIEWER
+				if (receptors.get(cvid).getInstance() == Nucleus.Instance.VIEWER
 						&& Profiles.getViewer(cvid).getPermissions().getFlag(cid, perm)) {
 					receptors.get(cvid).handle.write(m.build());
 				}
@@ -268,7 +269,7 @@ public final class ServerStore {
 			System.gc();
 
 			// update viewers
-			ServerStore.Connections.sendToAll(Instance.VIEWER, Message.newBuilder()
+			ServerStore.Connections.sendToAll(Nucleus.Instance.VIEWER, Message.newBuilder()
 					.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addAuthMethod(am)).build());
 			return outcome.setResult(true).build();
 		}

@@ -27,11 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.misc.FileLocking;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
+import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
 import com.subterranean_security.crimson.viewer.ViewerStore.Databases;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
@@ -61,7 +62,7 @@ public class Viewer {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Try to get a lock or exit
-		if (!FileLocking.lock(Instance.VIEWER)) {
+		if (!FileLocking.lock(Nucleus.Instance.VIEWER)) {
 			System.exit(0);
 		}
 

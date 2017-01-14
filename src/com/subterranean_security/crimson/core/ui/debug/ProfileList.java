@@ -29,7 +29,8 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Common.Instance;
+import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
 public class ProfileList extends JPanel {
@@ -108,7 +109,7 @@ class ProfileTM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		if (Common.instance == Instance.VIEWER) {
+		if (Common.instance == Nucleus.Instance.VIEWER) {
 
 			// return ViewerStore.Profiles.clients.size();
 			return 0;
@@ -125,7 +126,7 @@ class ProfileTM extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		ClientProfile p = null;
-		if (Common.instance == Instance.VIEWER) {
+		if (Common.instance == Nucleus.Instance.VIEWER) {
 
 			// p = ViewerStore.Profiles.clients.get(rowIndex);
 

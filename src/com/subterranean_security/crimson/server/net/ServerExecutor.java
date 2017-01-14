@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
-import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
@@ -77,6 +76,8 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.LocationUtil;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
 import com.subterranean_security.crimson.sc.Logsystem;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.ServerState;
@@ -410,7 +411,7 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_login(Message m) {
-		receptor.setInstance(Instance.VIEWER);
+		receptor.setInstance(Nucleus.Instance.VIEWER);
 
 		String user = m.getRqLogin().getUsername();
 		ViewerProfile vp = ServerStore.Profiles.getViewer(user);
@@ -664,7 +665,7 @@ public class ServerExecutor extends BasicExecutor {
 		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));
 		Message update = Message.newBuilder().setEvServerProfileDelta(
 				EV_ServerProfileDelta.newBuilder().addListener(m.getRqAddListener().getConfig())).build();
-		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
+		ServerStore.Connections.sendToAll(Nucleus.Instance.VIEWER, update);
 
 	}
 
@@ -685,7 +686,7 @@ public class ServerExecutor extends BasicExecutor {
 						.addViewerUser(EV_ViewerProfileDelta.newBuilder().setUser(m.getRqAddUser().getUser())
 								.addAllViewerPermissions(m.getRqAddUser().getPermissionsList())))
 				.build();
-		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
+		ServerStore.Connections.sendToAll(Nucleus.Instance.VIEWER, update);
 
 	}
 
@@ -723,7 +724,7 @@ public class ServerExecutor extends BasicExecutor {
 		Message update = Message.newBuilder()
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addViewerUser(b)).build();
 
-		ServerStore.Connections.sendToAll(Instance.VIEWER, update);
+		ServerStore.Connections.sendToAll(Nucleus.Instance.VIEWER, update);
 
 	}
 
@@ -753,7 +754,7 @@ public class ServerExecutor extends BasicExecutor {
 				.newBuilder().setOutcome(Outcome.newBuilder().setResult(result).setComment(comment))).build());
 
 		// notify viewers
-		ServerStore.Connections.sendToAll(Instance.VIEWER,
+		ServerStore.Connections.sendToAll(Nucleus.Instance.VIEWER,
 				Message.newBuilder()
 						.setEvServerProfileDelta(
 								EV_ServerProfileDelta.newBuilder().setServerStatus(ServerStore.Listeners.isRunning()))
@@ -794,7 +795,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void aux_acceptClient() {
 		receptor.setState(ConnectionState.AUTHENTICATED);
-		receptor.setInstance(Instance.CLIENT);
+		receptor.setInstance(Nucleus.Instance.CLIENT);
 
 		try {
 			if (ServerStore.Profiles.getClient(receptor.getCvid()) == null) {

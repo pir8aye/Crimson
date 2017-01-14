@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.Common.Instance;
 import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
@@ -42,6 +41,8 @@ import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContaine
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
@@ -170,7 +171,7 @@ public class ClientProfile implements Serializable {
 	public ClientProfile initialize() {
 		if (!initialized) {
 			// load icons
-			if (Common.instance == Instance.VIEWER) {
+			if (Common.instance == Nucleus.Instance.VIEWER) {
 				loadIcons();
 			}
 
