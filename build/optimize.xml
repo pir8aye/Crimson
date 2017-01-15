@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<project name="Crimson" default="main" basedir=".">
+
+	<property file="build/config/build.properties" />
+	<property file="build/build.number" />
+
+	<target name="clean">
+		<delete dir="${optimized.dir}" />
+		<mkdir dir="${optimized.dir}/lib/java" />
+		<mkdir dir="${optimized.dir}/lib/jni" />
+		<mkdir dir="${optimized.dir}/installres" />
+		<mkdir dir="${optimized.dir}/serverres" />
+	</target>
+	
+	<target name="setup-environment" depends="clean">
+		<!-- Copy all libraries. Some may be overwritten during optimization -->
+		<copy todir="${optimized.dir}/lib">
+			<fileset dir="${lib.dir}" />
+		</copy>
+
+		<copy file="${bin.dir}/CInstaller.jar" todir="${optimized.dir}" />
+	</target>
+
+	<target name="proguard" depends="setup-environment">
+		<description>Optimize</description>
+		<echo message="[OPTIMIZE] Optimizing Jars" />
+
+		<taskdef resource="proguard/ant/task.properties" classpath="${project.dir}/build/lib/proguard.jar" />
+		<proguard configuration="${project.dir}/build/config/proguard.conf"
+			printmapping="/home/subterranean/codemap-${build.number}.txt">
+
+			<injar name="${dist.dir}/Viridian.jar" />
+			<injar name="${dist.dir}/CInstaller.jar" />
+			<outjar name="${optimized.dir}" />
+			
+			<injar name="${installres.dir}/Crimson-Viewer.jar" />
+			<injar name="${installres.dir}/Crimson-Server.jar" />
+			<outjar name="${optimized.dir}/installres" />
+			
+			<injar name="${serverres.dir}/client.jar" />
+			<outjar name="${optimized.dir}/serverres" />
+
+			<injar name="${lib.dir}/java/c00.jar" />
+			<injar name="${lib.dir}/java/c01.jar" />
+			<injar name="${lib.dir}/java/c02.jar" />
+			<injar name="${lib.dir}/java/c03.jar" />
+			<injar name="${lib.dir}/java/c04.jar" />
+			<injar name="${lib.dir}/java/c05.jar" />
+
+			<libraryjar name="${lib.dir}/java/c06.jar" />
+			<libraryjar name="${lib.dir}/java/c07.jar" />
+			<libraryjar name="${lib.dir}/java/c08.jar" />
+			<libraryjar name="${lib.dir}/java/c09.jar" />
+			<libraryjar name="${lib.dir}/java/c10.jar" />
+			<libraryjar name="${lib.dir}/java/c11.jar" />
+			<libraryjar name="${lib.dir}/java/c12.jar" />
+			<libraryjar name="${lib.dir}/java/c13.jar" />
+			<libraryjar name="${lib.dir}/java/c14.jar" />
+			<injar name="${lib.dir}/java/c15.jar" />
+			<injar name="${lib.dir}/java/c16.jar" />
+			<libraryjar name="${lib.dir}/java/c17.jar" />
+			<libraryjar name="${lib.dir}/java/c18.jar" />
+			<libraryjar name="${lib.dir}/java/c19.jar" />
+			<injar name="${lib.dir}/java/c20.jar" />
+			<outjar name="${optimized.dir}/lib/java" />
+
+			<libraryjar name="${java.home}/lib/rt.jar" />
+			<libraryjar name="${java.home}/lib/jce.jar" />
+			<libraryjar name="${project.dir}/build/lib/mysql-connector.jar" />
+
+
+		</proguard>
+	</target>
+
+	<target name="finish" depends="proguard">
+
+		<!-- Inject serverres -->
+		<jar destfile="${optimized.dir}/installres/Crimson-Server.jar" update="true">
+			<zipfileset prefix="com/subterranean_security/crimson/server/res/bin/"
+				dir="${optimized.dir}/serverres" />
+		</jar>
+
+		<!-- Repopulate installres with optimized jars -->
+		<zip destfile="${optimized.dir}/installres/lib.zip" basedir="${optimized.dir}/lib" />
+
+		<!-- Inject installres -->
+		<jar destfile="${optimized.dir}/CInstaller.jar" update="true">
+			<zipfileset prefix="com/subterranean_security/cinstaller/res/bin/"
+				dir="${optimized.dir}/installres" />
+		</jar>
+
+		<!-- <copy file="${optimized.dir}/Viridian.jar" todir="${dist.dir}" /> -->
+		<copy file="${optimized.dir}/CInstaller.jar" todir="${dist.dir}" />
+
+	</target>
+
+	<target name="main" depends="finish">
+	</target>
+
+</project>
