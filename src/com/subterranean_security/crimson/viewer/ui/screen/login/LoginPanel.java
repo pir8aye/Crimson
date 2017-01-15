@@ -62,6 +62,7 @@ import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public class LoginPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -414,10 +415,22 @@ public class LoginPanel extends JPanel {
 							}
 
 							protected void done() {
-								synchronized (parent) {
-									parent.notifyAll();
-								}
-								parent.dispose();
+								lbl_status.setGood("Loading Interface");
+								new SwingWorker<Void, Void>() {
+
+									@Override
+									protected Void doInBackground() throws Exception {
+										MainFrame.main = new MainFrame();
+										return null;
+									}
+
+									protected void done() {
+										synchronized (parent) {
+											parent.notifyAll();
+										}
+										parent.dispose();
+									};
+								}.execute();
 							};
 						}.execute();
 
