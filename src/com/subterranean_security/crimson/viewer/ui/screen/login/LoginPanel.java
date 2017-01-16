@@ -410,28 +410,17 @@ public class LoginPanel extends JPanel {
 
 							@Override
 							protected Void doInBackground() throws Exception {
-								Thread.sleep(500);
+								Thread.sleep(650);
 								return null;
 							}
 
 							protected void done() {
-								lbl_status.setGood("Loading Interface");
-								new SwingWorker<Void, Void>() {
+								synchronized (parent) {
+									parent.notifyAll();
+								}
+								parent.dispose();
+							}
 
-									@Override
-									protected Void doInBackground() throws Exception {
-										MainFrame.main = new MainFrame();
-										return null;
-									}
-
-									protected void done() {
-										synchronized (parent) {
-											parent.notifyAll();
-										}
-										parent.dispose();
-									};
-								}.execute();
-							};
 						}.execute();
 
 					} else {

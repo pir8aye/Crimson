@@ -109,6 +109,11 @@ public enum ViewerCommands {
 			Message lrs = ViewerRouter.getReponse(0, id, 5);
 			if (lrs.hasRsLogin()) {
 				if (lrs.getRsLogin().getResponse()) {
+					// load interface
+					if (MainFrame.main == null) {
+						MainFrame.main = new MainFrame();
+					}
+
 					ViewerStore.Profiles.update(lrs.getRsLogin().getSpd());
 					ViewerStore.Profiles.update(lrs.getRsLogin().getVpd());
 					triggerProfileDelta();
