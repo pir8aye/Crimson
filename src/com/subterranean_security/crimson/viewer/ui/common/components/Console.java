@@ -49,7 +49,7 @@ public class Console extends JPanel {
 	private static final Color orange = new Color(255, 191, 0);
 	private Style orangeStyle = null;
 
-	private SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm:ss");
 
 	public Console() {
 		setLayout(new BorderLayout(0, 0));
@@ -97,7 +97,7 @@ public class Console extends JPanel {
 		}
 
 		try {
-			doc.insertString(doc.getLength(), "[" + formatter.format(new Date()) + "] " + s + "\n", style);
+			doc.insertString(doc.getLength(), "[" + dateFormat.format(new Date()) + "] " + s + "\n", style);
 		} catch (BadLocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
