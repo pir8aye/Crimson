@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.nucleus;
+package com.subterranean_security.crimson.universal;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -43,7 +43,7 @@ public final class JarUtil {
 	public static String getManifestValue(String attr) throws IOException {
 		try {
 			return getManifestValue(attr,
-					new File(Nucleus.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
+					new File(Universal.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
 		} catch (Throwable e1) {
 		}
 
@@ -151,7 +151,7 @@ public final class JarUtil {
 
 	public static boolean classExists(String c) {
 		try {
-			Class.forName(c, false, Nucleus.class.getClassLoader());
+			Class.forName(c, false, Universal.class.getClassLoader());
 		} catch (Throwable t) {
 			return false;
 		}

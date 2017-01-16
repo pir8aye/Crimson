@@ -34,8 +34,8 @@ import com.subterranean_security.crimson.core.storage.ClientDB;
 import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
-import com.subterranean_security.crimson.nucleus.JarUtil;
-import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.universal.JarUtil;
+import com.subterranean_security.crimson.universal.Universal;
 
 public class Generator {
 
@@ -118,7 +118,7 @@ public class Generator {
 		new File(tmpZip.getAbsolutePath() + "/java").mkdirs();
 
 		// add jar files
-		for (String lib : Nucleus.getInstancePrerequisites(Nucleus.Instance.CLIENT)) {
+		for (String lib : Universal.getInstancePrerequisites(Universal.Instance.CLIENT)) {
 			if (lib.equals("c19") && !ic.getKeylogger()) {
 				continue;
 			}

@@ -30,8 +30,8 @@ import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.FileUtil;
-import com.subterranean_security.crimson.nucleus.JarUtil;
-import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.universal.JarUtil;
+import com.subterranean_security.crimson.universal.Universal;
 
 public class Installer {
 
@@ -61,7 +61,7 @@ public class Installer {
 		File temp = new File(System.getProperty("java.io.tmpdir") + "/client_install");
 		temp.mkdir();
 
-		if (!Nucleus.loadTemporarily("com/subterranean_security/crimson/client/res/bin/lib.zip", temp)) {
+		if (!Universal.loadTemporarily("com/subterranean_security/crimson/client/res/bin/lib.zip", temp)) {
 			System.out.println("Failed to load requisite libraries");
 			System.exit(1);
 		}

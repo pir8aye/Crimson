@@ -34,7 +34,7 @@ import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
-import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
+import com.subterranean_security.crimson.universal.Universal.Instance;
 
 /**
  * Locks a file in the system temp directory to prevent multiple instances of

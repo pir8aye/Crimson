@@ -45,7 +45,7 @@ import javax.swing.border.LineBorder;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.util.DateUtil;
-import com.subterranean_security.crimson.nucleus.JarUtil;
+import com.subterranean_security.crimson.universal.JarUtil;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;

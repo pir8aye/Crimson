@@ -32,11 +32,11 @@ import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.nucleus.JarUtil;
 import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.universal.JarUtil;
 
 public class ServerDB extends Database {
 	private static final Logger log = LoggerFactory.getLogger(ServerDB.class);

@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.nucleus;
+package com.subterranean_security.crimson.universal;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -35,8 +35,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public final class Nucleus {
-	private Nucleus() {
+public final class Universal {
+	private Universal() {
 	}
 
 	public enum Instance {
@@ -61,11 +61,11 @@ public final class Nucleus {
 		}
 	}
 
-	public static Nucleus.Instance discoverInstance() {
+	public static Universal.Instance discoverInstance() {
 
 		try {
 			return Instance.valueOf(JarUtil.getManifestValue("Instance",
-					new File(Nucleus.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())));
+					new File(Universal.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())));
 		} catch (IOException e) {
 			System.exit(0);
 		} catch (URISyntaxException e) {
@@ -96,7 +96,7 @@ public final class Nucleus {
 		return true;
 	}
 
-	public static ArrayList<String> getInstancePrerequisites(Nucleus.Instance instance) {
+	public static ArrayList<String> getInstancePrerequisites(Universal.Instance instance) {
 		ArrayList<Element> elements = null;
 		try {
 			elements = readDependancyXML();
@@ -118,7 +118,7 @@ public final class Nucleus {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 
-		Document doc = builder.parse(Nucleus.class.getClassLoader()
+		Document doc = builder.parse(Universal.class.getClassLoader()
 				.getResourceAsStream("com/subterranean_security/crimson/nucleus/Dependancies.xml"));
 
 		doc.getDocumentElement().normalize();

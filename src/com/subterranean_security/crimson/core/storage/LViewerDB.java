@@ -20,8 +20,8 @@ package com.subterranean_security.crimson.core.storage;
 import java.io.File;
 import java.util.ArrayList;
 
-import com.subterranean_security.crimson.nucleus.JarUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.universal.JarUtil;
 
 public class LViewerDB extends Database {
 	public LViewerDB(File dfile) throws Exception {

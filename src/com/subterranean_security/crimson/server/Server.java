@@ -45,7 +45,7 @@ import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
-import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.universal.Universal;
 
 public final class Server {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
@@ -63,7 +63,7 @@ public final class Server {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Try to get a lock or exit
-		if (!FileLocking.lock(Nucleus.Instance.SERVER)) {
+		if (!FileLocking.lock(Universal.Instance.SERVER)) {
 			log.error("A Crimson server is already running in another process");
 			System.exit(0);
 		}

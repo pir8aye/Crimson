@@ -31,7 +31,7 @@ import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.misc.FileLocking;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
-import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.ViewerStore.Databases;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
@@ -61,7 +61,7 @@ public class Viewer {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
 		// Try to get a lock or exit
-		if (!FileLocking.lock(Nucleus.Instance.VIEWER)) {
+		if (!FileLocking.lock(Universal.Instance.VIEWER)) {
 			System.exit(0);
 		}
 

