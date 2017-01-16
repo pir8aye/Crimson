@@ -40,7 +40,9 @@ public final class LogUtil {
 		File config = new File(Common.Directories.varLog.getAbsolutePath() + "/logback-"
 				+ Common.instance.toString().toLowerCase() + ".xml");
 		if (!config.exists()) {
-			JarUtil.extract("com/subterranean_security/crimson/core/res/xml/logback.xml", config.getAbsolutePath());
+
+			JarUtil.extract(LogUtil.class.getClassLoader(),
+					"com/subterranean_security/crimson/core/res/xml/logback.xml", config.getAbsolutePath());
 			FileUtil.substitute(config, "%LEVEL%", Common.isDebugMode() ? LogLevel.DEBUG.toString().toLowerCase()
 					: LogLevel.INFO.toString().toLowerCase());
 			FileUtil.substitute(config, "%LOGDIR%", config.getParent().replaceAll("\\\\", "/"));

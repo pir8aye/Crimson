@@ -30,8 +30,6 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import com.subterranean_security.crimson.core.Common;
-
 public final class JarUtil {
 	private JarUtil() {
 	}
@@ -51,13 +49,6 @@ public final class JarUtil {
 
 		return null;
 
-	}
-
-	public static String getLibraryManifestValue(String attr, String lib) throws IOException {
-		if (!lib.endsWith(".jar")) {
-			lib += ".jar";
-		}
-		return getManifestValue(attr, new File(Common.Directories.base.getAbsolutePath() + "/lib/java/" + lib));
 	}
 
 	public static void loadFully(String path) throws IOException, ClassNotFoundException {
@@ -88,8 +79,8 @@ public final class JarUtil {
 		method.invoke(ClassLoader.getSystemClassLoader(), new Object[] { new File(path).toURI().toURL() });
 	}
 
-	public static void extract(String res, String dest) {
-		InputStream stream = JarUtil.class.getClassLoader().getResourceAsStream(res);
+	public static void extract(ClassLoader cl, String res, String dest) {
+		InputStream stream = cl.getResourceAsStream(res);
 
 		FileOutputStream fos = null;
 		try {
@@ -113,6 +104,10 @@ public final class JarUtil {
 				}
 			}
 		}
+	}
+
+	public static void extract(String res, String dest) {
+		extract(JarUtil.class.getClassLoader(), res, dest);
 	}
 
 	/**
