@@ -123,9 +123,9 @@ public final class ServerStore {
 				clients++;
 				Authentication.refreshVisibilityPermissions(r.getCvid());
 				Profiles.getClient(r.getCvid()).setOnline(true);
-				sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
-						Message.newBuilder().setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid())
-								.putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "1")));
+				//sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
+				//		Message.newBuilder().setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid())
+				//				.putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "1")));
 			}
 			receptors.put(r.getCvid(), r);
 		}

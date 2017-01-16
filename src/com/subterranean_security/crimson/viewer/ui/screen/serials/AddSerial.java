@@ -46,9 +46,8 @@ import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.viewer.Viewer;
 import com.subterranean_security.crimson.viewer.ViewerStore;
-import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
+import com.subterranean_security.crimson.viewer.ui.common.UINotification;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
-import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 import com.subterranean_security.services.Services;
 
 public class AddSerial extends JPanel {
@@ -301,7 +300,7 @@ public class AddSerial extends JPanel {
 									protected Void doInBackground() throws Exception {
 										ViewerStore.Databases.local.storeObject("serial", getKey());
 										Viewer.loadState();
-										MainFrame.main.panel.console.addLine("Thank you for activating Crimson!", LineType.GREEN);
+										UINotification.addConsoleGood("Thank you for activating Crimson!");
 										Thread.sleep(1000);
 										return null;
 									}

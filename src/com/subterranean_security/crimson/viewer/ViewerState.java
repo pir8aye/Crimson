@@ -19,7 +19,7 @@ package com.subterranean_security.crimson.viewer;
 
 import com.subterranean_security.crimson.core.misc.FileLocking;
 import com.subterranean_security.crimson.nucleus.Nucleus;
-import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
+import com.subterranean_security.crimson.viewer.ui.common.UINotification;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.relogin.Relogin;
 
@@ -40,7 +40,7 @@ public final class ViewerState {
 	public static void goOffline() {
 		if (online && !ShutdownHook.shuttingdown) {
 			online = false;
-			MainFrame.main.panel.console.addLine("Offline mode engaged", LineType.BLUE);
+			UINotification.addConsoleInfo("Offline mode engaged");
 			MainFrame.main.np.addNote("disconnection", "Connection to server lost", "Click to retry", new Runnable() {
 				public void run() {
 					MainFrame.main.ep.raise(new Relogin(MainFrame.main.ep), 125);

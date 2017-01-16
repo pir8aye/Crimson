@@ -21,12 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.util.MiscUtil;
 import com.subterranean_security.crimson.nucleus.Nucleus;
-import com.subterranean_security.crimson.nucleus.Nucleus.Instance;
-import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
-import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
-import com.subterranean_security.crimson.core.Reporter;
+import com.subterranean_security.crimson.viewer.ui.common.UINotification;
 
 public class EH implements Thread.UncaughtExceptionHandler {
 
@@ -37,7 +35,9 @@ public class EH implements Thread.UncaughtExceptionHandler {
 
 		if (Common.instance == Nucleus.Instance.VIEWER) {
 			try {
-				MainFrame.main.panel.console.addLine("An unexpected exception has occurred", LineType.ORANGE);
+				if (UINotification.getPolicy().getOnException()) {
+					UINotification.addConsoleBad("An unexpected exception has occurred");
+				}
 			} catch (Exception e) {
 
 			}

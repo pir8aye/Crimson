@@ -36,7 +36,7 @@ import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
+import com.subterranean_security.crimson.viewer.ui.common.UINotification;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 
 public enum ContextMenu {
@@ -137,11 +137,10 @@ public enum ContextMenu {
 					protected void done() {
 						try {
 							Outcome outcome = get();
-							if (outcome.getResult()) {
-								MainFrame.main.panel.console.addLine("Saved screenshot: " + outcome.getComment(),
-										LineType.GREEN);
+							if (outcome != null && outcome.getResult()) {
+								UINotification.addConsoleGood("Saved screenshot: " + outcome.getComment());
 							} else {
-								MainFrame.main.panel.console.addLine("Failed to capture screen", LineType.ORANGE);
+								UINotification.addConsoleBad("Failed to capture screenshot");
 							}
 
 						} catch (InterruptedException | ExecutionException e) {

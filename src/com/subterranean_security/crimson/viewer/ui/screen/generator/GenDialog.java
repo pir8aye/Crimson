@@ -37,11 +37,10 @@ import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
+import com.subterranean_security.crimson.viewer.ui.common.UINotification;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HiddenMenu;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.NormalMenu;
-import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public class GenDialog extends JDialog {
 
@@ -87,7 +86,7 @@ public class GenDialog extends JDialog {
 							return;
 						}
 						if (gp.testValues(config)) {
-							MainFrame.main.panel.console.addLine("Generating target on server...", LineType.GREEN);
+							UINotification.addConsoleInfo("Generating target on server...");
 							dispose();
 
 							if (config.getAuthType() == AuthType.GROUP
@@ -97,8 +96,7 @@ public class GenDialog extends JDialog {
 										.setId(IDGen.authenticationMethod()).setCreation(new Date().getTime())
 										.setType(AuthType.GROUP).setName(config.getGroupName())
 										.setGroupSeedPrefix(gp.getGroupPrefix()).build()).getResult()) {
-									MainFrame.main.panel.console.addLine("Failed to create authentication group",
-											LineType.ORANGE);
+									UINotification.addConsoleBad("Failed to create authentication group");
 									return;
 								}
 							} else if (config.getAuthType() == AuthType.PASSWORD
@@ -108,7 +106,7 @@ public class GenDialog extends JDialog {
 										.setId(IDGen.authenticationMethod()).setCreation(new Date().getTime())
 										.setType(AuthType.PASSWORD).setName(gp.atab.fld_password_name.getText())
 										.setPassword(gp.atab.getPassword()).build()).getResult()) {
-									MainFrame.main.panel.console.addLine("Failed to create password", LineType.ORANGE);
+									UINotification.addConsoleBad("Failed to create password");
 									return;
 								}
 							}

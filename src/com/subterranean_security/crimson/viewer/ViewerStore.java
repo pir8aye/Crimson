@@ -39,6 +39,7 @@ import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
+import com.subterranean_security.crimson.viewer.ui.common.UINotification;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
@@ -230,6 +231,7 @@ public final class ViewerStore {
 
 		public static void update(EV_ProfileDelta change) {
 			boolean onlineChanged = false;
+			boolean firstConnection = false;
 
 			ClientProfile cp = getClient(change.getCvid());
 			if (cp != null) {
@@ -237,22 +239,37 @@ public final class ViewerStore {
 						&& !change.getStrAttrOrDefault(SimpleAttribute.CLIENT_ONLINE.ordinal(), "")
 								.equals(cp.getAttr(SimpleAttribute.CLIENT_ONLINE));
 				cp.amalgamate(change);
+
 			} else {
+				firstConnection = true;
 				onlineChanged = change.containsStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal());
 
 				// add new profile
 				cp = new ClientProfile(change.getCvid());
 				cp.amalgamate(change);
 				clients.add(cp);
-				MainFrame.main.panel.console.addLine(
-						"New client connection from: " + cp.getAttr(SimpleAttribute.NET_EXTERNALIP), LineType.GREEN);
+
 			}
 			cp.initialize();
 
 			if (onlineChanged) {
 				if (change.getStrAttrOrDefault(SimpleAttribute.CLIENT_ONLINE.ordinal(), "").equals("1")) {
+
+					if (firstConnection && UINotification.getPolicy().getOnNewClientConnect()) {
+						UINotification.addConsoleInfo(
+								"(new client) Connection established: " + cp.getAttr(SimpleAttribute.NET_EXTERNALIP));
+					} else if (UINotification.getPolicy().getOnOldClientConnect()) {
+						UINotification.addConsoleInfo(
+								"Connection established: " + cp.getAttr(SimpleAttribute.NET_EXTERNALIP));
+					}
+
 					clientNowOnline(cp);
 				} else {
+					if (UINotification.getPolicy().getOnClientDisconnect()) {
+						UINotification
+								.addConsoleInfo("Connection closed: " + cp.getAttr(SimpleAttribute.NET_EXTERNALIP));
+					}
+
 					clientNowOffline(cp);
 				}
 			}
@@ -279,9 +296,13 @@ public final class ViewerStore {
 				ClientProfile detailTarget = MainFrame.main.dp.getTarget();
 				if (detailTarget != null && cp.getCid() == detailTarget.getCid()) {
 					MainFrame.main.dp.closeDetail();
-					MainFrame.main.panel.console.addLine(
-							"The client (" + cp.getAttr(SimpleAttribute.NET_EXTERNALIP) + ") has disconnected",
-							LineType.ORANGE);
+
+					// avoid double notifications
+					if (!UINotification.getPolicy().getOnClientDisconnect()) {
+						UINotification.addConsoleInfo(
+								"The client (" + cp.getAttr(SimpleAttribute.NET_EXTERNALIP) + ") has disconnected");
+					}
+
 				}
 			}
 
