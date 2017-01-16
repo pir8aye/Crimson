@@ -52,7 +52,7 @@ public class MainPanel extends JPanel {
 			e.printStackTrace();
 		}
 
-		console.addLine("Welcome to Crimson build: " + Common.build);
+		console.addLine("Welcome to Crimson (build " + Common.build + ")");
 
 	}
 
