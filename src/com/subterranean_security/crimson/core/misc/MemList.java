@@ -20,24 +20,24 @@ package com.subterranean_security.crimson.core.misc;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.subterranean_security.crimson.core.storage.Database;
+import com.subterranean_security.crimson.core.storage.StorageFacility;
 
 public class MemList<T> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Integer> index = new ArrayList<Integer>();
-	private transient Database database;
+	private transient StorageFacility database;
 
 	public MemList() {
 
 	}
 
-	public MemList(Database d) {
+	public MemList(StorageFacility d) {
 		setDatabase(d);
 
 	}
 
-	public void setDatabase(Database d) {
+	public void setDatabase(StorageFacility d) {
 		this.database = d;
 	}
 
@@ -48,7 +48,7 @@ public class MemList<T> implements Serializable {
 
 	public T get(Integer id) {
 		try {
-			return (T) database.get(index.get(id));
+			return (T) database.getObject(index.get(id));
 		} catch (Exception e) {
 			return null;
 		}

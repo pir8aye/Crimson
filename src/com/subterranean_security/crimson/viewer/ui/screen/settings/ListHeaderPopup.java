@@ -27,7 +27,7 @@ import javax.swing.JPopupMenu;
 
 import com.subterranean_security.crimson.core.profile.AbstractAttribute;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
-import com.subterranean_security.crimson.core.storage.LViewerDB;
+import com.subterranean_security.crimson.core.storage.StorageFacility;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.screen.main.HostList;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
@@ -40,9 +40,9 @@ public class ListHeaderPopup extends JPopupMenu {
 
 	private AbstractAttribute[] headers;
 
-	private LViewerDB db;
+	private StorageFacility db;
 
-	public ListHeaderPopup(LViewerDB db) {
+	public ListHeaderPopup(StorageFacility db) {
 		this.db = db;
 		try {
 			headers = (AbstractAttribute[]) db.getObject("hostlist.headers");
@@ -90,7 +90,7 @@ public class ListHeaderPopup extends JPopupMenu {
 	}
 
 	private void refreshHeaders() {
-		db.storeObject("hostlist.headers", headers);
+		db.store("hostlist.headers", headers);
 
 		// refresh list headers
 		MainFrame.main.panel.list.refreshHeaders();

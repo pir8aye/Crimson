@@ -89,7 +89,7 @@ import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.Universal.Instance;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.services.Services;
 
 import io.netty.util.ReferenceCountUtil;
@@ -448,8 +448,8 @@ public class ServerExecutor extends BasicExecutor {
 				RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder().setCloud(cloud != null);
 				if (lcrq.getCloud()) {
 					lcrq.setSalt(cloud.getSalt());
-				} else if (ServerStore.Databases.system.userExists(user)) {
-					lcrq.setSalt(ServerStore.Databases.system.getSalt(user));
+				} else if (Database.getFacility().userExists(user)) {
+					lcrq.setSalt(Database.getFacility().getSalt(user));
 				} else {
 					pass = false;
 					return;
@@ -465,7 +465,7 @@ public class ServerExecutor extends BasicExecutor {
 					return;
 				}
 				if (cloud == null) {
-					pass = ServerStore.Databases.system.validLogin(user, lcrs.getRsLoginChallenge().getResult());
+					pass = Database.getFacility().validLogin(user, lcrs.getRsLoginChallenge().getResult());
 				} else {
 					log.debug("Got cloud hash: " + cloud.getPassword());
 					pass = lcrs.getRsLoginChallenge().getResult().equals(cloud.getPassword());
@@ -678,7 +678,7 @@ public class ServerExecutor extends BasicExecutor {
 		receptor.handle.write(
 				Message.newBuilder().setId(m.getId()).setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
 
-		ServerStore.Databases.system.addLocalUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
+		Database.getFacility().addLocalUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
 				new ViewerPermissions(m.getRqAddUser().getPermissionsList()));
 
 		Message update = Message.newBuilder()
@@ -714,10 +714,9 @@ public class ServerExecutor extends BasicExecutor {
 			b.addAllViewerPermissions(rqad.getPermissionsList());
 		}
 
-		if (rqad.hasPassword()
-				&& ServerStore.Databases.system.validLogin(rqad.getUser(), CryptoUtil.hashCrimsonPassword(
-						m.getRqEditUser().getOldPassword(), ServerStore.Databases.system.getSalt(rqad.getUser())))) {
-			ServerStore.Databases.system.changePassword(rqad.getUser(), rqad.getPassword());
+		if (rqad.hasPassword() && Database.getFacility().validLogin(rqad.getUser(), CryptoUtil.hashCrimsonPassword(
+				m.getRqEditUser().getOldPassword(), Database.getFacility().getSalt(rqad.getUser())))) {
+			Database.getFacility().changePassword(rqad.getUser(), rqad.getPassword());
 
 		}
 

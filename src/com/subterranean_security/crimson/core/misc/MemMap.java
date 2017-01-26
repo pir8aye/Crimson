@@ -21,15 +21,15 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Set;
 
-import com.subterranean_security.crimson.core.storage.Database;
+import com.subterranean_security.crimson.core.storage.StorageFacility;
 
 public class MemMap<K, V> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private HashMap<K, Integer> map = new HashMap<K, Integer>();
-	private transient Database database;
+	private transient StorageFacility database;
 
-	public MemMap(Database d) {
+	public MemMap(StorageFacility d) {
 		setDatabase(d);
 	}
 
@@ -37,7 +37,7 @@ public class MemMap<K, V> implements Serializable {
 
 	}
 
-	public void setDatabase(Database d) {
+	public void setDatabase(StorageFacility d) {
 		this.database = d;
 	}
 
@@ -51,7 +51,7 @@ public class MemMap<K, V> implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public V get(K key) throws Exception {
-		return (V) database.get(map.get(key));
+		return (V) database.getObject(map.get(key));
 	}
 
 	public Set<K> keyset() {

@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 import java.awt.BorderLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.Box;
@@ -31,7 +32,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
@@ -215,10 +216,10 @@ class Detail extends JPanel {
 		setLayout(new BorderLayout(0, 0));
 
 		try {
-			processor = ViewerStore.Databases.local.getBoolean("detail.processor");
-			nic = ViewerStore.Databases.local.getBoolean("detail.nic");
-			preview = ViewerStore.Databases.local.getBoolean("detail.preview");
-			map = ViewerStore.Databases.local.getBoolean("detail.map");
+			processor = Database.getFacility().getBoolean("detail.processor");
+			nic = Database.getFacility().getBoolean("detail.nic");
+			preview = Database.getFacility().getBoolean("detail.preview");
+			map = Database.getFacility().getBoolean("detail.map");
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -272,7 +273,7 @@ class Detail extends JPanel {
 				@Override
 				protected Void doInBackground() throws Exception {
 
-					ViewerStore.Databases.local.storeObject("detail.processor", processor = !processor);
+					Database.getFacility().store("detail.processor", processor = !processor);
 					return null;
 
 				}
@@ -325,7 +326,7 @@ class Detail extends JPanel {
 			new SwingWorker<Void, Void>() {
 				@Override
 				protected Void doInBackground() throws Exception {
-					ViewerStore.Databases.local.storeObject("detail.nic", nic = !nic);
+					Database.getFacility().store("detail.nic", nic = !nic);
 					return null;
 				}
 
@@ -377,7 +378,7 @@ class Detail extends JPanel {
 				@Override
 				protected Void doInBackground() throws Exception {
 
-					ViewerStore.Databases.local.storeObject("detail.preview", preview = !preview);
+					Database.getFacility().store("detail.preview", preview = !preview);
 					return null;
 
 				}
@@ -428,7 +429,7 @@ class Detail extends JPanel {
 				@Override
 				protected Void doInBackground() throws Exception {
 
-					ViewerStore.Databases.local.storeObject("detail.map", map = !map);
+					Database.getFacility().store("detail.map", map = !map);
 					return null;
 
 				}

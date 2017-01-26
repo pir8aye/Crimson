@@ -28,8 +28,8 @@ import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.core.platform.SigarStore;
+import com.subterranean_security.crimson.universal.stores.Database;
 
 public class CRIMSON {
 	private static final Logger log = LoggerFactory.getLogger(CRIMSON.class);
@@ -136,7 +136,7 @@ public class CRIMSON {
 
 	public static String getInstallDate() {
 		try {
-			return new Date(Client.clientDB.getLong("install.timestamp")).toString();
+			return new Date(Database.getFacility().getLong("install.timestamp")).toString();
 		} catch (Exception e) {
 			return "N/A";
 		}

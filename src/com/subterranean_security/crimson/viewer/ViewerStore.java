@@ -33,14 +33,13 @@ import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
-import com.subterranean_security.crimson.core.storage.LViewerDB;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.common.UINotification;
-import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
@@ -124,19 +123,6 @@ public final class ViewerStore {
 		}
 	}
 
-	public static class Databases {
-		public static LViewerDB local;
-
-		static {
-			try {
-				local = new LViewerDB(new File(Common.Directories.var.getAbsolutePath() + "/viewer.db"));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
 	public static class Profiles {
 
 		private static ClientProfile vcp = new ClientProfile();
@@ -149,8 +135,8 @@ public final class ViewerStore {
 
 		static {
 			try {
-				clients = (MemList<ClientProfile>) Databases.local.getObject("profiles.clients");
-				clients.setDatabase(Databases.local);
+				clients = (MemList<ClientProfile>) Database.getFacility().getObject("profiles.clients");
+				clients.setDatabase(Database.getFacility());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

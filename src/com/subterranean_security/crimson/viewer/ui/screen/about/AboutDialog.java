@@ -25,8 +25,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
@@ -34,7 +32,6 @@ import java.util.TimerTask;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,7 +43,7 @@ import javax.swing.border.LineBorder;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.util.DateUtil;
 import com.subterranean_security.crimson.universal.JarUtil;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
@@ -93,7 +90,8 @@ public class AboutDialog extends JDialog {
 			gbl_contentPanel.columnWidths = new int[] { 600, 0 };
 			gbl_contentPanel.rowHeights = new int[] { 150, 0, 0, 0, 0, 0, 0, 0, 4, 0 };
 			gbl_contentPanel.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-			gbl_contentPanel.rowWeights = new double[] { 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, Double.MIN_VALUE };
+			gbl_contentPanel.rowWeights = new double[] { 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0,
+					Double.MIN_VALUE };
 			contentPanel.setLayout(gbl_contentPanel);
 
 		}
@@ -343,7 +341,7 @@ public class AboutDialog extends JDialog {
 				{
 					String serial = "XXXXXXXXXXXXXXXX";
 					try {
-						String tmp = ViewerStore.Databases.local.getString("serial");
+						String tmp = Database.getFacility().getString("serial");
 						serial = tmp.substring(0, 4) + "-" + tmp.substring(4, 8) + "-" + tmp.substring(8, 12) + "-"
 								+ tmp.substring(12);
 					} catch (Exception e) {

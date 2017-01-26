@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -38,8 +37,6 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.storage.ClientDB;
-import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.sv.net.Listener;
@@ -48,7 +45,7 @@ import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.Universal.Instance;
+import com.subterranean_security.crimson.universal.stores.Database;
 
 public final class ServerStore {
 
@@ -66,7 +63,7 @@ public final class ServerStore {
 		public static void load() {
 			unloadAll();
 			try {
-				for (ListenerConfig lc : ((ArrayList<ListenerConfig>) Databases.system.getObject("listeners"))) {
+				for (ListenerConfig lc : ((ArrayList<ListenerConfig>) Database.getFacility().getObject("listeners"))) {
 					listeners.add(new Listener(lc));
 				}
 			} catch (Exception e) {
@@ -123,9 +120,10 @@ public final class ServerStore {
 				clients++;
 				Authentication.refreshVisibilityPermissions(r.getCvid());
 				Profiles.getClient(r.getCvid()).setOnline(true);
-				//sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
-				//		Message.newBuilder().setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid())
-				//				.putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "1")));
+				// sendToViewersWithAuthorityOverClient(r.getCvid(),
+				// Perm.client.visibility,
+				// Message.newBuilder().setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid())
+				// .putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "1")));
 			}
 			receptors.put(r.getCvid(), r);
 		}
@@ -191,12 +189,6 @@ public final class ServerStore {
 		}
 	}
 
-	public static class Databases {
-		public static ServerDB system;
-		public static HashMap<String, ClientDB> loaded_viewers = new HashMap<String, ClientDB>();// UID
-
-	}
-
 	public static class LocalFilesystems {
 		private static ArrayList<LocalFS> lfs = new ArrayList<LocalFS>();
 
@@ -221,8 +213,8 @@ public final class ServerStore {
 
 		static {
 			try {
-				methods = (MemList<AuthMethod>) Databases.system.getObject("auth.methods");
-				methods.setDatabase(Databases.system);
+				methods = (MemList<AuthMethod>) Database.getFacility().getObject("auth.methods");
+				methods.setDatabase(Database.getFacility());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -242,7 +234,7 @@ public final class ServerStore {
 
 		public static AuthenticationGroup getGroup(String name) {
 			try {
-				return (AuthenticationGroup) Databases.system.get(getGroupMethod(name).getGroup());
+				return (AuthenticationGroup) Database.getFacility().getObject(getGroupMethod(name).getGroup());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -255,18 +247,12 @@ public final class ServerStore {
 			remove(am.getId());
 
 			if (am.getType() == AuthType.GROUP) {
-				am = AuthMethod.newBuilder().mergeFrom(am).setGroup(
-						Databases.system.store(CryptoUtil.generateGroup(am.getName(), am.getGroupSeedPrefix().getBytes())))
+				am = AuthMethod.newBuilder().mergeFrom(am)
+						.setGroup(Database.getFacility()
+								.store(CryptoUtil.generateGroup(am.getName(), am.getGroupSeedPrefix().getBytes())))
 						.build();
 			}
 			methods.add(am);
-
-			try {
-				Databases.system.flushHeap();
-			} catch (SQLException e) {
-				outcome.setComment("Failed to flush heap!");
-			}
-			System.gc();
 
 			// update viewers
 			ServerStore.Connections.sendToAll(Universal.Instance.VIEWER, Message.newBuilder()
@@ -359,16 +345,16 @@ public final class ServerStore {
 
 		static {
 			try {
-				clientProfiles = (MemMap<Integer, ClientProfile>) Databases.system.getObject("profiles.clients");
-				clientProfiles.setDatabase(Databases.system);
+				clientProfiles = (MemMap<Integer, ClientProfile>) Database.getFacility().getObject("profiles.clients");
+				clientProfiles.setDatabase(Database.getFacility());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 			try {
-				viewerProfiles = (MemMap<Integer, ViewerProfile>) Databases.system.getObject("profiles.viewers");
-				viewerProfiles.setDatabase(Databases.system);
+				viewerProfiles = (MemMap<Integer, ViewerProfile>) Database.getFacility().getObject("profiles.viewers");
+				viewerProfiles.setDatabase(Database.getFacility());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

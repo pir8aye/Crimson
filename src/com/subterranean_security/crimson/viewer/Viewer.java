@@ -19,9 +19,11 @@ package com.subterranean_security.crimson.viewer;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +31,12 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.misc.FileLocking;
+import com.subterranean_security.crimson.core.storage.BasicDatabase;
+import com.subterranean_security.crimson.core.storage.StorageFacility;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.viewer.ViewerStore.Databases;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.eula.EULADialog;
@@ -68,12 +72,15 @@ public class Viewer {
 		// Load native libraries
 		Native.Loader.load();
 
+		// Initialize database
+		initializeDatabase();
+
 		// Make platform specific UI tweaks
 		UIUtil.adaptPlatform();
 
 		// Show the EULA if needed
 		try {
-			if (ViewerStore.Databases.local.getBoolean("show_eula") && !Common.isDebugMode()) {
+			if (Database.getFacility().getBoolean("show_eula") && !Common.isDebugMode()) {
 				EULADialog eula = new EULADialog(true);
 				eula.setLocationRelativeTo(null);
 				eula.setVisible(true);
@@ -86,7 +93,7 @@ public class Viewer {
 					}
 				}
 				if (eula.accepted) {
-					ViewerStore.Databases.local.storeObject("show_eula", false);
+					Database.getFacility().store("show_eula", false);
 				}
 				eula = null;
 			}
@@ -129,6 +136,25 @@ public class Viewer {
 
 	}
 
+	private static void initializeDatabase() {
+		StorageFacility sf = new BasicDatabase(Viewer.class.getName(),
+				new File(Common.Directories.base + "/var/viewer.db"));
+		try {
+			sf.initialize();
+		} catch (ClassNotFoundException e) {
+			log.error("Failed to load SQLite dependancy");
+			System.exit(0);
+		} catch (IOException e) {
+			log.error("Failed to write database");
+			System.exit(0);
+		} catch (SQLException e) {
+			log.error("SQL error: {}", e.getMessage());
+			System.exit(0);
+		}
+
+		Database.setFacility(sf);
+	}
+
 	public static void loadJar(String path) throws Exception {
 		File target = new File(path);
 		System.out.println("Loading: " + target.getAbsolutePath());
@@ -143,7 +169,7 @@ public class Viewer {
 
 	public static void loadState() {
 		try {
-			ViewerState.trialMode = Databases.local.getString("serial").isEmpty();
+			ViewerState.trialMode = Database.getFacility().getString("serial").isEmpty();
 		} catch (Exception e) {
 			ViewerState.trialMode = true;
 		}

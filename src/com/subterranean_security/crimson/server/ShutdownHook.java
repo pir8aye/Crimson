@@ -17,10 +17,13 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.misc.FileLocking;
+import com.subterranean_security.crimson.universal.stores.Database;
 
 public class ShutdownHook extends Thread {
 
@@ -28,9 +31,18 @@ public class ShutdownHook extends Thread {
 
 	@Override
 	public void run() {
-		log.debug("Shutting down");
+		log.info("Received shutdown signal");
+
+		log.debug("Terminating network connections");
 		ServerStore.Connections.close();
-		ServerStore.Databases.system.close();
+
+		try {
+			log.debug("Closing database");
+			Database.getFacility().close();
+		} catch (IOException e) {
+			log.error("Failed to close database: {}", e.getMessage());
+		}
+
 		FileLocking.unlock();
 	}
 }

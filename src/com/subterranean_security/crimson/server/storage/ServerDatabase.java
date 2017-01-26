@@ -15,9 +15,10 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.storage;
+package com.subterranean_security.crimson.server.storage;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,35 +27,47 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.MemList;
 import com.subterranean_security.crimson.core.misc.MemMap;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
+import com.subterranean_security.crimson.core.storage.BasicDatabase;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.universal.JarUtil;
 
-public class ServerDB extends Database {
-	private static final Logger log = LoggerFactory.getLogger(ServerDB.class);
+public class ServerDatabase extends BasicDatabase {
+	private static final Logger log = LoggerFactory.getLogger(ServerDatabase.class);
 
-	public ServerDB(File dfile) throws Exception {
-		if (!dfile.exists()) {
-			// copy the template
-			log.debug("Copying database template to: " + dfile.getAbsolutePath());
-			JarUtil.extract("com/subterranean_security/crimson/core/storage/server-template.db",
-					dfile.getAbsolutePath());
+	public ServerDatabase(String pref, File sqlite) {
+		super(pref, sqlite);
+	}
+
+	@Override
+	public void initialize() throws IOException, ClassNotFoundException, SQLException {
+		super.initialize();
+	}
+
+	public void initSql() throws IOException, ClassNotFoundException, SQLException {
+		super.initSql();
+		if (!isTableConstructed()) {
+			construct();
 		}
-		init(dfile);
-		if (isFirstRun()) {
-			this.hardReset();
-		}
+	}
 
+	private void construct() throws SQLException {
+		execute("CREATE TABLE `users` (`Id` INTEGER PRIMARY KEY AUTOINCREMENT, `Username` TEXT, `Salt` TEXT, `Hash` TEXT);");
+	}
+
+	private boolean isTableConstructed() {
+		try {
+			return db.getMetaData().getTables(null, null, "users", null).next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public boolean userExists(String user) {
@@ -94,20 +107,13 @@ public class ServerDB extends Database {
 			stmt.setString(1, user);
 
 			ResultSet rs = stmt.executeQuery();
-			String UID = "";
 			String hash = "";
 
 			if (rs.next()) {
-				UID = rs.getString("UID");
 				hash = rs.getString("Hash");
 			} else {
-				log.debug("Could not get UID and Salt");
+				log.debug("Could not get Salt");
 				throw new Exception();
-			}
-
-			if (!ServerStore.Databases.loaded_viewers.containsKey(UID)) {
-				ServerStore.Databases.loaded_viewers.put(UID,
-						new ClientDB(new File(Common.Directories.var + File.separator + UID + ".db")));
 			}
 
 			return hash.equals(password);
@@ -138,27 +144,6 @@ public class ServerDB extends Database {
 		return true;
 	}
 
-	public String getUID(String username) {
-		try {
-			PreparedStatement stmt = db.prepareStatement("SELECT * FROM users WHERE `Username`=?");
-			stmt.setString(1, username);
-
-			ResultSet rs = stmt.executeQuery();
-
-			if (rs.next()) {
-				return rs.getString("UID");
-			} else {
-				log.debug("Could not get UID");
-				throw new Exception();
-			}
-
-		} catch (Exception e) {
-			log.error("Error during login query");
-
-		}
-		return null;
-	}
-
 	public boolean addLocalUser(String user, String password, ViewerPermissions permissions) {
 		if (userExists(user)) {
 			log.info("This user already exists: " + user);
@@ -167,29 +152,16 @@ public class ServerDB extends Database {
 
 		String salt = CryptoUtil.genSalt();
 		String hash = CryptoUtil.hashCrimsonPassword(password, salt);
-		String UID = RandomUtil.randString(4);
 
 		try {
-			PreparedStatement stmt = db
-					.prepareStatement("INSERT INTO users (Username, Salt, UID, Hash ) VALUES (?,?,?,?);");
+			PreparedStatement stmt = db.prepareStatement("INSERT INTO users (Username, Salt, Hash ) VALUES (?,?,?);");
 			stmt.setString(1, user);
 			stmt.setString(2, salt);
-			stmt.setString(3, UID);
-			stmt.setString(4, hash);
+			stmt.setString(3, hash);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
-		}
-
-		try {
-			ClientDB udb = new ClientDB(new File(dfile.getParent() + File.separator + UID + ".db"));
-			udb.master = CryptoUtil.hashCrimsonPassword(password.toCharArray(), salt);
-			udb.close();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 			return false;
 		}
 
@@ -212,22 +184,14 @@ public class ServerDB extends Database {
 		return true;
 	}
 
-	@Override
-	public void softReset() {
+	public void resetServer() {
+		resetBasic();
 
-		this.storeObject("auth.methods", new MemList<AuthMethod>());
-		this.storeObject("listeners", new ArrayList<ListenerConfig>());
-		this.storeObject("profiles.clients", new MemMap<Integer, ClientProfile>());
-		this.storeObject("profiles.viewers", new MemMap<Integer, ViewerProfile>());
-		this.storeObject("profiles.idcount", 0);
-		super.softReset();
-	}
-
-	@Override
-	public void hardReset() {
-		this.softReset();
-		super.hardReset();
-
+		store("auth.methods", new MemList<AuthMethod>());
+		store("listeners", new ArrayList<ListenerConfig>());
+		store("profiles.clients", new MemMap<Integer, ClientProfile>());
+		store("profiles.viewers", new MemMap<Integer, ViewerProfile>());
+		store("profiles.idcount", 0);
 	}
 
 }

@@ -17,15 +17,16 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.settings.panels;
 
-import javax.swing.JPanel;
-
-import com.subterranean_security.crimson.core.storage.LViewerDB;
-import com.subterranean_security.crimson.viewer.ui.screen.settings.SPanel;
 import java.awt.BorderLayout;
-import javax.swing.border.TitledBorder;
 import java.awt.Dimension;
-import javax.swing.JCheckBox;
 import java.awt.Font;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.border.TitledBorder;
+
+import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.viewer.ui.screen.settings.SPanel;
 
 public class SPanelPolicy extends JPanel implements SPanel {
 
@@ -63,7 +64,7 @@ public class SPanelPolicy extends JPanel implements SPanel {
 	}
 
 	@Override
-	public void setValues(LViewerDB db) {
+	public void setValues(StorageFacility db) {
 		try {
 			chckbxAlwaysShowLicense.setSelected(db.getBoolean("show_eula"));
 			chckbxShowHelpMenus.setSelected(db.getBoolean("show_helps"));
@@ -75,9 +76,9 @@ public class SPanelPolicy extends JPanel implements SPanel {
 	}
 
 	@Override
-	public void saveValues(LViewerDB db) {
-		db.storeObject("show_eula", chckbxAlwaysShowLicense.isSelected());
-		db.storeObject("show_helps", chckbxShowHelpMenus.isSelected());
+	public void saveValues(StorageFacility db) {
+		db.store("show_eula", chckbxAlwaysShowLicense.isSelected());
+		db.store("show_helps", chckbxShowHelpMenus.isSelected());
 
 	}
 }

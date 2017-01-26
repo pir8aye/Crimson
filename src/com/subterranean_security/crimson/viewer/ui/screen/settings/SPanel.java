@@ -1,9 +1,9 @@
 package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
-import com.subterranean_security.crimson.core.storage.LViewerDB;
+import com.subterranean_security.crimson.core.storage.StorageFacility;
 
 public interface SPanel {
-	public void setValues(LViewerDB db);
+	public void setValues(StorageFacility db);
 
-	public void saveValues(LViewerDB db);
+	public void saveValues(StorageFacility db);
 }

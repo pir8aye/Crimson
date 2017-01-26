@@ -30,7 +30,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
-import com.subterranean_security.crimson.core.storage.ClientDB;
+import com.subterranean_security.crimson.core.storage.BasicDatabase;
 import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
@@ -91,11 +91,13 @@ public class Generator {
 
 		// create a database for the client
 		try {
-			ClientDB database = new ClientDB(clientDB);
-			database.storeObject("cvid", cvid);
-			database.storeObject("ic", new String(B64Util.encode(ic.toByteArray())));
+			BasicDatabase database = new BasicDatabase("", clientDB);
+			database.initSql();
+			database.resetClient();
+			database.store("cvid", cvid);
+			database.store("ic", new String(B64Util.encode(ic.toByteArray())));
 			if (ic.getAuthType() == AuthType.GROUP) {
-				database.storeObject("auth.group", ServerStore.Authentication.getGroup(ic.getGroupName()));
+				database.store("auth.group", ServerStore.Authentication.getGroup(ic.getGroupName()));
 			}
 
 			database.close();

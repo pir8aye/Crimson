@@ -22,7 +22,7 @@ import java.awt.CardLayout;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 
 public class MainPanel extends JPanel {
@@ -41,7 +41,7 @@ public class MainPanel extends JPanel {
 		setLayout(new CardLayout());
 
 		try {
-			String last = ViewerStore.Databases.local.getString("view.last");
+			String last = Database.getFacility().getString("view.last");
 			if (last.equals("list")) {
 				loadList();
 			} else {
@@ -61,7 +61,7 @@ public class MainPanel extends JPanel {
 			loadList();
 		}
 		((CardLayout) getLayout()).show(this, "LIST");
-		ViewerStore.Databases.local.storeObject("view.last", "list");
+		Database.getFacility().store("view.last", "list");
 	}
 
 	public void switchToGraph() {
@@ -69,7 +69,7 @@ public class MainPanel extends JPanel {
 			loadGraph();
 		}
 		((CardLayout) getLayout()).show(this, "GRAPH");
-		ViewerStore.Databases.local.storeObject("view.last", "graph");
+		Database.getFacility().store("view.last", "graph");
 	}
 
 	public void loadList() {

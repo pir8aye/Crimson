@@ -44,6 +44,7 @@ import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
@@ -80,7 +81,7 @@ public class MenuControls extends JPanel {
 		init();
 		String view = null;
 		try {
-			view = ViewerStore.Databases.local.getString("view.last");
+			view = Database.getFacility().getString("view.last");
 		} catch (Exception e1) {
 			view = "list";
 		}

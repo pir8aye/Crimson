@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,49 +15,35 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.storage;
+package com.subterranean_security.crimson.universal.stores;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
+import java.io.IOException;
 
-import com.subterranean_security.crimson.core.misc.MemList;
-import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
-import com.subterranean_security.crimson.universal.JarUtil;
+import com.subterranean_security.crimson.core.storage.StorageFacility;
 
-public class ClientDB extends Database {
-
-	public String master;
-
-	public ClientDB(File dfile) throws Exception {
-
-		if (!dfile.exists()) {
-			// copy the template
-			JarUtil.extract("com/subterranean_security/crimson/core/storage/viewer-template.db",
-					dfile.getAbsolutePath());
-		}
-		init(dfile);
-		if (isFirstRun()) {
-			this.hardReset();
-		}
-
+public final class Database {
+	private Database() {
 	}
 
-	@Override
-	public void softReset() {
+	private static StorageFacility facility;
 
-		this.storeObject("login-times", new ArrayList<Long>());
-		this.storeObject("login-ips", new ArrayList<String>());
-
-		this.storeObject("keylogger.buffer", new MemList<EV_KEvent>());
-		super.softReset();
+	public static void setFacility(StorageFacility sf) {
+		facility = sf;
 	}
 
-	@Override
-	public void hardReset() {
-		this.storeObject("install.timestamp", new Date().getTime());
-		this.softReset();
-		super.hardReset();
+	public static StorageFacility getFacility() {
+		return facility;
+	}
+
+	public static void closeFacility() throws IOException {
+		if (facility != null) {
+			try {
+				Database.getFacility().close();
+			} finally {
+				facility = null;
+			}
+		}
+
 	}
 
 }

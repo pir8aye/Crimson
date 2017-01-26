@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.settings.panels;
 
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -25,12 +27,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.storage.LViewerDB;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.ListHeaderPopup;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SPanel;
-import java.awt.Font;
-import java.awt.Insets;
 
 public class SPanelHostList extends JPanel implements SPanel {
 
@@ -46,32 +46,32 @@ public class SPanelHostList extends JPanel implements SPanel {
 		JPanel static_panel = new JPanel();
 		static_panel.setBorder(new TitledBorder(null, "General", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		add(static_panel);
-		
+
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "List Headers", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		add(panel);
-		
-				JButton btnTest = new JButton("Modify Headers");
-				btnTest.setMargin(new Insets(2, 4, 2, 4));
-				btnTest.setFont(new Font("Dialog", Font.BOLD, 10));
-				panel.add(btnTest);
-				btnTest.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						ListHeaderPopup popup = new ListHeaderPopup(ViewerStore.Databases.local);
-						popup.show(btnTest, 0, 0);
-					}
-				});
+
+		JButton btnTest = new JButton("Modify Headers");
+		btnTest.setMargin(new Insets(2, 4, 2, 4));
+		btnTest.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel.add(btnTest);
+		btnTest.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ListHeaderPopup popup = new ListHeaderPopup(Database.getFacility());
+				popup.show(btnTest, 0, 0);
+			}
+		});
 
 	}
 
 	@Override
-	public void setValues(LViewerDB db) {
+	public void setValues(StorageFacility db) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void saveValues(LViewerDB db) {
+	public void saveValues(StorageFacility db) {
 		// TODO Auto-generated method stub
 
 	}

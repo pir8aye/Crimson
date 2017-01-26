@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -39,13 +40,15 @@ import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.storage.ServerDB;
+import com.subterranean_security.crimson.core.storage.StorageFacility;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
+import com.subterranean_security.crimson.server.storage.ServerDatabase;
 import com.subterranean_security.crimson.universal.Universal;
+import com.subterranean_security.crimson.universal.stores.Database;
 
 public final class Server {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
@@ -77,14 +80,14 @@ public final class Server {
 		// Clear /tmp/
 		TempUtil.clear();
 
-		// initialize system database
+		// initialize server database
+		initializeDatabase();
+
 		try {
-			ServerStore.Databases.system = new ServerDB(
-					new File(Common.Directories.var.getAbsolutePath() + "/system.db"));
-			Common.cvid = ServerStore.Databases.system.getInteger("cvid");
-		} catch (Exception e) {
-			log.error("Failed to initialize system database");
-			System.exit(0);
+			Common.cvid = Database.getFacility().getInteger("cvid");
+		} catch (NoSuchElementException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		ServerStore.Listeners.start();
@@ -94,6 +97,25 @@ public final class Server {
 		}
 
 		parse();
+	}
+
+	private static void initializeDatabase() {
+		StorageFacility sf = new ServerDatabase(Server.class.getName(),
+				new File(Common.Directories.var.getAbsolutePath() + "/system.db"));
+		try {
+			sf.initialize();
+		} catch (ClassNotFoundException e) {
+			log.error("Failed to load SQLite dependancy");
+			System.exit(0);
+		} catch (IOException e) {
+			log.error("Failed to write database");
+			System.exit(0);
+		} catch (SQLException e) {
+			log.error("SQL error: {}", e.getMessage());
+			System.exit(0);
+		}
+
+		Database.setFacility(sf);
 	}
 
 	public static void parse() {

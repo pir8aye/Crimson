@@ -27,6 +27,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.universal.JarUtil;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -105,7 +106,7 @@ public class MainFrame extends JFrame {
 	@Override
 	public void dispose() {
 		try {
-			if (ViewerStore.Databases.local.getBoolean("close_on_tray")) {
+			if (Database.getFacility().getBoolean("close_on_tray")) {
 				Tray.addTray();
 			} else {
 				System.exit(0);

@@ -21,7 +21,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class LogTree extends JPanel {
@@ -35,7 +35,7 @@ public class LogTree extends JPanel {
 
 	public void setFormatters() {
 		try {
-			organization = ViewerStore.Databases.local.getBoolean("keylog.treeview") ? KeylogTreeView.FLAT
+			organization = Database.getFacility().getBoolean("keylog.treeview") ? KeylogTreeView.FLAT
 					: KeylogTreeView.HIERARCHY;
 		} catch (Exception e) {
 			organization = KeylogTreeView.HIERARCHY;

