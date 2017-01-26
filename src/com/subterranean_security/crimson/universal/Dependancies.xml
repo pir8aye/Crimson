@@ -80,7 +80,7 @@
 		<Lib CID="c09">
 			<Name>Protobuf</Name>
 			<CVersion>1</CVersion>
-			<EVersion>3.0.2</EVersion>
+			<EVersion>3.1.0</EVersion>
 			<License>BSD</License>
 			<Requisites>SVCQI</Requisites>
 		</Lib>
