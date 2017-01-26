@@ -1,10 +1,10 @@
-let itemsCount=$(xmllint --xpath 'count(//Lib/Requisites)' /home/subterranean/Workspace/Crimson/src/com/subterranean_security/crimson/nucleus/Dependancies.xml)
+let itemsCount=$(xmllint --xpath 'count(//Lib/Requisites)' /home/subterranean/Workspace/Crimson/src/com/subterranean_security/crimson/universal/Dependancies.xml)
 declare -a description=( )
 
 cp=""
 
 for (( i=1; i <= $itemsCount; i++ )); do
-	if [[ "$(xmllint --xpath '//Lib['$i']/Requisites' /home/subterranean/Workspace/Crimson/src/com/subterranean_security/crimson/nucleus/Dependancies.xml)" == *"${1}"* ]]
+	if [[ "$(xmllint --xpath '//Lib['$i']/Requisites' /home/subterranean/Workspace/Crimson/src/com/subterranean_security/crimson/universal/Dependancies.xml)" == *"${1}"* ]]
 	then
 		((i=i-1))
 		if [ "$i" -lt "10" ]; then

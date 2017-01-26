@@ -119,7 +119,7 @@ public final class Universal {
 		DocumentBuilder builder = factory.newDocumentBuilder();
 
 		Document doc = builder.parse(Universal.class.getClassLoader()
-				.getResourceAsStream("com/subterranean_security/crimson/nucleus/Dependancies.xml"));
+				.getResourceAsStream("com/subterranean_security/crimson/universal/Dependancies.xml"));
 
 		doc.getDocumentElement().normalize();
 		NodeList nList = doc.getElementsByTagName("Lib");
