@@ -15,23 +15,25 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.storage;
+package com.subterranean_security.crimson.core.misc;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.ArrayList;
 
-public class MemMap<K, V> implements Serializable {
+import com.subterranean_security.crimson.core.storage.Database;
+
+public class MemList<T> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private HashMap<K, Integer> map = new HashMap<K, Integer>();
+	private ArrayList<Integer> index = new ArrayList<Integer>();
 	private transient Database database;
 
-	public MemMap(Database d) {
-		setDatabase(d);
+	public MemList() {
+
 	}
 
-	public MemMap() {
+	public MemList(Database d) {
+		setDatabase(d);
 
 	}
 
@@ -39,21 +41,28 @@ public class MemMap<K, V> implements Serializable {
 		this.database = d;
 	}
 
-	public void put(K key, V value) {
-		map.put(key, database.store(value));
+	public void add(T ob) {
+		index.add(database.store(ob));
+
 	}
 
-	public void remove(K key) {
-		map.remove(key);
+	public T get(Integer id) {
+		try {
+			return (T) database.get(index.get(id));
+		} catch (Exception e) {
+			return null;
+		}
+
 	}
 
-	@SuppressWarnings("unchecked")
-	public V get(K key) throws Exception {
-		return (V) database.get(map.get(key));
+	public T remove(Integer i) {
+		T t = get(i);
+		database.delete(index.get(i));
+		return t;
 	}
 
-	public Set<K> keyset() {
-		return map.keySet();
+	public int size() {
+		return index.size();
 	}
 
 }

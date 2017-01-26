@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.misc.MemMap;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
-import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.util.DateUtil;
 
 public class Log implements Serializable {

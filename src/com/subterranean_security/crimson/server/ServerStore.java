@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
+import com.subterranean_security.crimson.core.misc.MemList;
+import com.subterranean_security.crimson.core.misc.MemMap;
 import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
@@ -37,8 +39,6 @@ import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.storage.ClientDB;
-import com.subterranean_security.crimson.core.storage.MemList;
-import com.subterranean_security.crimson.core.storage.MemMap;
 import com.subterranean_security.crimson.core.storage.ServerDB;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.server.net.Receptor;
