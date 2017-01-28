@@ -43,6 +43,7 @@ import javax.swing.border.LineBorder;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.util.DateUtil;
 import com.subterranean_security.crimson.universal.JarUtil;
+import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -61,7 +62,7 @@ public class AboutDialog extends JDialog {
 
 		@Override
 		public void run() {
-			lbl_uptime.setText(DateUtil.datediff(Common.start, new Date()));
+			lbl_uptime.setText(DateUtil.datediff(Universal.start, new Date()));
 
 		}
 

@@ -20,7 +20,7 @@ package com.subterranean_security.crimson.core.util;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.universal.Universal;
 
 public final class DateUtil {
 	private DateUtil() {
@@ -33,7 +33,7 @@ public final class DateUtil {
 
 	public static int uptime() {
 		Date now = new Date();
-		return (int) (now.getTime() - Common.start.getTime()) / 1000;
+		return (int) (now.getTime() - Universal.start.getTime()) / 1000;
 	}
 
 	public static String datediff(Date d1, Date d2) {

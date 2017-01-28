@@ -28,6 +28,7 @@ import com.subterranean_security.crimson.core.platform.info.OS;
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.core.util.DateUtil;
 import com.subterranean_security.crimson.core.util.FileUtil;
+import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.services.Services;
 
 /**
@@ -123,7 +124,7 @@ public final class Reporter {
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setJreUptime(DateUtil.datediff(Common.start, new Date()));
+			rb.setJreUptime(DateUtil.datediff(Universal.start, new Date()));
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Java uptime: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));

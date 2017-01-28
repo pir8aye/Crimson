@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.core;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +37,6 @@ public final class Common {
 	 * Identifies this instance based on available packages
 	 */
 	public static final Universal.Instance instance = Universal.discoverInstance();
-
-	/**
-	 * Initialization Timestamp
-	 */
-	public static final Date start = new Date();
 
 	public static int cvid = 0;
 

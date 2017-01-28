@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,6 +34,11 @@ import org.w3c.dom.NodeList;
 public final class Universal {
 	private Universal() {
 	}
+
+	/**
+	 * Initialization Timestamp
+	 */
+	public static final Date start = new Date();
 
 	/**
 	 * When true, debug messages will be logged and additional functionality

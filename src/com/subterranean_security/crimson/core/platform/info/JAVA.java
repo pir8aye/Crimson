@@ -17,8 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.platform.info;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.platform.Platform.ARCH;
+import com.subterranean_security.crimson.universal.Universal;
 
 public final class JAVA {
 
@@ -38,7 +38,7 @@ public final class JAVA {
 	}
 
 	public static String getStartTime() {
-		return Common.start.toString();
+		return Universal.start.toString();
 	}
 
 	public static String getArch() {
