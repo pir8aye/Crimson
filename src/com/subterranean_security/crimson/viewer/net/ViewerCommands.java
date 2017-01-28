@@ -69,6 +69,7 @@ import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
@@ -482,7 +483,7 @@ public enum ViewerCommands {
 		ClientConfig client = getClientConfig(cid);
 		if (client == null) {
 			outcome.setResult(false).setComment("Could not obtain client configuration");
-		} else if (client.getBuildNumber() >= Common.build && !Common.isDebugMode()) {
+		} else if (client.getBuildNumber() >= Common.build && !Universal.isDebug) {
 			outcome.setResult(false).setComment("No updated needed");
 		} else {
 			try {

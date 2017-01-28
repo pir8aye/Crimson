@@ -51,11 +51,11 @@ import javax.swing.text.BadLocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ViewerStore;
@@ -63,7 +63,6 @@ import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public class LoginPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -94,7 +93,7 @@ public class LoginPanel extends JPanel {
 		this.parent = parent;
 		init();
 
-		if (Common.isDebugMode()) {
+		if (Universal.isDebug) {
 			fld_user.setText("admin");
 			fld_pass.setText("default");
 			new SwingWorker<Void, Void>() {

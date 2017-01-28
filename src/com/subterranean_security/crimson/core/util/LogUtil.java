@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.universal.JarUtil;
+import com.subterranean_security.crimson.universal.Universal;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -34,8 +35,6 @@ public final class LogUtil {
 	private LogUtil() {
 	}
 
-	private static final boolean netlevel = new File("/netdebug.txt").exists();
-
 	public static void configure() {
 		File config = new File(Common.Directories.varLog.getAbsolutePath() + "/logback-"
 				+ Common.instance.toString().toLowerCase() + ".xml");
@@ -43,12 +42,12 @@ public final class LogUtil {
 
 			JarUtil.extract(LogUtil.class.getClassLoader(),
 					"com/subterranean_security/crimson/core/res/xml/logback.xml", config.getAbsolutePath());
-			FileUtil.substitute(config, "%LEVEL%", Common.isDebugMode() ? LogLevel.DEBUG.toString().toLowerCase()
+			FileUtil.substitute(config, "%LEVEL%", Universal.isDebug ? LogLevel.DEBUG.toString().toLowerCase()
 					: LogLevel.INFO.toString().toLowerCase());
 			FileUtil.substitute(config, "%LOGDIR%", config.getParent().replaceAll("\\\\", "/"));
 			FileUtil.substitute(config, "%INSTANCE%", Common.instance.toString().toLowerCase());
-			FileUtil.substitute(config, "%NETLEVEL%",
-					netlevel ? LogLevel.DEBUG.toString().toLowerCase() : LogLevel.ERROR.toString().toLowerCase());
+			FileUtil.substitute(config, "%NETLEVEL%", Universal.isNetDebug ? LogLevel.DEBUG.toString().toLowerCase()
+					: LogLevel.ERROR.toString().toLowerCase());
 
 		}
 

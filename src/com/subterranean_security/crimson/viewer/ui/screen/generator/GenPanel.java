@@ -61,6 +61,7 @@ import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
@@ -102,7 +103,7 @@ public class GenPanel extends JPanel {
 
 		changeToJar();
 
-		if (Common.isDebugMode()) {
+		if (Universal.isDebug) {
 			ntab.table.add(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build());
 			fld_path.setText("C:/Users/dev/Desktop/client.jar");
 			cbx_waiver.setSelected(true);

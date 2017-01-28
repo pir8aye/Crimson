@@ -44,25 +44,6 @@ public final class Common {
 	 */
 	public static final Date start = new Date();
 
-	/**
-	 * When true, debug messages will be logged and additional functionality
-	 * enabled
-	 */
-	private static boolean debug = false;
-
-	public static void setDebug(boolean d) {
-		debug = d;
-
-	}
-
-	public static boolean isDebugMode() {
-		return debug;
-	}
-
-	static {
-		setDebug(new File("/debug.txt").exists());
-	}
-
 	public static int cvid = 0;
 
 	/**

@@ -34,6 +34,17 @@ public final class Universal {
 	private Universal() {
 	}
 
+	/**
+	 * When true, debug messages will be logged and additional functionality
+	 * enabled
+	 */
+	public static final boolean isDebug = true;
+
+	/**
+	 * When true, network data is logged
+	 */
+	public static final boolean isNetDebug = false;
+
 	public enum Instance {
 		SERVER, CLIENT, VIEWER, INSTALLER, VIRIDIAN;
 

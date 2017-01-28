@@ -80,7 +80,7 @@ public class Viewer {
 
 		// Show the EULA if needed
 		try {
-			if (Database.getFacility().getBoolean("show_eula") && !Common.isDebugMode()) {
+			if (Database.getFacility().getBoolean("show_eula") && !Universal.isDebug) {
 				EULADialog eula = new EULADialog(true);
 				eula.setLocationRelativeTo(null);
 				eula.setVisible(true);

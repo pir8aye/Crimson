@@ -40,8 +40,6 @@ public class Installer {
 	public static String jarDir;
 	private static OSFAMILY os;
 
-	private static boolean debug = new File("/debug.txt").exists();
-
 	public static void main(String[] args) {
 
 		try {
@@ -61,8 +59,15 @@ public class Installer {
 		File temp = new File(System.getProperty("java.io.tmpdir") + "/client_install");
 		temp.mkdir();
 
-		if (!Universal.loadTemporarily("com/subterranean_security/crimson/client/res/bin/lib.zip", temp)) {
-			System.out.println("Failed to load requisite libraries");
+		try {
+			Universal.loadTemporarily("/com/subterranean_security/crimson/client/res/bin/lib.zip", temp);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.exit(1);
+		} catch (SecurityException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 			System.exit(1);
 		}
 
@@ -96,13 +101,18 @@ public class Installer {
 			break;
 		}
 
-		if (install(base.replaceAll("\\%USERNAME\\%", System.getProperty("user.name")))) {
+		if (install(filterPath(base))) {
 			System.out.println("Install Success");
 		} else {
 			System.out.println("Install Failed");
 		}
 		FileUtil.delete(temp);
 
+	}
+
+	private static String filterPath(String path) {
+		return path.replace("%USERNAME%", System.getProperty("user.name")) // username
+				.replace("%USERHOME%", System.getProperty("user.home")); // userhome
 	}
 
 	public static boolean packagedLibsFound() {
@@ -135,11 +145,9 @@ public class Installer {
 	public static boolean install(String base) {
 		System.out.println("Starting installation");
 
-		if (!base.endsWith(File.separator)) {
-			base += File.separator;
-		}
-
 		File baseFile = new File(base);
+		base = baseFile.getAbsolutePath() + File.separator;
+		System.out.println("Installing to: " + base);
 
 		if (!baseFile.exists() && !baseFile.mkdirs()) {
 			System.out.println("Failed to create install base");
@@ -200,7 +208,7 @@ public class Installer {
 			}
 		}
 
-		if (!debug) {
+		if (!Universal.isDebug) {
 			try {
 				Runtime.getRuntime().exec(os.getJavaw() + " -jar " + client.getAbsolutePath());
 			} catch (IOException e) {
