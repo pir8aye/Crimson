@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Log.LogType;
 import com.subterranean_security.crimson.core.util.FileUtil;
+import com.subterranean_security.crimson.universal.Universal;
 
 public enum Logsystem {
 	;
@@ -26,7 +27,7 @@ public enum Logsystem {
 		case BOOT:
 			break;
 		case CRIMSON:
-			location = Common.Directories.varLog.getAbsolutePath() + "/" + Common.instance.toString().toLowerCase()
+			location = Common.Directories.varLog.getAbsolutePath() + "/" + Universal.instance.toString().toLowerCase()
 					+ ".log";
 			break;
 		default:

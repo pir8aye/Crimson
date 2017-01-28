@@ -37,7 +37,7 @@ public final class LogUtil {
 
 	public static void configure() {
 		File config = new File(Common.Directories.varLog.getAbsolutePath() + "/logback-"
-				+ Common.instance.toString().toLowerCase() + ".xml");
+				+ Universal.instance.toString().toLowerCase() + ".xml");
 		if (!config.exists()) {
 
 			JarUtil.extract(LogUtil.class.getClassLoader(),
@@ -45,7 +45,7 @@ public final class LogUtil {
 			FileUtil.substitute(config, "%LEVEL%", Universal.isDebug ? LogLevel.DEBUG.toString().toLowerCase()
 					: LogLevel.INFO.toString().toLowerCase());
 			FileUtil.substitute(config, "%LOGDIR%", config.getParent().replaceAll("\\\\", "/"));
-			FileUtil.substitute(config, "%INSTANCE%", Common.instance.toString().toLowerCase());
+			FileUtil.substitute(config, "%INSTANCE%", Universal.instance.toString().toLowerCase());
 			FileUtil.substitute(config, "%NETLEVEL%", Universal.isNetDebug ? LogLevel.DEBUG.toString().toLowerCase()
 					: LogLevel.ERROR.toString().toLowerCase());
 

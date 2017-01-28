@@ -51,6 +51,11 @@ public final class Universal {
 	 */
 	public static final boolean isNetDebug = false;
 
+	/**
+	 * Identifies this instance based upon a manifest attribute
+	 */
+	public static final Instance instance = discoverInstance();
+
 	public enum Instance {
 		SERVER, CLIENT, VIEWER, INSTALLER, VIRIDIAN;
 
@@ -73,7 +78,7 @@ public final class Universal {
 		}
 	}
 
-	public static Universal.Instance discoverInstance() {
+	private static Instance discoverInstance() {
 
 		try {
 			return Instance.valueOf(JarUtil.getManifestValue("Instance",

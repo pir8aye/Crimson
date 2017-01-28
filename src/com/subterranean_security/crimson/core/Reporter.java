@@ -106,7 +106,7 @@ public final class Reporter {
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setCrInstance(Common.instance.toString());
+			rb.setCrInstance(Universal.instance.toString());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Crimson instance: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
@@ -155,7 +155,7 @@ public final class Reporter {
 		}
 		try {
 			rb.setLogCrimson(FileUtil.readFileString(new File(Common.Directories.varLog.getAbsolutePath() + "/"
-					+ Common.instance.toString().toLowerCase() + ".log")));
+					+ Universal.instance.toString().toLowerCase() + ".log")));
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query instance log: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));

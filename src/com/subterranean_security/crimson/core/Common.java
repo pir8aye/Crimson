@@ -33,11 +33,6 @@ public final class Common {
 	private Common() {
 	}
 
-	/**
-	 * Identifies this instance based on available packages
-	 */
-	public static final Universal.Instance instance = Universal.discoverInstance();
-
 	public static int cvid = 0;
 
 	/**
@@ -89,7 +84,7 @@ public final class Common {
 			if (!varLog.exists()) {
 				varLog.mkdirs();
 			}
-			if (Common.instance != Universal.Instance.INSTALLER) {
+			if (Universal.instance != Universal.Instance.INSTALLER) {
 				if ((!base.canRead() || !base.canWrite())) {
 					log.error("Fatal Error: " + base.getAbsolutePath() + " is not readable and/or writable");
 
@@ -100,7 +95,7 @@ public final class Common {
 		}
 
 		private static File discoverBaseDir() {
-			if (Common.instance == Universal.Instance.INSTALLER) {
+			if (Universal.instance == Universal.Instance.INSTALLER) {
 				return null;
 			}
 
@@ -118,14 +113,14 @@ public final class Common {
 		}
 
 		private static File discoverTmpDir() {
-			if (Common.instance == Universal.Instance.INSTALLER) {
+			if (Universal.instance == Universal.Instance.INSTALLER) {
 				return null;
 			}
 			return new File(System.getProperty("java.io.tmpdir"));
 		}
 
 		private static File discoverVarDir() {
-			if (Common.instance == Universal.Instance.INSTALLER) {
+			if (Universal.instance == Universal.Instance.INSTALLER) {
 				return null;
 			}
 			switch (Platform.osFamily) {
@@ -139,10 +134,10 @@ public final class Common {
 		}
 
 		private static File discoverLogDir() {
-			if (Common.instance == Universal.Instance.INSTALLER) {
+			if (Universal.instance == Universal.Instance.INSTALLER) {
 				return new File(Main.temp.getAbsolutePath() + "/log");
 			}
-			if (Common.instance == Universal.Instance.VIRIDIAN) {
+			if (Universal.instance == Universal.Instance.VIRIDIAN) {
 				return new File("/var/log/viridian");
 			}
 			return new File(var.getAbsolutePath() + "/log");

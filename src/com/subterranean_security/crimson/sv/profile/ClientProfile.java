@@ -30,7 +30,6 @@ import javax.swing.ImageIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
@@ -172,7 +171,7 @@ public class ClientProfile implements Serializable {
 	public ClientProfile initialize() {
 		if (!initialized) {
 			// load icons
-			if (Common.instance == Universal.Instance.VIEWER) {
+			if (Universal.instance == Universal.Instance.VIEWER) {
 				loadIcons();
 			}
 

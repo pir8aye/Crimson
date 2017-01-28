@@ -28,7 +28,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.Universal.Instance;
@@ -109,7 +108,7 @@ class ProfileTM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		if (Common.instance == Universal.Instance.VIEWER) {
+		if (Universal.instance == Universal.Instance.VIEWER) {
 
 			// return ViewerStore.Profiles.clients.size();
 			return 0;
@@ -126,7 +125,7 @@ class ProfileTM extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		ClientProfile p = null;
-		if (Common.instance == Universal.Instance.VIEWER) {
+		if (Universal.instance == Universal.Instance.VIEWER) {
 
 			// p = ViewerStore.Profiles.clients.get(rowIndex);
 

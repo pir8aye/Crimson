@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.core.misc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.util.MiscUtil;
 import com.subterranean_security.crimson.universal.Universal;
@@ -33,7 +32,7 @@ public class EH implements Thread.UncaughtExceptionHandler {
 	@Override
 	public void uncaughtException(Thread thread, Throwable t) {
 
-		if (Common.instance == Universal.Instance.VIEWER) {
+		if (Universal.instance == Universal.Instance.VIEWER) {
 			try {
 				if (UINotification.getPolicy().getOnException()) {
 					UINotification.addConsoleBad("An unexpected exception has occurred");

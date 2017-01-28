@@ -40,6 +40,7 @@ import com.subterranean_security.crimson.core.platform.info.WIN;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
+import com.subterranean_security.crimson.universal.Universal;
 
 public final class Platform {
 
@@ -77,7 +78,7 @@ public final class Platform {
 
 		for (SimpleAttribute sa : SimpleAttribute.values()) {
 
-			if (!sa.valid(osFamily, Common.instance)) {
+			if (!sa.valid(osFamily, Universal.instance)) {
 				continue;
 			}
 			if (sa == SimpleAttribute.NET_EXTERNALIP && !Client.ic.getAllowMiscConnections()) {

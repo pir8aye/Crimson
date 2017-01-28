@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.core.stream;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
 import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
@@ -64,7 +63,7 @@ public abstract class Stream {
 
 	public void start() {
 		running = true;
-		if (Common.instance == Universal.Instance.VIEWER) {
+		if (Universal.instance == Universal.Instance.VIEWER) {
 			ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
 					.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
 		}
@@ -74,7 +73,7 @@ public abstract class Stream {
 	public void stop() {
 		running = false;
 		timer.cancel();
-		if (Common.instance == Universal.Instance.VIEWER) {
+		if (Universal.instance == Universal.Instance.VIEWER) {
 			ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
 					.setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
 		}
