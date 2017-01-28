@@ -17,15 +17,10 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.universal;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -77,23 +72,13 @@ public final class Universal {
 		return null;
 	}
 
-	public static boolean loadTemporarily(String libZip, File temp) {
-		JarUtil.extract(libZip, temp.getAbsolutePath() + "/lib.zip");
-		try {
-			unzip(temp.getAbsolutePath() + "/lib.zip", temp.getAbsolutePath());
-		} catch (IOException e2) {
-			return false;
+	public static void loadTemporarily(String libZip, File temp) throws IOException, SecurityException {
+		JarUtil.extractZip(Universal.class.getResourceAsStream(libZip), temp.getAbsolutePath());
+
+		for (String lib : getInstancePrerequisites(discoverInstance())) {
+			JarUtil.load(temp.getAbsolutePath() + "/java/" + lib + ".jar");
 		}
 
-		// load java libraries
-		try {
-			for (String lib : getInstancePrerequisites(discoverInstance())) {
-				JarUtil.load(temp.getAbsolutePath() + "/java/" + lib + ".jar");
-			}
-		} catch (Exception e1) {
-			return false;
-		}
-		return true;
 	}
 
 	public static ArrayList<String> getInstancePrerequisites(Universal.Instance instance) {
@@ -133,39 +118,6 @@ public final class Universal {
 		}
 
 		return elements;
-	}
-
-	/**
-	 * REPLICATED FROM FILEUTIL
-	 */
-	private static void unzip(String zipFilePath, String destDirectory) throws IOException {
-		File destDir = new File(destDirectory);
-		if (!destDir.exists()) {
-			destDir.mkdir();
-		}
-		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-		ZipEntry entry = zipIn.getNextEntry();
-		// iterates over entries in the zip file
-		while (entry != null) {
-			String filePath = destDirectory + File.separator + entry.getName();
-			if (!entry.isDirectory()) {
-				// if the entry is a file, extracts it
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				byte[] bytesIn = new byte[4096];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1) {
-					bos.write(bytesIn, 0, read);
-				}
-				bos.close();
-			} else {
-				// if the entry is a directory, make the directory
-				File dir = new File(filePath);
-				dir.mkdir();
-			}
-			zipIn.closeEntry();
-			entry = zipIn.getNextEntry();
-		}
-		zipIn.close();
 	}
 
 }

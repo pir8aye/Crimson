@@ -18,17 +18,23 @@
 package com.subterranean_security.crimson.universal;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public final class JarUtil {
 	private JarUtil() {
@@ -73,10 +79,20 @@ public final class JarUtil {
 		}
 	}
 
-	public static void load(String path) throws Exception {
-		Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { URL.class });
-		method.setAccessible(true);
-		method.invoke(ClassLoader.getSystemClassLoader(), new Object[] { new File(path).toURI().toURL() });
+	public static void load(String path) throws SecurityException, FileNotFoundException {
+		File f = new File(path);
+		if (!f.exists()) {
+			throw new FileNotFoundException();
+		}
+		try {
+			Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { URL.class });
+			method.setAccessible(true);
+			method.invoke(ClassLoader.getSystemClassLoader(), new Object[] { f.toURI().toURL() });
+		} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+			throw new SecurityException();
+		} catch (MalformedURLException e) {
+			throw new FileNotFoundException();
+		}
 	}
 
 	public static void extract(ClassLoader cl, String res, String dest) {
@@ -156,5 +172,38 @@ public final class JarUtil {
 			return false;
 		}
 		return true;
+	}
+
+	public static void extractZip(InputStream zipFilePath, String destDirectory) throws IOException {
+		if (zipFilePath == null) {
+			throw new IOException();
+		}
+		File destDir = new File(destDirectory);
+		if (!destDir.exists()) {
+			destDir.mkdir();
+		}
+		ZipInputStream zipIn = new ZipInputStream(zipFilePath);
+		ZipEntry entry = zipIn.getNextEntry();
+		// iterates over entries in the zip file
+		while (entry != null) {
+			String filePath = destDirectory + File.separator + entry.getName();
+			if (!entry.isDirectory()) {
+				// if the entry is a file, extracts it
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+				byte[] bytesIn = new byte[4096];
+				int read = 0;
+				while ((read = zipIn.read(bytesIn)) != -1) {
+					bos.write(bytesIn, 0, read);
+				}
+				bos.close();
+			} else {
+				// if the entry is a directory, make the directory
+				File dir = new File(filePath);
+				dir.mkdir();
+			}
+			zipIn.closeEntry();
+			entry = zipIn.getNextEntry();
+		}
+		zipIn.close();
 	}
 }
