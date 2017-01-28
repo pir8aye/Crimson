@@ -149,11 +149,6 @@ class TM extends AbstractTableModel {
 	}
 
 	public void add(ClientProfile cp) {
-		if (ViewerState.trialMode && clients.size() == 1) {
-			MainFrame.main.np.addNote("info", "Host limitation (1) has been reached");
-			return;
-		}
-
 		clients.add(cp);
 		fireTableRowsInserted(clients.size() - 1, clients.size() - 1);
 	}
