@@ -36,7 +36,7 @@ import com.subterranean_security.crimson.core.profile.AbstractAttribute;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.JarUtil;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 
 public class HostGraph extends JPanel implements MouseWheelListener {
 
@@ -91,7 +91,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 				if (cell != null && cell != serverVertex) {
 
 					// get profile
-					ClientProfile selected = ViewerStore.Profiles.getClient(vertices.get(cell));
+					ClientProfile selected = ProfileStore.getClient(vertices.get(cell));
 
 					if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
 
@@ -115,8 +115,8 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 	}
 
 	private void addInitialClients() {
-		for (int i = 0; i < ViewerStore.Profiles.clients.size(); i++) {
-			addClient(ViewerStore.Profiles.clients.get(i));
+		for (int i = 0; i < ProfileStore.clients.size(); i++) {
+			addClient(ProfileStore.clients.get(i));
 		}
 
 	}

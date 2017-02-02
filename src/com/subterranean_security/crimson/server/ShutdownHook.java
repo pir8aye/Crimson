@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.misc.FileLocking;
+import com.subterranean_security.crimson.server.store.ConnectionStore;
 import com.subterranean_security.crimson.universal.stores.Database;
 
 public class ShutdownHook extends Thread {
@@ -34,7 +35,7 @@ public class ShutdownHook extends Thread {
 		log.info("Received shutdown signal");
 
 		log.debug("Terminating network connections");
-		ServerStore.Connections.close();
+		ConnectionStore.close();
 
 		try {
 			log.debug("Closing database");

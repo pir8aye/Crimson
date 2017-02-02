@@ -29,7 +29,7 @@ import javax.swing.table.AbstractTableModel;
 
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class AuthTable extends JScrollPane {
@@ -121,7 +121,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerStore.Profiles.getServer().authMethods.size();
+		return ProfileStore.getServer().authMethods.size();
 	}
 
 	@Override
@@ -134,24 +134,24 @@ class TM extends AbstractTableModel {
 
 		switch (headers[columnIndex]) {
 		case "ID":
-			return ViewerStore.Profiles.getServer().authMethods.get(rowIndex).getId();
+			return ProfileStore.getServer().authMethods.get(rowIndex).getId();
 		case "Authentication Type":
-			return ViewerStore.Profiles.getServer().authMethods.get(rowIndex).getType();
+			return ProfileStore.getServer().authMethods.get(rowIndex).getType();
 		case "Name":
-			return ViewerStore.Profiles.getServer().authMethods.get(rowIndex).getName();
+			return ProfileStore.getServer().authMethods.get(rowIndex).getName();
 		case "Creation Date":
-			return new Date(ViewerStore.Profiles.getServer().authMethods.get(rowIndex).getCreation()).toString();
+			return new Date(ProfileStore.getServer().authMethods.get(rowIndex).getCreation()).toString();
 
 		}
 		return null;
 	}
 
 	public AuthMethod getAt(int row) {
-		return ViewerStore.Profiles.getServer().authMethods.get(row);
+		return ProfileStore.getServer().authMethods.get(row);
 	}
 
 	public void removeAt(int row) {
-		ViewerStore.Profiles.getServer().authMethods.remove(row);
+		ProfileStore.getServer().authMethods.remove(row);
 	}
 
 }

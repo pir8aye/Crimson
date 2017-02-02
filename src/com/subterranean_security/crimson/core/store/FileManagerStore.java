@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,24 +15,29 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.stream;
+package com.subterranean_security.crimson.core.store;
 
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
-import com.subterranean_security.crimson.core.stream.info.InfoSlave;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
-import com.subterranean_security.crimson.viewer.ui.screen.main.MenuControls;
+import java.util.ArrayList;
 
-public class VInfoSlave extends InfoSlave {
+import com.subterranean_security.crimson.core.platform.LocalFS;
 
-	public VInfoSlave(InfoParam ip) {
-		super(ip);
+public final class FileManagerStore {
+	private FileManagerStore() {
 	}
 
-	@Override
-	public void send() {
+	private static ArrayList<LocalFS> lfs = new ArrayList<LocalFS>();
 
-		ProfileStore.getLocalClient().amalgamate(gather());
-		MenuControls.mc.refresh();
+	public static int add(LocalFS l) {
+		lfs.add(l);
+		return l.getFmid();
 	}
 
+	public static LocalFS get(int fmid) {
+		for (LocalFS l : lfs) {
+			if (l.getFmid() == fmid) {
+				return l;
+			}
+		}
+		return null;
+	}
 }

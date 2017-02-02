@@ -47,6 +47,8 @@ import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
 import com.subterranean_security.crimson.server.storage.ServerDatabase;
+import com.subterranean_security.crimson.server.store.Authentication;
+import com.subterranean_security.crimson.server.store.ListenerStore;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.Database;
 
@@ -90,7 +92,7 @@ public final class Server {
 			e.printStackTrace();
 		}
 
-		ServerStore.Listeners.start();
+		ListenerStore.start();
 
 		if (Universal.isDebug && !ServerState.isCloudMode() && !ServerState.isExampleMode()) {
 			installDebugClient();
@@ -149,7 +151,7 @@ public final class Server {
 		Outcome.Builder outcome = Outcome.newBuilder().setResult(true);
 
 		// Use group authentication
-		Outcome authOutcome = ServerStore.Authentication
+		Outcome authOutcome = Authentication
 				.create(AuthMethod.newBuilder().setCreation(new Date().getTime()).setType(AuthType.GROUP).setId(0)
 						.setName("TESTGROUP").setGroupSeedPrefix(RandomUtil.randString(5)).build());
 

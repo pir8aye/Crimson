@@ -20,7 +20,7 @@ package com.subterranean_security.crimson.client.net;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.client.ClientStore;
+import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.core.net.BasicHandler;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
@@ -46,7 +46,7 @@ public class ClientHandler extends BasicHandler {
 		ctx.close();
 		new Thread(new Runnable() {
 			public void run() {
-				ClientStore.Connections.connectionRoutine();
+				ConnectionStore.connectionRoutine();
 			}
 		}).start();
 	}
@@ -56,7 +56,7 @@ public class ClientHandler extends BasicHandler {
 		ctx.close();
 		new Thread(new Runnable() {
 			public void run() {
-				ClientStore.Connections.connectionRoutine();
+				ConnectionStore.connectionRoutine();
 			}
 		}).start();
 

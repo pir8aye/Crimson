@@ -31,8 +31,8 @@ import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.sv.permissions.Perm;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
@@ -287,7 +287,7 @@ public class AddListener extends JPanel {
 			return false;
 		}
 
-		for (ListenerConfig lc : ViewerStore.Profiles.getServer().listeners) {
+		for (ListenerConfig lc : ProfileStore.getServer().listeners) {
 			if (lc.getPort() == Integer.parseInt(fld_port.getText())) {
 				sl.setBad("Port in use");
 				return false;
@@ -319,13 +319,13 @@ public class AddListener extends JPanel {
 
 	public void updateOwners() {
 		String[] o = null;
-		if (ViewerStore.Profiles.getLocalViewer().getPermissions().getFlag(Perm.Super)) {
-			o = new String[ViewerStore.Profiles.getServer().users.size()];
+		if (ProfileStore.getLocalViewer().getPermissions().getFlag(Perm.Super)) {
+			o = new String[ProfileStore.getServer().users.size()];
 			for (int i = 0; i < o.length; i++) {
-				o[i] = ViewerStore.Profiles.getServer().users.get(i).getUser();
+				o[i] = ProfileStore.getServer().users.get(i).getUser();
 			}
 		} else {
-			o = new String[] { ViewerStore.Profiles.getLocalViewer().getUser() };
+			o = new String[] { ProfileStore.getLocalViewer().getUser() };
 		}
 		owner.setModel(new DefaultComboBoxModel<String>(o));
 	}

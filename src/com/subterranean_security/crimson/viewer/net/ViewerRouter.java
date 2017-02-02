@@ -21,20 +21,20 @@ import java.util.concurrent.TimeUnit;
 
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.store.ConnectionStore;
 
 public enum ViewerRouter {
 	;
 	public static void route(Message m) {
 
 		try {
-			ViewerStore.Connections.get(m.getRid()).write(m);
+			ConnectionStore.get(m.getRid()).write(m);
 			return;
 		} catch (NullPointerException e) {
 			// try server
 		}
 		// send to server
-		ViewerStore.Connections.get(0).write(m);
+		ConnectionStore.get(0).write(m);
 
 	}
 
@@ -45,7 +45,7 @@ public enum ViewerRouter {
 
 	public static Message getReponse(int cvid, int mid, int timeout) throws InterruptedException {
 		// TODO receive from direct connections
-		return ViewerStore.Connections.getVC(0).cq.take(mid, timeout, TimeUnit.SECONDS);
+		return ConnectionStore.getVC(0).cq.take(mid, timeout, TimeUnit.SECONDS);
 	}
 
 	public static Message routeAndWait(Message.Builder m, int timeout) throws InterruptedException {

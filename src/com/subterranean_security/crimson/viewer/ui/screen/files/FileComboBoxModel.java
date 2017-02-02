@@ -22,7 +22,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.event.ListDataListener;
 
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class FileComboBoxModel extends AbstractListModel implements ComboBoxModel {
@@ -53,14 +53,14 @@ public class FileComboBoxModel extends AbstractListModel implements ComboBoxMode
 			return server;
 		}
 
-		return ViewerStore.Profiles.clients.get(arg0 - 2).getOsMonitorIcon();
+		return ProfileStore.clients.get(arg0 - 2).getOsMonitorIcon();
 
 	}
 
 	@Override
 	public int getSize() {
 
-		return 2 + ViewerStore.Profiles.clients.size();
+		return 2 + ProfileStore.clients.size();
 	}
 
 	@Override

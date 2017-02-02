@@ -43,8 +43,8 @@ import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class AddUser extends JDialog {
@@ -314,7 +314,7 @@ public class AddUser extends JDialog {
 		}
 
 		// check for username conflicts
-		for (ViewerProfile vp : ViewerStore.Profiles.getServer().users) {
+		for (ViewerProfile vp : ProfileStore.getServer().users) {
 			if (vp.getUser().equals(textField.getText())) {
 				sl.setBad("Username taken");
 				return false;

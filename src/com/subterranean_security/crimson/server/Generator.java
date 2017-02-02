@@ -34,6 +34,7 @@ import com.subterranean_security.crimson.core.storage.BasicDatabase;
 import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
+import com.subterranean_security.crimson.server.store.Authentication;
 import com.subterranean_security.crimson.universal.JarUtil;
 import com.subterranean_security.crimson.universal.Universal;
 
@@ -97,7 +98,7 @@ public class Generator {
 			database.store("cvid", cvid);
 			database.store("ic", new String(B64Util.encode(ic.toByteArray())));
 			if (ic.getAuthType() == AuthType.GROUP) {
-				database.store("auth.group", ServerStore.Authentication.getGroup(ic.getGroupName()));
+				database.store("auth.group", Authentication.getGroup(ic.getGroupName()));
 			}
 
 			database.close();

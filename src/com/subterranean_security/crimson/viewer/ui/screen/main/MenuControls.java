@@ -46,8 +46,8 @@ import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.stream.VInfoSlave;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.Tray;
@@ -388,26 +388,26 @@ public class MenuControls extends JPanel {
 	}
 
 	public void refresh() {
-		valViewerRamUsage.setText(ViewerStore.Profiles.getLocalClient().getAttr(SimpleAttribute.CLIENT_RAM_USAGE));
-		valViewerCpuTemp.setText(ViewerStore.Profiles.getLocalClient().getPrimaryCPU()
+		valViewerRamUsage.setText(ProfileStore.getLocalClient().getAttr(SimpleAttribute.CLIENT_RAM_USAGE));
+		valViewerCpuTemp.setText(ProfileStore.getLocalClient().getPrimaryCPU()
 				.queryAttribute(AttributeGroupType.CPU_TEMP).get());
 		valViewerCpuUsage
-				.setText(ViewerStore.Profiles.getLocalClient().getAttr(SimpleAttribute.CLIENT_CPU_USAGE) + " %");
-		valServerRamUsage.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCrimsonRamUsage() : "");
-		valServerCpuTemp.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCpuTemp() : "");
+				.setText(ProfileStore.getLocalClient().getAttr(SimpleAttribute.CLIENT_CPU_USAGE) + " %");
+		valServerRamUsage.setText(ViewerState.isOnline() ? ProfileStore.getServer().getCrimsonRamUsage() : "");
+		valServerCpuTemp.setText(ViewerState.isOnline() ? ProfileStore.getServer().getCpuTemp() : "");
 		valServerCpuUsage
-				.setText(ViewerState.isOnline() ? ViewerStore.Profiles.getServer().getCrimsonCpuUsage() + " %" : "");
-		valClients.setText(ViewerState.isOnline() ? "" + ViewerStore.Profiles.getServer().getConnectedClients() : "");
-		valUsers.setText(ViewerState.isOnline() ? "" + ViewerStore.Profiles.getServer().getConnectedUsers() : "");
-		valIp.setText(ViewerStore.Profiles.getLocalViewer().getIp());
-		valUsername.setText(ViewerStore.Profiles.getLocalViewer().getUser());
+				.setText(ViewerState.isOnline() ? ProfileStore.getServer().getCrimsonCpuUsage() + " %" : "");
+		valClients.setText(ViewerState.isOnline() ? "" + ProfileStore.getServer().getConnectedClients() : "");
+		valUsers.setText(ViewerState.isOnline() ? "" + ProfileStore.getServer().getConnectedUsers() : "");
+		valIp.setText(ProfileStore.getLocalViewer().getIp());
+		valUsername.setText(ProfileStore.getLocalViewer().getUser());
 
 		if (!ViewerState.isOnline()) {
 			valStatus.setText("Offline");
 			valStatus.setForeground(Color.gray);// TODO
 			btnStartServer.setEnabled(false);
 			btnStopServer.setEnabled(false);
-		} else if (ViewerStore.Profiles.getServer().getStatus()) {
+		} else if (ProfileStore.getServer().getStatus()) {
 			valStatus.setText("Running");
 			valStatus.setForeground(new Color(0, 149, 39));
 			btnStartServer.setEnabled(false);

@@ -28,8 +28,9 @@ import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.net.Receptor;
+import com.subterranean_security.crimson.server.store.ConnectionStore;
+import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
@@ -62,7 +63,7 @@ public class SubscriberSlave extends Stream {
 	public void start() {
 
 		if (param.getSubscriberParam().getKeylog()) {
-			ClientProfile cp = ServerStore.Profiles.getClient(param.getCID());
+			ClientProfile cp = ProfileStore.getClient(param.getCID());
 
 			if (cp != null) {
 				cp.getKeylog().addCallback(lcb);
@@ -76,7 +77,7 @@ public class SubscriberSlave extends Stream {
 	@Override
 	public void stop() {
 		if (param.getSubscriberParam().getKeylog()) {
-			ClientProfile cp = ServerStore.Profiles.getClient(param.getCID());
+			ClientProfile cp = ProfileStore.getClient(param.getCID());
 
 			if (cp != null) {
 				cp.getKeylog().removeCallback(lcb);
@@ -88,7 +89,7 @@ public class SubscriberSlave extends Stream {
 	}
 
 	public void trigger(EV_KEvent k) {
-		Receptor r = ServerStore.Connections.getConnection(param.getVID());
+		Receptor r = ConnectionStore.getConnection(param.getVID());
 		if (r == null) {
 			// stop this stream
 			StreamStore.removeStreamBySID(getStreamID());

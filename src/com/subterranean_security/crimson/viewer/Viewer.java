@@ -37,6 +37,7 @@ import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.viewer.store.LocalServerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.eula.EULADialog;
@@ -103,9 +104,9 @@ public class Viewer {
 		}
 
 		boolean localServerFound = ViewerState.findLocalServerInstance();
-		if (ViewerStore.LocalServer.bundledServer.exists() && !localServerFound) {
+		if (LocalServerStore.bundledServer.exists() && !localServerFound) {
 
-			ViewerStore.LocalServer.startLocalServer();
+			LocalServerStore.startLocalServer();
 
 		}
 
@@ -116,7 +117,7 @@ public class Viewer {
 		loadState();
 
 		// show login dialog
-		LoginDialog login = new LoginDialog(ViewerStore.LocalServer.bundledServer.exists() && !localServerFound);
+		LoginDialog login = new LoginDialog(LocalServerStore.bundledServer.exists() && !localServerFound);
 
 		login.setVisible(true);
 		try {

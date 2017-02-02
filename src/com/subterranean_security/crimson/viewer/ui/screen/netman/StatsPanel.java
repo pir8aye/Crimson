@@ -11,7 +11,8 @@ import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.platform.info.NET;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.store.ConnectionStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class StatsPanel extends JPanel {
@@ -118,11 +119,11 @@ public class StatsPanel extends JPanel {
 	}
 
 	public void refresh() {
-		label_5.setText(ViewerStore.Connections.getVC(0).getRemoteAddress());
+		label_5.setText(ConnectionStore.getVC(0).getRemoteAddress());
 		label_3.setText(NET.getDefaultInternalIP());
-		label_1.setText("" + ViewerStore.Profiles.getServer().listeners.size());
-		lblNewLabel.setText("" + ViewerStore.Profiles.getServer().getConnectedClients());
-		lblVal.setText("" + ViewerStore.Profiles.getServer().getConnectedUsers());
+		label_1.setText("" + ProfileStore.getServer().listeners.size());
+		lblNewLabel.setText("" + ProfileStore.getServer().getConnectedClients());
+		lblVal.setText("" + ProfileStore.getServer().getConnectedUsers());
 		new SwingWorker<String, String>() {
 
 			@Override

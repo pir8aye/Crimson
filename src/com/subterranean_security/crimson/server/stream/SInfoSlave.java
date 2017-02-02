@@ -25,8 +25,9 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
-import com.subterranean_security.crimson.server.ServerStore;
 import com.subterranean_security.crimson.server.net.Receptor;
+import com.subterranean_security.crimson.server.store.ConnectionStore;
+import com.subterranean_security.crimson.server.store.ListenerStore;
 
 public class SInfoSlave extends InfoSlave {
 
@@ -36,7 +37,7 @@ public class SInfoSlave extends InfoSlave {
 
 	@Override
 	public void send() {
-		Receptor r = ServerStore.Connections.getConnection(param.getVID());
+		Receptor r = ConnectionStore.getConnection(param.getVID());
 		if (r == null) {
 			StreamStore.removeStreamBySID(getStreamID());
 			return;
@@ -48,9 +49,9 @@ public class SInfoSlave extends InfoSlave {
 
 	private EV_ServerProfileDelta gatherServerInfo() {
 		EV_ServerProfileDelta.Builder sid = EV_ServerProfileDelta.newBuilder();
-		sid.setServerStatus(ServerStore.Listeners.isRunning());
-		sid.setClientCount(ServerStore.Connections.countClients());
-		sid.setUserCount(ServerStore.Connections.countUsers());
+		sid.setServerStatus(ListenerStore.isRunning());
+		sid.setClientCount(ConnectionStore.countClients());
+		sid.setUserCount(ConnectionStore.countUsers());
 
 		if (param.getInfoParam().hasCpuTemp()) {
 			sid.setCpuTemp(CPU.getTemp());

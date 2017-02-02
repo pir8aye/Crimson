@@ -25,7 +25,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 
 public class ListenerTable extends JScrollPane {
 
@@ -86,7 +86,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerStore.Profiles.getServer().listeners.size();
+		return ProfileStore.getServer().listeners.size();
 	}
 
 	@Override
@@ -99,19 +99,19 @@ class TM extends AbstractTableModel {
 
 		switch (headers[columnIndex]) {
 		case "ID": {
-			return ViewerStore.Profiles.getServer().listeners.get(rowIndex).getId();
+			return ProfileStore.getServer().listeners.get(rowIndex).getId();
 		}
 		case "Name": {
-			return ViewerStore.Profiles.getServer().listeners.get(rowIndex).getName();
+			return ProfileStore.getServer().listeners.get(rowIndex).getName();
 		}
 		case "Port": {
-			return ViewerStore.Profiles.getServer().listeners.get(rowIndex).getPort();
+			return ProfileStore.getServer().listeners.get(rowIndex).getPort();
 		}
 		case "UPnP": {
-			return ViewerStore.Profiles.getServer().listeners.get(rowIndex).getUpnp() ? "yes" : "no";
+			return ProfileStore.getServer().listeners.get(rowIndex).getUpnp() ? "yes" : "no";
 		}
 		case "Owner": {
-			return ViewerStore.Profiles.getServer().listeners.get(rowIndex).getOwner();
+			return ProfileStore.getServer().listeners.get(rowIndex).getOwner();
 		}
 
 		}
@@ -119,11 +119,11 @@ class TM extends AbstractTableModel {
 	}
 
 	public ListenerConfig getAt(int row) {
-		return ViewerStore.Profiles.getServer().listeners.get(row);
+		return ProfileStore.getServer().listeners.get(row);
 	}
 
 	public void removeAt(int row) {
-		ViewerStore.Profiles.getServer().listeners.remove(row);
+		ProfileStore.getServer().listeners.remove(row);
 	}
 
 }

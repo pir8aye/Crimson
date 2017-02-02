@@ -20,9 +20,10 @@ import javax.swing.border.EtchedBorder;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
+import com.subterranean_security.crimson.viewer.store.ConnectionStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 
@@ -122,7 +123,7 @@ public class Relogin extends JPanel {
 		gbc_lblUsername.gridy = 1;
 		panel.add(lblUsername, gbc_lblUsername);
 
-		lbl_user = new JLabel(ViewerStore.Profiles.getLocalViewer().getUser());
+		lbl_user = new JLabel(ProfileStore.getLocalViewer().getUser());
 		lbl_user.setEnabled(false);
 		lbl_user.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblAdmin = new GridBagConstraints();
@@ -165,7 +166,7 @@ public class Relogin extends JPanel {
 		try {
 
 			try {
-				ViewerStore.Connections.put(0, new ViewerConnector(server, Integer.parseInt(port)));
+				ConnectionStore.put(0, new ViewerConnector(server, Integer.parseInt(port)));
 			} catch (Throwable e) {
 				lbl_status.setBad("Unable to Connect");
 				return;
@@ -185,7 +186,7 @@ public class Relogin extends JPanel {
 				parent.drop();
 
 			} else {
-				ViewerStore.Connections.closeAll();
+				ConnectionStore.closeAll();
 				lbl_status.setBad("Failed to Login");
 			}
 		} finally {

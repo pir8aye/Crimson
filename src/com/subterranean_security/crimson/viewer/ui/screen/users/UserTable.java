@@ -26,7 +26,7 @@ import javax.swing.table.AbstractTableModel;
 
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 
 public class UserTable extends JScrollPane {
 
@@ -54,7 +54,7 @@ public class UserTable extends JScrollPane {
 				}
 
 				ViewerProfile selected = tm.getAt(sourceRow);
-				if (ViewerStore.Profiles.getLocalViewer().getUser().equals(selected.getUser())) {
+				if (ProfileStore.getLocalViewer().getUser().equals(selected.getUser())) {
 					parent.btnRemove.setEnabled(false);
 				}
 
@@ -93,7 +93,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerStore.Profiles.getServer().users.size();
+		return ProfileStore.getServer().users.size();
 	}
 
 	@Override
@@ -106,22 +106,22 @@ class TM extends AbstractTableModel {
 
 		switch (headers[columnIndex]) {
 		case "Username": {
-			return ViewerStore.Profiles.getServer().users.get(rowIndex).getUser();
+			return ProfileStore.getServer().users.get(rowIndex).getUser();
 		}
 		case "Login Time": {
-			if (ViewerStore.Profiles.getServer().users.get(rowIndex).getLoginTime() == null) {
+			if (ProfileStore.getServer().users.get(rowIndex).getLoginTime() == null) {
 				return "";
 			}
-			if (ViewerStore.Profiles.getServer().users.get(rowIndex).getLoginTime().getTime() == 0) {
+			if (ProfileStore.getServer().users.get(rowIndex).getLoginTime().getTime() == 0) {
 				return "<hidden>";
 			}
-			return ViewerStore.Profiles.getServer().users.get(rowIndex).getLoginTime().toString();
+			return ProfileStore.getServer().users.get(rowIndex).getLoginTime().toString();
 		}
 		case "Login IP": {
-			return ViewerStore.Profiles.getServer().users.get(rowIndex).getIp();
+			return ProfileStore.getServer().users.get(rowIndex).getIp();
 		}
 		case "Superuser": {
-			return ViewerStore.Profiles.getServer().users.get(rowIndex).getPermissions().getFlag(Perm.Super) ? "yes" : "no";
+			return ProfileStore.getServer().users.get(rowIndex).getPermissions().getFlag(Perm.Super) ? "yes" : "no";
 		}
 
 		}
@@ -129,11 +129,11 @@ class TM extends AbstractTableModel {
 	}
 
 	public ViewerProfile getAt(int row) {
-		return ViewerStore.Profiles.getServer().users.get(row);
+		return ProfileStore.getServer().users.get(row);
 	}
 
 	public void removeAt(int row) {
-		ViewerStore.Profiles.getServer().users.remove(row);
+		ProfileStore.getServer().users.remove(row);
 	}
 
 }

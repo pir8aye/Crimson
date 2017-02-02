@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,29 +15,59 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.client.stream;
+package com.subterranean_security.crimson.viewer.store;
 
-import com.subterranean_security.crimson.client.store.ConnectionStore;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Stream.Param;
-import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 
-public class CInfoSlave extends InfoSlave {
-
-	public CInfoSlave(Param p) {
-		super(p);
-		// TODO Auto-generated constructor stub
+public final class LocalServerStore {
+	private LocalServerStore() {
 	}
 
-	@Override
-	public void send() {
-		EV_ProfileDelta pd = gather();
-		if (pd.getStrAttrCount() != 0 || pd.getGroupAttrCount() != 0) {
-			ConnectionStore
-					.route(Message.newBuilder().setSid(Common.cvid).setRid(param.getVID()).setEvProfileDelta(pd));
+	private static final Logger log = LoggerFactory.getLogger(LocalServerStore.class);
+
+	/**
+	 * The server executable
+	 */
+	public static final File bundledServer = new File(
+			Common.Directories.base.getAbsolutePath() + "/Crimson-Server.jar");
+
+	public static Process process;
+	private static OutputStream os;
+
+	public static boolean startLocalServer() {
+		String command = "java -jar \"" + bundledServer.getAbsolutePath() + "\"";
+		log.debug("Starting local server ({})", command);
+		try {
+			process = Runtime.getRuntime().exec(command);
+			os = process.getOutputStream();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static void killLocalServer() {
+		if (os != null) {
+			// kill server
+			try {
+				os.write("quit\n".getBytes());
+				os.flush();
+				process.waitFor(3, TimeUnit.SECONDS);
+				os.close();
+			} catch (IOException e) {
+
+			} catch (InterruptedException e) {
+
+			}
 		}
 	}
-
 }

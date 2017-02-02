@@ -51,8 +51,8 @@ import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.Validation;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.common.components.EntropyHarvester;
 import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
@@ -118,7 +118,7 @@ public class CreateGroup extends JPanel {
 						timer.cancel();
 						Outcome outcome = ViewerCommands.createAuthMethod(
 								AuthMethod.newBuilder().setId(IDGen.authenticationMethod()).setCreation(new Date().getTime())
-										.addOwner(ViewerStore.Profiles.getLocalViewer().getUser())
+										.addOwner(ProfileStore.getLocalViewer().getUser())
 										.setType(AuthType.GROUP).setName(textField.getText())
 										.setGroupSeedPrefix(key_prefix.getText() + RandomUtil.randString(32)).build());
 						if (outcome.getResult()) {
@@ -224,7 +224,7 @@ public class CreateGroup extends JPanel {
 			sl.setBad("Invalid group name");
 			return false;
 		}
-		for (AuthMethod am : ViewerStore.Profiles.getServer().authMethods) {
+		for (AuthMethod am : ProfileStore.getServer().authMethods) {
 			if (am.getName().equals(textField.getText())) {
 				sl.setBad("Group name in use");
 				return false;

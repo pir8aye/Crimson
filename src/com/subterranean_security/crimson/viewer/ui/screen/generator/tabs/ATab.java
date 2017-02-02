@@ -40,7 +40,7 @@ import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.EntropyHarvester;
@@ -251,7 +251,7 @@ public class ATab extends JPanel {
 
 	private void loadGroups() {
 		ArrayList<AuthMethod> groups = new ArrayList<AuthMethod>();
-		for (AuthMethod am : ViewerStore.Profiles.getServer().authMethods) {
+		for (AuthMethod am : ProfileStore.getServer().authMethods) {
 			if (am.getType() == AuthType.GROUP) {
 				groups.add(am);
 			}

@@ -58,9 +58,10 @@ import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
+import com.subterranean_security.crimson.viewer.store.ConnectionStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
@@ -354,7 +355,7 @@ public class LoginPanel extends JPanel {
 				Outcome.Builder outcome = Outcome.newBuilder();
 
 				try {
-					ViewerStore.Connections.put(0, new ViewerConnector(server, Integer.parseInt(port)));
+					ConnectionStore.put(0, new ViewerConnector(server, Integer.parseInt(port)));
 				} catch (Throwable e) {
 					outcome.setResult(false);
 					try {
@@ -368,7 +369,7 @@ public class LoginPanel extends JPanel {
 				}
 
 				// set local viewer profile name
-				ViewerStore.Profiles.setLocalUser(user);
+				ProfileStore.setLocalUser(user);
 
 				// test the credentials
 				if (ViewerCommands.login(user, UIUtil.getPassword(fld_pass))) {
@@ -391,7 +392,7 @@ public class LoginPanel extends JPanel {
 					}
 
 				} else {
-					ViewerStore.Connections.closeAll();
+					ConnectionStore.closeAll();
 					outcome.setResult(false).setComment("Failed to login");
 				}
 

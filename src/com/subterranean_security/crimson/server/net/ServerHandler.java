@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.net.BasicHandler;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.server.ServerStore;
+import com.subterranean_security.crimson.server.store.ConnectionStore;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -40,13 +40,13 @@ public class ServerHandler extends BasicHandler {
 
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-		ServerStore.Connections.remove(receptor.getCvid());
+		ConnectionStore.remove(receptor.getCvid());
 		ctx.close();
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		ServerStore.Connections.remove(receptor.getCvid());
+		ConnectionStore.remove(receptor.getCvid());
 		ctx.close();
 	}
 

@@ -26,7 +26,7 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.viewer.ViewerStore;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -59,11 +59,11 @@ public class ViewerExecutor extends BasicExecutor {
 					} else if (m.hasEvEndpointClosed()) {
 						StreamStore.removeStreamsByCVID(m.getEvEndpointClosed().getCVID());
 					} else if (m.hasEvProfileDelta()) {
-						ViewerStore.Profiles.update(m.getEvProfileDelta());
+						ProfileStore.update(m.getEvProfileDelta());
 					} else if (m.hasEvServerProfileDelta()) {
-						ViewerStore.Profiles.update(m.getEvServerProfileDelta());
+						ProfileStore.update(m.getEvServerProfileDelta());
 					} else if (m.hasEvViewerProfileDelta()) {
-						ViewerStore.Profiles.update(m.getEvViewerProfileDelta());
+						ProfileStore.update(m.getEvViewerProfileDelta());
 					} else if (m.hasEvKevent()) {
 						ev_kevent(m);
 					} else if (m.hasMiAssignCvid()) {
@@ -82,12 +82,12 @@ public class ViewerExecutor extends BasicExecutor {
 
 	private void assign_1w(Message m) {
 		Common.cvid = m.getMiAssignCvid().getId();
-		ViewerStore.Profiles.getLocalClient().setCid(Common.cvid);
+		ProfileStore.getLocalClient().setCid(Common.cvid);
 		log.debug("Assigned new CVID: {}", Common.cvid);
 	}
 
 	private void ev_kevent(Message m) {
-		ClientProfile cp = ViewerStore.Profiles.getClient(m.getSid());
+		ClientProfile cp = ProfileStore.getClient(m.getSid());
 		if (cp != null) {
 			cp.getKeylog().addEvent(m.getEvKevent());
 		} else {

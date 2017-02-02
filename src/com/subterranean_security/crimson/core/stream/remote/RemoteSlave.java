@@ -23,7 +23,7 @@ import java.awt.event.InputEvent;
 import java.util.Date;
 import java.util.LinkedList;
 
-import com.subterranean_security.crimson.client.ClientStore;
+import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.CoreStore;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
@@ -135,7 +135,7 @@ public class RemoteSlave extends Stream {
 	public void send() {
 
 		if (uQueue.size() != 0) {
-			ClientStore.Connections.route(
+			ConnectionStore.route(
 					Message.newBuilder().setSid(Common.cvid).setRid(param.getVID()).setEvStreamData(uQueue.poll()));
 		}
 

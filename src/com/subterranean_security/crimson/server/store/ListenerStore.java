@@ -15,48 +15,70 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common;
+package com.subterranean_security.crimson.server.store;
 
-import com.subterranean_security.crimson.core.proto.NotificationPolicyOuterClass.NotificationPolicy;
+import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
+import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.universal.stores.Database;
-import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
-import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
-public final class UINotification {
-	private UINotification() {
+public final class ListenerStore {
+	private ListenerStore() {
 	}
 
-	private static NotificationPolicy policy;
+	private static final Logger log = LoggerFactory.getLogger(ListenerStore.class);
 
-	static {
+	private static boolean running = false;
+
+	public static ArrayList<Listener> listeners = new ArrayList<Listener>();
+
+	public static void load() {
+		unloadAll();
 		try {
-			policy = (NotificationPolicy) Database.getFacility().getObject("policy.notification");
+			for (ListenerConfig lc : ((ArrayList<ListenerConfig>) Database.getFacility().getObject("listeners"))) {
+				listeners.add(new Listener(lc));
+			}
 		} catch (Exception e) {
-
-			// default policy
-			policy = NotificationPolicy.newBuilder().setOnClientDisconnect(false).setOnNewClientConnect(true)
-					.setOnOldClientConnect(false).setOnException(true).build();
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
-	public static void addConsoleGood(String s) {
-		MainFrame.main.panel.console.addLine(s, LineType.GREEN);
+	public static void unloadAll() {
+		for (Listener l : listeners) {
+			try {
+				l.close();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		listeners.clear();
 	}
 
-	public static void addConsoleInfo(String s) {
-		MainFrame.main.panel.console.addLine(s, LineType.BLUE);
+	public static boolean isRunning() {
+		return running;
 	}
 
-	public static void addConsoleBad(String s) {
-		MainFrame.main.panel.console.addLine(s, LineType.ORANGE);
+	public static void stop() {
+		if (running) {
+			log.info("Stopping network listeners");
+			running = false;
+			unloadAll();
+		}
+
 	}
 
-	public static NotificationPolicy getPolicy() {
-		return policy;
-	}
-
-	public static void setPolicy(NotificationPolicy np) {
-		policy = np;
+	public static void start() {
+		if (!running) {
+			log.info("Starting network listeners");
+			running = true;
+			load();
+		}
 	}
 
 }

