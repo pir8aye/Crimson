@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.BasicConnector;
@@ -71,7 +72,7 @@ public class ClientConnector extends BasicConnector {
 
 		// SSL Connection established
 
-		AuthType authType = Client.ic.getAuthType();
+		AuthType authType = ConfigStore.getConfig().getAuthType();
 
 		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(Common.cvid).setType(authType);
 
@@ -88,12 +89,11 @@ public class ClientConnector extends BasicConnector {
 			break;
 		case NO_AUTH:
 			setState(ConnectionState.AUTHENTICATED);
-			handle.write(Message.newBuilder().setId(IDGen.msg())
-					.setMiAuthRequest(auth.setPd(Platform.fig())).build());
+			handle.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth.setPd(Platform.fig())).build());
 
 			break;
 		case PASSWORD:
-			auth.setPassword(Client.ic.getPassword());
+			auth.setPassword(ConfigStore.getConfig().getPassword());
 
 			setState(ConnectionState.AUTH_STAGE1);
 			handle.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());

