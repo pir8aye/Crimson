@@ -82,7 +82,7 @@ public class Pane extends JPanel {
 		typeBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				ImageIcon selected = (ImageIcon) typeBox.getSelectedItem();
-				String name = selected.getDescription().toLowerCase();//npe
+				String name = selected.getDescription().toLowerCase();// npe
 				new Thread(new Runnable() {
 					public void run() {
 
@@ -218,7 +218,7 @@ public class Pane extends JPanel {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ExecutionException e) {
-				parent.console.addLine("Request timed out", LineType.ORANGE);
+				// parent.console.addLine("Request timed out", LineType.ORANGE);
 			}
 
 			stopLoading();
@@ -278,7 +278,7 @@ public class Pane extends JPanel {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ExecutionException e) {
-				parent.console.addLine("Request timed out", LineType.ORANGE);
+				// parent.console.addLine("Request timed out", LineType.ORANGE);
 			}
 
 			stopLoading();
@@ -381,7 +381,7 @@ public class Pane extends JPanel {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ExecutionException e) {
-				parent.console.addLine("Request timed out", LineType.ORANGE);
+				// parent.console.addLine("Request timed out", LineType.ORANGE);
 			}
 
 			stopLoading();
