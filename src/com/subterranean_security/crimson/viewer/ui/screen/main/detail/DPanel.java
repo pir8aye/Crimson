@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
 import java.awt.BorderLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.Box;
@@ -53,8 +52,6 @@ public class DPanel extends SLPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private DPanel thisDP;
-
 	private SLConfig pos1;
 	private SLConfig pos2;
 
@@ -77,7 +74,6 @@ public class DPanel extends SLPanel {
 	private static int transitionTime = 900;
 
 	public DPanel(JPanel main) {
-		thisDP = this;
 
 		movingBar = new MovingPanel(detail);
 		movingMain = new MovingPanel(main);
@@ -132,7 +128,7 @@ public class DPanel extends SLPanel {
 		@Override
 		public void run() {
 			moving = true;
-			thisDP.createTransition().push(new SLKeyframe(pos2, transitionTime / 1000f)
+			DPanel.this.createTransition().push(new SLKeyframe(pos2, transitionTime / 1000f)
 					.setStartSide(SLSide.RIGHT, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
@@ -147,7 +143,7 @@ public class DPanel extends SLPanel {
 		@Override
 		public void run() {
 			moving = true;
-			thisDP.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
+			DPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
 					.setEndSide(SLSide.RIGHT, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {

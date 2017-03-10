@@ -37,8 +37,6 @@ public class EPanel extends SLPanel {
 
 	private SLSide orientation;
 
-	private EPanel thisNP = this;
-
 	private SLConfig pos1;
 	private SLConfig pos2;
 
@@ -227,7 +225,7 @@ public class EPanel extends SLPanel {
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
-			thisNP.createTransition().push(new SLKeyframe(pos2, transitionTime / 1000f)
+			EPanel.this.createTransition().push(new SLKeyframe(pos2, transitionTime / 1000f)
 					.setStartSide(orientation, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
@@ -240,7 +238,7 @@ public class EPanel extends SLPanel {
 	private final Runnable actionDN = new Runnable() {
 		@Override
 		public void run() {
-			thisNP.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
+			EPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
 					.setEndSide(orientation, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {

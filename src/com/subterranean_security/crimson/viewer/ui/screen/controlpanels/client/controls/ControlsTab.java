@@ -65,7 +65,6 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private ControlsTab thisCT = this;
 	private EPanel ep;
 	private ClientProfile profile;
 	private Console console;
@@ -553,7 +552,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 				setControlsEnabled(false);
 
 				// confirm action with user
-				c = new Confirmation(ep, thisCT, "The Crimson client will be uninstalled immediately.");
+				c = new Confirmation(ep, ControlsTab.this, "The Crimson client will be uninstalled immediately.");
 				ep.raise(c, 80);
 
 				new SwingWorker<Void, Void>() {
@@ -615,8 +614,8 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 	public void refreshStatusConsole() {
 		try {
-			powerStatusConsole.updateValue(0, DateUtil.datediff(new Date(),
-					uptimeFormat.parse(profile.getAttr(SimpleAttribute.OS_START_TIME))));
+			powerStatusConsole.updateValue(0,
+					DateUtil.datediff(new Date(), uptimeFormat.parse(profile.getAttr(SimpleAttribute.OS_START_TIME))));
 		} catch (ParseException e) {
 			powerStatusConsole.updateValue(0, "N/A");
 		}

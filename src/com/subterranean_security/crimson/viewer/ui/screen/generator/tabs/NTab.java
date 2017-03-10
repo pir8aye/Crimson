@@ -29,7 +29,6 @@ public class NTab extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private EPanel ep;
-	private NTab thisNTab = this;
 
 	public NetworkTargetTable table;
 	public JSpinner fld_connect_period;
@@ -62,7 +61,7 @@ public class NTab extends JPanel {
 		btnAdd_1.setMargin(new Insets(2, 2, 2, 2));
 		btnAdd_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ep.raise(new AddNetworkTarget(ep, thisNTab), 120);
+				ep.raise(new AddNetworkTarget(ep, NTab.this), 120);
 			}
 		});
 		menuBar.add(btnAdd_1);
@@ -117,7 +116,7 @@ public class NTab extends JPanel {
 		chckbxIgnoreServerCertificate.setFont(new Font("Dialog", Font.BOLD, 10));
 		chckbxIgnoreServerCertificate.setBounds(8, 41, 318, 20);
 		panel.add(chckbxIgnoreServerCertificate);
-		
+
 		chckbxDontMiscConnections = new JCheckBox("Don't make miscellanous connections");
 		chckbxDontMiscConnections.setFont(new Font("Dialog", Font.BOLD, 10));
 		chckbxDontMiscConnections.setBounds(8, 65, 318, 20);

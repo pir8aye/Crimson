@@ -37,8 +37,6 @@ public class HPanel extends SLPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private HPanel thisHP;
-
 	private SLConfig pos1;
 	private SLConfig pos2;
 
@@ -60,7 +58,6 @@ public class HPanel extends SLPanel {
 	}
 
 	public HPanel(JPanel main) {
-		thisHP = this;
 
 		movingMain = new MovingPanel(main);
 		movingMain.setAction(actionUP);
@@ -90,7 +87,7 @@ public class HPanel extends SLPanel {
 		@Override
 		public void run() {
 			moving = true;
-			thisHP.createTransition()
+			HPanel.this.createTransition()
 					.push(new SLKeyframe(pos2, transitionTime / 1000f).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
@@ -106,7 +103,7 @@ public class HPanel extends SLPanel {
 		@Override
 		public void run() {
 			moving = true;
-			thisHP.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
+			HPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
 					.setEndSide(SLSide.BOTTOM, movingHMenu).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {

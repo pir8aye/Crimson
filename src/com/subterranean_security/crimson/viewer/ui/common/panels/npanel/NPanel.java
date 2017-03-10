@@ -35,8 +35,6 @@ public class NPanel extends SLPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private NPanel thisNP;
-
 	private SLConfig pos1;
 	private SLConfig pos2;
 
@@ -46,7 +44,6 @@ public class NPanel extends SLPanel {
 	private Notification note = new Notification();
 
 	public NPanel(JPanel main) {
-		thisNP = this;
 
 		movingBar = new MovingPanel(note);
 		movingMain = new MovingPanel(main);
@@ -148,7 +145,7 @@ public class NPanel extends SLPanel {
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
-			thisNP.createTransition().push(new SLKeyframe(pos2, 0.9f).setStartSide(SLSide.BOTTOM, movingBar)
+			NPanel.this.createTransition().push(new SLKeyframe(pos2, 0.9f).setStartSide(SLSide.BOTTOM, movingBar)
 					.setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
@@ -161,7 +158,7 @@ public class NPanel extends SLPanel {
 	private final Runnable actionDN = new Runnable() {
 		@Override
 		public void run() {
-			thisNP.createTransition().push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.BOTTOM, movingBar)
+			NPanel.this.createTransition().push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.BOTTOM, movingBar)
 					.setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
