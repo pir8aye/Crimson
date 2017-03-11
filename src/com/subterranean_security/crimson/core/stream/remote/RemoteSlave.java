@@ -25,11 +25,11 @@ import java.util.LinkedList;
 
 import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.CoreStore;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
 import com.subterranean_security.crimson.core.proto.Stream.EventData;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.store.RemoteStore;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.util.Native;
 
@@ -59,7 +59,7 @@ public class RemoteSlave extends Stream {
 	public RemoteSlave(Param p) {
 		param = p;
 
-		CoreStore.Remote.setSlave(this);
+		RemoteStore.setSlave(this);
 
 		for (GraphicsDevice gd : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
 			if (gd.getIDstring().equals(param.getRemoteParam().getMonitor())) {

@@ -6,11 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.CoreStore;
 import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.Stream.DirtyRect;
 import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
+import com.subterranean_security.crimson.core.store.RemoteStore;
 
 public final class Native {
 
@@ -105,7 +105,7 @@ public final class Native {
 		for (int i : data) {
 			dr.addRGBA(i);
 		}
-		CoreStore.Remote.getSlave()
+		RemoteStore.getSlave()
 				.addFrame(EV_StreamData.newBuilder().setDirtyRect(dr.setSx(sx).setSy(sy).setW(w).setH(h)));
 	}
 }
