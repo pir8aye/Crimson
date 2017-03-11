@@ -1,0 +1,15 @@
+syntax = "proto3";
+package com.subterranean_security.crimson.core.proto;
+
+import "net/misc/Misc.proto";
+
+message RQ_AddTorrent {
+	bytes torrent_file = 1;
+	string destintation = 2;
+	int32 transfer_id = 3;
+}
+
+message RS_AddTorrent {
+	int32 torrent_id = 1;
+	Outcome outcome = 2;
+}

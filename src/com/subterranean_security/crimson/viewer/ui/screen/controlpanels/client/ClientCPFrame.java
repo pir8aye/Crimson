@@ -265,11 +265,16 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 	}
 
 	public enum Panels {
-		CONTROLS, CLIPBOARD, WEBFILTER, DESKTOP, SHELL, LOGS, LOCATION, KEYLOGGER, REGISTRY;
+		// Multiplatform
+		BITTORRENT, CONTROLS, CLIPBOARD, WEBFILTER, DESKTOP, SHELL, LOGS, LOCATION, KEYLOGGER,
+		// Windows specific
+		REGISTRY;
 
 		@Override
 		public String toString() {
 			switch (this) {
+			case BITTORRENT:
+				return "Bittorrent";
 			case CONTROLS:
 				return "Controls";
 			case KEYLOGGER:

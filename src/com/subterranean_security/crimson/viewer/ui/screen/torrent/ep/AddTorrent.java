@@ -15,21 +15,47 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.profile.group;
+package com.subterranean_security.crimson.viewer.ui.screen.torrent.ep;
 
-public enum AttributeGroupType {
-	// CPU Attributes
-	CPU_VENDOR, CPU_MODEL, CPU_CORES, CPU_CACHE, CPU_TEMP, CPU_TOTAL_USAGE, CPU_FREQUENCY, CPU_FREQUENCY_MAX,
-	// GPU Attributes
-	GPU_VENDOR, GPU_MODEL, GPU_RAM, GPU_TEMP,
-	// Display Attributes
-	DISP_ID, DISP_TYPE, DISP_WIDTH, DISP_HEIGHT, DISP_MEMORY, DISP_REFRESH_RATE, DISP_BIT_DEPTH,
-	// Network Interface Attributes
-	NIC_NAME, NIC_DESC, NIC_IP, NIC_MAC, NIC_MASK, NIC_RX_SPEED, NIC_TX_SPEED, NIC_RX_BYTES, NIC_TX_BYTES, NIC_RX_PACKETS, NIC_TX_PACKETS,
-	// Torrent
-	TORRENT_NAME, TORRENT_SIZE,
-	// Filesystem Attributes
-	FS;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-	public static final AttributeGroupType[] ordinal = AttributeGroupType.values();
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.border.EtchedBorder;
+
+import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+
+public class AddTorrent extends JPanel {
+
+	private static final long serialVersionUID = 1L;
+
+	public AddTorrent(EPanel ep, String string) {
+		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		setLayout(new BorderLayout(0, 0));
+
+		JPanel panel = new JPanel();
+		add(panel, BorderLayout.SOUTH);
+
+		JButton btnClose = new JButton("Close");
+		btnClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ep.drop();
+			}
+		});
+		btnClose.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel.add(btnClose);
+
+		JPanel panel_1 = new JPanel();
+		add(panel_1, BorderLayout.CENTER);
+
+		JPanel panel_2 = new JPanel();
+		panel_2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		panel_1.add(panel_2);
+		panel_2.setLayout(new BorderLayout(0, 0));
+
+	}
+
 }

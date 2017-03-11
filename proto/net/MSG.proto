@@ -18,6 +18,7 @@ import "net/sequences/Users.proto";
 import "net/sequences/Update.proto";
 import "net/sequences/State.proto";
 import "net/sequences/Screenshot.proto";
+import "net/sequences/Torrent.proto";
 
 message Message {
 	optional int32 id = 2;
@@ -79,6 +80,8 @@ message Message {
 	optional RS_Logs rs_logs = 141;
 	optional RQ_Chat rq_chat = 144;
 	optional RS_Chat rs_chat = 145;
+	optional RQ_AddTorrent rq_add_torrent = 146;
+	optional RS_AddTorrent rs_add_torrent = 147;
 
 	optional MI_TriggerProfileDelta mi_trigger_profile_delta = 199;
 	optional MI_StreamStart mi_stream_start = 200;

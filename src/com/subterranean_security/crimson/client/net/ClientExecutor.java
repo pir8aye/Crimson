@@ -135,6 +135,8 @@ public class ClientExecutor extends BasicExecutor {
 						rq_change_setting(m);
 					} else if (m.hasRqChat()) {
 						rq_chat(m);
+					} else if (m.hasRqAddTorrent()) {
+						rq_add_torrent(m);
 					} else {
 						connector.cq.put(m.getId(), m);
 					}
@@ -460,6 +462,10 @@ public class ClientExecutor extends BasicExecutor {
 
 	private void rq_chat(Message m) {
 		// TODO handle
+	}
+
+	private void rq_add_torrent(Message m) {
+		
 	}
 
 }
