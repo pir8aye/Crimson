@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.universal;
+package com.subterranean_security.crimson.universal.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -35,6 +35,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import com.subterranean_security.crimson.universal.Universal;
 
 public final class JarUtil {
 	private JarUtil() {
