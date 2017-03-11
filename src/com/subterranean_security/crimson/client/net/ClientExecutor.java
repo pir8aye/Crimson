@@ -74,7 +74,7 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
 import com.subterranean_security.crimson.sc.Logsystem;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -336,7 +336,7 @@ public class ClientExecutor extends BasicExecutor {
 
 	private void assign_1w(Message m) {
 		Common.cvid = m.getMiAssignCvid().getId();
-		Database.getFacility().store("cvid", Common.cvid);
+		DatabaseStore.getDatabase().store("cvid", Common.cvid);
 	}
 
 	private void stream_start_ev(Message m) {

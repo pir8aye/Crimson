@@ -37,7 +37,7 @@ import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 public class Authentication {
 	private Authentication() {
@@ -49,8 +49,8 @@ public class Authentication {
 
 	static {
 		try {
-			methods = (MemList<AuthMethod>) Database.getFacility().getObject("auth.methods");
-			methods.setDatabase(Database.getFacility());
+			methods = (MemList<AuthMethod>) DatabaseStore.getDatabase().getObject("auth.methods");
+			methods.setDatabase(DatabaseStore.getDatabase());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -70,7 +70,7 @@ public class Authentication {
 
 	public static AuthenticationGroup getGroup(String name) {
 		try {
-			return (AuthenticationGroup) Database.getFacility().getObject(getGroupMethod(name).getGroup());
+			return (AuthenticationGroup) DatabaseStore.getDatabase().getObject(getGroupMethod(name).getGroup());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -83,7 +83,7 @@ public class Authentication {
 		remove(am.getId());
 
 		if (am.getType() == AuthType.GROUP) {
-			am = AuthMethod.newBuilder().mergeFrom(am).setGroup(Database.getFacility()
+			am = AuthMethod.newBuilder().mergeFrom(am).setGroup(DatabaseStore.getDatabase()
 					.store(CryptoUtil.generateGroup(am.getName(), am.getGroupSeedPrefix().getBytes()))).build();
 		}
 		methods.add(am);

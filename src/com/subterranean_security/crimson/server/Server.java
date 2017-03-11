@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.EH;
-import com.subterranean_security.crimson.core.misc.FileLocking;
 import com.subterranean_security.crimson.core.misc.HCP;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
@@ -50,7 +49,9 @@ import com.subterranean_security.crimson.server.storage.ServerDatabase;
 import com.subterranean_security.crimson.server.store.Authentication;
 import com.subterranean_security.crimson.server.store.ListenerStore;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.Universal.Instance;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
+import com.subterranean_security.crimson.universal.stores.PrefStore;
 
 public final class Server {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
@@ -67,10 +68,15 @@ public final class Server {
 		// Establish the custom shutdown hook
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
+		// Initialize preferences
+		initializePreferences();
+
 		// Try to get a lock or exit
-		if (!FileLocking.lock(Universal.Instance.SERVER)) {
+		if (PrefStore.getPref().isLocked()) {
 			log.error("A Crimson server is already running in another process");
 			System.exit(0);
+		} else {
+			PrefStore.getPref().lock();
 		}
 
 		// Read configuration
@@ -86,7 +92,7 @@ public final class Server {
 		initializeDatabase();
 
 		try {
-			Common.cvid = Database.getFacility().getInteger("cvid");
+			Common.cvid = DatabaseStore.getDatabase().getInteger("cvid");
 		} catch (NoSuchElementException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -117,7 +123,11 @@ public final class Server {
 			System.exit(0);
 		}
 
-		Database.setFacility(sf);
+		DatabaseStore.setFacility(sf);
+	}
+
+	private static void initializePreferences() {
+		PrefStore.loadPreferences(Instance.SERVER);
 	}
 
 	public static void parse() {

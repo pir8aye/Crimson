@@ -466,18 +466,9 @@ public class BasicDatabase implements StorageFacility {
 	public void resetViewer() {
 		resetBasic();
 
-		store("close_on_tray", false);
-		store("show_eula", true);
-		store("show_helps", true);
 		store("show_detail", true);
-		store("detail.processor", true);
-		store("detail.nic", true);
-		store("detail.preview", false);
-		store("detail.map", false);
-		store("view.last", "list");
 		store("login.recents", new ArrayList<String>());
 		store("profiles.clients", new MemList<ClientProfile>());
-		store("keylog.treeview", false);
 	}
 
 	public void resetClient() {

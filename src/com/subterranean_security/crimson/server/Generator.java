@@ -35,8 +35,8 @@ import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
 import com.subterranean_security.crimson.server.store.Authentication;
-import com.subterranean_security.crimson.universal.JarUtil;
 import com.subterranean_security.crimson.universal.Universal;
+import com.subterranean_security.crimson.universal.util.JarUtil;
 
 public class Generator {
 

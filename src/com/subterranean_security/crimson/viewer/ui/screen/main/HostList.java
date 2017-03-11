@@ -34,7 +34,7 @@ import javax.swing.table.TableRowSorter;
 import com.subterranean_security.crimson.core.profile.AbstractAttribute;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.ListHeaderPopup;
 
 public class HostList extends JPanel {
@@ -95,7 +95,7 @@ public class HostList extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON3) {
-					ListHeaderPopup popup = new ListHeaderPopup(Database.getFacility());
+					ListHeaderPopup popup = new ListHeaderPopup(DatabaseStore.getDatabase());
 					popup.show(table.getTableHeader(), e.getX(), e.getY());
 				}
 			}
@@ -183,7 +183,7 @@ class TM extends AbstractTableModel {
 
 	public void refreshHeaders() {
 		try {
-			headers = (AbstractAttribute[]) Database.getFacility().getObject("hostlist.headers");
+			headers = (AbstractAttribute[]) DatabaseStore.getDatabase().getObject("hostlist.headers");
 		} catch (Exception e) {
 			headers = HostList.defaultHeaders;
 		}

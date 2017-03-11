@@ -42,9 +42,9 @@ import javax.swing.border.LineBorder;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.util.DateUtil;
-import com.subterranean_security.crimson.universal.JarUtil;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
+import com.subterranean_security.crimson.universal.util.JarUtil;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
@@ -342,7 +342,7 @@ public class AboutDialog extends JDialog {
 				{
 					String serial = "XXXXXXXXXXXXXXXX";
 					try {
-						String tmp = Database.getFacility().getString("serial");
+						String tmp = DatabaseStore.getDatabase().getString("serial");
 						serial = tmp.substring(0, 4) + "-" + tmp.substring(4, 8) + "-" + tmp.substring(8, 12) + "-"
 								+ tmp.substring(12);
 					} catch (Exception e) {

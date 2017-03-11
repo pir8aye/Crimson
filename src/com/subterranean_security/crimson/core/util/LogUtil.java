@@ -23,8 +23,8 @@ import java.util.logging.LogManager;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.universal.JarUtil;
 import com.subterranean_security.crimson.universal.Universal;
+import com.subterranean_security.crimson.universal.util.JarUtil;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;

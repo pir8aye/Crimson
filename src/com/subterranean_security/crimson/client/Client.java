@@ -35,7 +35,9 @@ import com.subterranean_security.crimson.core.storage.BasicDatabase;
 import com.subterranean_security.crimson.core.storage.StorageFacility;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.Universal.Instance;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
+import com.subterranean_security.crimson.universal.stores.PrefStore;
 
 public class Client {
 	private static final Logger log = LoggerFactory.getLogger(Client.class);
@@ -52,6 +54,16 @@ public class Client {
 		// Establish the custom shutdown hook
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
+		// Initialize preference storage
+		initializePreferences();
+
+		// Check for other instances
+		if (PrefStore.getPref().isLocked()) {
+			System.exit(0);
+		} else {
+			PrefStore.getPref().lock();
+		}
+
 		// Load native libraries
 		Native.Loader.load();
 
@@ -61,7 +73,7 @@ public class Client {
 		ConfigStore.loadConfig();
 
 		try {
-			Common.cvid = Database.getFacility().getInteger("cvid");
+			Common.cvid = DatabaseStore.getDatabase().getInteger("cvid");
 		} catch (Exception e2) {
 		}
 
@@ -99,12 +111,16 @@ public class Client {
 			System.exit(0);
 		}
 
-		Database.setFacility(sf);
+		DatabaseStore.setFacility(sf);
+	}
+
+	private static void initializePreferences() {
+		PrefStore.loadPreferences(Instance.CLIENT);
 	}
 
 	public static AuthenticationGroup getGroup() {
 		try {
-			return (AuthenticationGroup) Database.getFacility().getObject("auth.group");
+			return (AuthenticationGroup) DatabaseStore.getDatabase().getObject("auth.group");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

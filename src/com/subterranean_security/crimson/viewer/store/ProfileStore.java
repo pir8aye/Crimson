@@ -25,7 +25,7 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.common.UINotification;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
@@ -45,8 +45,8 @@ public final class ProfileStore {
 
 	static {
 		try {
-			clients = (MemList<ClientProfile>) Database.getFacility().getObject("profiles.clients");
-			clients.setDatabase(Database.getFacility());
+			clients = (MemList<ClientProfile>) DatabaseStore.getDatabase().getObject("profiles.clients");
+			clients.setDatabase(DatabaseStore.getDatabase());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

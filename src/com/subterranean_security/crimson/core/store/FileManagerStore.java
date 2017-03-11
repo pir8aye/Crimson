@@ -27,11 +27,23 @@ public final class FileManagerStore {
 
 	private static ArrayList<LocalFS> lfs = new ArrayList<LocalFS>();
 
+	/**
+	 * Store a new LocalFS in this store
+	 * 
+	 * @param l
+	 * @return FS object ID for convenience
+	 */
 	public static int add(LocalFS l) {
 		lfs.add(l);
 		return l.getFmid();
 	}
 
+	/**
+	 * Get a LocalFS object from store
+	 * 
+	 * @param fmid
+	 * @return LocalFS object with ID fmid or null
+	 */
 	public static LocalFS get(int fmid) {
 		for (LocalFS l : lfs) {
 			if (l.getFmid() == fmid) {
@@ -39,5 +51,12 @@ public final class FileManagerStore {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Clear this store
+	 */
+	public static void clear() {
+		lfs.clear();
 	}
 }

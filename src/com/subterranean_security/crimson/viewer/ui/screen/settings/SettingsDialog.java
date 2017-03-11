@@ -39,7 +39,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
@@ -68,7 +68,7 @@ public class SettingsDialog extends JDialog {
 
 		// load values from database
 		for (SPanel tab : panels.values()) {
-			tab.setValues(Database.getFacility());
+			tab.setValues(DatabaseStore.getDatabase());
 		}
 
 	}
@@ -89,7 +89,7 @@ public class SettingsDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				// save to databases
 				for (SPanel tab : panels.values()) {
-					tab.saveValues(Database.getFacility());
+					tab.saveValues(DatabaseStore.getDatabase());
 				}
 
 				dispose();

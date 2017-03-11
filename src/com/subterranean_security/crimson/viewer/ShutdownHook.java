@@ -22,8 +22,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.misc.FileLocking;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
+import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.viewer.store.ConnectionStore;
 import com.subterranean_security.crimson.viewer.store.LocalServerStore;
 
@@ -41,15 +41,21 @@ public class ShutdownHook extends Thread {
 		log.debug("Terminating network connections");
 		ConnectionStore.closeAll();
 
+		LocalServerStore.killLocalServer();
+
 		try {
 			log.debug("Closing database");
-			Database.closeFacility();
+			DatabaseStore.close();
 		} catch (IOException e) {
 			log.error("Failed to close database: {}", e.getMessage());
 		}
 
-		LocalServerStore.killLocalServer();
+		try {
+			log.debug("Closing preferences");
+			PrefStore.close();
+		} catch (IOException e) {
+			log.error("Failed to close preferences: {}", e.getMessage());
+		}
 
-		FileLocking.unlock();
 	}
 }

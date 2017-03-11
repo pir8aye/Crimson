@@ -30,13 +30,14 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.EH;
-import com.subterranean_security.crimson.core.misc.FileLocking;
 import com.subterranean_security.crimson.core.storage.BasicDatabase;
 import com.subterranean_security.crimson.core.storage.StorageFacility;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.Universal.Instance;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
+import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.viewer.store.LocalServerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
@@ -65,9 +66,14 @@ public class Viewer {
 		// Establish the custom shutdown hook
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 
-		// Try to get a lock or exit
-		if (!FileLocking.lock(Universal.Instance.VIEWER)) {
+		// Initialize preference storage
+		initializePreferences();
+
+		// Check for other instances
+		if (PrefStore.getPref().isLocked()) {
 			System.exit(0);
+		} else {
+			PrefStore.getPref().lock();
 		}
 
 		// Load native libraries
@@ -81,7 +87,7 @@ public class Viewer {
 
 		// Show the EULA if needed
 		try {
-			if (Database.getFacility().getBoolean("show_eula") && !Universal.isDebug) {
+			if (PrefStore.getPref().getBoolean(PrefStore.PTag.GENERAL_EULA_SHOW) && !Universal.isDebug) {
 				EULADialog eula = new EULADialog(true);
 				eula.setLocationRelativeTo(null);
 				eula.setVisible(true);
@@ -94,7 +100,7 @@ public class Viewer {
 					}
 				}
 				if (eula.accepted) {
-					Database.getFacility().store("show_eula", false);
+					PrefStore.getPref().putBoolean(PrefStore.PTag.GENERAL_EULA_SHOW, false);
 				}
 				eula = null;
 			}
@@ -105,9 +111,7 @@ public class Viewer {
 
 		boolean localServerFound = ViewerState.findLocalServerInstance();
 		if (LocalServerStore.bundledServer.exists() && !localServerFound) {
-
-			LocalServerStore.startLocalServer();
-
+			// LocalServerStore.startLocalServer();
 		}
 
 		// initialize sliding layout
@@ -153,7 +157,12 @@ public class Viewer {
 			System.exit(0);
 		}
 
-		Database.setFacility(sf);
+		DatabaseStore.setFacility(sf);
+
+	}
+
+	private static void initializePreferences() {
+		PrefStore.loadPreferences(Instance.VIEWER);
 	}
 
 	public static void loadJar(String path) throws Exception {
@@ -170,7 +179,7 @@ public class Viewer {
 
 	public static void loadState() {
 		try {
-			ViewerState.trialMode = Database.getFacility().getString("serial").isEmpty();
+			ViewerState.trialMode = DatabaseStore.getDatabase().getString("serial").isEmpty();
 		} catch (Exception e) {
 			ViewerState.trialMode = true;
 		}

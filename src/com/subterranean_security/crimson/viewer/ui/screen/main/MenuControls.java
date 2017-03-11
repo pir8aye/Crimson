@@ -44,7 +44,7 @@ import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
@@ -81,7 +81,7 @@ public class MenuControls extends JPanel {
 		init();
 		String view = null;
 		try {
-			view = Database.getFacility().getString("view.last");
+			view = PrefStore.getPref().getString(PrefStore.PTag.VIEW_MAIN_LAST);
 		} catch (Exception e1) {
 			view = "list";
 		}
@@ -389,14 +389,12 @@ public class MenuControls extends JPanel {
 
 	public void refresh() {
 		valViewerRamUsage.setText(ProfileStore.getLocalClient().getAttr(SimpleAttribute.CLIENT_RAM_USAGE));
-		valViewerCpuTemp.setText(ProfileStore.getLocalClient().getPrimaryCPU()
-				.queryAttribute(AttributeGroupType.CPU_TEMP).get());
-		valViewerCpuUsage
-				.setText(ProfileStore.getLocalClient().getAttr(SimpleAttribute.CLIENT_CPU_USAGE) + " %");
+		valViewerCpuTemp.setText(
+				ProfileStore.getLocalClient().getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP).get());
+		valViewerCpuUsage.setText(ProfileStore.getLocalClient().getAttr(SimpleAttribute.CLIENT_CPU_USAGE) + " %");
 		valServerRamUsage.setText(ViewerState.isOnline() ? ProfileStore.getServer().getCrimsonRamUsage() : "");
 		valServerCpuTemp.setText(ViewerState.isOnline() ? ProfileStore.getServer().getCpuTemp() : "");
-		valServerCpuUsage
-				.setText(ViewerState.isOnline() ? ProfileStore.getServer().getCrimsonCpuUsage() + " %" : "");
+		valServerCpuUsage.setText(ViewerState.isOnline() ? ProfileStore.getServer().getCrimsonCpuUsage() + " %" : "");
 		valClients.setText(ViewerState.isOnline() ? "" + ProfileStore.getServer().getConnectedClients() : "");
 		valUsers.setText(ViewerState.isOnline() ? "" + ProfileStore.getServer().getConnectedUsers() : "");
 		valIp.setText(ProfileStore.getLocalViewer().getIp());

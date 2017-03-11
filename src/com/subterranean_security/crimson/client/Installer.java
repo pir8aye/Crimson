@@ -30,8 +30,8 @@ import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.FileUtil;
-import com.subterranean_security.crimson.universal.JarUtil;
 import com.subterranean_security.crimson.universal.Universal;
+import com.subterranean_security.crimson.universal.util.JarUtil;
 
 public class Installer {
 

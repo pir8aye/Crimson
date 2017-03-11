@@ -6,7 +6,7 @@ import java.util.Set;
 import com.subterranean_security.crimson.core.misc.MemMap;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 public class ProfileStore {
 	private static MemMap<Integer, ClientProfile> clientProfiles;
@@ -14,16 +14,16 @@ public class ProfileStore {
 
 	static {
 		try {
-			clientProfiles = (MemMap<Integer, ClientProfile>) Database.getFacility().getObject("profiles.clients");
-			clientProfiles.setDatabase(Database.getFacility());
+			clientProfiles = (MemMap<Integer, ClientProfile>) DatabaseStore.getDatabase().getObject("profiles.clients");
+			clientProfiles.setDatabase(DatabaseStore.getDatabase());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		try {
-			viewerProfiles = (MemMap<Integer, ViewerProfile>) Database.getFacility().getObject("profiles.viewers");
-			viewerProfiles.setDatabase(Database.getFacility());
+			viewerProfiles = (MemMap<Integer, ViewerProfile>) DatabaseStore.getDatabase().getObject("profiles.viewers");
+			viewerProfiles.setDatabase(DatabaseStore.getDatabase());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

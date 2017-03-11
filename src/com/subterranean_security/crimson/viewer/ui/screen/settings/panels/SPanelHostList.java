@@ -28,7 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.storage.StorageFacility;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.ListHeaderPopup;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SPanel;
 
@@ -57,7 +57,7 @@ public class SPanelHostList extends JPanel implements SPanel {
 		panel.add(btnTest);
 		btnTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				ListHeaderPopup popup = new ListHeaderPopup(Database.getFacility());
+				ListHeaderPopup popup = new ListHeaderPopup(DatabaseStore.getDatabase());
 				popup.show(btnTest, 0, 0);
 			}
 		});

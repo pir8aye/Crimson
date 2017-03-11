@@ -31,7 +31,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.PrefStore;
+import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
@@ -211,15 +212,10 @@ class Detail extends JPanel {
 	private void init() {
 		setLayout(new BorderLayout(0, 0));
 
-		try {
-			processor = Database.getFacility().getBoolean("detail.processor");
-			nic = Database.getFacility().getBoolean("detail.nic");
-			preview = Database.getFacility().getBoolean("detail.preview");
-			map = Database.getFacility().getBoolean("detail.map");
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		processor = PrefStore.getPref().getBoolean(PrefStore.PTag.VIEW_DETAIL_PROCESSOR);
+		nic = PrefStore.getPref().getBoolean(PrefStore.PTag.VIEW_DETAIL_NIC);
+		preview = PrefStore.getPref().getBoolean(PrefStore.PTag.VIEW_DETAIL_PREVIEW);
+		map = PrefStore.getPref().getBoolean(PrefStore.PTag.VIEW_DETAIL_MAP);
 
 		JPanel menuPanel = new JPanel(new BorderLayout());
 		JMenuBar menu = new JMenuBar();
@@ -268,8 +264,7 @@ class Detail extends JPanel {
 			new SwingWorker<Void, Void>() {
 				@Override
 				protected Void doInBackground() throws Exception {
-
-					Database.getFacility().store("detail.processor", processor = !processor);
+					PrefStore.getPref().putBoolean(PrefStore.PTag.VIEW_DETAIL_PROCESSOR, processor = !processor);
 					return null;
 
 				}
@@ -322,7 +317,7 @@ class Detail extends JPanel {
 			new SwingWorker<Void, Void>() {
 				@Override
 				protected Void doInBackground() throws Exception {
-					Database.getFacility().store("detail.nic", nic = !nic);
+					PrefStore.getPref().putBoolean(PrefStore.PTag.VIEW_DETAIL_NIC, nic = !nic);
 					return null;
 				}
 
@@ -373,8 +368,7 @@ class Detail extends JPanel {
 			new SwingWorker<Void, Void>() {
 				@Override
 				protected Void doInBackground() throws Exception {
-
-					Database.getFacility().store("detail.preview", preview = !preview);
+					PrefStore.getPref().putBoolean(PrefStore.PTag.VIEW_DETAIL_PREVIEW, preview = !preview);
 					return null;
 
 				}
@@ -424,8 +418,7 @@ class Detail extends JPanel {
 			new SwingWorker<Void, Void>() {
 				@Override
 				protected Void doInBackground() throws Exception {
-
-					Database.getFacility().store("detail.map", map = !map);
+					PrefStore.getPref().putBoolean(PrefStore.PTag.VIEW_DETAIL_MAP, map = !map);
 					return null;
 
 				}

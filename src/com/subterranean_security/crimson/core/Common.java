@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.cinstaller.Main;
 import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.universal.JarUtil;
 import com.subterranean_security.crimson.universal.Universal;
+import com.subterranean_security.crimson.universal.util.JarUtil;
 
 public final class Common {
 	private Common() {

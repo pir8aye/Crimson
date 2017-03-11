@@ -22,7 +22,8 @@ import java.awt.CardLayout;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.PrefStore;
+import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 
 public class MainPanel extends JPanel {
@@ -40,16 +41,11 @@ public class MainPanel extends JPanel {
 
 		setLayout(new CardLayout());
 
-		try {
-			String last = Database.getFacility().getString("view.last");
-			if (last.equals("list")) {
-				loadList();
-			} else {
-				loadGraph();
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String last = PrefStore.getPref().getString(PrefStore.PTag.VIEW_MAIN_LAST);
+		if (last.equals("list")) {
+			loadList();
+		} else {
+			loadGraph();
 		}
 
 		console.addLine("Welcome to Crimson (build " + Common.build + ")");
@@ -61,7 +57,7 @@ public class MainPanel extends JPanel {
 			loadList();
 		}
 		((CardLayout) getLayout()).show(this, "LIST");
-		Database.getFacility().store("view.last", "list");
+		PrefStore.getPref().putString(PrefStore.PTag.VIEW_MAIN_LAST, "list");
 	}
 
 	public void switchToGraph() {
@@ -69,7 +65,7 @@ public class MainPanel extends JPanel {
 			loadGraph();
 		}
 		((CardLayout) getLayout()).show(this, "GRAPH");
-		Database.getFacility().store("view.last", "graph");
+		PrefStore.getPref().putString(PrefStore.PTag.VIEW_MAIN_LAST, "graph");
 	}
 
 	public void loadList() {

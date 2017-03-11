@@ -56,7 +56,7 @@ import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
@@ -380,7 +380,7 @@ public class LoginPanel extends JPanel {
 						// update recents
 						try {
 							String successfulLogin = server + ":" + port;
-							ArrayList<String> recents = (ArrayList<String>) Database.getFacility()
+							ArrayList<String> recents = (ArrayList<String>) DatabaseStore.getDatabase()
 									.getObject("login.recents");
 							recents.remove(successfulLogin);
 							recents.add(successfulLogin);
@@ -520,7 +520,7 @@ public class LoginPanel extends JPanel {
 	public void addRecents(boolean localServer) {
 		ArrayList<String> r = new ArrayList<String>();
 		try {
-			r.addAll((ArrayList<String>) Database.getFacility().getObject("login.recents"));
+			r.addAll((ArrayList<String>) DatabaseStore.getDatabase().getObject("login.recents"));
 		} catch (Exception e) {
 			log.error("Failed to load recent connections");
 			e.printStackTrace();

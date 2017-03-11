@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.sv.net.Listener;
-import com.subterranean_security.crimson.universal.stores.Database;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 public final class ListenerStore {
 	private ListenerStore() {
@@ -39,7 +39,7 @@ public final class ListenerStore {
 	public static void load() {
 		unloadAll();
 		try {
-			for (ListenerConfig lc : ((ArrayList<ListenerConfig>) Database.getFacility().getObject("listeners"))) {
+			for (ListenerConfig lc : ((ArrayList<ListenerConfig>) DatabaseStore.getDatabase().getObject("listeners"))) {
 				listeners.add(new Listener(lc));
 			}
 		} catch (Exception e) {

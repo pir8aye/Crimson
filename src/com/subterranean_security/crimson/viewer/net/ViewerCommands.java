@@ -74,9 +74,11 @@ import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
-public enum ViewerCommands {
-	;
+public final class ViewerCommands {
 	private static final Logger log = LoggerFactory.getLogger(ViewerCommands.class);
+
+	private ViewerCommands() {
+	}
 
 	public static boolean login(String user, String pass) {
 		int id = IDGen.msg();

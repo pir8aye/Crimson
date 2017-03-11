@@ -26,6 +26,8 @@ import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.universal.stores.PrefStore;
+import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SPanel;
 
 public class SPanelPolicy extends JPanel implements SPanel {
@@ -66,8 +68,8 @@ public class SPanelPolicy extends JPanel implements SPanel {
 	@Override
 	public void setValues(StorageFacility db) {
 		try {
-			chckbxAlwaysShowLicense.setSelected(db.getBoolean("show_eula"));
-			chckbxShowHelpMenus.setSelected(db.getBoolean("show_helps"));
+			chckbxAlwaysShowLicense.setSelected(PrefStore.getPref().getBoolean(PrefStore.PTag.GENERAL_EULA_SHOW));
+			chckbxShowHelpMenus.setSelected(PrefStore.getPref().getBoolean(PrefStore.PTag.GENERAL_HELP_SHOW));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,8 +79,7 @@ public class SPanelPolicy extends JPanel implements SPanel {
 
 	@Override
 	public void saveValues(StorageFacility db) {
-		db.store("show_eula", chckbxAlwaysShowLicense.isSelected());
-		db.store("show_helps", chckbxShowHelpMenus.isSelected());
-
+		PrefStore.getPref().putBoolean(PrefStore.PTag.GENERAL_EULA_SHOW, chckbxAlwaysShowLicense.isSelected());
+		PrefStore.getPref().putBoolean(PrefStore.PTag.GENERAL_HELP_SHOW, chckbxShowHelpMenus.isSelected());
 	}
 }

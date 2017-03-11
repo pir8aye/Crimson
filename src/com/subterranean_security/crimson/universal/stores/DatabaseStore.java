@@ -21,28 +21,34 @@ import java.io.IOException;
 
 import com.subterranean_security.crimson.core.storage.StorageFacility;
 
-public final class Database {
-	private Database() {
+public final class DatabaseStore {
+	private DatabaseStore() {
 	}
 
-	private static StorageFacility facility;
+	private static StorageFacility database;
 
 	public static void setFacility(StorageFacility sf) {
-		facility = sf;
+		database = sf;
 	}
 
-	public static StorageFacility getFacility() {
-		return facility;
+	public static StorageFacility getDatabase() {
+		return database;
 	}
 
-	public static void closeFacility() throws IOException {
-		if (facility != null) {
+	public static void close() throws IOException {
+
+		// close database
+		if (database != null) {
 			try {
-				Database.getFacility().close();
+				database.close();
 			} finally {
-				facility = null;
+				database = null;
 			}
 		}
+
+	}
+
+	public enum DTag {
 
 	}
 
