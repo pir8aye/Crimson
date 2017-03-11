@@ -29,12 +29,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableRowSorter;
 
 import com.subterranean_security.crimson.core.profile.AbstractAttribute;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.stores.Database;
-import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.ListHeaderPopup;
 
 public class HostList extends JPanel {
@@ -47,10 +47,11 @@ public class HostList extends JPanel {
 
 	private static JTable table = new JTable();
 	private TM tm = new TM();
-	private TR tr = new TR();
+	private TR tr = new TR(tm);
 
 	public HostList() {
 		init();
+		initRowSorter();
 	}
 
 	public void init() {
@@ -132,6 +133,29 @@ public class HostList extends JPanel {
 
 	public void refreshHeaders() {
 		tm.refreshHeaders();
+		initRowSorter();
+	}
+
+	private void initRowSorter() {
+		TableRowSorter<TM> sorter = new TableRowSorter<TM>(tm);
+		sorter.toggleSortOrder(0);
+
+		for (int i = 0; i < tm.headers.length; i++) {
+			AbstractAttribute aa = tm.headers[i];
+			if (aa instanceof SimpleAttribute) {
+				SimpleAttribute sa = (SimpleAttribute) aa;
+				switch (sa) {
+				case CLIENT_CID:
+					sorter.setComparator(i, new ClientProfile.CidComparator());
+				default:
+					sorter.setComparator(i, new ClientProfile.SimpleAttributeComparator(sa));
+				}
+			} else {
+				// TODO complex attribute
+			}
+		}
+
+		table.setRowSorter(sorter);
 	}
 
 }
@@ -183,22 +207,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		AbstractAttribute aa = headers[columnIndex];
-		if (aa instanceof SimpleAttribute) {
-			SimpleAttribute sa = (SimpleAttribute) aa;
-			switch (sa) {
-			case IPLOC_COUNTRY:
-				return clients.get(rowIndex).getLocationIcon();
-			case OS_NAME:
-				return clients.get(rowIndex).getOsNameIcon();
-			default:
-				return clients.get(rowIndex).getAttr(sa);
-			}
-		} else {
-			// TODO complex attribute
-			return null;
-		}
-
+		return clients.get(rowIndex);
 	}
 
 	public ClientProfile getRow(int selected) {
@@ -211,12 +220,47 @@ class TR extends DefaultTableCellRenderer {
 
 	private static final long serialVersionUID = 1L;
 
+	private TM tm;
+
+	public TR(TM tm) {
+		this.tm = tm;
+	}
+
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
-		super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-		setBorder(noFocusBorder);
+
+		super.getTableCellRendererComponent(table, setupCell(table, (ClientProfile) value, column), isSelected,
+				hasFocus, row, column);
 		return this;
+	}
+
+	/**
+	 * Setup and return the data for the given cell
+	 * 
+	 * @param table
+	 * @param file
+	 * @param viewColumn
+	 * @return
+	 */
+	private Object setupCell(JTable table, ClientProfile profile, int viewColumn) {
+		setBorder(noFocusBorder);
+
+		AbstractAttribute aa = tm.headers[table.convertColumnIndexToModel(viewColumn)];
+		if (aa instanceof SimpleAttribute) {
+			SimpleAttribute sa = (SimpleAttribute) aa;
+			switch (sa) {
+			case IPLOC_COUNTRY:
+				return profile.getLocationIcon();
+			case OS_NAME:
+				return profile.getOsNameIcon();
+			default:
+				return profile.getAttr(sa);
+			}
+		} else {
+			// TODO complex attribute
+			return null;
+		}
 	}
 
 	protected void setValue(Object value) {
@@ -226,7 +270,7 @@ class TR extends DefaultTableCellRenderer {
 			setText(ico.getDescription());
 		} else {
 			setIcon(null);
-			setText((String) value);
+			super.setValue(value);
 		}
 	}
 

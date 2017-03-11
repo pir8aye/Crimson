@@ -44,7 +44,6 @@ public class FileTable extends JPanel {
 	private static final long serialVersionUID = 1L;
 	public TM tm = new TM();
 	public TR tr = new TR(tm);
-	public TableRowSorter<TM> rs = new TableRowSorter<TM>(tm);
 
 	private JTable table = new JTable();
 	public Pane pane;
@@ -53,7 +52,7 @@ public class FileTable extends JPanel {
 		pane = parent;
 		initContextMenu();
 		init();
-
+		initRowSorter();
 	}
 
 	public ArrayList<FileItem> selection = null;
@@ -109,23 +108,6 @@ public class FileTable extends JPanel {
 		table.setFillsViewportHeight(true);
 		table.setDefaultRenderer(Object.class, tr);
 		table.setModel(tm);
-		table.setRowSorter(rs);
-
-		rs.setComparator(1, new Comparator<String>() {
-
-			@Override
-			public int compare(String i1, String i2) {
-				if (i1.contains("item")) {
-					i1 = "" + (Long.parseLong(i1.substring(0, i1.indexOf(' '))) - 10000000) + " items";
-				}
-				if (i2.contains("item")) {
-					i2 = "" + (Long.parseLong(i2.substring(0, i2.indexOf(' '))) - 10000000) + " items";
-				}
-				return Long.compare(UnitTranslator.defamiliarize(i1, UnitTranslator.BYTES),
-						UnitTranslator.defamiliarize(i2, UnitTranslator.BYTES));
-
-			}
-		});
 
 		JScrollPane jsp = new JScrollPane(table);
 		add(jsp, BorderLayout.CENTER);
@@ -204,6 +186,17 @@ public class FileTable extends JPanel {
 		tm.setFiles(list);
 	}
 
+	private void initRowSorter() {
+		TableRowSorter<TM> sorter = new TableRowSorter<TM>(tm);
+		sorter.toggleSortOrder(0);
+
+		// TODO hardcoded headers
+		sorter.setComparator(0, new FileItem.NameComparator());
+		sorter.setComparator(1, new FileItem.SizeComparator());
+
+		table.setRowSorter(sorter);
+	}
+
 }
 
 class TM extends AbstractTableModel {
@@ -233,18 +226,7 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-
-		switch (headers[columnIndex]) {
-		case "Name": {
-			return files.get(rowIndex).getIcon();
-
-		}
-		case "Size": {
-			return files.get(rowIndex).getSize();
-		}
-
-		}
-		return null;
+		return files.get(rowIndex);
 	}
 
 	public FileItem getFile(int row) {
@@ -266,11 +248,34 @@ class TR extends DefaultTableCellRenderer {
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
-		super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-		setBorder(noFocusBorder);
-		setHorizontalAlignment(tm.headers[column].equals("Size") ? SwingConstants.RIGHT : SwingConstants.LEFT);
 
+		super.getTableCellRendererComponent(table, setupCell(table, (FileItem) value, column), isSelected, hasFocus,
+				row, column);
 		return this;
+	}
+
+	/**
+	 * Setup and return the data for the given cell
+	 * 
+	 * @param table
+	 * @param file
+	 * @param viewColumn
+	 * @return
+	 */
+	private Object setupCell(JTable table, FileItem file, int viewColumn) {
+		setBorder(noFocusBorder);
+
+		switch (tm.headers[table.convertColumnIndexToModel(viewColumn)]) {
+		case "Name": {
+			setHorizontalAlignment(SwingConstants.LEFT);
+			return file.getIcon();
+		}
+		case "Size": {
+			setHorizontalAlignment(viewColumn == 0 ? SwingConstants.LEFT : SwingConstants.RIGHT);
+			return file.getSize();
+		}
+		}
+		return null;
 	}
 
 	protected void setValue(Object value) {
@@ -289,20 +294,24 @@ class TR extends DefaultTableCellRenderer {
 class FileItem {
 	private ImageIcon icon;
 
-	private String size;
+	private long size;
+	private String sizeStr;
 
-	private String mtime;
+	private long mtime;
+	private String mtimeStr;
 
 	private boolean folder;
 
 	public FileItem(String name, boolean dir, long size, long mtime) {
-		folder = dir;
+		this.mtime = mtime;
+		this.size = size;
+		this.folder = dir;
 
 		if (dir) {
-			this.size = size + ((size == 1) ? " item " : " items");
+			this.sizeStr = size + ((size == 1) ? " item " : " items");
 			icon = UIUtil.getIcon("icons16/files/file_extension_folder.png");
 		} else {
-			this.size = UnitTranslator.familiarize(size, UnitTranslator.BYTES);
+			this.sizeStr = UnitTranslator.familiarize(size, UnitTranslator.BYTES);
 
 			icon = UIUtil.getIcon("icons16/files/file_extension_" + name.substring(name.lastIndexOf('.') + 1) + ".png");
 			if (icon == null) {
@@ -316,16 +325,57 @@ class FileItem {
 		return icon;
 	}
 
+	public String getName() {
+		return icon.getDescription();
+	}
+
 	public String getSize() {
-		return size;
+		return sizeStr;
 	}
 
 	public String getMtime() {
-		return mtime;
+		return mtimeStr;
 	}
 
 	public boolean isFolder() {
 		return folder;
+	}
+
+	static class NameComparator implements Comparator<FileItem> {
+		@Override
+		public int compare(FileItem o1, FileItem o2) {
+			if (o1 == o2) {
+				return 0;
+			} else if (o1.folder && !o2.folder) {
+				return -1;
+			} else if (!o1.folder && o2.folder) {
+				return 1;
+			}
+
+			return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+		}
+	}
+
+	static class MTimeComparator implements Comparator<FileItem> {
+		@Override
+		public int compare(FileItem o1, FileItem o2) {
+			return (int) (o1.mtime - o2.mtime);
+		}
+	}
+
+	static class SizeComparator implements Comparator<FileItem> {
+		@Override
+		public int compare(FileItem o1, FileItem o2) {
+			if (o1 == o2) {
+				return 0;
+			} else if (o1.folder && !o2.folder) {
+				return -1;
+			} else if (!o1.folder && o2.folder) {
+				return 1;
+			}
+
+			return (int) (o1.size - o2.size);
+		}
 	}
 
 }

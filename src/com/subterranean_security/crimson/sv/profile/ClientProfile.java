@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.sv.profile;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,14 +39,13 @@ import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
 import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.util.Validation;
-import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.Universal.Instance;
 import com.subterranean_security.crimson.universal.stores.Database;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
@@ -437,6 +437,29 @@ public class ClientProfile implements Serializable {
 
 	public boolean getOnline() {
 		return attributes.get(SimpleAttribute.CLIENT_ONLINE).equals("1");
+	}
+
+	public static class CidComparator implements Comparator<ClientProfile> {
+		@Override
+		public int compare(ClientProfile o1, ClientProfile o2) {
+			return o1.getCid() - o2.getCid();
+		}
+	}
+
+	public static class SimpleAttributeComparator implements Comparator<ClientProfile> {
+		private SimpleAttribute sa;
+
+		public SimpleAttributeComparator(SimpleAttribute sa) {
+			this.sa = sa;
+		}
+
+		@Override
+		public int compare(ClientProfile o1, ClientProfile o2) {
+			if (o1.getAttr(sa) == null) {
+				return (o2.getAttr(sa) == null) ? 0 : 1;
+			}
+			return o1.getAttr(sa).compareTo(o2.getAttr(sa));
+		}
 	}
 
 }
