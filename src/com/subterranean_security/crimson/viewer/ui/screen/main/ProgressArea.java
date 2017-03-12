@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 import com.subterranean_security.crimson.viewer.ui.common.components.StatusLights;
-import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.animated.MovablePanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -38,8 +38,8 @@ import aurelienribon.slidinglayout.SLSide;
 public class ProgressArea extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	MovingPanel main;
-	MovingPanel note;
+	MovablePanel main;
+	MovablePanel note;
 	SLPanel slPanel;
 	private final SLConfig mainCfg, p1Cfg;
 
@@ -47,11 +47,11 @@ public class ProgressArea extends JPanel {
 		JPanel blank = new JPanel();
 		blank.setLayout(new BorderLayout(0, 0));
 
-		main = new MovingPanel(blank);
+		main = new MovablePanel(blank);
 
 		pp = new ProcessPanel();
 
-		note = new MovingPanel(pp);
+		note = new MovablePanel(pp);
 		setLayout(new BorderLayout(0, 0));
 
 		slPanel = new SLPanel();

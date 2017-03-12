@@ -25,7 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.animated.MovablePanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -40,9 +40,9 @@ public class HPanel extends SLPanel {
 	private SLConfig pos1;
 	private SLConfig pos2;
 
-	private MovingPanel movingHMenu; // for hidden menu
-	private MovingPanel movingBar; // for normal menu
-	private MovingPanel movingMain; // for content
+	private MovablePanel movingHMenu; // for hidden menu
+	private MovablePanel movingBar; // for normal menu
+	private MovablePanel movingMain; // for content
 
 	public HiddenMenu hmenu;
 	public NormalMenu nmenu;
@@ -59,7 +59,7 @@ public class HPanel extends SLPanel {
 
 	public HPanel(JPanel main) {
 
-		movingMain = new MovingPanel(main);
+		movingMain = new MovablePanel(main);
 		movingMain.setAction(actionUP);
 
 	}
@@ -68,8 +68,8 @@ public class HPanel extends SLPanel {
 		hmenu = h;
 		nmenu = n;
 
-		movingBar = new MovingPanel(nmenu);
-		movingHMenu = new MovingPanel(hmenu);
+		movingBar = new MovablePanel(nmenu);
+		movingHMenu = new MovablePanel(hmenu);
 
 		pos1 = new SLConfig(this).gap(0, 0).row(8f).row(nMenuHeight).col(1f).place(0, 0, movingMain).place(1, 0,
 				movingBar);

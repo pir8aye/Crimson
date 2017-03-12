@@ -35,7 +35,7 @@ import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.animated.MovablePanel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.lpanel.LPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules.NetInterfaces;
@@ -56,8 +56,8 @@ public class DPanel extends SLPanel {
 	private SLConfig pos1;
 	private SLConfig pos2;
 
-	private MovingPanel movingBar;
-	private MovingPanel movingMain;
+	private MovablePanel movingBar;
+	private MovablePanel movingMain;
 
 	public Detail detail = new Detail(this);
 
@@ -76,8 +76,8 @@ public class DPanel extends SLPanel {
 
 	public DPanel(JPanel main) {
 
-		movingBar = new MovingPanel(detail);
-		movingMain = new MovingPanel(main);
+		movingBar = new MovablePanel(detail);
+		movingMain = new MovablePanel(main);
 		movingMain.setAction(actionUP);
 
 		pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f).place(0, 0, movingMain);

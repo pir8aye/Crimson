@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common.panels;
+package com.subterranean_security.crimson.viewer.ui.common.panels.animated;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -28,7 +28,7 @@ import javax.swing.JPanel;
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.tweenengine.TweenManager;
 
-public class MovingPanel extends JPanel {
+public class MovablePanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private static final Color BG_COLOR = new Color(0x3B5998);
@@ -38,7 +38,7 @@ public class MovingPanel extends JPanel {
 	private Runnable action;
 	private int borderThickness = 2;
 
-	public MovingPanel(JPanel panel) {
+	public MovablePanel(JPanel panel) {
 		setBackground(BG_COLOR);
 		setLayout(new BorderLayout());
 		add(panel, BorderLayout.CENTER);
@@ -80,7 +80,7 @@ public class MovingPanel extends JPanel {
 
 		@Override
 		public int getValues(Component target, int tweenType, float[] returnValues) {
-			MovingPanel tp = (MovingPanel) target;
+			MovablePanel tp = (MovablePanel) target;
 
 			int ret = super.getValues(target, tweenType, returnValues);
 			if (ret >= 0)
@@ -97,7 +97,7 @@ public class MovingPanel extends JPanel {
 
 		@Override
 		public void setValues(Component target, int tweenType, float[] newValues) {
-			MovingPanel tp = (MovingPanel) target;
+			MovablePanel tp = (MovablePanel) target;
 
 			super.setValues(target, tweenType, newValues);
 

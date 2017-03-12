@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.animated.MovablePanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -40,8 +40,8 @@ public class EPanel extends SLPanel {
 	private SLConfig pos1;
 	private SLConfig pos2;
 
-	private MovingPanel movingBar;
-	private MovingPanel movingMain;
+	private MovablePanel movingBar;
+	private MovablePanel movingMain;
 
 	private ENote note = new ENote();
 
@@ -57,8 +57,8 @@ public class EPanel extends SLPanel {
 	public EPanel(JPanel main, SLSide o) {
 		this.orientation = o;
 
-		movingBar = new MovingPanel(note);
-		movingMain = new MovingPanel(main);
+		movingBar = new MovablePanel(note);
+		movingMain = new MovablePanel(main);
 		movingMain.setAction(actionUP);
 
 		switch (orientation) {

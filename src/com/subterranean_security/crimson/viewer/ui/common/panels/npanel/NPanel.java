@@ -23,7 +23,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.animated.MovablePanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
@@ -38,15 +38,15 @@ public class NPanel extends SLPanel {
 	private SLConfig pos1;
 	private SLConfig pos2;
 
-	private MovingPanel movingBar;
-	private MovingPanel movingMain;
+	private MovablePanel movingBar;
+	private MovablePanel movingMain;
 
 	private Notification note = new Notification();
 
 	public NPanel(JPanel main) {
 
-		movingBar = new MovingPanel(note);
-		movingMain = new MovingPanel(main);
+		movingBar = new MovablePanel(note);
+		movingMain = new MovablePanel(main);
 		movingMain.setAction(actionUP);
 
 		pos1 = new SLConfig(this).gap(0, 0).row(2f).col(1f).place(0, 0, movingMain);
