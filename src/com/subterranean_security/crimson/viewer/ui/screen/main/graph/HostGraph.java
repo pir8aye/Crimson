@@ -15,9 +15,10 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.main;
+package com.subterranean_security.crimson.viewer.ui.screen.main.graph;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -35,14 +36,24 @@ import com.mxgraph.view.mxStylesheet;
 import com.subterranean_security.crimson.core.profile.AbstractAttribute;
 import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.util.JarUtil;
+import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.ui.screen.main.ContextMenu;
+import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public class HostGraph extends JPanel implements MouseWheelListener {
 
 	private static final long serialVersionUID = 1L;
-	public mxGraph graph = new mxGraph();
-	public Object parent = graph.getDefaultParent();
+
+	private AbstractAttribute textType = SimpleAttribute.NET_HOSTNAME;
+
+	private final int vertexWidth = 80;
+	private final int vertexHeight = 30;
+
+	public mxGraph graph;
+	public Object parent;
 
 	public Object serverVertex;
 	private mxGraphComponent graphComponent;
@@ -51,44 +62,58 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 	public HostGraph() {
 		init();
-		addInitialClients();
+		if (ViewerState.isOnline()) {
+			addServer();
+			addInitialClients();
+		}
+
 	}
 
 	public void init() {
 
-		// insert server
-		try {
-			graph.getModel().beginUpdate();
-
-			mxStylesheet stylesheet = graph.getStylesheet();
-			Hashtable<String, Object> style = new Hashtable<String, Object>();
-			style.put(mxConstants.STYLE_FONTCOLOR, "#774400");
-			stylesheet.putCellStyle("style", style);
-
-			graph.setCellsEditable(false);
-			graph.setCellsResizable(false);
-			graph.setAllowDanglingEdges(false);
-			graph.setConnectableEdges(false);
-			graph.setAllowNegativeCoordinates(false);
-			// TODO change behavior if not connected
-			serverVertex = graph.insertVertex(parent, null, "\n\n\nServer", 260, 135, 80, 30,
-					"shape=image;image=/com/subterranean_security/crimson/viewer/ui/res/image/icons32/general/server.png");
-
-		} finally {
-			graph.getModel().endUpdate();
-		}
 		setLayout(new BorderLayout(0, 0));
+
+		graph = new mxGraph() {
+			@Override
+			public boolean isCellMovable(Object arg0) {
+				if (model.isEdge(arg0)) {
+					return false;
+				}
+				return super.isCellMovable(arg0);
+			}
+
+			@Override
+			public boolean isCellSelectable(Object arg0) {
+				if (model.isEdge(arg0)) {
+					return false;
+				}
+				return super.isCellSelectable(arg0);
+			}
+
+		};
+		graph.setCellsEditable(false);
+		graph.setCellsResizable(false);
+		graph.setAllowDanglingEdges(false);
+		graph.setConnectableEdges(false);
+		graph.setAllowNegativeCoordinates(false);
+
+		parent = graph.getDefaultParent();
 
 		graphComponent = new mxGraphComponent(graph);
 		add(graphComponent);
 
 		graphComponent.getGraphControl().addMouseListener(new MouseAdapter() {
 
+			public void mousePressed(MouseEvent e) {
+				Object cell = graphComponent.getCellAt(e.getX(), e.getY());
+
+			}
+
 			public void mouseReleased(MouseEvent e) {
 
 				Object cell = graphComponent.getCellAt(e.getX(), e.getY());
 
-				if (cell != null && cell != serverVertex) {
+				if (cell != null && cell != serverVertex && vertices.containsKey(cell)) {
 
 					// get profile
 					ClientProfile selected = ProfileStore.getClient(vertices.get(cell));
@@ -114,6 +139,29 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 	}
 
+	private void addServer() {
+		// insert server
+		try {
+			graph.getModel().beginUpdate();
+
+			mxStylesheet stylesheet = graph.getStylesheet();
+			Hashtable<String, Object> style = new Hashtable<String, Object>();
+			style.put(mxConstants.STYLE_FONTCOLOR, "#774400");
+			stylesheet.putCellStyle("style", style);
+
+			// TODO change behavior if not connected
+			serverVertex = graph.insertVertex(parent, null, "\n\n\nServer", 260, 135, vertexWidth, vertexHeight,
+					"shape=image;image=/com/subterranean_security/crimson/viewer/ui/res/image/icons32/general/server.png");
+
+		} finally {
+			graph.getModel().endUpdate();
+		}
+	}
+
+	private void addViewer(ViewerProfile vp) {
+
+	}
+
 	private void addInitialClients() {
 		for (int i = 0; i < ProfileStore.clients.size(); i++) {
 			addClient(ProfileStore.clients.get(i));
@@ -121,42 +169,47 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 	}
 
-	public void addClient(ClientProfile p) {
-		for (Object o : vertices.keySet()) {
-			if (vertices.get(o) == p.getCid()) {
-				// TODO
-				return;
-			}
-		}
-
-		// generate coordinates for the new vertex
-		int xMin = 0;
-		int xMax = this.getWidth();
-		int yMin = 0;
-		int yMax = this.getHeight();
+	private Point findSpot(int xMin, int yMin, int xMax, int yMax) {
 		int x = 0;
 		int y = 0;
 
-		// TODO timeout if screen full
-		while (true) {
+		int iteration = 0;
+		do {
+			iteration++;
 			x = xMin + (int) (Math.random() * ((xMax - xMin) + 1));
 			y = yMin + (int) (Math.random() * ((yMax - yMin) + 1));
 
-			Object corner1 = graphComponent.getCellAt(x, y);
-			Object corner2 = graphComponent.getCellAt(x + 80, y);
-			Object corner3 = graphComponent.getCellAt(x, y + 30);
-			Object corner4 = graphComponent.getCellAt(x + 80, y + 30);
+		} while (!suitablePoint(x, y) && iteration < 1000);
 
-			if (corner1 == null && corner2 == null && corner3 == null && corner4 == null) {
+		return new Point(x, y);
+	}
 
-				break;
-			}
-
+	private boolean suitablePoint(int x, int y) {
+		if (graphComponent.getCellAt(x, y) != null || graphComponent.getCellAt(x + vertexWidth, y) != null
+				|| graphComponent.getCellAt(x, y + vertexHeight) != null
+				|| graphComponent.getCellAt(x + vertexWidth, y + vertexHeight) != null) {
+			return false;
 		}
+		return true;
+	}
+
+	private Point findSpot() {
+		return findSpot(15, 15, 520 - vertexWidth - 15, 270 - vertexHeight - 15);
+	}
+
+	public void addClient(ClientProfile p) {
+		if (vertices.values().contains(p.getCid())) {
+			// this client is already present
+			return;
+		}
+
+		// find a spot for the new vertex
+		Point point = findSpot();
+
 		graph.getModel().beginUpdate();
-		String text = "";
 
 		try {
+			// TODO move to util
 			String iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
 					+ p.getAttr(SimpleAttribute.OS_NAME).replaceAll(" ", "_").toLowerCase() + ".png";
 
@@ -165,11 +218,12 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 						+ p.getAttr(SimpleAttribute.OS_FAMILY) + ".png";
 			}
 
-			Object v = graph.insertVertex(parent, null, "\n\n\n" + text, x, y, 80, 30,
-					"shape=image;image=" + iconLocation);
+			Object v = graph.insertVertex(parent, null, "\n\n\n" + getTextFor(p), point.x, point.y, vertexWidth,
+					vertexHeight, "shape=image;image=" + iconLocation);
 			vertices.put(v, p.getCid());
 
-			graph.insertEdge(parent, null, "", serverVertex, v);
+			graph.insertEdge(parent, null, "", serverVertex, v,
+					"startArrow=oval;endArrow=oval;sourcePerimeterSpacing=4;startFill=0;endFill=0;");
 
 		} finally {
 			graph.getModel().endUpdate();
@@ -182,26 +236,20 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		}
 		graph.getModel().beginUpdate();
 
-		Object target = null;
-
 		for (Entry<Object, Integer> entry : vertices.entrySet()) {
 			if (entry.getValue() == p.getCid()) {
-				// found the connection to remove
-				target = entry.getKey();
+				// found the vertex to remove
+				vertices.remove(entry.getKey());
 
-				break;
+				try {
+					graph.removeCells(new Object[] { entry.getKey() }, true);
+				} finally {
+					graph.getModel().endUpdate();
+				}
+
+				return;
 			}
 
-		}
-
-		vertices.remove(target);
-
-		try {
-			Object[] ob = new Object[1];
-			ob[0] = target;
-			graph.removeCells(ob, true);
-		} finally {
-			graph.getModel().endUpdate();
 		}
 
 	}
@@ -212,14 +260,10 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 	}
 
-	private AbstractAttribute textType = SimpleAttribute.CLIENT_CID;
-
-	// TODO updates should trigger this method
-	public String getTextAt(ClientProfile cp) {
+	private String getTextFor(ClientProfile cp) {
 		if (textType instanceof SimpleAttribute) {
 			SimpleAttribute sa = (SimpleAttribute) textType;
 			return cp.getAttr(sa);
-
 		} else {
 			// TODO complex attribute
 			return "";

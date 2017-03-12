@@ -25,6 +25,7 @@ import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
+import com.subterranean_security.crimson.viewer.ui.screen.main.graph.HostGraph;
 
 public class MainPanel extends JPanel {
 
