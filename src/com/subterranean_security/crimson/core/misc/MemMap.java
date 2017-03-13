@@ -18,44 +18,106 @@
 package com.subterranean_security.crimson.core.misc;
 
 import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import com.subterranean_security.crimson.core.storage.StorageFacility;
 
-public class MemMap<K, V> implements Serializable {
+public class MemMap<K, V> implements Serializable, Map<K, V> {
 
 	private static final long serialVersionUID = 1L;
-	private HashMap<K, Integer> map = new HashMap<K, Integer>();
+
 	private transient StorageFacility database;
 
+	private HashMap<K, Integer> index;
+
 	public MemMap(StorageFacility d) {
+		this();
 		setDatabase(d);
 	}
 
 	public MemMap() {
-
+		index = new HashMap<K, Integer>();
 	}
 
 	public void setDatabase(StorageFacility d) {
 		this.database = d;
 	}
 
-	public void put(K key, V value) {
-		map.put(key, database.store(value));
+	@Override
+	public V put(K key, V value) {
+		index.put(key, database.store(value));
+		return null;
 	}
 
-	public void remove(K key) {
-		map.remove(key);
+	@Override
+	public V remove(Object key) {
+		V value = get(key);
+		index.remove(key);
+		return value;
 	}
 
-	@SuppressWarnings("unchecked")
-	public V get(K key) throws Exception {
-		return (V) database.getObject(map.get(key));
+	@Override
+	public V get(Object key) {
+		try {
+			return (V) database.getObject(index.get(key));
+		} catch (NoSuchElementException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	public Set<K> keyset() {
-		return map.keySet();
+	@Override
+	public boolean containsKey(Object arg0) {
+		return index.containsKey(arg0);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return index.isEmpty();
+	}
+
+	@Override
+	public Set<K> keySet() {
+		return index.keySet();
+	}
+
+	@Override
+	public int size() {
+		return index.size();
+	}
+
+	@Override
+	public void clear() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean containsValue(Object arg0) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Set<java.util.Map.Entry<K, V>> entrySet() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void putAll(Map<? extends K, ? extends V> arg0) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Collection<V> values() {
+		throw new UnsupportedOperationException();
 	}
 
 }
