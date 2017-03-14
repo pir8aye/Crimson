@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common.panels.npanel;
+package com.subterranean_security.crimson.viewer.ui.common.panels.sl.npanel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -23,7 +23,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import com.subterranean_security.crimson.viewer.ui.common.panels.animated.MovablePanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.MovablePanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;

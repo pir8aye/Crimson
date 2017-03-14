@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2017 Subterranean Security                    *
+ *                    Copyright 2016 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,18 +15,40 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common.panels.animated;
+package com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel;
 
-import aurelienribon.slidinglayout.SLPanel;
+import java.awt.BorderLayout;
+import java.awt.Component;
 
-public abstract class SlidingPanel extends SLPanel {
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.border.EtchedBorder;
+
+public class NormalMenu extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	protected boolean moving = false;
+	private Box bar = new Box(BoxLayout.X_AXIS);
 
-	public boolean isMoving() {
-		return moving;
+	public NormalMenu() {
+		init();
+	}
+
+	private void init() {
+		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		setLayout(new BorderLayout(0, 0));
+		add(bar, BorderLayout.CENTER);
+	}
+
+	public void setButtons(Component... buttons) {
+		bar.removeAll();
+		bar.add(Box.createHorizontalStrut(5));
+		for (Component c : buttons) {
+			bar.add(c);
+		}
+		bar.add(Box.createHorizontalStrut(5));
+
 	}
 
 }

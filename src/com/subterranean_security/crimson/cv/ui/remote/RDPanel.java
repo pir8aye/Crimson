@@ -43,7 +43,7 @@ import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.cv.ui.remote.ep.Settings;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 
 import aurelienribon.slidinglayout.SLSide;
 

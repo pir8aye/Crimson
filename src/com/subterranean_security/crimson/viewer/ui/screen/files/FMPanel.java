@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 
 public class FMPanel extends JPanel {

@@ -47,7 +47,7 @@ import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.Viewer;
 import com.subterranean_security.crimson.viewer.ui.common.UINotification;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.services.Services;
 
 public class AddSerial extends JPanel {

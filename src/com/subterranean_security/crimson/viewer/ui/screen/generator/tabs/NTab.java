@@ -20,7 +20,7 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.NetworkTargetTable;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.ep.AddNetworkTarget;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.ep.ViewNetworktarget;

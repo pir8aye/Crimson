@@ -29,7 +29,7 @@ import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.users.ep.EditUser;
 
 public class UsersPanel extends JPanel {

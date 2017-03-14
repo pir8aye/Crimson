@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common.panels.animated;
+package com.subterranean_security.crimson.viewer.ui.common.panels.sl;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,7 +26,6 @@ import java.awt.Graphics2D;
 import javax.swing.JPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
-import aurelienribon.tweenengine.TweenManager;
 
 public class MovablePanel extends JPanel {
 
@@ -34,15 +33,31 @@ public class MovablePanel extends JPanel {
 	private static final Color BG_COLOR = new Color(0x3B5998);
 	private static final Color BORDER_COLOR = new Color(0x000000);
 
-	private static final TweenManager tweenManager = SLAnimator.createTweenManager();
 	private Runnable action;
 	private int borderThickness = 2;
+
+	private JPanel child;
+
+	public MovablePanel() {
+		setBackground(BG_COLOR);
+		setLayout(new BorderLayout());
+	}
 
 	public MovablePanel(JPanel panel) {
 		setBackground(BG_COLOR);
 		setLayout(new BorderLayout());
-		add(panel, BorderLayout.CENTER);
+		setPanel(panel);
 
+	}
+
+	public void setPanel(JPanel panel) {
+		removeAll();
+		child = panel;
+		add(panel, BorderLayout.CENTER);
+	}
+
+	public JPanel getPanel() {
+		return child;
 	}
 
 	public void setAction(Runnable action) {

@@ -26,9 +26,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import javax.swing.border.EtchedBorder;
+
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 
 public class Error extends JPanel {
 

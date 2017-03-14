@@ -55,9 +55,9 @@ import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.common.components.ProgressBarFactory;
 import com.subterranean_security.crimson.viewer.ui.common.components.StatusConsole;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.CPPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.controls.ep.Confirmation;
 

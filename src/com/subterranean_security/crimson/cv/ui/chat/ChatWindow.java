@@ -24,7 +24,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
+
 import javax.swing.JMenuBar;
 import javax.swing.Box;
 import javax.swing.JButton;

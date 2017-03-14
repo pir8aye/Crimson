@@ -46,7 +46,6 @@ import com.subterranean_security.crimson.viewer.ui.screen.users.UserMan;
 public class MainMenu extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	public ProgressArea progressArea;
 
 	private JMenu mnControls;
 	private MenuControls mc;
@@ -148,8 +147,7 @@ public class MainMenu extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (!ViewerState.isOnline()) {
 					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
-				} else if (ProfileStore.getLocalViewer().getPermissions()
-						.getFlag(Perm.server.generator.generate)) {
+				} else if (ProfileStore.getLocalViewer().getPermissions().getFlag(Perm.server.generator.generate)) {
 					if (UIStore.genDialog == null) {
 						UIStore.genDialog = new GenDialog();
 						UIStore.genDialog.setLocationRelativeTo(null);

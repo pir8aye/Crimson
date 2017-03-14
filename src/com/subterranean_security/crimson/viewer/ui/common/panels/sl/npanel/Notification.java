@@ -1,4 +1,4 @@
-package com.subterranean_security.crimson.viewer.ui.common.panels.npanel;
+package com.subterranean_security.crimson.viewer.ui.common.panels.sl.npanel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

@@ -36,7 +36,7 @@ import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.CPPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.ep.Settings;
 

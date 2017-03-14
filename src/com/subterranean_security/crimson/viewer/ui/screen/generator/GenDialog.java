@@ -38,9 +38,9 @@ import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.UINotification;
-import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
-import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HiddenMenu;
-import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.NormalMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel.HiddenMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel.NormalMenu;
 
 public class GenDialog extends JDialog {
 

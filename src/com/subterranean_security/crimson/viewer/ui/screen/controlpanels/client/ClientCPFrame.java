@@ -49,7 +49,7 @@ import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.controls.ControlsTab;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.Keylogger;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.logs.Logs;

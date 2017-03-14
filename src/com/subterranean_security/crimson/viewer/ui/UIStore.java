@@ -8,6 +8,7 @@ import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.auth.CreateGroup;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.auth.CreatePassword;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.listener.AddListener;
+import com.subterranean_security.crimson.viewer.ui.screen.settings.SettingsDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.users.UserMan;
 
 /**
@@ -22,6 +23,7 @@ public final class UIStore {
 	public static NetMan netMan;
 	public static UserMan userMan;
 	public static AddListener EAddListener;
+	public static SettingsDialog settingsDialog;
 
 	public static CreateGroup ECreateGroup;
 	public static CreatePassword ECreatePassword;

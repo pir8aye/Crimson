@@ -26,9 +26,9 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
-import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HiddenMenu;
-import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.NormalMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel.HiddenMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel.NormalMenu;
 
 public class LoginDialog extends JDialog {
 

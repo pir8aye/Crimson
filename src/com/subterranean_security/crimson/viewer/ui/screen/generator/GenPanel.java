@@ -64,7 +64,7 @@ import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.ATab;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.FTab;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.NTab;

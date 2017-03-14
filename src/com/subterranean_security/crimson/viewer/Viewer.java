@@ -40,7 +40,7 @@ import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.viewer.store.LocalServerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.panels.MovingPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.MovablePanel;
 import com.subterranean_security.crimson.viewer.ui.screen.eula.EULADialog;
 import com.subterranean_security.crimson.viewer.ui.screen.login.LoginDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
@@ -115,7 +115,7 @@ public class Viewer {
 		}
 
 		// initialize sliding layout
-		Tween.registerAccessor(MovingPanel.class, new MovingPanel.Accessor());
+		Tween.registerAccessor(MovablePanel.class, new MovablePanel.Accessor());
 		SLAnimator.start();
 
 		loadState();

@@ -27,14 +27,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.universal.stores.PrefStore;
-import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.universal.util.JarUtil;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.Tray;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
-import com.subterranean_security.crimson.viewer.ui.common.panels.npanel.NPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.npanel.NPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DPanel;
 
 public class MainFrame extends JFrame {
@@ -46,10 +46,10 @@ public class MainFrame extends JFrame {
 	 */
 	public static MainFrame main;
 
+	public MPanel mp;
 	public EPanel ep;
 	public NPanel np;
 	public DPanel dp;
-	public MainMenu mm;
 	public MainPanel panel;
 	private JMenuBar sm;
 
@@ -76,9 +76,6 @@ public class MainFrame extends JFrame {
 
 	private void initMenus() {
 
-		mm = new MainMenu();
-		getContentPane().add(mm, BorderLayout.NORTH);
-
 		// account for special "system menu bar" on some platforms
 
 	}
@@ -92,15 +89,22 @@ public class MainFrame extends JFrame {
 		panel = new MainPanel();
 		panel.setVisible(true);
 		dp = new DPanel(panel);
-		JPanel connector1 = new JPanel(new BorderLayout(0, 0));
-		connector1.setVisible(true);
-		connector1.add(dp, BorderLayout.CENTER);
-		np = new NPanel(connector1);
 
-		JPanel connector2 = new JPanel(new BorderLayout(0, 0));
-		connector2.setVisible(true);
-		connector2.add(np, BorderLayout.CENTER);
-		ep = new EPanel(connector2);
+		JPanel npConnector = new JPanel(new BorderLayout(0, 0));
+		npConnector.setVisible(true);
+		npConnector.add(dp, BorderLayout.CENTER);
+		np = new NPanel(npConnector);
+
+		JPanel mpConnector = new JPanel(new BorderLayout(0, 0));
+		mpConnector.setVisible(true);
+		mpConnector.add(np, BorderLayout.CENTER);
+		mp = new MPanel(mpConnector);
+
+		JPanel epConnector = new JPanel(new BorderLayout(0, 0));
+		epConnector.setVisible(true);
+		epConnector.add(mp, BorderLayout.CENTER);
+		ep = new EPanel(epConnector);
+
 		getContentPane().add(ep, BorderLayout.CENTER);
 	}
 

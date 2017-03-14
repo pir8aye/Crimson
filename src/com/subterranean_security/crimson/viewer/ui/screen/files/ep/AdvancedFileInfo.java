@@ -38,7 +38,7 @@ import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileI
 import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.viewer.ui.common.components.DataViewer;
-import com.subterranean_security.crimson.viewer.ui.common.panels.epanel.EPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 
 public class AdvancedFileInfo extends JPanel {
 

@@ -32,9 +32,9 @@ import javax.swing.border.EmptyBorder;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HPanel;
-import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.HiddenMenu;
-import com.subterranean_security.crimson.viewer.ui.common.panels.hpanel.NormalMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel.HPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel.HiddenMenu;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel.NormalMenu;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.auth.AuthPanel;
 
 public class NetMan extends JFrame {

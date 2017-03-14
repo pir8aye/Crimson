@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,40 +15,38 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common.panels.hpanel;
+package com.subterranean_security.crimson.viewer.ui.common.panels.sl;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
+import javax.swing.SwingWorker;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
+import aurelienribon.slidinglayout.SLPanel;
 
-public class NormalMenu extends JPanel {
+public abstract class SlidingPanel extends SLPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private Box bar = new Box(BoxLayout.X_AXIS);
+	protected int transitionTime = 900;
 
-	public NormalMenu() {
-		init();
+	protected boolean moving = false;
+
+	public boolean isMoving() {
+		return moving;
 	}
 
-	private void init() {
-		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
-		setLayout(new BorderLayout(0, 0));
-		add(bar, BorderLayout.CENTER);
+	protected void endMotion() {
+		new EndMotion().execute();
 	}
 
-	public void setButtons(Component... buttons) {
-		bar.removeAll();
-		bar.add(Box.createHorizontalStrut(5));
-		for (Component c : buttons) {
-			bar.add(c);
+	class EndMotion extends SwingWorker<Void, Void> {
+		protected Void doInBackground() throws Exception {
+			moving = true;
+			Thread.sleep(transitionTime);
+			return null;
 		}
-		bar.add(Box.createHorizontalStrut(5));
 
+		protected void done() {
+			moving = false;
+		}
 	}
 
 }
