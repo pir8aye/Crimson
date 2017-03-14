@@ -42,7 +42,7 @@ public class Log implements Serializable {
 	public void optimize() {
 		Date now = new Date();
 		synchronized (pages) {
-			for (Date d : pages.keyset()) {
+			for (Date d : pages.keySet()) {
 				// only optimize if page is old
 				if (!DateUtil.isSameDay(now, d)) {
 					try {
@@ -60,7 +60,7 @@ public class Log implements Serializable {
 	public ArrayList<EV_KEvent> getEventsAfter(Date target) {
 		ArrayList<EV_KEvent> ev = new ArrayList<EV_KEvent>();
 
-		for (Date d : pages.keyset()) {
+		for (Date d : pages.keySet()) {
 			// skip old dates
 			if (d.getTime() + TimeUnit.DAYS.toMillis(1) < target.getTime()) {
 				continue;
@@ -89,7 +89,7 @@ public class Log implements Serializable {
 
 		boolean flag = false;
 
-		for (Date d : pages.keyset()) {
+		for (Date d : pages.keySet()) {
 			if (DateUtil.isSameDay(d, target)) {
 				flag = true;
 				try {

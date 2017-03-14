@@ -53,7 +53,7 @@ public class ProfileStore {
 
 	public static ViewerProfile getViewer(String user) {
 		try {
-			for (Integer i : viewerProfiles.keyset()) {
+			for (Integer i : viewerProfiles.keySet()) {
 				ViewerProfile vp = viewerProfiles.get(i);
 				if (vp.getUser().equals(user)) {
 					return vp;
@@ -69,7 +69,7 @@ public class ProfileStore {
 	public static ArrayList<ViewerProfile> getViewersWithAuthorityOnClient(int cid) {
 		ArrayList<ViewerProfile> vps = new ArrayList<ViewerProfile>();
 		try {
-			for (Integer i : viewerProfiles.keyset()) {
+			for (Integer i : viewerProfiles.keySet()) {
 				// TODO filter
 				vps.add(viewerProfiles.get(i));
 
@@ -84,7 +84,7 @@ public class ProfileStore {
 	public static ArrayList<ClientProfile> getClientsUnderAuthority(int vid) {
 		ArrayList<ClientProfile> cps = new ArrayList<ClientProfile>();
 		try {
-			for (Integer i : clientProfiles.keyset()) {
+			for (Integer i : clientProfiles.keySet()) {
 				// TODO filter
 				cps.add(clientProfiles.get(i));
 
@@ -97,11 +97,11 @@ public class ProfileStore {
 	}
 
 	public static Set<Integer> getViewerKeyset() {
-		return viewerProfiles.keyset();
+		return viewerProfiles.keySet();
 	}
 
 	public static Set<Integer> getClientKeyset() {
-		return clientProfiles.keyset();
+		return clientProfiles.keySet();
 	}
 
 	public static void addViewer(ViewerProfile p) {

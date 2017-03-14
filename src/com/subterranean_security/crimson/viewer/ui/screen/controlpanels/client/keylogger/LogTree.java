@@ -95,7 +95,7 @@ public class LogTree extends JPanel {
 							// open the date in the content pane
 
 							parent.loadKeylog();
-							for (Date d : profile.getKeylog().pages.keyset()) {
+							for (Date d : profile.getKeylog().pages.keySet()) {
 								if (selectedNode.toString().equals(formatLeaf.format(d))) {
 									try {
 										parent.content.loadData(profile.getKeylog().pages.get(d));
@@ -161,7 +161,7 @@ public class LogTree extends JPanel {
 	public void refreshTree() {
 		refreshing = true;
 		int updates = 0;
-		for (Date d : profile.getKeylog().pages.keyset()) {
+		for (Date d : profile.getKeylog().pages.keySet()) {
 
 			String name = formatLeaf.format(d);
 
