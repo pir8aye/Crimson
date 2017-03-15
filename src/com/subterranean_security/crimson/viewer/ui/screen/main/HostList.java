@@ -22,6 +22,7 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -85,7 +86,7 @@ public class HostList extends JPanel {
 					// open up the detail
 					MainFrame.main.dp.showDetail(selected);
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					ContextMenu.getMenu(selected, "list").show(table, e.getX(), e.getY());
+					ContextMenuFactory.getMenu(selected, "list").show(table, e.getX(), e.getY());
 
 				}
 
@@ -156,6 +157,16 @@ public class HostList extends JPanel {
 		}
 
 		table.setRowSorter(sorter);
+	}
+
+	public void select(ClientProfile cp) {
+		List<ClientProfile> profiles = tm.getClientList();
+		for (int i = 0; i < profiles.size(); i++) {
+			if (cp.getCid() == profiles.get(i).getCid()) {
+				table.setRowSelectionInterval(i, i);
+				return;
+			}
+		}
 	}
 
 }

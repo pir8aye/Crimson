@@ -39,9 +39,11 @@ import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.UINotification;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
 
-public enum ContextMenu {
-	;
-	private static ClientProfile selected = null;
+public final class ContextMenuFactory {
+	private ContextMenuFactory() {
+	}
+
+	private static ClientProfile selected;
 
 	private static JMenuItem control;
 	private static JMenuItem screenshot;
@@ -112,12 +114,32 @@ public enum ContextMenu {
 
 		showInGraph = new JMenuItem("Show in Graph");
 		showInGraph.setIcon(UIUtil.getIcon("icons16/general/diagramm.png"));
+		showInGraph.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// switch to graph
+				MainFrame.main.panel.switchToGraph();
+
+				// select in graph
+				MainFrame.main.panel.graph.select(selected);
+			}
+		});
 
 		showInHistory = new JMenuItem("Show in History");
 		showInHistory.setIcon(UIUtil.getIcon("icons16/general/clock_history_frame.png"));
 
 		showInList = new JMenuItem("Show in List");
 		showInList.setIcon(UIUtil.getIcon("icons16/general/scroll_pane_list.png"));
+		showInList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// switch to list
+				MainFrame.main.panel.switchToList();
+
+				// select in list
+				MainFrame.main.panel.list.select(selected);
+			}
+		});
 
 		quick = new JMenu("Quick Commands");
 		quick.setIcon(UIUtil.getIcon("icons16/general/bow.png"));

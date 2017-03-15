@@ -40,7 +40,7 @@ import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.util.JarUtil;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
-import com.subterranean_security.crimson.viewer.ui.screen.main.ContextMenu;
+import com.subterranean_security.crimson.viewer.ui.screen.main.ContextMenuFactory;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public class HostGraph extends JPanel implements MouseWheelListener {
@@ -104,11 +104,6 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 		graphComponent.getGraphControl().addMouseListener(new MouseAdapter() {
 
-			public void mousePressed(MouseEvent e) {
-				Object cell = graphComponent.getCellAt(e.getX(), e.getY());
-
-			}
-
 			public void mouseReleased(MouseEvent e) {
 
 				Object cell = graphComponent.getCellAt(e.getX(), e.getY());
@@ -123,7 +118,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 						// select the cell
 						graph.setSelectionCell(cell);
 
-						ContextMenu.getMenu(selected, "graph").show(graphComponent, e.getX(), e.getY());
+						ContextMenuFactory.getMenu(selected, "graph").show(graphComponent, e.getX(), e.getY());
 
 					} else if (e.getButton() == java.awt.event.MouseEvent.BUTTON1) {
 						// left click
@@ -136,6 +131,16 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 			}
 
 		});
+
+	}
+
+	public void select(ClientProfile cp) {
+		for (Entry<Object, Integer> entry : vertices.entrySet()) {
+			if (entry.getValue() == cp.getCid()) {
+				graph.setSelectionCell(entry.getKey());
+				return;
+			}
+		}
 
 	}
 
