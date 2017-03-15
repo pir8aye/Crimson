@@ -65,6 +65,10 @@ public class Processor extends JPanel implements DModule {
 
 	private JLabel val_usage;
 
+	private JLabel statConsoleModel;
+	private JLabel statConsoleFreq;
+	private JLabel statConsoleTemp;
+
 	public Processor() {
 		initChart();
 		init();
@@ -142,10 +146,15 @@ public class Processor extends JPanel implements DModule {
 		gbc_panel_1.gridy = 1;
 		panel.add(panel_1, gbc_panel_1);
 
-		statusConsole = new StatusConsole(new String[] { "Model", "Frequency", "Core Temp" });
-		for (int i = 0; i < 3; i++) {
-			statusConsole.updateValue(i, "Loading...");
-		}
+		statusConsole = new StatusConsole();
+		statConsoleModel = statusConsole.addRow("Model");
+		statConsoleFreq = statusConsole.addRow("Frequency");
+		statConsoleTemp = statusConsole.addRow("Core Temp");
+
+		statConsoleModel.setText("Loading...");
+		statConsoleFreq.setText("Loading...");
+		statConsoleTemp.setText("Loading...");
+
 		panel_1.setLayout(new BorderLayout(0, 0));
 		panel_1.add(statusConsole);
 
@@ -186,8 +195,8 @@ public class Processor extends JPanel implements DModule {
 					// set dynamic attributes
 					// temperature
 					if (profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP) != null) {
-						statusConsole.updateValue(2,
-								profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP).get());
+						statConsoleTemp
+								.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP).get());
 					}
 
 				}
@@ -212,9 +221,8 @@ public class Processor extends JPanel implements DModule {
 		profile = p;
 
 		// set static attributes
-		statusConsole.updateValue(0, profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_MODEL).get());
-		statusConsole.updateValue(1,
-				profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_FREQUENCY_MAX).get());
+		statConsoleModel.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_MODEL).get());
+		statConsoleFreq.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_FREQUENCY_MAX).get());
 
 	}
 
@@ -228,10 +236,14 @@ public class Processor extends JPanel implements DModule {
 
 		@Override
 		protected void done() {
-			for (int i = 0; i < 3; i++) {
-				if (statusConsole.getValue(i).equals("Loading...")) {
-					statusConsole.updateValue(i, "N/A");
-				}
+			if (statConsoleModel.getText().equals("Loading...")) {
+				statConsoleModel.setText("N/A");
+			}
+			if (statConsoleFreq.getText().equals("Loading...")) {
+				statConsoleFreq.setText("N/A");
+			}
+			if (statConsoleTemp.getText().equals("Loading...")) {
+				statConsoleTemp.setText("N/A");
 			}
 		};
 

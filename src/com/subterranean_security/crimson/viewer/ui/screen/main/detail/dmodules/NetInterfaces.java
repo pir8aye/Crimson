@@ -68,6 +68,10 @@ public class NetInterfaces extends JPanel implements DModule {
 
 	private JLabel val_usage;
 
+	private JLabel statConsoleMAC;
+	private JLabel statConsoleIP;
+	private JLabel statConsoleNetmask;
+
 	private Chart2D chart;
 
 	public NetInterfaces() {
@@ -149,10 +153,15 @@ public class NetInterfaces extends JPanel implements DModule {
 		mainPanel.add(panel_1, gbc_panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
 
-		statusConsole = new StatusConsole(new String[] { "MAC", "IP", "Netmask" });
-		for (int i = 0; i < 3; i++) {
-			statusConsole.updateValue(i, "Loading...");
-		}
+		statusConsole = new StatusConsole();
+		statConsoleMAC = statusConsole.addRow("MAC");
+		statConsoleIP = statusConsole.addRow("IP");
+		statConsoleNetmask = statusConsole.addRow("Netmask");
+
+		statConsoleMAC.setText("Loading...");
+		statConsoleIP.setText("Loading...");
+		statConsoleNetmask.setText("Loading...");
+
 		panel_1.add(statusConsole, BorderLayout.CENTER);
 
 		startUpdater();
@@ -221,9 +230,9 @@ public class NetInterfaces extends JPanel implements DModule {
 		profile = p;
 
 		// set static attributes
-		statusConsole.updateValue(0, profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_MAC).get());
-		statusConsole.updateValue(1, profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_IP).get());
-		statusConsole.updateValue(2, profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_MASK).get());
+		statConsoleMAC.setText(profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_MAC).get());
+		statConsoleIP.setText(profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_IP).get());
+		statConsoleNetmask.setText(profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_MASK).get());
 
 		// set title
 		mainPanel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)),
@@ -241,10 +250,14 @@ public class NetInterfaces extends JPanel implements DModule {
 
 		@Override
 		protected void done() {
-			for (int i = 0; i < 3; i++) {
-				if (statusConsole.getValue(i).equals("Loading...")) {
-					statusConsole.updateValue(i, "N/A");
-				}
+			if (statConsoleMAC.getText().equals("Loading...")) {
+				statConsoleMAC.setText("N/A");
+			}
+			if (statConsoleIP.getText().equals("Loading...")) {
+				statConsoleIP.setText("N/A");
+			}
+			if (statConsoleNetmask.getText().equals("Loading...")) {
+				statConsoleNetmask.setText("N/A");
 			}
 
 		};

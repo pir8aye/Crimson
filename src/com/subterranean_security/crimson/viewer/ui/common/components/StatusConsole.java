@@ -40,42 +40,22 @@ public class StatusConsole extends JPanel {
 
 	private static final Color bg = Color.DARK_GRAY;
 
-	private ArrayList<JLabel> values = new ArrayList<JLabel>();
+	private LPanel list;
 
-	public StatusConsole(String[] fields) {
+	public StatusConsole() {
 		super(new BorderLayout());
-		init(fields);
+		init();
 		UIUtil.disableMouse(this);
 	}
 
-	private void init(String[] fields) {
+	private void init() {
 
 		setForeground(bg);
 		setBackground(bg);
 
-		LPanel list = new LPanel();
+		list = new LPanel(bg);
 		list.setBackground(bg);
 		list.setForeground(bg);
-
-		for (String f : fields) {
-			JPanel panel = new JPanel();
-			panel.setBackground(bg);
-			panel.setLayout(new BorderLayout(0, 0));
-			JLabel property = new JLabel(f);
-			property.setFont(new Font("Monospaced", Font.PLAIN, 10));
-			property.setForeground(blue);
-			panel.add(property, BorderLayout.WEST);
-			JLabel value = new JLabel();
-			value.setFont(new Font("Monospaced", Font.PLAIN, 10));
-			value.setForeground(blue);
-			value.setHorizontalAlignment(SwingConstants.RIGHT);
-
-			panel.add(Box.createHorizontalStrut(4), BorderLayout.CENTER);
-			panel.add(value, BorderLayout.EAST);
-
-			list.addPanel(panel);
-			values.add(value);
-		}
 
 		add(Box.createHorizontalStrut(4), BorderLayout.WEST);
 		add(list, BorderLayout.CENTER);
@@ -83,12 +63,24 @@ public class StatusConsole extends JPanel {
 
 	}
 
-	public void updateValue(int i, String value) {
-		values.get(i).setText(value);
-	}
+	public JLabel addRow(String header) {
+		JPanel panel = new JPanel();
+		panel.setBackground(bg);
+		panel.setLayout(new BorderLayout(0, 0));
+		JLabel property = new JLabel(header);
+		property.setFont(new Font("Monospaced", Font.PLAIN, 10));
+		property.setForeground(blue);
+		panel.add(property, BorderLayout.WEST);
+		JLabel value = new JLabel();
+		value.setFont(new Font("Monospaced", Font.PLAIN, 10));
+		value.setForeground(blue);
+		value.setHorizontalAlignment(SwingConstants.RIGHT);
 
-	public String getValue(int i) {
-		return values.get(i).getText();
+		panel.add(Box.createHorizontalStrut(4), BorderLayout.CENTER);
+		panel.add(value, BorderLayout.EAST);
+
+		list.addPanel(panel);
+		return value;
 	}
 
 	public enum LineType {
