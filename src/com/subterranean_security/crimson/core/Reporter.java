@@ -124,7 +124,7 @@ public final class Reporter {
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setJreUptime(DateUtil.datediff(Universal.start, new Date()));
+			rb.setJreUptime(DateUtil.timeBetween(Universal.start, new Date()));
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Java uptime: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));

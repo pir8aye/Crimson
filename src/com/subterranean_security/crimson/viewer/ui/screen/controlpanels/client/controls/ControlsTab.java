@@ -366,13 +366,13 @@ public class ControlsTab extends JPanel implements CPPanel {
 	public void refreshStatusConsole() {
 		try {
 			statConsoleUptime.setText(
-					DateUtil.datediff(new Date(), uptimeFormat.parse(profile.getAttr(SimpleAttribute.OS_START_TIME))));
+					DateUtil.timeBetween(new Date(), uptimeFormat.parse(profile.getAttr(SimpleAttribute.OS_START_TIME))));
 		} catch (ParseException e) {
 			statConsoleUptime.setText("N/A");
 		}
 
 		statConsoleStatus.setText(profile.getAttr(SimpleAttribute.CLIENT_STATUS));
-		statConsoleLastContact.setText(DateUtil.datediff(new Date(), profile.getLastUpdate()));
+		statConsoleLastContact.setText(DateUtil.timeBetween(new Date(), profile.getLastUpdate()));
 	}
 
 	public void refreshControls() {

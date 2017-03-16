@@ -26,6 +26,12 @@ public final class DateUtil {
 	private DateUtil() {
 	}
 
+	private static final long SECONDS_IN_MINUTE = 60;
+	private static final long SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
+	private static final long SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
+	private static final long SECONDS_IN_WEEK = SECONDS_IN_DAY * 7;
+	private static final long SECONDS_IN_YEAR = SECONDS_IN_WEEK * 52;
+
 	public static boolean isSameDay(Date d1, Date d2) {
 		SimpleDateFormat formatter = new SimpleDateFormat("MMddyyyy");
 		return formatter.format(d1).equals(formatter.format(d2));
@@ -36,65 +42,90 @@ public final class DateUtil {
 		return (int) (now.getTime() - Universal.start.getTime()) / 1000;
 	}
 
-	public static String datediff(Date d1, Date d2) {
-		long seconds = 0;
-		if (d1.getTime() > d2.getTime()) {
-			seconds = (d1.getTime() - d2.getTime()) / 1000;
-		} else if (d1.getTime() < d2.getTime()) {
-			seconds = (d2.getTime() - d1.getTime()) / 1000;
-		}
+	/**
+	 * Return the time between two dates (in any order) as a nicely formatted
+	 * string
+	 * 
+	 * @param d1
+	 * @param d2
+	 * @return
+	 */
+	public static String timeBetween(Date d1, Date d2) {
+		long seconds = Math.abs(d1.getTime() - d2.getTime()) / 1000;
 
-		int months = (int) (seconds / 2592000);
-		seconds -= months * 2592000;
-		int days = (int) (seconds / 86400);
-		seconds -= days * 86400;
-		int hours = (int) (seconds / 3600);
-		seconds -= hours * 3600;
-		int minutes = (int) (seconds / 60);
-		seconds -= minutes * 60;
+		int years = (int) (seconds / SECONDS_IN_YEAR);
+		seconds -= years * SECONDS_IN_YEAR;
+		int weeks = (int) (seconds / SECONDS_IN_WEEK);
+		seconds -= weeks * SECONDS_IN_WEEK;
+		int days = (int) (seconds / SECONDS_IN_DAY);
+		seconds -= days * SECONDS_IN_DAY;
+		int hours = (int) (seconds / SECONDS_IN_HOUR);
+		seconds -= hours * SECONDS_IN_HOUR;
+		int minutes = (int) (seconds / SECONDS_IN_MINUTE);
+		seconds -= minutes * SECONDS_IN_MINUTE;
 
-		String result = "";
-		switch (months) {
+		StringBuffer result = new StringBuffer();
+		switch (years) {
 		case 0:
 			break;
 		case 1:
-			result += months + " month ";
+			result.append(years);
+			result.append(" year ");
 			break;
 		default:
-			result += months + " months ";
+			result.append(years);
+			result.append(" years ");
+			break;
+		}
+		switch (weeks) {
+		case 0:
+			break;
+		case 1:
+			result.append(weeks);
+			result.append(" week ");
+			break;
+		default:
+			result.append(weeks);
+			result.append(" weeks ");
 			break;
 		}
 		switch (days) {
 		case 0:
 			break;
 		case 1:
-			result += days + " day ";
+			result.append(days);
+			result.append(" day ");
 			break;
 		default:
-			result += days + " days ";
+			result.append(days);
+			result.append(" days ");
 			break;
 		}
 		switch (hours) {
 		case 0:
 			break;
 		case 1:
-			result += hours + " hour ";
+			result.append(hours);
+			result.append(" hour ");
 			break;
 		default:
-			result += hours + " hours ";
+			result.append(hours);
+			result.append(" hours ");
 			break;
 		}
 		switch (minutes) {
 		case 0:
 			break;
 		case 1:
-			result += minutes + " minute ";
+			result.append(minutes);
+			result.append(" minute ");
 			break;
 		default:
-			result += minutes + " minutes ";
+			result.append(minutes);
+			result.append(" minutes ");
 			break;
 		}
-		return result;
+		return result.substring(0, result.length() - 1);
 	}
 
 }

@@ -62,7 +62,7 @@ public class AboutDialog extends JDialog {
 
 		@Override
 		public void run() {
-			lbl_uptime.setText(DateUtil.datediff(Universal.start, new Date()));
+			lbl_uptime.setText(DateUtil.timeBetween(Universal.start, new Date()));
 
 		}
 
