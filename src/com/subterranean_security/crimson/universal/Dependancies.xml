@@ -6,7 +6,6 @@
 
 		<Lib CID="c00">
 			<Name>Crimson Core</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1</EVersion>
 			<License>Apache 2</License>
 			<Requisites>SVCIQ</Requisites>
@@ -14,7 +13,6 @@
 
 		<Lib CID="c01">
 			<Name>HCP</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1</EVersion>
 			<License>Apache 2</License>
 			<Requisites>SVCI</Requisites>
@@ -22,7 +20,6 @@
 
 		<Lib CID="c02">
 			<Name>Crimson SC Library</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1</EVersion>
 			<License>Apache 2</License>
 			<Requisites>SC</Requisites>
@@ -30,7 +27,6 @@
 
 		<Lib CID="c03">
 			<Name>Crimson SV Library</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1</EVersion>
 			<License>Apache 2</License>
 			<Requisites>SVI</Requisites>
@@ -38,7 +34,6 @@
 
 		<Lib CID="c04">
 			<Name>Crimson CV Library</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1</EVersion>
 			<License>Apache 2</License>
 			<Requisites>VC</Requisites>
@@ -46,7 +41,6 @@
 
 		<Lib CID="c05">
 			<Name>Crimson Services</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1</EVersion>
 			<License>Proprietary</License>
 			<Requisites>SVCI</Requisites>
@@ -54,7 +48,6 @@
 
 		<Lib CID="c06">
 			<Name>Netty</Name>
-			<CVersion>1</CVersion>
 			<EVersion>4.0.30</EVersion>
 			<License>Apache 2</License>
 			<Requisites>SVCQI</Requisites>
@@ -63,7 +56,6 @@
 
 		<Lib CID="c07">
 			<Name>SQLite JDBC</Name>
-			<CVersion>1</CVersion>
 			<EVersion>3.8.10.1</EVersion>
 			<License>Apache 2</License>
 			<Requisites>SVCI</Requisites>
@@ -71,7 +63,6 @@
 
 		<Lib CID="c08">
 			<Name>Sliding Layout</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1.1.1</EVersion>
 			<License>Apache 2</License>
 			<Requisites>V</Requisites>
@@ -79,7 +70,6 @@
 
 		<Lib CID="c09">
 			<Name>Protobuf</Name>
-			<CVersion>1</CVersion>
 			<EVersion>3.1.0</EVersion>
 			<License>BSD</License>
 			<Requisites>SVCQI</Requisites>
@@ -87,7 +77,6 @@
 
 		<Lib CID="c10">
 			<Name>SLF4J</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1.7.13</EVersion>
 			<License>MIT</License>
 			<Requisites>SVCQI</Requisites>
@@ -95,7 +84,6 @@
 
 		<Lib CID="c11">
 			<Name>Logback Core</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1.1.3</EVersion>
 			<License>LGPL</License>
 			<Requisites>SVCQI</Requisites>
@@ -103,7 +91,6 @@
 
 		<Lib CID="c12">
 			<Name>Logback Classic</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1.1.3</EVersion>
 			<License>LGPL</License>
 			<Requisites>SVCQI</Requisites>
@@ -111,7 +98,6 @@
 
 		<Lib CID="c13">
 			<Name>Hyperic SIGAR</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1.6.4</EVersion>
 			<License>Apache 2</License>
 			<Requisites>SVC</Requisites>
@@ -119,7 +105,6 @@
 
 		<Lib CID="c14">
 			<Name>Java Mail</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1.4.5</EVersion>
 			<License>Oracle License</License>
 			<Requisites>Q</Requisites>
@@ -127,7 +112,6 @@
 
 		<Lib CID="c15">
 			<Name>Zeroturnaround zt-zip</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1.9</EVersion>
 			<License>Apache 2</License>
 			<Requisites>SI</Requisites>
@@ -135,7 +119,6 @@
 
 		<Lib CID="c16">
 			<Name>Blocking Map</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1.0</EVersion>
 			<License>LGPL</License>
 			<Requisites>SVCQI</Requisites>
@@ -143,7 +126,6 @@
 
 		<Lib CID="c17">
 			<Name>JGraphX</Name>
-			<CVersion>1</CVersion>
 			<EVersion>3.3.0.1</EVersion>
 			<License>BSD</License>
 			<Requisites>V</Requisites>
@@ -151,7 +133,6 @@
 
 		<Lib CID="c18">
 			<Name>JChart2D</Name>
-			<CVersion>1</CVersion>
 			<EVersion>3.2.2</EVersion>
 			<License>LGPL</License>
 			<Requisites>V</Requisites>
@@ -159,7 +140,6 @@
 
 		<Lib CID="c19">
 			<Name>JNativeHook</Name>
-			<CVersion>1</CVersion>
 			<EVersion>2.0.3</EVersion>
 			<License>LGPL</License>
 			<Requisites>C</Requisites>
@@ -167,11 +147,25 @@
 
 		<Lib CID="c20">
 			<Name>mslinks</Name>
-			<CVersion>1</CVersion>
 			<EVersion>1</EVersion>
 			<License>DWTFYWTPL</License>
 			<Requisites>I</Requisites>
 		</Lib>
+
+		<Lib CID="c21">
+			<Name>JSch</Name>
+			<EVersion>0.1.54</EVersion>
+			<License>BSD</License>
+			<Requisites>SVQ</Requisites>
+		</Lib>
+		
+		<Lib CID="c22">
+			<Name>TTorrent</Name>
+			<EVersion>0.1.54</EVersion>
+			<License>Apache 2</License>
+			<Requisites>C</Requisites>
+		</Lib>
+		
 
 	</JAR>
 
