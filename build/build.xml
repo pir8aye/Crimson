@@ -3,7 +3,8 @@
 	<property file="build/config/version.properties" />
 	<property file="build/config/build.properties" />
 	<tstamp>
-		<format property="build.time" pattern="MM-dd-yyyy HH:mm:ss" locale="en,US" />
+		<format property="build.time" pattern="MM-dd-yyyy HH:mm:ss"
+			locale="en,US" />
 	</tstamp>
 
 	<buildnumber file="build/build.number" />
@@ -36,14 +37,16 @@
 			</fileset>
 		</path>
 
-		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${bin.dir}" debug="true">
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${bin.dir}"
+			debug="true">
 			<classpath refid="class.path" />
 		</javac>
 	</target>
 
-	<!--Create jni files  -->
+	<!--Create jni files -->
 	<target name="jni" depends="compile.java">
-		<javah destdir="${javah.dir}" verbose="yes" force="yes" classpath="${bin.dir}">
+		<javah destdir="${javah.dir}" verbose="yes" force="yes"
+			classpath="${bin.dir}">
 			<class name="com.subterranean_security.crimson.core.util.Native" />
 		</javah>
 
@@ -63,7 +66,48 @@
 
 	</target>
 
-	<target name="jar.core" depends="copy-other">
+	<target name="jar.android-library" depends="copy-other">
+		<description>Build Android support jar</description>
+		<echo message="[BUILD] Building Android library" />
+		<jar destfile="${project.android.dir}/app/libs/core-android.jar">
+			<fileset dir="${bin.dir}">
+				<!-- viewer -->
+				<include name="**/com/subterranean_security/crimson/viewer/net/**" />
+				<include name="**/com/subterranean_security/crimson/viewer/store/**" />
+				<exclude
+					name="**/com/subterranean_security/crimson/viewer/net/ViewerExecutor*" />
+
+				<include name="**/com/subterranean_security/crimson/viewer/stream/**" />
+
+				<exclude name="**/com/subterranean_security/crimson/viewer/ViewerStore*" />
+				<include name="**/com/subterranean_security/crimson/viewer/ViewerState*" />
+
+				<!-- client -->
+				<include name="**/com/subterranean_security/crimson/client/net/**" />
+				<include name="**/com/subterranean_security/crimson/client/stream/**" />
+				<include name="**/com/subterranean_security/crimson/client/store/**" />
+
+				<!-- core -->
+				<include name="**/com/subterranean_security/crimson/core/**" />
+				<exclude name="**/com/subterranean_security/crimson/core/platform/**" />
+				<exclude name="**/com/subterranean_security/crimson/core/res/**" />
+				<exclude name="**/com/subterranean_security/crimson/core/ui/**" />
+
+				<!-- universal -->
+				<include name="**/com/subterranean_security/crimson/universal/**" />
+
+				<!-- sv -->
+				<include name="**/com/subterranean_security/crimson/sv/**" />
+			</fileset>
+
+			<manifest>
+				<attribute name="Build-Number" value="${build.number}" />
+				<attribute name="Crimson-Version" value="${crimson.version}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="jar.core" depends="jar.android-library">
 		<description>Build core jar</description>
 		<echo message="[BUILD] Building Core library" />
 		<jar destfile="${lib.dir}/java/c00.jar">
@@ -139,7 +183,9 @@
 	</target>
 
 	<target name="check.services">
-		<available file="${bin.dir}/com/subterranean_security/services/Services.class" property="services.present" />
+		<available
+			file="${bin.dir}/com/subterranean_security/services/Services.class"
+			property="services.present" />
 	</target>
 
 	<target name="jar.services" depends="check.services,jar.cv" if="services.present">
@@ -161,14 +207,15 @@
 		<echo message="[BUILD] Building Client" />
 
 		<!-- Generate class path -->
-		<exec executable="${buildscript.dir}/resolve-cp.sh" outputproperty="client.cp">
+		<exec executable="${buildscript.dir}/resolve-cp.sh"
+			outputproperty="client.cp">
 			<arg value="C" />
 		</exec>
 
 		<jar destfile="${serverres.dir}/client.jar">
 			<fileset dir="${bin.dir}">
 				<include name="**/com/subterranean_security/crimson/client/**" />
-				<include name="**/com/subterranean_security/crimson/nucleus/**" />
+				<include name="**/com/subterranean_security/crimson/universal/**" />
 			</fileset>
 
 			<manifest>
@@ -186,14 +233,15 @@
 		<echo message="[BUILD] Building Server" />
 
 		<!-- Generate class path -->
-		<exec executable="${buildscript.dir}/resolve-cp.sh" outputproperty="server.cp">
+		<exec executable="${buildscript.dir}/resolve-cp.sh"
+			outputproperty="server.cp">
 			<arg value="S" />
 		</exec>
 
 		<jar destfile="${installres.dir}/Crimson-Server.jar">
 			<fileset dir="${bin.dir}">
 				<include name="**/com/subterranean_security/crimson/server/**" />
-				<include name="**/com/subterranean_security/crimson/nucleus/**" />
+				<include name="**/com/subterranean_security/crimson/universal/**" />
 			</fileset>
 
 			<manifest>
@@ -213,7 +261,8 @@
 		<echo message="[BUILD] Building Viewer" />
 
 		<!-- Generate class path -->
-		<exec executable="${buildscript.dir}/resolve-cp.sh" outputproperty="viewer.cp">
+		<exec executable="${buildscript.dir}/resolve-cp.sh"
+			outputproperty="viewer.cp">
 			<arg value="V" />
 		</exec>
 
@@ -234,13 +283,14 @@
 		<length property="jni-sol.size" mode="all">
 			<fileset dir="${lib.dir}" includes="**/jni/sol/**" />
 		</length>
-		<exec executable="${buildscript.dir}/resolve-lib-size.sh" outputproperty="client-lib.size">
+		<exec executable="${buildscript.dir}/resolve-lib-size.sh"
+			outputproperty="client-lib.size">
 		</exec>
 
 		<jar destfile="${installres.dir}/Crimson-Viewer.jar">
 			<fileset dir="${bin.dir}">
 				<include name="**/com/subterranean_security/crimson/viewer/**" />
-				<include name="**/com/subterranean_security/crimson/nucleus/**" />
+				<include name="**/com/subterranean_security/crimson/universal/**" />
 			</fileset>
 
 			<manifest>
@@ -251,7 +301,8 @@
 				<attribute name="Crimson-Version" value="${crimson.version}" />
 				<attribute name="Application-Name" value="Crimson" />
 				<attribute name="Instance" value="VIEWER" />
-				<attribute name="SplashScreen-Image" value="com/subterranean_security/crimson/viewer/ui/res/image/splash/splash.png" />
+				<attribute name="SplashScreen-Image"
+					value="com/subterranean_security/crimson/viewer/ui/res/image/splash/splash.png" />
 
 				<!-- File sizes -->
 				<attribute name="jnativehook-size" value="${jnativehook.size}" />
@@ -274,7 +325,8 @@
 		<jar destfile="${bin.dir}/CInstaller.jar">
 			<fileset dir="${bin.dir}">
 				<include name="**/com/subterranean_security/cinstaller/**" />
-				<include name="**/com/subterranean_security/crimson/nucleus/**" />
+				<include name="**/com/subterranean_security/crimson/server/storage/**" />
+				<include name="**/com/subterranean_security/crimson/universal/**" />
 			</fileset>
 
 			<manifest>
@@ -283,33 +335,38 @@
 				<attribute name="Build-Number" value="${build.number}" />
 				<attribute name="Crimson-Version" value="${crimson.version}" />
 				<attribute name="Instance" value="INSTALLER" />
-				<attribute name="SplashScreen-Image" value="com/subterranean_security/cinstaller/res/img/splash.png" />
+				<attribute name="SplashScreen-Image"
+					value="com/subterranean_security/cinstaller/res/img/splash.png" />
 			</manifest>
 		</jar>
 	</target>
 
 	<target name="check.viridian">
-		<available file="${bin.dir}/com/subterranean_security/viridian/Main.class" property="viridian.present" />
+		<available file="${bin.dir}/com/subterranean_security/viridian/Main.class"
+			property="viridian.present" />
 	</target>
 
-	<target name="jar.viridian" depends="check.viridian,jar.cinstaller" if="viridian.present">
+	<target name="jar.viridian" depends="check.viridian,jar.cinstaller"
+		if="viridian.present">
 		<description>Build viridian</description>
 		<echo message="[BUILD] Building Viridian" />
 
 		<!-- Generate class path -->
-		<exec executable="${buildscript.dir}/resolve-cp.sh" outputproperty="viridian.cp">
+		<exec executable="${buildscript.dir}/resolve-cp.sh"
+			outputproperty="viridian.cp">
 			<arg value="Q" />
 		</exec>
 
 		<jar destfile="${bin.dir}/Viridian.jar">
 			<fileset dir="${bin.dir}">
 				<include name="**/com/subterranean_security/viridian/**" />
-				<include name="**/com/subterranean_security/crimson/nucleus/**" />
+				<include name="**/com/subterranean_security/crimson/universal/**" />
 			</fileset>
 
 			<manifest>
 				<attribute name="Main-Class" value="${viridian.main}" />
-				<attribute name="Class-Path" value="${viridian.cp} ../../../usr/share/java/mysql.jar" />
+				<attribute name="Class-Path"
+					value="${viridian.cp} ../../../usr/share/java/mysql.jar" />
 				<attribute name="Build-Number" value="${build.number}" />
 				<attribute name="Crimson-Version" value="${crimson.version}" />
 				<attribute name="Instance" value="VIRIDIAN" />
@@ -326,7 +383,9 @@
 		<copy file="${dist.dir}/CInstaller.jar" todir="/srv/http/dist/" />
 		<copy file="${bin.dir}/Viridian.jar" todir="/srv/http/dist/" />
 
-		<copy file="${bin.dir}/com/subterranean_security/cinstaller/res/bin/lib.zip" todir="/srv/http/dist/" />
+		<copy
+			file="${bin.dir}/com/subterranean_security/cinstaller/res/bin/lib.zip"
+			todir="/srv/http/dist/" />
 
 	</target>
 
