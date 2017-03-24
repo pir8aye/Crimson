@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,31 +15,47 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.sv.keylogger;
+package com.subterranean_security.crimson.core.attribute;
 
-import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
-import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
-import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.keylogger.Keylogger;
+import java.util.ArrayList;
+import java.util.Date;
 
-public class LogCallback {
-	Object target;
+public class TrackedAttribute extends Attribute {
 
-	public LogCallback(Object target) {
-		this.target = target;
+	private static final long serialVersionUID = 1L;
+
+	private ArrayList<String> values = new ArrayList<String>();
+	private ArrayList<Date> timestamps = new ArrayList<Date>();
+
+	@Override
+	public void set(String s) {
+		set(s, new Date());
 	}
 
-	public void launch(EV_KEvent k) {
-		switch (Universal.instance) {
+	public void set(String s, Date d) {
+		timestamps.add(d);
+		values.add(s);
+		super.set(s);
+	}
 
-		case SERVER:
-			((SubscriberSlave) target).trigger(k);
-			break;
-		case VIEWER:
-			((Keylogger) target).addKEvent(k);
-			break;
+	public int size() {
+		return values.size();
+	}
 
+	public String getValue(int i) {
+		try {
+			return values.get(i);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
 		}
-
 	}
+
+	public Date getTime(int i) {
+		try {
+			return timestamps.get(i);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
+	}
+
 }

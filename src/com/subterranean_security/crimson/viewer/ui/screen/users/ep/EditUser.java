@@ -40,6 +40,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.sv.permissions.Perm;
@@ -278,8 +279,8 @@ public class EditUser extends JPanel {
 										.addFlag(Perm.server.users.create, chckbxAddUser.isSelected());
 								String oldPass = UIUtil.getPassword(fld_old);
 								String newPass = UIUtil.getPassword(fld_new);
-								return ViewerCommands.editUser(original.getUser(), oldPass.isEmpty() ? null : oldPass,
-										oldPass.isEmpty() ? null : newPass, vp);
+								return ViewerCommands.editUser(original.get(AKeySimple.VIEWER_USER),
+										oldPass.isEmpty() ? null : oldPass, oldPass.isEmpty() ? null : newPass, vp);
 							}
 
 							protected void done() {
@@ -323,7 +324,7 @@ public class EditUser extends JPanel {
 			}
 		}
 
-		sl = new StatusLabel("Editing user: " + original.getUser());
+		sl = new StatusLabel("Editing user: " + original.get(AKeySimple.VIEWER_USER));
 		add(sl, BorderLayout.NORTH);
 	}
 

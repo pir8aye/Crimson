@@ -30,10 +30,10 @@ import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.attribute.keys.AKeyCPU;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.platform.SigarStore;
-import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
-import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.Native;
@@ -144,7 +144,7 @@ public final class CPU {
 	}
 
 	public static String computeGID(int i) {
-		return GroupAttributeType.CPU.ordinal() + getModel(i);
+		return AttributeKey.Type.CPU.ordinal() + getModel(i);
 	}
 
 	public static String getTemp() {
@@ -166,18 +166,44 @@ public final class CPU {
 
 	}
 
+	public static String get(AKeyCPU key, int i) {
+		switch (key) {
+		case CPU_CACHE:
+			return getCache(i);
+		case CPU_CORES:
+			return getCores(i);
+		case CPU_FREQUENCY:
+			return null;
+		case CPU_FREQUENCY_MAX:
+			return getMaxFrequency(i);
+		case CPU_MODEL:
+			return getModel(i);
+		case CPU_TEMP:
+			return getTemp();
+		case CPU_TOTAL_USAGE:
+			return getTotalUsage(i);
+		case CPU_VENDOR:
+			return getVendor(i);
+		default:
+			break;
+
+		}
+		return null;
+	}
+
 	public static ArrayList<AttributeGroupContainer> getAttributes() {
 		ArrayList<AttributeGroupContainer> a = new ArrayList<AttributeGroupContainer>();
 		for (int i = 0; i < general.length; i++) {
-			AttributeGroupContainer.Builder template = AttributeGroupContainer.newBuilder()
-					.setGroupType(GroupAttributeType.CPU.ordinal()).setGroupId(computeGID(i));
+			AttributeGroupContainer.Builder container = AttributeGroupContainer.newBuilder()
+					.setGroupType(AttributeKey.Type.CPU.ordinal()).setGroupId(computeGID(i));
 
-			a.add(template.setAttributeType(AttributeGroupType.CPU_CORES.ordinal()).setValue(getCores(i)).build());
-			a.add(template.setAttributeType(AttributeGroupType.CPU_MODEL.ordinal()).setValue(getModel(i)).build());
-			a.add(template.setAttributeType(AttributeGroupType.CPU_VENDOR.ordinal()).setValue(getVendor(i)).build());
-			a.add(template.setAttributeType(AttributeGroupType.CPU_CACHE.ordinal()).setValue(getCache(i)).build());
-			a.add(template.setAttributeType(AttributeGroupType.CPU_FREQUENCY_MAX.ordinal()).setValue(getMaxFrequency(i))
-					.build());
+			container.putAttribute(AKeyCPU.CPU_CORES.ordinal(), getCores(i));
+			container.putAttribute(AKeyCPU.CPU_MODEL.ordinal(), getModel(i));
+			container.putAttribute(AKeyCPU.CPU_VENDOR.ordinal(), getVendor(i));
+			container.putAttribute(AKeyCPU.CPU_CACHE.ordinal(), getCache(i));
+			container.putAttribute(AKeyCPU.CPU_FREQUENCY_MAX.ordinal(), getMaxFrequency(i));
+
+			a.add(container.build());
 		}
 		return a;
 	}
@@ -195,8 +221,7 @@ public final class CPU {
 				// get core hwmon directory
 				for (File probe : new File("/sys/class/hwmon").listFiles()) {
 					try {
-						if (FileUtil.readFileString(new File(probe.getAbsolutePath() + "/name"))
-								.contains("coretemp")) {
+						if (FileUtil.readFileString(new File(probe.getAbsolutePath() + "/name")).contains("coretemp")) {
 							core = probe;
 							break;
 						}

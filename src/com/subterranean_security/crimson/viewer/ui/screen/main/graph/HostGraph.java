@@ -33,8 +33,8 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
-import com.subterranean_security.crimson.core.profile.AbstractAttribute;
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.util.JarUtil;
@@ -47,7 +47,7 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private AbstractAttribute textType = SimpleAttribute.NET_HOSTNAME;
+	private AttributeKey textType = AKeySimple.NET_HOSTNAME;
 
 	private final int vertexWidth = 80;
 	private final int vertexHeight = 30;
@@ -216,11 +216,11 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		try {
 			// TODO move to util
 			String iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
-					+ p.getAttr(SimpleAttribute.OS_NAME).replaceAll(" ", "_").toLowerCase() + ".png";
+					+ p.get(AKeySimple.OS_NAME).replaceAll(" ", "_").toLowerCase() + ".png";
 
 			if (JarUtil.getResourceSize(iconLocation) == 0) {
 				iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
-						+ p.getAttr(SimpleAttribute.OS_FAMILY) + ".png";
+						+ p.get(AKeySimple.OS_FAMILY) + ".png";
 			}
 
 			Object v = graph.insertVertex(parent, null, "\n\n\n" + getTextFor(p), point.x, point.y, vertexWidth,
@@ -266,9 +266,9 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 	}
 
 	private String getTextFor(ClientProfile cp) {
-		if (textType instanceof SimpleAttribute) {
-			SimpleAttribute sa = (SimpleAttribute) textType;
-			return cp.getAttr(sa);
+		if (textType instanceof AKeySimple) {
+			AKeySimple sa = (AKeySimple) textType;
+			return cp.get(sa);
 		} else {
 			// TODO complex attribute
 			return "";

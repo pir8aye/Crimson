@@ -37,6 +37,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.Validation;
@@ -315,7 +316,7 @@ public class AddUser extends JDialog {
 
 		// check for username conflicts
 		for (ViewerProfile vp : ProfileStore.getServer().users) {
-			if (vp.getUser().equals(textField.getText())) {
+			if (vp.get(AKeySimple.VIEWER_USER).equals(textField.getText())) {
 				sl.setBad("Username taken");
 				return false;
 			}

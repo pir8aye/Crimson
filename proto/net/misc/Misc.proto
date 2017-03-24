@@ -5,6 +5,7 @@ package com.subterranean_security.crimson.core.proto;
 message Outcome {
 	required bool result = 1;
 	optional string comment = 2;
+	optional int64 time = 3;
 
 }
 

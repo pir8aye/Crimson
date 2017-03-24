@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,21 +15,38 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.profile.group;
+package com.subterranean_security.crimson.core.attribute.keys;
 
-public enum AttributeGroupType {
-	// CPU Attributes
-	CPU_VENDOR, CPU_MODEL, CPU_CORES, CPU_CACHE, CPU_TEMP, CPU_TOTAL_USAGE, CPU_FREQUENCY, CPU_FREQUENCY_MAX,
-	// GPU Attributes
-	GPU_VENDOR, GPU_MODEL, GPU_RAM, GPU_TEMP,
-	// Display Attributes
-	DISP_ID, DISP_TYPE, DISP_WIDTH, DISP_HEIGHT, DISP_MEMORY, DISP_REFRESH_RATE, DISP_BIT_DEPTH,
-	// Network Interface Attributes
-	NIC_NAME, NIC_DESC, NIC_IP, NIC_MAC, NIC_MASK, NIC_RX_SPEED, NIC_TX_SPEED, NIC_RX_BYTES, NIC_TX_BYTES, NIC_RX_PACKETS, NIC_TX_PACKETS,
-	// Torrent
-	TORRENT_NAME, TORRENT_SIZE,
-	// Filesystem Attributes
-	FS;
+import com.subterranean_security.crimson.core.attribute.Attribute;
+import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
+import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.universal.Universal.Instance;
 
-	public static final AttributeGroupType[] ordinal = AttributeGroupType.values();
+public enum AKeyNIC implements AttributeKey {
+	NIC_NAME, NIC_DESC, NIC_IP, NIC_MAC, NIC_MASK, NIC_RX_SPEED, NIC_TX_SPEED, NIC_RX_BYTES, NIC_TX_BYTES, NIC_RX_PACKETS, NIC_TX_PACKETS;
+
+	@Override
+	public int getGroupType() {
+		return AttributeKey.Type.NIC.ordinal();
+	}
+
+	@Override
+	public int getOrdinal() {
+		return this.ordinal();
+	}
+
+	@Override
+	public Attribute getNewAttribute() {
+		return new UntrackedAttribute();
+	}
+
+	@Override
+	public boolean isCompatible(OSFAMILY os, Instance instance) {
+		return true;
+	}
+
+	@Override
+	public boolean isHeaderable() {
+		return true;
+	}
 }

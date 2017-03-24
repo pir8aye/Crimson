@@ -17,25 +17,16 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net;
 
-import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-
-import javax.security.auth.DestroyFailedException;
-import javax.xml.stream.XMLStreamException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.ConnectionState;
-import com.subterranean_security.crimson.core.platform.LocalFS;
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
-import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
-import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_CreateAuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
@@ -43,11 +34,6 @@ import com.subterranean_security.crimson.core.proto.ClientAuth.RS_RemoveAuthMeth
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
-import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
-import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
-import com.subterranean_security.crimson.core.proto.FileManager.RS_Delete;
-import com.subterranean_security.crimson.core.proto.FileManager.RS_FileHandle;
-import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.Generator.GenReport;
 import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
@@ -57,29 +43,24 @@ import com.subterranean_security.crimson.core.proto.Listener.RS_AddListener;
 import com.subterranean_security.crimson.core.proto.Log.LogFile;
 import com.subterranean_security.crimson.core.proto.Log.LogType;
 import com.subterranean_security.crimson.core.proto.Log.RS_Logs;
-import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
-import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.proto.SMSG.RS_CloudUser;
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.Stream.EV_EndpointClosed;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_EditUser;
-import com.subterranean_security.crimson.core.store.FileManagerStore;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
-import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.core.util.LocationUtil;
-import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.sc.Logsystem;
 import com.subterranean_security.crimson.server.Generator;
-import com.subterranean_security.crimson.server.ServerState;
+import com.subterranean_security.crimson.server.net.exe.AuthExe;
+import com.subterranean_security.crimson.server.net.exe.DeltaExe;
+import com.subterranean_security.crimson.server.net.exe.FileManagerExe;
+import com.subterranean_security.crimson.server.net.exe.LoginExe;
 import com.subterranean_security.crimson.server.store.Authentication;
 import com.subterranean_security.crimson.server.store.ConnectionStore;
 import com.subterranean_security.crimson.server.store.ListenerStore;
@@ -92,7 +73,6 @@ import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
-import com.subterranean_security.services.Services;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -100,8 +80,6 @@ public class ServerExecutor extends BasicExecutor {
 	private static final Logger log = LoggerFactory.getLogger(ServerExecutor.class);
 
 	private Receptor receptor;
-
-	private int authID;
 
 	public ServerExecutor(Receptor r) {
 		super();
@@ -123,30 +101,30 @@ public class ServerExecutor extends BasicExecutor {
 								ConnectionStore.getConnection(m.getRid()).handle.write(m);
 							} catch (NullPointerException e) {
 								log.debug("Could not forward message to CVID: {}", m.getRid());
-								receptor.handle.write(Message.newBuilder()
+								r.handle.write(Message.newBuilder()
 										.setEvEndpointClosed(EV_EndpointClosed.newBuilder().setCVID(m.getRid()))
 										.build());
 							}
 						} else if (m.hasEvProfileDelta()) {
-							ev_profileDelta(m.getEvProfileDelta());
+							DeltaExe.ev_profileDelta(r, m.getEvProfileDelta());
 						} else if (m.hasEvKevent()) {
 							ev_kevent(m);
 						} else if (m.hasRqLogin()) {
-							rq_login(m);
+							LoginExe.rq_login(r, m);
 						} else if (m.hasRqGenerate()) {
 							rq_generate(m);
 						} else if (m.hasRqGroupChallenge()) {
 							rq_group_challenge(m);
 						} else if (m.hasMiAuthRequest()) {
-							mi_auth_request(m);
+							AuthExe.mi_auth_request(r, m);
 						} else if (m.hasMiChallengeresult()) {
-							mi_challenge_result(m);
+							AuthExe.mi_challenge_result(r, m);
 						} else if (m.hasRqFileListing()) {
-							rq_file_listing(m);
+							FileManagerExe.rq_file_listing(r, m);
 						} else if (m.hasRsFileListing()) {
-							rs_file_listing(m);
+							FileManagerExe.rs_file_listing(r, m);
 						} else if (m.hasRqAdvancedFileInfo()) {
-							rq_advanced_file_info(m);
+							FileManagerExe.rq_advanced_file_info(r, m);
 						} else if (m.hasMiStreamStart()) {
 							mi_stream_start(m);
 						} else if (m.hasMiStreamStop()) {
@@ -164,15 +142,15 @@ public class ServerExecutor extends BasicExecutor {
 						} else if (m.hasRqChangeClientState()) {
 							rq_change_client_state(m);
 						} else if (m.hasRqFileHandle()) {
-							rq_file_handle(m);
+							FileManagerExe.rq_file_handle(r, m);
 						} else if (m.hasRsFileHandle()) {
-							rs_file_handle(m);
+							FileManagerExe.rs_file_handle(r, m);
 						} else if (m.hasRqDelete()) {
-							rq_delete(m);
+							FileManagerExe.rq_delete(r, m);
 						} else if (m.hasRqKeyUpdate()) {
 							rq_key_update(m);
 						} else if (m.hasMiTriggerProfileDelta()) {
-							mi_trigger_profile_delta(m);
+							DeltaExe.mi_trigger_profile_delta(r, m);
 						} else if (m.hasRqCreateAuthMethod()) {
 							rq_create_auth_method(m);
 						} else if (m.hasRqRemoveAuthMethod()) {
@@ -199,154 +177,6 @@ public class ServerExecutor extends BasicExecutor {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
-	}
-
-	private void ev_profileDelta(EV_ProfileDelta pd) {
-		if (pd.hasFig() && pd.getFig()) {
-			String ip = pd.getStrAttrOrDefault(SimpleAttribute.NET_EXTERNALIP.ordinal(), "");
-			if (!pd.containsStrAttr(SimpleAttribute.NET_EXTERNALIP.ordinal())) {
-				ip = receptor.getRemoteAddress();
-				pd = EV_ProfileDelta.newBuilder(pd).putStrAttr(SimpleAttribute.NET_EXTERNALIP.ordinal(), ip).build();
-
-			}
-
-			if (!Validation.privateIP(ip)) {
-
-				try {
-					HashMap<String, String> location = LocationUtil.resolve(ip);
-					pd = EV_ProfileDelta.newBuilder(pd)
-							.putStrAttr(SimpleAttribute.IPLOC_COUNTRYCODE.ordinal(), location.get("countrycode"))
-							.putStrAttr(SimpleAttribute.IPLOC_COUNTRY.ordinal(), location.get("countryname")).build();
-
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (XMLStreamException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-
-		if (pd.getCvid() != receptor.getCvid()) {
-			pd = EV_ProfileDelta.newBuilder(pd).setCvid(receptor.getCvid()).build();
-		}
-
-		ProfileStore.getClient(receptor.getCvid()).amalgamate(pd);
-		ConnectionStore.sendToViewersWithAuthorityOverClient(receptor.getCvid(), Perm.client.visibility,
-				Message.newBuilder().setEvProfileDelta(pd));
-	}
-
-	private void mi_trigger_profile_delta(Message m) {
-
-		for (ClientProfile cp : ProfileStore.getClientsUnderAuthority(receptor.getCvid())) {
-			boolean flag = true;
-			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
-				if (pt.getCvid() == cp.getCid()) {
-					log.debug("Updating client in viewer");
-					receptor.handle.write(
-							Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(pt.getTimestamp()))).build());
-					flag = false;
-					continue;
-				}
-			}
-			if (flag) {
-				log.debug("Sending new client to viewer");
-				receptor.handle.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(0))).build());
-			}
-
-		}
-
-	}
-
-	private void mi_challenge_result(Message m) {
-		if (receptor.getState() != ConnectionState.AUTH_STAGE2) {
-			return;
-		}
-		if (m.getMiChallengeresult().getResult()) {
-			aux_acceptClient();
-			ev_profileDelta(m.getMiChallengeresult().getPd());
-		} else {
-			log.debug("Authentication failed");
-			receptor.setState(ConnectionState.CONNECTED);
-		}
-
-	}
-
-	private void mi_auth_request(Message m) {
-		if (receptor.getState() != ConnectionState.CONNECTED) {
-			return;
-		} else {
-			receptor.setState(ConnectionState.AUTH_STAGE1);
-		}
-		MI_AuthRequest auth = m.getMiAuthRequest();
-		if (auth.getCvid() != 0) {
-			receptor.setCvid(auth.getCvid());
-		} else {
-			ServerCommands.setCvid(receptor, IDGen.cvid());
-		}
-
-		switch (auth.getType()) {
-
-		case GROUP:
-			final AuthenticationGroup group = Authentication.getGroup(auth.getGroupName());
-			if (group == null) {
-				log.debug("Authentication failed: Invalid Group: {}", auth.getGroupName());
-				receptor.setState(ConnectionState.CONNECTED);
-				return;
-			} else {
-				authID = Authentication.getGroupMethod(auth.getGroupName()).getId();
-			}
-			final int mSeqID = IDGen.msg();
-
-			final String magic = RandomUtil.randString(64);
-			RQ_GroupChallenge rq = RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
-			receptor.handle.write(Message.newBuilder().setId(mSeqID).setRqGroupChallenge(rq).build());
-
-			try {
-				RS_GroupChallenge rs = receptor.cq.take(mSeqID, 7, TimeUnit.SECONDS).getRsGroupChallenge();
-				boolean flag = rs.getResult().equals(CryptoUtil.hashSign(magic, group.getGroupKey()));
-				try {
-					group.destroy();
-				} catch (DestroyFailedException e) {
-				}
-
-				if (flag) {
-					receptor.setState(ConnectionState.AUTH_STAGE2);
-				} else {
-					log.info("Challenge 1 failed");
-					receptor.setState(ConnectionState.CONNECTED);
-				}
-				receptor.handle.write(Message.newBuilder().setId(mSeqID)
-						.setMiChallengeresult(MI_GroupChallengeResult.newBuilder().setResult(flag).build()).build());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				log.debug("Failed to get challenge from client");
-			}
-
-			break;
-
-		case PASSWORD:
-			AuthMethod am = Authentication.getPassword(auth.getPassword());
-			if (am == null) {
-				log.debug("Password authentication failed");
-				receptor.setState(ConnectionState.CONNECTED);
-				break;
-			} else {
-				authID = am.getId();
-				// drop into NO_AUTH
-			}
-		case NO_AUTH:
-			// come on in
-			aux_acceptClient();
-			ev_profileDelta(auth.getPd());
-			break;
-		default:
-			break;
-
 		}
 
 	}
@@ -412,131 +242,6 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	private void rq_login(Message m) {
-		receptor.setInstance(Universal.Instance.VIEWER);
-
-		String user = m.getRqLogin().getUsername();
-		ViewerProfile vp = ProfileStore.getViewer(user);
-		EV_ServerProfileDelta.Builder sid = EV_ServerProfileDelta.newBuilder();
-		EV_ViewerProfileDelta.Builder vid = EV_ViewerProfileDelta.newBuilder();
-
-		RS_CloudUser cloud = null;
-		if (ServerState.isCloudMode() && vp == null) {
-			cloud = Services.getCloudUser(user);
-			if (vp == null) {
-				// create ViewerProfile
-				vp = new ViewerProfile(IDGen.cvid());
-				vp.setUser(user);
-				vp.getPermissions().addFlag(Perm.server.generator.generate).addFlag(Perm.server.fs.read);
-				ProfileStore.addViewer(vp);
-			}
-
-		}
-
-		boolean pass = false;
-
-		try {
-			if (!ServerState.isExampleMode()) {
-				pass = false;
-
-				if (vp != null) {
-					ServerCommands.setCvid(receptor, vp.getCvid());
-				} else {
-					log.error("No profile found for user: {}", user);
-					pass = false;
-					return;
-				}
-
-				RQ_LoginChallenge.Builder lcrq = RQ_LoginChallenge.newBuilder().setCloud(cloud != null);
-				if (lcrq.getCloud()) {
-					lcrq.setSalt(cloud.getSalt());
-				} else if (DatabaseStore.getDatabase().userExists(user)) {
-					lcrq.setSalt(DatabaseStore.getDatabase().getSalt(user));
-				} else {
-					pass = false;
-					return;
-				}
-
-				receptor.handle.write(Message.newBuilder().setId(m.getId()).setRqLoginChallenge(lcrq).build());
-				Message lcrs = null;
-				try {
-					lcrs = receptor.cq.take(m.getId(), 5, TimeUnit.SECONDS);
-				} catch (InterruptedException e) {
-					log.error("No response to login challenge");
-					pass = false;
-					return;
-				}
-				if (cloud == null) {
-					pass = DatabaseStore.getDatabase().validLogin(user, lcrs.getRsLoginChallenge().getResult());
-				} else {
-					log.debug("Got cloud hash: " + cloud.getPassword());
-					pass = lcrs.getRsLoginChallenge().getResult().equals(cloud.getPassword());
-				}
-
-			} else {
-				pass = true;
-				receptor.setCvid(IDGen.cvid());
-				user = "user_" + Math.abs(RandomUtil.nextInt());
-			}
-
-			if (pass) {
-				receptor.setState(ConnectionState.AUTHENTICATED);
-
-				ConnectionStore.add(receptor);
-
-				vp.setIp(receptor.getRemoteAddress());
-				vid.setUser(vp.getUser());
-				vid.setLoginIp(vp.getIp());
-				vid.setLoginTime(vp.getLoginTime().getTime());
-				vid.addAllViewerPermissions(vp.getPermissions().listPermissions());
-
-				if (vp.getLastLoginIp() != null) {
-					vid.setLastLoginIp(vp.getLastLoginIp());
-				}
-				if (vp.getLastLoginTime() != null) {
-					vid.setLastLoginTime(vp.getLastLoginTime().getTime());
-				}
-
-				for (Listener l : ListenerStore.listeners) {
-					sid.addListener(l.getConfig());
-				}
-
-				try {
-					for (Integer i : ProfileStore.getViewerKeyset()) {
-
-						ViewerProfile vpi = ProfileStore.getViewer(i);
-						if (vpi.getUser().equals(user)) {
-							// skip the user logging in
-							continue;
-						}
-
-						EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder().setUser(vpi.getUser())
-								.setLoginIp(vp.getPermissions().getFlag(Perm.Super) ? vpi.getIp() : "<hidden>")
-								.setLoginTime(
-										vp.getPermissions().getFlag(Perm.Super) ? vpi.getLoginTime().getTime() : 0)
-								.addAllViewerPermissions(vpi.getPermissions().listPermissions());
-
-						sid.addViewerUser(b);
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				sid.setServerStatus(ListenerStore.isRunning());
-			}
-
-		} finally {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
-					.setRsLogin(RS_Login.newBuilder().setResponse(pass).setSpd(sid).setVpd(vid)).build());
-
-			if (!pass) {
-				receptor.close();
-			} else {
-				log.info("Logged in: {}", user);
-			}
-		}
-	}
-
 	private void rq_generate(Message m) {
 
 		// check permissions
@@ -577,80 +282,6 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	private void rq_file_listing(Message m) {
-		ViewerProfile vp = ProfileStore.getViewer(receptor.getCvid());
-
-		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
-			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
-			return;
-		}
-
-		RQ_FileListing rq = m.getRqFileListing();
-		LocalFS lf = FileManagerStore.get(rq.getFmid());
-		if (rq.hasUp() && rq.getUp()) {
-			lf.up();
-		} else if (rq.hasDown()) {
-			lf.down(rq.getDown());
-		}
-
-		try {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
-					.setRsFileListing(RS_FileListing.newBuilder().setPath(lf.pwd()).addAllListing(lf.list())).build());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-
-		}
-	}
-
-	// TODO router?
-	private void rs_file_listing(Message m) {
-		Receptor r = ConnectionStore.getConnection(m.getSid());
-		r.handle.write(m);
-	}
-
-	private void rs_file_handle(Message m) {
-		log.debug("Got rs_file_handle for VID: " + m.getSid());
-		Receptor r = ConnectionStore.getConnection(m.getSid());
-		r.handle.write(m);
-
-	}
-
-	private void rq_file_handle(Message m) {
-		ViewerProfile vp = ProfileStore.getViewer(receptor.getCvid());
-
-		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
-			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
-			return;
-		}
-		receptor.handle.write(Message.newBuilder().setId(m.getId())
-				.setRsFileHandle(RS_FileHandle.newBuilder().setFmid(FileManagerStore.add(new LocalFS(true, true))))
-				.build());
-
-	}
-
-	private void rq_delete(Message m) {
-
-		// check permissions
-		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
-					.setRsDelete(RS_Delete.newBuilder()
-							.setOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions")))
-					.build());
-			return;
-		}
-
-		receptor.handle.write(Message.newBuilder().setId(m.getId())
-				.setRsDelete(RS_Delete.newBuilder()
-						.setOutcome(LocalFS.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
-				.build());
-	}
-
-	private void rq_advanced_file_info(Message m) {
-		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
-				.setRsAdvancedFileInfo(LocalFS.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
-	}
-
 	private void rq_add_listener(Message m) {
 		// check permissions
 		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.network.create_listener)) {
@@ -684,8 +315,11 @@ public class ServerExecutor extends BasicExecutor {
 
 		Message update = Message.newBuilder()
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder()
-						.addViewerUser(EV_ViewerProfileDelta.newBuilder().setUser(m.getRqAddUser().getUser())
-								.addAllViewerPermissions(m.getRqAddUser().getPermissionsList())))
+						.addViewerUser(EV_ViewerProfileDelta.newBuilder()
+								.addAllViewerPermissions(m.getRqAddUser().getPermissionsList()))
+						.setPd(EV_ProfileDelta.newBuilder()
+								.addGroup(ProtoUtil.getNewGeneralGroup()
+										.putAttribute(AKeySimple.VIEWER_USER.getFullID(), m.getRqAddUser().getUser()))))
 				.build();
 		ConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
 
@@ -707,7 +341,9 @@ public class ServerExecutor extends BasicExecutor {
 			e.printStackTrace();
 		}
 
-		EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder().setUser(rqad.getUser())
+		EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder()
+				.setPd(EV_ProfileDelta.newBuilder().addGroup(ProtoUtil.getNewGeneralGroup()
+						.putAttribute(AKeySimple.VIEWER_USER.getFullID(), rqad.getUser())))
 				.addAllViewerPermissions(m.getRqAddUser().getPermissionsList());
 
 		if (rqad.getPermissionsCount() != 0) {
@@ -754,9 +390,12 @@ public class ServerExecutor extends BasicExecutor {
 				.newBuilder().setOutcome(Outcome.newBuilder().setResult(result).setComment(comment))).build());
 
 		// notify viewers
-		ConnectionStore.sendToAll(Universal.Instance.VIEWER, Message.newBuilder()
-				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().setServerStatus(ListenerStore.isRunning()))
-				.build());
+		ConnectionStore.sendToAll(Universal.Instance.VIEWER,
+				Message.newBuilder()
+						.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().setPd(EV_ProfileDelta.newBuilder()
+								.addGroup(ProtoUtil.getNewGeneralGroup().putAttribute(
+										AKeySimple.SERVER_STATUS.getFullID(), ListenerStore.isRunning() ? "1" : "0"))))
+						.build());
 	}
 
 	private void rq_change_client_state(Message m) {
@@ -789,24 +428,6 @@ public class ServerExecutor extends BasicExecutor {
 			}
 		}
 		receptor.handle.write(Message.newBuilder().setRsLogs(rs).build());
-	}
-
-	private void aux_acceptClient() {
-		receptor.setState(ConnectionState.AUTHENTICATED);
-		receptor.setInstance(Universal.Instance.CLIENT);
-
-		try {
-			if (ProfileStore.getClient(receptor.getCvid()) == null) {
-				ProfileStore.addClient(new ClientProfile(receptor.getCvid()));
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		ProfileStore.getClient(receptor.getCvid()).setAuthID(authID);
-
-		ConnectionStore.add(receptor);
 	}
 
 }

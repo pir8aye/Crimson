@@ -21,15 +21,15 @@ import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import com.subterranean_security.crimson.core.profile.group.AttributeGroup;
-import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
+import com.subterranean_security.crimson.core.attribute.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.AKeyDISP;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam.RMethod;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel;
@@ -38,7 +38,7 @@ public class Settings extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<AttributeGroup> displays;
+	private List<AttributeGroup> displays;
 	private String[] displayStrings;
 
 	private String[] methodStrings = new String[] { "Simple Poll (slowest)", "Native Hook (fastest)" };
@@ -56,7 +56,7 @@ public class Settings extends JPanel {
 
 	private boolean full;
 
-	public Settings(ArrayList<AttributeGroup> displays, RDPanel parent, boolean full) {
+	public Settings(List<AttributeGroup> displays, RDPanel parent, boolean full) {
 		this.displays = displays;
 		this.parent = parent;
 		this.full = full;
@@ -84,9 +84,8 @@ public class Settings extends JPanel {
 	private void loadSettings() {
 		displayStrings = new String[displays.size()];
 		for (int i = 0; i < displays.size(); i++) {
-			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " ("
-					+ displays.get(i).queryAttribute(AttributeGroupType.DISP_WIDTH).get() + " x "
-					+ displays.get(i).queryAttribute(AttributeGroupType.DISP_HEIGHT).get() + ")";
+			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " (" + displays.get(i).get(AKeyDISP.DISP_WIDTH)
+					+ " x " + displays.get(i).get(AKeyDISP.DISP_HEIGHT) + ")";
 		}
 
 		if (parent.stream != null) {
@@ -116,7 +115,7 @@ public class Settings extends JPanel {
 	}
 
 	public String getMonitor() {
-		return getDisplay().queryAttribute(AttributeGroupType.DISP_ID).get();
+		return getDisplay().get(AKeyDISP.DISP_ID);
 	}
 
 	public AttributeGroup getDisplay() {

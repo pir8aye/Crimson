@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.sv.keylogger;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Observable;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ import com.subterranean_security.crimson.core.misc.MemMap;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.util.DateUtil;
 
-public class Log implements Serializable {
+public class Log extends Observable implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -109,32 +110,7 @@ public class Log implements Serializable {
 		// update last updated
 		timestamp = target;
 
-		if (callbacks != null) {
-			try {
-				for (int i = 0; i < callbacks.size(); i++) {
-					callbacks.get(i).launch(evKevent);
-				}
-			} catch (IndexOutOfBoundsException e) {
-				// ignore since callback must have been removed
-			}
-
-		}
-
-	}
-
-	private transient ArrayList<LogCallback> callbacks;
-
-	public void addCallback(LogCallback r) {
-		if (callbacks == null) {
-			callbacks = new ArrayList<LogCallback>();
-		}
-		callbacks.add(r);
-	}
-
-	public void removeCallback(LogCallback r) {
-		if (callbacks != null) {
-			callbacks.remove(r);
-		}
+		notifyObservers(evKevent);
 
 	}
 

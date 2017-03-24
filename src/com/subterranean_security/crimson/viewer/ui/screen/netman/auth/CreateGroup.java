@@ -43,6 +43,7 @@ import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
@@ -116,11 +117,11 @@ public class CreateGroup extends JPanel {
 					public void run() {
 						sl.setInfo("Creating group");
 						timer.cancel();
-						Outcome outcome = ViewerCommands.createAuthMethod(
-								AuthMethod.newBuilder().setId(IDGen.authenticationMethod()).setCreation(new Date().getTime())
-										.addOwner(ProfileStore.getLocalViewer().getUser())
-										.setType(AuthType.GROUP).setName(textField.getText())
-										.setGroupSeedPrefix(key_prefix.getText() + RandomUtil.randString(32)).build());
+						Outcome outcome = ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
+								.setId(IDGen.authenticationMethod()).setCreation(new Date().getTime())
+								.addOwner(ProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER))
+								.setType(AuthType.GROUP).setName(textField.getText())
+								.setGroupSeedPrefix(key_prefix.getText() + RandomUtil.randString(32)).build());
 						if (outcome.getResult()) {
 							sl.setGood("Group created successfully");
 							try {

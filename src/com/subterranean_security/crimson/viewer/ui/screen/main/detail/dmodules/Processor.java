@@ -17,14 +17,16 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Timer;
+import java.util.List;
 import java.util.TimerTask;
 
 import javax.swing.BoxLayout;
@@ -36,12 +38,13 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
+import com.subterranean_security.crimson.core.attribute.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.AKeyCPU;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
+import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.viewer.ui.common.components.StatusConsole;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
 
@@ -50,15 +53,11 @@ import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
 import info.monitorenter.util.Range;
-import java.awt.BorderLayout;
 
-public class Processor extends JPanel implements DModule {
+public class Processor extends TracedPanel implements DModule {
 
 	private static final long serialVersionUID = 1L;
 
-	private long updatePeriod = 900;
-
-	private Chart2D chart;
 	private ITrace2D trace;
 
 	private boolean showing = false;
@@ -70,16 +69,15 @@ public class Processor extends JPanel implements DModule {
 	private JLabel statConsoleTemp;
 
 	public Processor() {
+		super();
 		initChart();
 		init();
 	}
 
 	private void initChart() {
-		trace = new Trace2DLtd(60);
-		trace.setColor(Color.RED);
 
 		chart = new Chart2D();
-		chart.addTrace(trace);
+
 		chart.setUseAntialiasing(true);
 		chart.setBackground(Color.WHITE);
 		chart.getAxisX().setVisible(false);
@@ -93,6 +91,19 @@ public class Processor extends JPanel implements DModule {
 		chart.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		chart.setPaintLabels(false);
 		chart.setAutoscrolls(true);
+	}
+
+	private void initTraces() {
+
+		trace = new Trace2DLtd(60);
+		trace.setColor(Color.RED);
+
+		addTraces();
+	}
+
+	private void addTraces() {
+		chart.removeAllTraces();
+		chart.addTrace(trace);
 	}
 
 	private void init() {
@@ -158,71 +169,73 @@ public class Processor extends JPanel implements DModule {
 		panel_1.setLayout(new BorderLayout(0, 0));
 		panel_1.add(statusConsole);
 
-		startUpdater();
 	}
 
-	private void startUpdater() {
-		updateTimer.schedule(new TimerTask() {
-			Date start = new Date();
-			Date last = new Date();
+	class UpdateTask extends TimerTask {
 
-			@Override
-			public void run() {
-				if (isDetailOpen()) {
+		@Override
+		public void run() {
+			double time = System.currentTimeMillis() - start.getTime();
 
-					double time = System.currentTimeMillis() - start.getTime();
-
-					if (System.currentTimeMillis() - last.getTime() > updatePeriod * 2) {
-						trace.addPoint(time - 1, Double.NaN);
-					}
-
-					// usage
-					Attribute usage = profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TOTAL_USAGE);
-					double u;
-					if (usage != null) {
-						u = Double.parseDouble(usage.get());
-
-						val_usage.setText(String.format("Average Utilization: %5.2f%%", u));
-					} else {
-						u = Double.NaN;
-					}
-
-					last = new Date();
-					trace.addPoint(time, u);
-
-					chart.getAxisX().getRangePolicy().setRange(new Range(time, time - (60 * updatePeriod)));
-
-					// set dynamic attributes
-					// temperature
-					if (profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP) != null) {
-						statConsoleTemp
-								.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP).get());
-					}
-
-				}
-
+			// break trace if the last update was longer than two
+			// periods ago
+			if (System.currentTimeMillis() - last.getTime() > updatePeriod * 2) {
+				trace.addPoint(time - 1, Double.NaN);
 			}
 
-		}, 0, updatePeriod);
+			// usage
+			String usage = getPrimaryCPU().get(AKeyCPU.CPU_TOTAL_USAGE);
+			double u;
+			if (usage != null) {
+				u = Double.parseDouble(usage);
+
+				val_usage.setText(String.format("Average Utilization: %5.2f%%", u));
+			} else {
+				u = Double.NaN;
+			}
+
+			last = new Date();
+			trace.addPoint(time, u);
+
+			chart.getAxisX().getRangePolicy().setRange(new Range(time, time - (60 * updatePeriod)));
+
+			// set dynamic attributes
+			// temperature
+			String temp = getPrimaryCPU().get(AKeyCPU.CPU_TEMP);
+			if (temp != null) {
+				statConsoleTemp.setText(temp);
+			}
+
+		}
+
 	}
 
 	private ClientProfile profile;
-	private InfoMaster im;
-	private Timer updateTimer = new Timer();
+	private List<AttributeGroup> cpuList;
+
+	private AttributeGroup getPrimaryCPU() {
+		return cpuList.get(0);
+	}
 
 	@Override
 	public void setTarget(ClientProfile p) {
-
-		// clear chart only if the new profile differs from the old
-		if ((profile != null) && p.getCid() != profile.getCid()) {
-			trace.removeAllPoints();
+		List<ITrace2D> savedTraces = traceList.get(p.getCid());
+		if (savedTraces == null) {
+			initTraces();
+			savedTraces = new ArrayList<ITrace2D>();
+			savedTraces.add(trace);
+			traceList.put(p.getCid(), savedTraces);
+		} else {
+			trace = savedTraces.get(0);
+			addTraces();
 		}
 
 		profile = p;
+		cpuList = profile.getGroupList(AttributeKey.Type.CPU);
 
 		// set static attributes
-		statConsoleModel.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_MODEL).get());
-		statConsoleFreq.setText(profile.getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_FREQUENCY_MAX).get());
+		statConsoleModel.setText(getPrimaryCPU().get(AKeyCPU.CPU_MODEL));
+		statConsoleFreq.setText(getPrimaryCPU().get(AKeyCPU.CPU_FREQUENCY_MAX));
 
 	}
 
@@ -236,13 +249,13 @@ public class Processor extends JPanel implements DModule {
 
 		@Override
 		protected void done() {
-			if (statConsoleModel.getText().equals("Loading...")) {
+			if ("Loading...".equals(statConsoleModel.getText())) {
 				statConsoleModel.setText("N/A");
 			}
-			if (statConsoleFreq.getText().equals("Loading...")) {
+			if ("Loading...".equals(statConsoleFreq.getText())) {
 				statConsoleFreq.setText("N/A");
 			}
-			if (statConsoleTemp.getText().equals("Loading...")) {
+			if ("Loading...".equals(statConsoleTemp.getText())) {
 				statConsoleTemp.setText("N/A");
 			}
 		};
@@ -251,20 +264,25 @@ public class Processor extends JPanel implements DModule {
 
 	private StatusConsole statusConsole;
 
+	private InfoMaster im;
+
 	@Override
 	public void setShowing(boolean showing) {
 		this.showing = showing;
 		if (showing) {
-			im = new InfoMaster(InfoParam.newBuilder().setCpuUsage(true).setCpuTemp(true).build(), profile.getCid(),
-					(int) updatePeriod);
+
+			im = new InfoMaster(ProtoUtil.getInfoParam(AKeyCPU.CPU_TOTAL_USAGE, AKeyCPU.CPU_TEMP).build(),
+					profile.getCid(), (int) updatePeriod);
 			StreamStore.addStream(im);
 
 			// launch timeout
 			timeout.execute();
+			startRefresh(new UpdateTask());
 		} else {
 			if (im != null) {
 				StreamStore.removeStreamBySID(im.getStreamID());
 			}
+			stopRefresh();
 		}
 	}
 
@@ -287,14 +305,6 @@ public class Processor extends JPanel implements DModule {
 	@Override
 	public boolean isDetailOpen() {
 		return showing;
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		if (updateTimer != null) {
-			updateTimer.cancel();
-		}
-		super.finalize();
 	}
 
 }

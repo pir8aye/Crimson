@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.misc.MemList;
 import com.subterranean_security.crimson.core.misc.MemMap;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
@@ -167,7 +168,7 @@ public class ServerDatabase extends BasicDatabase {
 
 		// create ViewerProfile
 		ViewerProfile vp = new ViewerProfile(IDGen.cvid());
-		vp.setUser(user);
+		vp.set(AKeySimple.VIEWER_USER, user);
 		vp.setPermissions(permissions);
 
 		try {

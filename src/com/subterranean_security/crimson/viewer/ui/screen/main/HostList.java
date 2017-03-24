@@ -32,8 +32,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
-import com.subterranean_security.crimson.core.profile.AbstractAttribute;
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.ListHeaderPopup;
@@ -42,9 +42,8 @@ public class HostList extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final AbstractAttribute[] defaultHeaders = new AbstractAttribute[] { SimpleAttribute.IPLOC_COUNTRY,
-			SimpleAttribute.OS_NAME, SimpleAttribute.USER_NAME, SimpleAttribute.NET_HOSTNAME,
-			SimpleAttribute.OS_LANGUAGE };
+	public static final AttributeKey[] defaultHeaders = new AttributeKey[] { AKeySimple.IPLOC_COUNTRY,
+			AKeySimple.OS_NAME, AKeySimple.USER_NAME, AKeySimple.NET_HOSTNAME, AKeySimple.OS_LANGUAGE };
 
 	private static JTable table = new JTable();
 	private TM tm = new TM();
@@ -113,7 +112,7 @@ public class HostList extends JPanel {
 	}
 
 	// TODO only update cell
-	public void updateField(ClientProfile cp, AbstractAttribute aa) {
+	public void updateField(ClientProfile cp, AttributeKey aa) {
 		for (int i = 0; i < tm.getClientList().size(); i++) {
 			if (cp.getCid() == tm.getClientList().get(i).getCid()) {
 				tm.fireTableRowsUpdated(i, i);
@@ -142,9 +141,9 @@ public class HostList extends JPanel {
 		sorter.toggleSortOrder(0);
 
 		for (int i = 0; i < tm.headers.length; i++) {
-			AbstractAttribute aa = tm.headers[i];
-			if (aa instanceof SimpleAttribute) {
-				SimpleAttribute sa = (SimpleAttribute) aa;
+			AttributeKey aa = tm.headers[i];
+			if (aa instanceof AKeySimple) {
+				AKeySimple sa = (AKeySimple) aa;
 				switch (sa) {
 				case CLIENT_CID:
 					sorter.setComparator(i, new ClientProfile.CidComparator());
@@ -175,7 +174,7 @@ class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 
-	public AbstractAttribute[] headers = new AbstractAttribute[] {};
+	public AttributeKey[] headers = new AttributeKey[] {};
 
 	private ArrayList<ClientProfile> clients = new ArrayList<ClientProfile>();
 
@@ -194,7 +193,7 @@ class TM extends AbstractTableModel {
 
 	public void refreshHeaders() {
 		try {
-			headers = (AbstractAttribute[]) DatabaseStore.getDatabase().getObject("hostlist.headers");
+			headers = (AttributeKey[]) DatabaseStore.getDatabase().getObject("hostlist.headers");
 		} catch (Exception e) {
 			headers = HostList.defaultHeaders;
 		}
@@ -257,16 +256,16 @@ class TR extends DefaultTableCellRenderer {
 	private Object setupCell(JTable table, ClientProfile profile, int viewColumn) {
 		setBorder(noFocusBorder);
 
-		AbstractAttribute aa = tm.headers[table.convertColumnIndexToModel(viewColumn)];
-		if (aa instanceof SimpleAttribute) {
-			SimpleAttribute sa = (SimpleAttribute) aa;
+		AttributeKey aa = tm.headers[table.convertColumnIndexToModel(viewColumn)];
+		if (aa instanceof AKeySimple) {
+			AKeySimple sa = (AKeySimple) aa;
 			switch (sa) {
 			case IPLOC_COUNTRY:
 				return profile.getLocationIcon();
 			case OS_NAME:
 				return profile.getOsNameIcon();
 			default:
-				return profile.getAttr(sa);
+				return profile.get(sa);
 			}
 		} else {
 			// TODO complex attribute

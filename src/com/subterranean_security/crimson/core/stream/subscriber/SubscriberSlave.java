@@ -31,14 +31,12 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.server.store.ConnectionStore;
 import com.subterranean_security.crimson.server.store.ProfileStore;
-import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
+//TODO DELETE AND MERGE INTO INFO STREAM!!!
 public class SubscriberSlave extends Stream {
 
 	private static final Logger log = LoggerFactory.getLogger(SubscriberSlave.class);
-
-	private LogCallback lcb = new LogCallback(this);
 
 	public SubscriberSlave(Param p) {
 		param = p;
@@ -66,7 +64,7 @@ public class SubscriberSlave extends Stream {
 			ClientProfile cp = ProfileStore.getClient(param.getCID());
 
 			if (cp != null) {
-				cp.getKeylog().addCallback(lcb);
+				// cp.getKeylog().addCallback(lcb);
 			} else {
 				log.warn("ClientProfile: {} was null", param.getCID());
 			}
@@ -80,7 +78,7 @@ public class SubscriberSlave extends Stream {
 			ClientProfile cp = ProfileStore.getClient(param.getCID());
 
 			if (cp != null) {
-				cp.getKeylog().removeCallback(lcb);
+				// cp.getKeylog().removeCallback(lcb);
 			} else {
 				log.warn("ClientProfile: {} was null", param.getCID());
 			}

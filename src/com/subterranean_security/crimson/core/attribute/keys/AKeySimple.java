@@ -15,12 +15,15 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.profile;
+package com.subterranean_security.crimson.core.attribute.keys;
 
+import com.subterranean_security.crimson.core.attribute.Attribute;
+import com.subterranean_security.crimson.core.attribute.TrackedAttribute;
+import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
-public enum SimpleAttribute implements AbstractAttribute {
+public enum AKeySimple implements AttributeKey {
 	// Meta attributes
 	META_FIRST_CONTACT,
 	// Operating system attributes
@@ -44,7 +47,11 @@ public enum SimpleAttribute implements AbstractAttribute {
 	// Linux specific attributes
 	LINUX_WM, LINUX_DISTRO, LINUX_SHELL, LINUX_PACKAGES, LINUX_TERMINAL, LINUX_KERNEL,
 	// Windows specific attributes
-	WIN_IE_VERSION, WIN_POWERSHELL_VERSION, WIN_SERIAL, WIN_INSTALLDATE;
+	WIN_IE_VERSION, WIN_POWERSHELL_VERSION, WIN_SERIAL, WIN_INSTALLDATE,
+	// Server specific
+	SERVER_CONNECTED_CLIENTS, SERVER_CONNECTED_VIEWERS, SERVER_TOTAL_CLIENTS, SERVER_TOTAL_VIEWERS, SERVER_STATUS,
+	// Viewer specific
+	VIEWER_USER, VIEWER_LOGIN_TIME, VIEWER_LOGIN_IP;
 
 	public String toSuperString() {
 		return super.toString();
@@ -128,7 +135,15 @@ public enum SimpleAttribute implements AbstractAttribute {
 		return super.toString();
 	}
 
-	public boolean valid(OSFAMILY os, Instance instance) {
+	public static final AKeySimple[] ordinal = AKeySimple.values();
+
+	@Override
+	public int getGroupType() {
+		return 0;
+	}
+
+	@Override
+	public boolean isCompatible(OSFAMILY os, Instance instance) {
 		switch (this) {
 		case KEYLOGGER_STATE:
 		case KEYLOGGER_TRIGGER:
@@ -146,10 +161,46 @@ public enum SimpleAttribute implements AbstractAttribute {
 		case WIN_POWERSHELL_VERSION:
 		case WIN_SERIAL:
 			return os == OSFAMILY.WIN;
+		case SERVER_CONNECTED_CLIENTS:
+		case SERVER_CONNECTED_VIEWERS:
+		case SERVER_TOTAL_CLIENTS:
+		case SERVER_TOTAL_VIEWERS:
+		case SERVER_STATUS:
+			return instance == Instance.SERVER || instance == Instance.VIEWER;
 		default:
 			return true;
 		}
 	}
 
-	public static final SimpleAttribute[] ordinal = SimpleAttribute.values();
+	@Override
+	public boolean isHeaderable() {
+		switch (this) {
+		case SERVER_CONNECTED_CLIENTS:
+		case SERVER_CONNECTED_VIEWERS:
+		case SERVER_TOTAL_CLIENTS:
+		case SERVER_TOTAL_VIEWERS:
+		case SERVER_STATUS:
+			return false;
+		default:
+			return true;
+		}
+	}
+
+	@Override
+	public int getOrdinal() {
+		return this.ordinal();
+	}
+
+	@Override
+	public Attribute getNewAttribute() {
+		switch (this) {
+		case VIEWER_LOGIN_IP:
+		case VIEWER_LOGIN_TIME:
+		case NET_EXTERNALIP:
+			return new TrackedAttribute();
+		default:
+			return new UntrackedAttribute();
+		}
+	}
+
 }

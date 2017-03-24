@@ -17,15 +17,19 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.stream.info;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.attribute.keys.AKeyCPU;
+import com.subterranean_security.crimson.core.attribute.keys.AKeyNIC;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.misc.StatStream;
-import com.subterranean_security.crimson.core.platform.info.CRIMSON;
 import com.subterranean_security.crimson.core.platform.info.CPU;
+import com.subterranean_security.crimson.core.platform.info.CRIMSON;
 import com.subterranean_security.crimson.core.platform.info.NIC;
 import com.subterranean_security.crimson.core.platform.info.RAM;
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
-import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
-import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
@@ -35,6 +39,8 @@ import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
+import com.subterranean_security.crimson.server.store.ConnectionStore;
+import com.subterranean_security.crimson.server.store.ListenerStore;
 
 public abstract class InfoSlave extends Stream {
 
@@ -42,40 +48,60 @@ public abstract class InfoSlave extends Stream {
 	 * The last profile delta. Subsequent updates use this as a base.
 	 */
 	private EV_ProfileDelta.Builder pd;
-	private AttributeGroupContainer.Builder lastCpuUsage;
-	private AttributeGroupContainer.Builder lastCpuTemp;
+	private AttributeGroupContainer.Builder lastGeneralContainer;
+
+	private AttributeGroupContainer.Builder lastCpuContainer;
 	private int whichCPU = 0;
 
 	private StatStream rxSpeed;
-	private AttributeGroupContainer.Builder lastRxSpeed;
-	private AttributeGroupContainer.Builder lastRxBytes;
-	private AttributeGroupContainer.Builder lastRxPackets;
 
 	private StatStream txSpeed;
-	private AttributeGroupContainer.Builder lastTxSpeed;
-	private AttributeGroupContainer.Builder lastTxBytes;
-	private AttributeGroupContainer.Builder lastTxPackets;
+	private AttributeGroupContainer.Builder lastNicContainer;
 	private int whichNIC = 0;
+
+	private List<AttributeKey> keys;
 
 	public InfoSlave(Param p) {
 		param = p;
+		initKeys(p.getInfoParam().getKeyList());
+
 		pd = EV_ProfileDelta.newBuilder().setCvid(Common.cvid);
 
-		if (param.getInfoParam().hasCpuUsage() || param.getInfoParam().hasCpuTemp()) {
-			initializeCPU();
+		initializeContainers();
+
+		for (AttributeKey key : keys) {
+			if (key instanceof AKeyCPU) {
+				initializeCPU();
+				break;
+			}
 		}
 
-		if (param.getInfoParam().hasNicRxBytes() || param.getInfoParam().hasNicRxPackets()
-				|| param.getInfoParam().hasNicRxSpeed() || param.getInfoParam().hasNicTxBytes()
-				|| param.getInfoParam().hasNicTxPackets() || param.getInfoParam().hasNicTxSpeed()) {
-			initializeNIC();
+		for (AttributeKey key : keys) {
+			if (key instanceof AKeyNIC) {
+				initializeNIC();
+				break;
+			}
 		}
 
 		start();
 	}
 
+	private void initKeys(List<Integer> list) {
+		keys = new ArrayList<AttributeKey>();
+		for (int id : list) {
+			keys.add(AttributeKey.getKey(id));
+		}
+	}
+
 	public InfoSlave(InfoParam ip) {
 		this(Param.newBuilder().setInfoParam(ip).setStreamID(IDGen.stream()).setVID(Common.cvid).build());
+	}
+
+	private void initializeContainers() {
+		lastCpuContainer = AttributeGroupContainer.newBuilder().setGroupType(AttributeKey.Type.CPU.ordinal());
+		lastNicContainer = AttributeGroupContainer.newBuilder().setGroupType(AttributeKey.Type.NIC.ordinal());
+		lastGeneralContainer = AttributeGroupContainer.newBuilder().setGroupType(AttributeKey.Type.GENERAL.ordinal())
+				.setGroupId("");
 	}
 
 	private void initializeCPU() {
@@ -96,15 +122,8 @@ public abstract class InfoSlave extends Stream {
 			whichCPU = 0;
 		}
 
-		if (param.getInfoParam().hasCpuUsage()) {
-			lastCpuUsage = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.CPU.ordinal())
-					.setGroupId(cpuID).setAttributeType(AttributeGroupType.CPU_TOTAL_USAGE.ordinal());
-		}
+		lastCpuContainer.setGroupId(cpuID);
 
-		if (param.getInfoParam().hasCpuTemp()) {
-			lastCpuTemp = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.CPU.ordinal())
-					.setGroupId(cpuID).setAttributeType(AttributeGroupType.CPU_TEMP.ordinal());
-		}
 	}
 
 	private void initializeNIC() {
@@ -125,41 +144,13 @@ public abstract class InfoSlave extends Stream {
 			whichNIC = 0;
 		}
 
-		if (param.getInfoParam().hasNicRxBytes()) {
-			lastRxBytes = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.NIC.ordinal())
-					.setGroupId(nicID).setAttributeType(AttributeGroupType.NIC_RX_BYTES.ordinal());
-		}
+		lastNicContainer.setGroupId(nicID);
 
-		if (param.getInfoParam().hasNicRxPackets()) {
-			lastRxPackets = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.NIC.ordinal())
-					.setGroupId(nicID).setAttributeType(AttributeGroupType.NIC_RX_PACKETS.ordinal());
-		}
-
-		if (param.getInfoParam().hasNicRxSpeed()) {
-			lastRxSpeed = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.NIC.ordinal())
-					.setGroupId(nicID).setAttributeType(AttributeGroupType.NIC_RX_SPEED.ordinal());
-		}
-
-		if (param.getInfoParam().hasNicTxBytes()) {
-			lastTxBytes = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.NIC.ordinal())
-					.setGroupId(nicID).setAttributeType(AttributeGroupType.NIC_TX_BYTES.ordinal());
-		}
-
-		if (param.getInfoParam().hasNicTxPackets()) {
-			lastTxPackets = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.NIC.ordinal())
-					.setGroupId(nicID).setAttributeType(AttributeGroupType.NIC_TX_PACKETS.ordinal());
-		}
-
-		if (param.getInfoParam().hasNicTxSpeed()) {
-			lastTxSpeed = AttributeGroupContainer.newBuilder().setGroupType(GroupAttributeType.NIC.ordinal())
-					.setGroupId(nicID).setAttributeType(AttributeGroupType.NIC_TX_SPEED.ordinal());
-		}
-
-		if (param.getInfoParam().hasNicRxBytes() || param.getInfoParam().hasNicRxSpeed()) {
+		if (keys.contains(AKeyNIC.NIC_RX_BYTES) || keys.contains(AKeyNIC.NIC_RX_SPEED)) {
 			rxSpeed = new StatStream(1000, 60);
 		}
 
-		if (param.getInfoParam().hasNicTxBytes() || param.getInfoParam().hasNicTxSpeed()) {
+		if (keys.contains(AKeyNIC.NIC_TX_BYTES) || keys.contains(AKeyNIC.NIC_TX_SPEED)) {
 			txSpeed = new StatStream(1000, 60);
 		}
 	}
@@ -172,131 +163,71 @@ public abstract class InfoSlave extends Stream {
 	protected EV_ProfileDelta gather() {
 
 		// purge last attribute groups
-		pd.clearGroupAttr();
+		pd.clearGroup();
 
-		// cpu usage
-		if (param.getInfoParam().hasCpuUsage()) {
-			String coreUsage = CPU.getTotalUsage(whichCPU);
-			if (!lastCpuUsage.getValue().equals(coreUsage)) {
-				pd.addGroupAttr(lastCpuUsage.setValue(coreUsage));
-			}
-		}
-
-		// cpu temps
-		if (param.getInfoParam().hasCpuTemp()) {
-			String cpuTemp = CPU.getTemp();
-			if (!lastCpuTemp.getValue().equals(cpuTemp)) {
-				pd.addGroupAttr(lastCpuTemp.setValue(cpuTemp));
-			}
-		}
-
-		// nic rx bytes
-		if (param.getInfoParam().hasNicRxBytes()) {
+		if (keys.contains(AKeyNIC.NIC_RX_BYTES)) {
 			long l = NIC.getRxBytes(whichNIC);
 			rxSpeed.addPoint(l);
-			String nicRxBytes = UnitTranslator.translateNicOutput(l);
-			if (!lastRxBytes.getValue().equals(nicRxBytes)) {
-				pd.addGroupAttr(lastRxBytes.setValue(nicRxBytes));
-			}
+
+			poll(lastNicContainer, AKeyNIC.NIC_RX_BYTES, UnitTranslator.translateNicOutput(l));
 		}
 
-		// nic rx speed
-		if (param.getInfoParam().hasNicRxSpeed()) {
-			String nicRxSpeed = UnitTranslator.nicSpeed(param.getInfoParam().hasNicRxBytes()
-					? rxSpeed.getInstantaneousSpeed() : rxSpeed.addPoint(NIC.getRxBytes(whichNIC)));
-			if (!lastRxSpeed.getValue().equals(nicRxSpeed)) {
-				pd.addGroupAttr(lastRxSpeed.setValue(nicRxSpeed));
-			}
-		}
-
-		// nic rx packets
-		if (param.getInfoParam().hasNicRxPackets()) {
-			String nicRxPackets = "" + NIC.getRxPackets(whichNIC);
-			if (!lastRxPackets.getValue().equals(nicRxPackets)) {
-				pd.addGroupAttr(lastRxPackets.setValue(nicRxPackets));
-			}
-		}
-
-		// nic tx bytes
-		if (param.getInfoParam().hasNicTxBytes()) {
+		if (keys.contains(AKeyNIC.NIC_TX_BYTES)) {
 			long l = NIC.getTxBytes(whichNIC);
 			txSpeed.addPoint(l);
-			String nicTxBytes = UnitTranslator.translateNicOutput(l);
-			if (!lastTxBytes.getValue().equals(nicTxBytes)) {
-				pd.addGroupAttr(lastTxBytes.setValue(nicTxBytes));
-			}
+
+			poll(lastNicContainer, AKeyNIC.NIC_TX_BYTES, UnitTranslator.translateNicOutput(l));
 		}
 
-		// nic tx speed
-		if (param.getInfoParam().hasNicTxSpeed()) {
-			String nicTxSpeed = UnitTranslator.nicSpeed(param.getInfoParam().hasNicTxBytes()
-					? txSpeed.getInstantaneousSpeed() : txSpeed.addPoint(NIC.getTxBytes(whichNIC)));
-			if (!lastTxSpeed.getValue().equals(nicTxSpeed)) {
-				pd.addGroupAttr(lastTxSpeed.setValue(nicTxSpeed));
-			}
-		}
+		if (keys.contains(AKeyNIC.NIC_RX_SPEED))
+			poll(lastNicContainer, AKeyNIC.NIC_RX_SPEED, UnitTranslator.nicSpeed(keys.contains(AKeyNIC.NIC_RX_BYTES)
+					? rxSpeed.getInstantaneousSpeed() : rxSpeed.addPoint(NIC.getRxBytes(whichNIC))));
+		if (keys.contains(AKeyNIC.NIC_TX_SPEED))
+			poll(lastNicContainer, AKeyNIC.NIC_TX_SPEED, UnitTranslator.nicSpeed(keys.contains(AKeyNIC.NIC_TX_BYTES)
+					? txSpeed.getInstantaneousSpeed() : txSpeed.addPoint(NIC.getTxBytes(whichNIC))));
+		if (keys.contains(AKeyNIC.NIC_RX_PACKETS))
+			poll(lastNicContainer, AKeyNIC.NIC_RX_PACKETS, "" + NIC.getRxPackets(whichNIC));
+		if (keys.contains(AKeyNIC.NIC_TX_PACKETS))
+			poll(lastNicContainer, AKeyNIC.NIC_TX_PACKETS, "" + NIC.getTxPackets(whichNIC));
+		if (keys.contains(AKeyCPU.CPU_TOTAL_USAGE))
+			poll(lastCpuContainer, AKeyCPU.CPU_TOTAL_USAGE, CPU.getTotalUsage(whichCPU));
+		if (keys.contains(AKeyCPU.CPU_TEMP))
+			poll(lastCpuContainer, AKeyCPU.CPU_TEMP, CPU.getTemp());
+		if (keys.contains(AKeySimple.OS_ACTIVE_WINDOW))
+			poll(lastGeneralContainer, AKeySimple.OS_ACTIVE_WINDOW, Native.getActiveWindow());
+		if (keys.contains(AKeySimple.CLIENT_STATUS))
+			poll(lastGeneralContainer, AKeySimple.CLIENT_STATUS, CRIMSON.getStatus());
+		if (keys.contains(AKeySimple.RAM_USAGE))
+			poll(lastGeneralContainer, AKeySimple.RAM_USAGE, RAM.getUsage());
+		if (keys.contains(AKeySimple.CLIENT_RAM_USAGE))
+			poll(lastGeneralContainer, AKeySimple.CLIENT_RAM_USAGE, RAM.getClientUsage());
+		if (keys.contains(AKeySimple.CLIENT_CPU_USAGE))
+			poll(lastGeneralContainer, AKeySimple.CLIENT_CPU_USAGE, CPU.getClientUsage());
+		if (keys.contains(AKeySimple.SERVER_STATUS))
+			poll(lastGeneralContainer, AKeySimple.SERVER_STATUS, ListenerStore.isRunning() ? "1" : "0");
+		if (keys.contains(AKeySimple.SERVER_CONNECTED_CLIENTS))
+			poll(lastGeneralContainer, AKeySimple.SERVER_CONNECTED_CLIENTS, "" + ConnectionStore.countClients());
+		if (keys.contains(AKeySimple.SERVER_CONNECTED_VIEWERS))
+			poll(lastGeneralContainer, AKeySimple.SERVER_CONNECTED_VIEWERS, "" + ConnectionStore.countUsers());
 
-		// nic tx packets
-		if (param.getInfoParam().hasNicTxPackets()) {
-			String nicTxPackets = "" + NIC.getTxPackets(whichNIC);
-			if (!lastTxPackets.getValue().equals(nicTxPackets)) {
-				pd.addGroupAttr(lastTxPackets.setValue(nicTxPackets));
-			}
-		}
+		if (lastGeneralContainer.getAttributeCount() > 0)
+			pd.addGroup(lastGeneralContainer);
+		if (lastCpuContainer.getAttributeCount() > 0)
+			pd.addGroup(lastCpuContainer);
+		if (lastNicContainer.getAttributeCount() > 0)
+			pd.addGroup(lastNicContainer);
 
-		// active window
-		if (param.getInfoParam().hasActiveWindow()) {
-			String activeWindow = Native.getActiveWindow();
-			if (!pd.getStrAttrOrDefault(SimpleAttribute.OS_ACTIVE_WINDOW.ordinal(), "").equals(activeWindow)) {
-				pd.putStrAttr(SimpleAttribute.OS_ACTIVE_WINDOW.ordinal(), activeWindow);
-			} else {
-				pd.removeStrAttr(SimpleAttribute.OS_ACTIVE_WINDOW.ordinal());
-			}
-		}
+		System.out.println("Gathered info for " + pd.getGroupCount() + " groups");
 
-		// client status
-		if (param.getInfoParam().hasClientStatus()) {
-			String clientStatus = CRIMSON.getStatus();
-			if (!pd.getStrAttrOrDefault(SimpleAttribute.CLIENT_STATUS.ordinal(), "").equals(clientStatus)) {
-				pd.putStrAttr(SimpleAttribute.CLIENT_STATUS.ordinal(), clientStatus);
-			} else {
-				pd.removeStrAttr(SimpleAttribute.CLIENT_STATUS.ordinal());
-			}
-		}
-
-		// ram usage
-		if (param.getInfoParam().hasRamUsage()) {
-			String ramUsage = RAM.getUsage();
-			if (!pd.getStrAttrOrDefault(SimpleAttribute.RAM_USAGE.ordinal(), "").equals(ramUsage)) {
-				pd.putStrAttr(SimpleAttribute.RAM_USAGE.ordinal(), ramUsage);
-			} else {
-				pd.removeStrAttr(SimpleAttribute.RAM_USAGE.ordinal());
-			}
-
-		}
-
-		// crimson ram usage
-		if (param.getInfoParam().hasCrimsonRamUsage()) {
-			String crimsonRamUsage = RAM.getClientUsage();
-			if (!pd.getStrAttrOrDefault(SimpleAttribute.CLIENT_RAM_USAGE.ordinal(), "").equals(crimsonRamUsage)) {
-				pd.putStrAttr(SimpleAttribute.CLIENT_RAM_USAGE.ordinal(), crimsonRamUsage);
-			} else {
-				pd.removeStrAttr(SimpleAttribute.CLIENT_RAM_USAGE.ordinal());
-			}
-
-		}
-
-		// crimson cpu usage
-		if (param.getInfoParam().hasCrimsonCpuUsage()) {
-			String crimsonCpuUsage = CPU.getClientUsage();
-			if (!pd.getStrAttrOrDefault(SimpleAttribute.CLIENT_CPU_USAGE.ordinal(), "").equals(crimsonCpuUsage)) {
-				pd.putStrAttr(SimpleAttribute.CLIENT_CPU_USAGE.ordinal(), crimsonCpuUsage);
-			} else {
-				pd.removeStrAttr(SimpleAttribute.CLIENT_CPU_USAGE.ordinal());
-			}
-
-		}
 		return pd.build();
+	}
+
+	private void poll(AttributeGroupContainer.Builder container, AttributeKey key, String value) {
+		if (container.getAttributeOrDefault(key.getFullID(), "").equals(value)) {
+			container.removeAttribute(key.getFullID());
+		} else {
+			container.putAttribute(key.getFullID(), value);
+		}
 	}
 
 	@Override

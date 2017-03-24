@@ -340,7 +340,6 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void stream_start_ev(Message m) {
-		log.debug("stream_start_ev");
 		Param p = m.getMiStreamStart().getParam();
 		if (p.hasInfoParam()) {
 			StreamStore.addStream(new CInfoSlave(p));
@@ -351,7 +350,6 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void stream_stop_ev(Message m) {
-		log.debug("stream_stop_ev");
 		StreamStore.removeStreamBySID(m.getMiStreamStop().getStreamID());
 
 	}
@@ -465,7 +463,7 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void rq_add_torrent(Message m) {
-		
+
 	}
 
 }

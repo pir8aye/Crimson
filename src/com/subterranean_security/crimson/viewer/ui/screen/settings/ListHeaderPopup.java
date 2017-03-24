@@ -25,8 +25,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
-import com.subterranean_security.crimson.core.profile.AbstractAttribute;
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.storage.StorageFacility;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.screen.main.HostList;
@@ -38,22 +38,22 @@ public class ListHeaderPopup extends JPopupMenu {
 
 	private static final Font boxFont = new Font("Dialog", Font.BOLD, 10);
 
-	private AbstractAttribute[] headers;
+	private AttributeKey[] headers;
 
 	private StorageFacility db;
 
 	public ListHeaderPopup(StorageFacility db) {
 		this.db = db;
 		try {
-			headers = (AbstractAttribute[]) db.getObject("hostlist.headers");
+			headers = (AttributeKey[]) db.getObject("hostlist.headers");
 		} catch (Exception e) {
 			headers = HostList.defaultHeaders;
 		}
 		init();
 	}
 
-	private boolean checkHeader(AbstractAttribute aa) {
-		for (AbstractAttribute ab : headers) {
+	private boolean checkHeader(AttributeKey aa) {
+		for (AttributeKey ab : headers) {
 			if (ab == aa) {
 				return true;
 			}
@@ -61,8 +61,8 @@ public class ListHeaderPopup extends JPopupMenu {
 		return false;
 	}
 
-	private void addHeader(AbstractAttribute aa) {
-		AbstractAttribute[] h = new AbstractAttribute[headers.length + 1];
+	private void addHeader(AttributeKey aa) {
+		AttributeKey[] h = new AttributeKey[headers.length + 1];
 
 		for (int i = 0; i < headers.length; i++) {
 			h[i] = headers[i];
@@ -73,14 +73,14 @@ public class ListHeaderPopup extends JPopupMenu {
 		refreshHeaders();
 	}
 
-	private void removeHeader(AbstractAttribute aa) {
-		ArrayList<AbstractAttribute> r = new ArrayList<AbstractAttribute>();
-		for (AbstractAttribute ab : headers) {
+	private void removeHeader(AttributeKey aa) {
+		ArrayList<AttributeKey> r = new ArrayList<AttributeKey>();
+		for (AttributeKey ab : headers) {
 			if (ab != aa) {
 				r.add(ab);
 			}
 		}
-		AbstractAttribute[] h = new AbstractAttribute[r.size()];
+		AttributeKey[] h = new AttributeKey[r.size()];
 		for (int i = 0; i < h.length; i++) {
 			h[i] = r.get(i);
 		}
@@ -103,7 +103,7 @@ public class ListHeaderPopup extends JPopupMenu {
 		client.setIcon(UIUtil.getIcon("icons16/general/users_3.png"));
 		add(client);
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
+		for (AKeySimple sa : AKeySimple.values()) {
 			if (sa.toSuperString().startsWith("CLIENT")) {
 				JCheckBox jcb = new JCheckBox(sa.toString());
 				jcb.addActionListener((ActionEvent e) -> {
@@ -123,7 +123,7 @@ public class ListHeaderPopup extends JPopupMenu {
 		user.setIcon(UIUtil.getIcon("icons16/general/user.png"));
 		add(user);
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
+		for (AKeySimple sa : AKeySimple.values()) {
 			if (sa.toSuperString().startsWith("USER")) {
 				JCheckBox jcb = new JCheckBox(sa.toString());
 				jcb.addActionListener((ActionEvent e) -> {
@@ -143,7 +143,7 @@ public class ListHeaderPopup extends JPopupMenu {
 		java.setIcon(UIUtil.getIcon("icons16/general/java.png"));
 		add(java);
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
+		for (AKeySimple sa : AKeySimple.values()) {
 			if (sa.toSuperString().startsWith("JAVA")) {
 				JCheckBox jcb = new JCheckBox(sa.toString());
 				jcb.addActionListener((ActionEvent e) -> {
@@ -163,7 +163,7 @@ public class ListHeaderPopup extends JPopupMenu {
 		ram.setIcon(UIUtil.getIcon("icons16/general/ram.png"));
 		add(ram);
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
+		for (AKeySimple sa : AKeySimple.values()) {
 			if (sa.toSuperString().startsWith("RAM")) {
 				JCheckBox jcb = new JCheckBox(sa.toString());
 				jcb.addActionListener((ActionEvent e) -> {
@@ -183,7 +183,7 @@ public class ListHeaderPopup extends JPopupMenu {
 		network.setIcon(UIUtil.getIcon("icons16/general/network_ethernet.png"));
 		add(network);
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
+		for (AKeySimple sa : AKeySimple.values()) {
 			if (sa.toSuperString().startsWith("NET")) {
 				JCheckBox jcb = new JCheckBox(sa.toString());
 				jcb.addActionListener((ActionEvent e) -> {
@@ -203,7 +203,7 @@ public class ListHeaderPopup extends JPopupMenu {
 		iploc.setIcon(UIUtil.getIcon("icons16/general/ip.png"));
 		add(iploc);
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
+		for (AKeySimple sa : AKeySimple.values()) {
 			if (sa.toSuperString().startsWith("IPLOC")) {
 				JCheckBox jcb = new JCheckBox(sa.toString());
 				jcb.addActionListener((ActionEvent e) -> {
@@ -223,7 +223,7 @@ public class ListHeaderPopup extends JPopupMenu {
 		os.setIcon(UIUtil.getIcon("icons16/general/users_3.png"));
 		add(os);
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
+		for (AKeySimple sa : AKeySimple.values()) {
 			if (sa.toSuperString().startsWith("OS")) {
 				JCheckBox jcb = new JCheckBox(sa.toString());
 				jcb.addActionListener((ActionEvent e) -> {
@@ -243,7 +243,7 @@ public class ListHeaderPopup extends JPopupMenu {
 		linux.setIcon(UIUtil.getIcon("icons16/platform/linux.png"));
 		add(linux);
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
+		for (AKeySimple sa : AKeySimple.values()) {
 			if (sa.toSuperString().startsWith("LINUX")) {
 				JCheckBox jcb = new JCheckBox(sa.toString());
 				jcb.addActionListener((ActionEvent e) -> {
@@ -263,7 +263,7 @@ public class ListHeaderPopup extends JPopupMenu {
 		win.setIcon(UIUtil.getIcon("icons16/platform/windows_7.png"));
 		add(win);
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
+		for (AKeySimple sa : AKeySimple.values()) {
 			if (sa.toSuperString().startsWith("WIN")) {
 				JCheckBox jcb = new JCheckBox(sa.toString());
 				jcb.addActionListener((ActionEvent e) -> {

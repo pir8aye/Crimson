@@ -35,8 +35,8 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
-import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
+import com.subterranean_security.crimson.core.attribute.keys.AKeyDISP;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
@@ -68,8 +68,7 @@ public class RDPanel extends JPanel {
 		this.fullSettings = fullSettings;
 		this.cvid = cvid;
 
-		settings = new Settings(ProfileStore.getClient(cvid).getAttributeGroupList(GroupAttributeType.DISP),
-				this, fullSettings);
+		settings = new Settings(ProfileStore.getClient(cvid).getGroupList(AttributeKey.Type.DISP), this, fullSettings);
 		init();
 
 	}
@@ -283,10 +282,8 @@ public class RDPanel extends JPanel {
 					stop();
 				} else {
 					running = true;
-					rdArea.setMonitorSize(
-							Integer.parseInt(settings.getDisplay().queryAttribute(AttributeGroupType.DISP_WIDTH).get()),
-							Integer.parseInt(
-									settings.getDisplay().queryAttribute(AttributeGroupType.DISP_HEIGHT).get()));
+					rdArea.setMonitorSize(Integer.parseInt(settings.getDisplay().get(AKeyDISP.DISP_WIDTH)),
+							Integer.parseInt(settings.getDisplay().get(AKeyDISP.DISP_HEIGHT)));
 
 					btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
 					btnToggle.setToolTipText("Stop");

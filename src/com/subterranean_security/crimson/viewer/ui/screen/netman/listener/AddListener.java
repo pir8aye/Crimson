@@ -26,6 +26,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -257,8 +258,7 @@ public class AddListener extends JPanel {
 										.setViewerAcceptor(chckbxAcceptViewers.isSelected())
 										.setLocalhostExclusive(chckbxRestrictToLocalhost.isSelected())
 										.setPort(Integer.parseInt(fld_port.getText()))
-										.setOwner((String) owner.getSelectedItem()).setId(IDGen.listener())
-										.build());
+										.setOwner((String) owner.getSelectedItem()).setId(IDGen.listener()).build());
 								resetEPanels();
 								ep.drop();
 							}
@@ -322,10 +322,10 @@ public class AddListener extends JPanel {
 		if (ProfileStore.getLocalViewer().getPermissions().getFlag(Perm.Super)) {
 			o = new String[ProfileStore.getServer().users.size()];
 			for (int i = 0; i < o.length; i++) {
-				o[i] = ProfileStore.getServer().users.get(i).getUser();
+				o[i] = ProfileStore.getServer().users.get(i).get(AKeySimple.VIEWER_USER);
 			}
 		} else {
-			o = new String[] { ProfileStore.getLocalViewer().getUser() };
+			o = new String[] { ProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER) };
 		}
 		owner.setModel(new DefaultComboBoxModel<String>(o));
 	}

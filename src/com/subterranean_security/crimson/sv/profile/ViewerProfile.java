@@ -17,23 +17,20 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sv.profile;
 
-import java.io.Serializable;
 import java.util.Date;
 
+import com.subterranean_security.crimson.core.attribute.TrackedAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
+import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
-import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
-import com.subterranean_security.crimson.sv.profile.attribute.TrackedAttribute;
-import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
 
-public class ViewerProfile implements Serializable {
+public class ViewerProfile extends Profile {
 
 	private static final long serialVersionUID = 1L;
 
-	private int cvid;
-
-	private Attribute user;
-	private Attribute ip;
 	private ViewerPermissions permissions;
 
 	public ViewerProfile(int cvid) {
@@ -42,9 +39,8 @@ public class ViewerProfile implements Serializable {
 	}
 
 	public ViewerProfile() {
-		ip = new TrackedAttribute();
-		user = new UntrackedAttribute();
-		permissions = new ViewerPermissions();
+		super();
+		this.permissions = new ViewerPermissions();
 	}
 
 	public ViewerPermissions getPermissions() {
@@ -52,7 +48,7 @@ public class ViewerProfile implements Serializable {
 	}
 
 	public void setPermissions(ViewerPermissions p) {
-		permissions = p;
+		this.permissions = p;
 	}
 
 	public Integer getCvid() {
@@ -63,28 +59,8 @@ public class ViewerProfile implements Serializable {
 		this.cvid = cvid;
 	}
 
-	public String getUser() {
-		return user.get();
-	}
-
-	public void setUser(String user) {
-		this.user.set(user);
-	}
-
-	public String getIp() {
-		return ip.get();
-	}
-
-	public Date getLoginTime() {
-		return ((TrackedAttribute) ip).getTime(0);
-	}
-
-	public void setIp(String ip) {
-		((TrackedAttribute) this.ip).set(ip);
-	}
-
 	public String getLastLoginIp() {
-		TrackedAttribute tr = (TrackedAttribute) ip;
+		TrackedAttribute tr = (TrackedAttribute) getAttribute(AKeySimple.VIEWER_LOGIN_IP);
 		if (tr.size() < 2) {
 			return null;
 		}
@@ -92,7 +68,7 @@ public class ViewerProfile implements Serializable {
 	}
 
 	public Date getLastLoginTime() {
-		TrackedAttribute tr = (TrackedAttribute) ip;
+		TrackedAttribute tr = (TrackedAttribute) getAttribute(AKeySimple.VIEWER_LOGIN_TIME);
 		if (tr.size() < 2) {
 			return null;
 		}
@@ -100,23 +76,27 @@ public class ViewerProfile implements Serializable {
 	}
 
 	public void amalgamate(EV_ViewerProfileDelta c) {
-		if (c.hasUser()) {
-			setUser(c.getUser());
-		}
-
-		if (c.hasLastLoginIp() && c.hasLastLoginTime()) {
-			((TrackedAttribute) ip).set(c.getLastLoginIp(), new Date(c.getLastLoginTime()));
-		}
-
-		if (c.hasLoginIp()) {
-			((TrackedAttribute) ip).set(c.getLoginIp(), new Date(c.getLoginTime()));
-		}
+		super.amalgamate(c.getPd());
 
 		if (c.getViewerPermissionsCount() != 0) {
-			// append to permissions, overwriting if necessary
+			// append new permissions, overwriting if necessary
 			permissions.load(c.getViewerPermissionsList());
 		}
 
+	}
+
+	public EV_ViewerProfileDelta gatherForServer(ViewerPermissions p) {
+		EV_ViewerProfileDelta.Builder vpd = EV_ViewerProfileDelta.newBuilder()
+				.addAllViewerPermissions(getPermissions().listPermissions());
+
+		AttributeGroupContainer.Builder general = AttributeGroupContainer.newBuilder()
+				.putAttribute(AKeySimple.VIEWER_USER.getFullID(), get(AKeySimple.VIEWER_USER))
+				.putAttribute(AKeySimple.VIEWER_LOGIN_IP.getFullID(),
+						p == null || p.getFlag(Perm.Super) ? get(AKeySimple.VIEWER_LOGIN_IP) : "<hidden>")
+				.putAttribute(AKeySimple.VIEWER_LOGIN_TIME.getFullID(),
+						p == null || p.getFlag(Perm.Super) ? get(AKeySimple.VIEWER_LOGIN_IP) : "0");
+
+		return vpd.setPd(EV_ProfileDelta.newBuilder().addGroup(general)).build();
 	}
 
 }

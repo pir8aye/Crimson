@@ -52,6 +52,7 @@ public class ViewerExecutor extends BasicExecutor {
 
 				pool.submit(() -> {
 					if (m.hasEvStreamData()) {
+						System.out.println("Got stream data");
 						Stream s = StreamStore.getStream(m.getEvStreamData().getStreamID());
 						if (s != null) {
 							s.received(m);
@@ -82,7 +83,7 @@ public class ViewerExecutor extends BasicExecutor {
 
 	private void assign_1w(Message m) {
 		Common.cvid = m.getMiAssignCvid().getId();
-		ProfileStore.getLocalClient().setCid(Common.cvid);
+		ProfileStore.getLocalViewer().setCvid(Common.cvid);
 		log.debug("Assigned new CVID: {}", Common.cvid);
 	}
 

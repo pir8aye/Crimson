@@ -30,15 +30,16 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
-import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
+import com.subterranean_security.crimson.core.attribute.keys.AKeyCPU;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
+import com.subterranean_security.crimson.core.util.ProtoUtil;
+import com.subterranean_security.crimson.sv.profile.ServerProfile;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.net.ViewerConnector;
-import com.subterranean_security.crimson.viewer.store.ConnectionStore;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.stream.VInfoSlave;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -67,7 +68,8 @@ public class MenuControls extends JPanel {
 
 	public MenuControls() {
 		init();
-
+		sp = ProfileStore.getServer();
+		vp = ProfileStore.getLocalViewer();
 	}
 
 	public void init() {
@@ -243,25 +245,28 @@ public class MenuControls extends JPanel {
 
 	}
 
+	private ServerProfile sp;
+	private ViewerProfile vp;
+
 	public void refresh() {
-		valViewerRamUsage.setText(ProfileStore.getLocalClient().getAttr(SimpleAttribute.CLIENT_RAM_USAGE));
-		valViewerCpuTemp.setText(
-				ProfileStore.getLocalClient().getPrimaryCPU().queryAttribute(AttributeGroupType.CPU_TEMP).get());
-		valViewerCpuUsage.setText(ProfileStore.getLocalClient().getAttr(SimpleAttribute.CLIENT_CPU_USAGE) + " %");
-		valServerRamUsage.setText(ViewerState.isOnline() ? ProfileStore.getServer().getCrimsonRamUsage() : "");
-		valServerCpuTemp.setText(ViewerState.isOnline() ? ProfileStore.getServer().getCpuTemp() : "");
-		valServerCpuUsage.setText(ViewerState.isOnline() ? ProfileStore.getServer().getCrimsonCpuUsage() + " %" : "");
-		valClients.setText(ViewerState.isOnline() ? "" + ProfileStore.getServer().getConnectedClients() : "");
-		valUsers.setText(ViewerState.isOnline() ? "" + ProfileStore.getServer().getConnectedUsers() : "");
-		val_local_ip.setText(ProfileStore.getLocalViewer().getIp());
-		val_server_ip.setText(((ViewerConnector) ConnectionStore.get(0)).getRemoteAddress());
-		valUsername.setText(ProfileStore.getLocalViewer().getUser());
+		valViewerRamUsage.setText(vp.get(AKeySimple.CLIENT_RAM_USAGE));
+		// valViewerCpuTemp.setText(ProfileStore.getLocalClient().getPrimaryCPU().getAttribute(AKeyCPU.CPU_TEMP).get());
+		valViewerCpuUsage.setText(vp.get(AKeySimple.CLIENT_CPU_USAGE) + " %");
+		valServerRamUsage.setText(ViewerState.isOnline() ? sp.get(AKeySimple.CLIENT_RAM_USAGE) : "");
+		// valServerCpuTemp.setText(ViewerState.isOnline() ?
+		// ProfileStore.getServer().getCpuTemp() : "");
+		valServerCpuUsage.setText(ViewerState.isOnline() ? sp.get(AKeySimple.CLIENT_CPU_USAGE) + " %" : "");
+		valClients.setText(ViewerState.isOnline() ? "" + sp.get(AKeySimple.SERVER_CONNECTED_CLIENTS) : "");
+		valUsers.setText(ViewerState.isOnline() ? "" + sp.get(AKeySimple.SERVER_CONNECTED_VIEWERS) : "");
+		val_local_ip.setText(vp.get(AKeySimple.VIEWER_LOGIN_IP));
+		val_server_ip.setText(ViewerState.isOnline() ? sp.get(AKeySimple.NET_EXTERNALIP) : "");
+		valUsername.setText(vp.get(AKeySimple.VIEWER_USER));
 
 		if (!ViewerState.isOnline()) {
 			valStatus.setText("Offline");
 			valStatus.setForeground(Color.gray);// TODO
 
-		} else if (ProfileStore.getServer().getStatus()) {
+		} else if (ProfileStore.getServer().get(AKeySimple.SERVER_STATUS).equals("1")) {
 			valStatus.setText("Running");
 			valStatus.setForeground(new Color(0, 149, 39));
 
@@ -275,14 +280,14 @@ public class MenuControls extends JPanel {
 
 	private InfoMaster im;
 	private InfoSlave is;
+	private static final InfoParam param = ProtoUtil
+			.getInfoParam(AKeyCPU.CPU_TEMP, AKeySimple.CLIENT_RAM_USAGE, AKeySimple.CLIENT_CPU_USAGE).build();
 
 	public void startStreams() {
-		im = new InfoMaster(
-				InfoParam.newBuilder().setCpuTemp(true).setCrimsonCpuUsage(true).setCrimsonRamUsage(true).build(),
-				1000);
+
+		im = new InfoMaster(param, 1000);
 		StreamStore.addStream(im);
-		is = new VInfoSlave(
-				InfoParam.newBuilder().setCpuTemp(true).setCrimsonCpuUsage(true).setCrimsonRamUsage(true).build());
+		is = new VInfoSlave(param);
 		StreamStore.addStream(is);
 	}
 

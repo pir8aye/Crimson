@@ -17,9 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.stream;
 
-import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.platform.info.CPU;
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
@@ -27,7 +24,6 @@ import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.server.store.ConnectionStore;
-import com.subterranean_security.crimson.server.store.ListenerStore;
 
 public class SInfoSlave extends InfoSlave {
 
@@ -48,23 +44,7 @@ public class SInfoSlave extends InfoSlave {
 	}
 
 	private EV_ServerProfileDelta gatherServerInfo() {
-		EV_ServerProfileDelta.Builder sid = EV_ServerProfileDelta.newBuilder();
-		sid.setServerStatus(ListenerStore.isRunning());
-		sid.setClientCount(ConnectionStore.countClients());
-		sid.setUserCount(ConnectionStore.countUsers());
-
-		if (param.getInfoParam().hasCpuTemp()) {
-			sid.setCpuTemp(CPU.getTemp());
-		}
-
-		// TODO keep track of last value and send selectively
-		if (param.getInfoParam().hasCrimsonRamUsage()) {
-			sid.setRamCrimsonUsage(Platform.queryAttribute(SimpleAttribute.CLIENT_RAM_USAGE));
-		}
-		if (param.getInfoParam().hasCrimsonCpuUsage()) {
-			sid.setCpuCrimsonUsage(Platform.queryAttribute(SimpleAttribute.CLIENT_CPU_USAGE));
-		}
-		return sid.build();
+		return EV_ServerProfileDelta.newBuilder().setPd(gather()).build();
 	}
 
 }

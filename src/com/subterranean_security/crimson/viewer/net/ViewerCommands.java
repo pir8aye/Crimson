@@ -32,8 +32,6 @@ import com.subterranean_security.crimson.core.proto.Chat.RQ_Chat;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_CreateAuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_RemoveAuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientControl.RQ_ChangeSetting;
-import com.subterranean_security.crimson.core.proto.Delta.MI_TriggerProfileDelta;
-import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.core.proto.FileManager.MI_CloseFileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_Delete;
@@ -51,9 +49,6 @@ import com.subterranean_security.crimson.core.proto.Listener.RQ_RemoveListener;
 import com.subterranean_security.crimson.core.proto.Log.LogFile;
 import com.subterranean_security.crimson.core.proto.Log.LogType;
 import com.subterranean_security.crimson.core.proto.Log.RQ_Logs;
-import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
-import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
-import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
@@ -64,11 +59,9 @@ import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.proto.Update.RQ_GetClientConfig;
 import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RQ_EditUser;
-import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
-import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
@@ -78,74 +71,6 @@ public final class ViewerCommands {
 	private static final Logger log = LoggerFactory.getLogger(ViewerCommands.class);
 
 	private ViewerCommands() {
-	}
-
-	public static boolean login(String user, String pass) {
-		int id = IDGen.msg();
-
-		ViewerRouter.route(Message.newBuilder().setId(id).setRqLogin(RQ_Login.newBuilder().setUsername(user)).build());
-
-		try {
-			Message lcrq = ViewerRouter.getReponse(0, id, 5);
-			if (lcrq == null) {
-				log.error("No reponse");
-				return false;
-			} else if (lcrq.hasRqLoginChallenge()) {
-				RQ_LoginChallenge challenge = lcrq.getRqLoginChallenge();
-				String result = challenge.getCloud() ? CryptoUtil.hashOpencartPassword(pass, challenge.getSalt())
-						: CryptoUtil.hashCrimsonPassword(pass, challenge.getSalt());
-				ViewerRouter.route(Message.newBuilder().setId(id)
-						.setRsLoginChallenge(RS_LoginChallenge.newBuilder().setResult(result)).build());
-			} else if (lcrq.hasRsLogin()) {
-				log.debug("Received login response: Invalid user");
-				return false;
-			} else {
-				log.debug("Expected login challenge");
-				return false;
-			}
-		} catch (InterruptedException e) {
-			log.debug("Login interrupted");
-			return false;
-		}
-
-		try {
-			Message lrs = ViewerRouter.getReponse(0, id, 5);
-			if (lrs.hasRsLogin()) {
-				if (lrs.getRsLogin().getResponse()) {
-					// load interface
-					if (MainFrame.main == null) {
-						MainFrame.main = new MainFrame();
-					}
-
-					ProfileStore.update(lrs.getRsLogin().getSpd());
-					ProfileStore.update(lrs.getRsLogin().getVpd());
-					triggerProfileDelta();
-					return true;
-				}
-
-			} else {
-				log.debug("Expected login response");
-				return false;
-			}
-		} catch (InterruptedException e) {
-			log.debug("Login interrupted");
-		}
-		return false;
-	}
-
-	public static void triggerProfileDelta() {
-		log.debug("Triggering profile delta update");
-
-		// report last update timestamps for current clients
-		MI_TriggerProfileDelta.Builder mi = MI_TriggerProfileDelta.newBuilder();
-		for (int i = 0; i < ProfileStore.clients.size(); i++) {
-			ClientProfile cp = ProfileStore.clients.get(i);
-
-			mi.addProfileTimestamp(
-					ProfileTimestamp.newBuilder().setCvid(cp.getCid()).setTimestamp(cp.getLastUpdate().getTime()));
-		}
-		ViewerRouter.route(Message.newBuilder().setMiTriggerProfileDelta(mi));
-
 	}
 
 	public static Outcome changeServerState(StateType st) {

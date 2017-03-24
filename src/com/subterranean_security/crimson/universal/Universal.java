@@ -51,7 +51,7 @@ public final class Universal {
 	/**
 	 * When true, network data is logged
 	 */
-	public static final boolean isNetDebug = false;
+	public static final boolean isNetDebug = true;
 
 	/**
 	 * Identifies this instance based upon a manifest attribute

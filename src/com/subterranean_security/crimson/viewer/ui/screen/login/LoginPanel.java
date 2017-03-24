@@ -58,8 +58,8 @@ import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.net.ViewerConnector;
+import com.subterranean_security.crimson.viewer.net.commands.LoginCom;
 import com.subterranean_security.crimson.viewer.store.ConnectionStore;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
@@ -352,12 +352,12 @@ public class LoginPanel extends JPanel {
 
 			@Override
 			protected Outcome doInBackground() throws Exception {
-				Outcome.Builder outcome = Outcome.newBuilder();
+				long t1 = System.currentTimeMillis();
+				Outcome.Builder outcome = Outcome.newBuilder().setResult(false);
 
 				try {
 					ConnectionStore.put(0, new ViewerConnector(server, Integer.parseInt(port)));
-				} catch (Throwable e) {
-					outcome.setResult(false);
+				} catch (Exception e) {
 					try {
 						outcome.setComment(
 								"Unable to connect to server: " + InetAddress.getByName(server).getHostAddress());
@@ -371,11 +371,14 @@ public class LoginPanel extends JPanel {
 				// set local viewer profile name
 				ProfileStore.setLocalUser(user);
 
-				// test the credentials
-				if (ViewerCommands.login(user, UIUtil.getPassword(fld_pass))) {
+				// request login from server
+				Outcome loginOutcome = LoginCom.login(user, UIUtil.getPassword(fld_pass));
+				result = loginOutcome.getResult();
+				if (result) {
 					outcome.setResult(true);
 					ViewerState.goOnline(server, Integer.parseInt(port));
 
+					// TODO relocate
 					if (!server.equals("127.0.0.1")) {
 						// update recents
 						try {
@@ -393,20 +396,22 @@ public class LoginPanel extends JPanel {
 
 				} else {
 					ConnectionStore.closeAll();
-					outcome.setResult(false).setComment("Failed to login");
+					if (loginOutcome.hasComment())
+						outcome.setComment(loginOutcome.getComment());
+
 				}
 
-				return outcome.build();
+				return outcome.setTime(System.currentTimeMillis() - t1).build();
 			}
 
 			protected void done() {
 				try {
+
 					Outcome outcome = get();
-					result = outcome.getResult();
 
 					lbl_status.unfreeze();
 					if (outcome.getResult()) {
-						lbl_status.setGood("Login successful!");
+						lbl_status.setGood("Login completed in: " + outcome.getTime() + "ms");
 						new SwingWorker<Void, Void>() {
 
 							@Override
@@ -433,6 +438,7 @@ public class LoginPanel extends JPanel {
 				} finally {
 					endLogin();
 				}
+
 			};
 		}.execute();
 

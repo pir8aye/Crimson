@@ -17,28 +17,29 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sv.profile;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.subterranean_security.crimson.core.attribute.Attribute;
+import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
-import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
-import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
+import com.subterranean_security.crimson.core.util.ProtoUtil;
+import com.subterranean_security.crimson.server.store.ListenerStore;
+import com.subterranean_security.crimson.server.store.ProfileStore;
+import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 
-public class ServerProfile implements Serializable {
+public class ServerProfile extends Profile {
 
 	private static final long serialVersionUID = 1L;
 
-	private final int cvid = 0;
 	private Date updateTimestamp = new Date();
-
-	private boolean status;
-	private int connectedUsers;
-	private int connectedClients;
 
 	public ArrayList<ListenerConfig> listeners = new ArrayList<ListenerConfig>();
 	public ArrayList<AuthMethod> authMethods = new ArrayList<AuthMethod>();
@@ -47,31 +48,13 @@ public class ServerProfile implements Serializable {
 	// General attributes
 	private Attribute messageLatency;
 
-	// RAM attributes
-	private Attribute crimsonRamUsage;
-
-	// CPU attributes
-	private Attribute cpuTemp;
-	private Attribute crimsonCpuUsage;
-
 	public ServerProfile() {
-
+		super();
 		messageLatency = new UntrackedAttribute();
-		crimsonRamUsage = new UntrackedAttribute();
-		cpuTemp = new UntrackedAttribute();
-		crimsonCpuUsage = new UntrackedAttribute();
 	}
 
 	public int getCvid() {
 		return cvid;
-	}
-
-	public String getCpuTemp() {
-		return cpuTemp.get();
-	}
-
-	public void setCpuTemp(String temp) {
-		this.cpuTemp.set(temp);
 	}
 
 	public String getMessageLatency() {
@@ -86,65 +69,8 @@ public class ServerProfile implements Serializable {
 		return updateTimestamp;
 	}
 
-	public String getCrimsonRamUsage() {
-		return crimsonRamUsage.get();
-	}
-
-	public void setCrimsonRamUsage(String crimsonRamUsage) {
-		this.crimsonRamUsage.set(crimsonRamUsage);
-	}
-
-	public String getCrimsonCpuUsage() {
-		return crimsonCpuUsage.get();
-	}
-
-	public void setCrimsonCpuUsage(String crimsonCpuUsage) {
-		this.crimsonCpuUsage.set(crimsonCpuUsage);
-	}
-
-	public int getConnectedClients() {
-		return connectedClients;
-	}
-
-	public void setConnectedClients(int connectedClients) {
-		this.connectedClients = connectedClients;
-	}
-
-	public int getConnectedUsers() {
-		return connectedUsers;
-	}
-
-	public void setConnectedUsers(int connectedUsers) {
-		this.connectedUsers = connectedUsers;
-	}
-
-	public boolean getStatus() {
-		return status;
-	}
-
-	public void setStatus(boolean status) {
-		this.status = status;
-	}
-
 	public void amalgamate(EV_ServerProfileDelta c) {
-		if (c.hasServerStatus()) {
-			setStatus(c.getServerStatus());
-		}
-		if (c.hasClientCount()) {
-			setConnectedClients(c.getClientCount());
-		}
-		if (c.hasUserCount()) {
-			setConnectedUsers(c.getUserCount());
-		}
-		if (c.hasCpuTemp()) {
-			setCpuTemp(c.getCpuTemp());
-		}
-		if (c.hasRamCrimsonUsage()) {
-			setCrimsonRamUsage(c.getRamCrimsonUsage());
-		}
-		if (c.hasCpuCrimsonUsage()) {
-			setCrimsonCpuUsage(c.getCpuCrimsonUsage());
-		}
+		super.amalgamate(c.getPd());
 
 		for (ListenerConfig lc : c.getListenerList()) {
 			for (ListenerConfig l : listeners) {
@@ -156,7 +82,7 @@ public class ServerProfile implements Serializable {
 
 			listeners.add(lc);
 		}
-		if (UIStore.netMan != null) {
+		if (UIStore.netMan != null && c.getListenerCount() > 0) {
 			UIStore.netMan.lp.lt.fireTableDataChanged();
 		}
 
@@ -164,7 +90,8 @@ public class ServerProfile implements Serializable {
 
 			boolean modified = false;
 			for (ViewerProfile l : users) {
-				if (lc.getUser().equals(l.getUser())) {
+				if (l.get(AKeySimple.VIEWER_USER).equals(
+						ProtoUtil.getGeneralGroup(lc).getAttributeOrDefault(AKeySimple.VIEWER_USER.getFullID(), ""))) {
 					modified = true;
 					l.amalgamate(lc);
 					break;
@@ -191,10 +118,44 @@ public class ServerProfile implements Serializable {
 			}
 		}
 
-		if (UIStore.userMan != null) {
+		if (UIStore.userMan != null && c.getAuthMethodCount() > 0) {
 			UIStore.userMan.up.ut.fireTableDataChanged();
 		}
 
+	}
+
+	public EV_ServerProfileDelta getUpdates(Date lastUpdate, ViewerProfile vp) {
+		EV_ServerProfileDelta.Builder spd = EV_ServerProfileDelta.newBuilder();
+
+		try {
+			// add general attributes
+			spd.setPd(EV_ProfileDelta.newBuilder(super.getUpdates(lastUpdate))
+					.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.SERVER_STATUS.getFullID(),
+							ListenerStore.isRunning() ? "1" : "0")));
+
+			// add listeners
+			for (Listener l : ListenerStore.listeners) {
+				spd.addListener(l.getConfig());
+			}
+
+			// add viewers
+			for (Integer i : ProfileStore.getViewerKeyset()) {
+
+				ViewerProfile vpi = ProfileStore.getViewer(i);
+				if (vpi.equals(vp)) {
+					// give full rights to the viewer's own profile
+					spd.addViewerUser(vpi.gatherForServer(null));
+				} else {
+					spd.addViewerUser(vpi.gatherForServer(vp.getPermissions()));
+				}
+
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return spd.build();
 	}
 
 }

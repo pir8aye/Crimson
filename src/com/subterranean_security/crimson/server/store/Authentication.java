@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.MemList;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
@@ -149,8 +150,8 @@ public class Authentication {
 		} else {
 			for (Integer i : ProfileStore.getViewerKeyset()) {
 				ViewerProfile vp = ProfileStore.getViewer(i);
-				if (clientAuth.getOwnerList().contains(vp.getUser())
-						|| clientAuth.getMemberList().contains(vp.getUser())) {
+				if (clientAuth.getOwnerList().contains(vp.get(AKeySimple.VIEWER_USER))
+						|| clientAuth.getMemberList().contains(vp.get(AKeySimple.VIEWER_USER))) {
 					// this viewer has authority over this client
 					log.debug("Adding visibility flag to viewer {} for client {}", vp.getCvid(), cid);
 					vp.getPermissions().addFlag(cid, Perm.client.visibility);

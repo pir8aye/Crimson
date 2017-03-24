@@ -1,0 +1,34 @@
+syntax = "proto3";
+package com.subterranean_security.cinstaller.proto;
+
+import "net/misc/Misc.proto";
+
+message InstallReport {
+	bool overall = 1;
+	
+	com.subterranean_security.crimson.core.proto.Outcome outcome_write_server_database = 2;
+	com.subterranean_security.crimson.core.proto.Outcome outcome_write_server_binary = 3;
+	com.subterranean_security.crimson.core.proto.Outcome outcome_write_viewer_database = 4;
+	com.subterranean_security.crimson.core.proto.Outcome outcome_write_viewer_binary = 5;
+	com.subterranean_security.crimson.core.proto.Outcome outcome_write_uninstall_script = 6;
+	com.subterranean_security.crimson.core.proto.Outcome outcome_write_java_libs = 7;
+	com.subterranean_security.crimson.core.proto.Outcome outcome_write_jni_libs = 8;
+	com.subterranean_security.crimson.core.proto.Outcome outcome_setup_directories = 9;
+	
+}
+
+message InstallConfig {
+	string base = 1;
+	
+	bool server = 2;
+	string admin_user = 3;
+	string admin_pass = 4;
+	bool admin_remote = 5;
+	bool server_autostart = 6;
+	
+	bool viewer = 20;
+	bool system_menu = 21;
+	bool desktop_shortcut = 22;
+	
+
+}

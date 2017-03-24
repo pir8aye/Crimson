@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,29 +15,38 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.sv.profile.attribute;
+package com.subterranean_security.crimson.core.attribute.keys;
 
-import java.io.Serializable;
-import java.util.Date;
+import com.subterranean_security.crimson.core.attribute.Attribute;
+import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
+import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.universal.Universal.Instance;
 
-public abstract class Attribute implements Serializable {
+public enum AKeyGPU implements AttributeKey {
+	GPU_VENDOR, GPU_MODEL, GPU_RAM, GPU_TEMP;
 
-	private static final long serialVersionUID = 1L;
-
-	protected String current;
-	private Date timestamp = new Date(0);
-
-	public String get() {
-		return current;
+	@Override
+	public int getGroupType() {
+		return AttributeKey.Type.GPU.ordinal();
 	}
 
-	public Date getTimestamp() {
-		return timestamp;
+	@Override
+	public int getOrdinal() {
+		return this.ordinal();
 	}
 
-	public void set(String s) {
-		current = s;
-		timestamp = new Date();
+	@Override
+	public Attribute getNewAttribute() {
+		return new UntrackedAttribute();
 	}
 
+	@Override
+	public boolean isCompatible(OSFAMILY os, Instance instance) {
+		return true;
+	}
+
+	@Override
+	public boolean isHeaderable() {
+		return true;
+	}
 }

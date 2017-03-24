@@ -24,27 +24,28 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Timer;
+import java.util.List;
 import java.util.TimerTask;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
+import com.subterranean_security.crimson.core.attribute.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.AKeyNIC;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
+import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
 import com.subterranean_security.crimson.viewer.ui.common.components.StatusConsole;
 import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
 
@@ -55,14 +56,12 @@ import info.monitorenter.gui.chart.rangepolicies.RangePolicyMinimumViewport;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
 import info.monitorenter.util.Range;
 
-public class NetInterfaces extends JPanel implements DModule {
+public class NetInterfaces extends TracedPanel implements DModule {
 
 	private static final long serialVersionUID = 1L;
 
-	private long updatePeriod = 900;
-
-	private ITrace2D tx = new Trace2DLtd(60);
-	private ITrace2D rx = new Trace2DLtd(60);
+	private ITrace2D tx;
+	private ITrace2D rx;
 
 	private boolean showing = false;
 
@@ -72,16 +71,13 @@ public class NetInterfaces extends JPanel implements DModule {
 	private JLabel statConsoleIP;
 	private JLabel statConsoleNetmask;
 
-	private Chart2D chart;
-
 	public NetInterfaces() {
+		super();
 		initChart();
 		init();
 	}
 
 	public void initChart() {
-		tx.setColor(new Color(251, 0, 24));
-		rx.setColor(new Color(0, 215, 123));
 
 		chart = new Chart2D();
 		chart.setUseAntialiasing(true);
@@ -97,6 +93,22 @@ public class NetInterfaces extends JPanel implements DModule {
 		chart.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		chart.setPaintLabels(false);
 		chart.setAutoscrolls(true);
+
+	}
+
+	private void initTraces() {
+
+		tx = new Trace2DLtd(60);
+		tx.setColor(new Color(251, 0, 24));
+
+		rx = new Trace2DLtd(60);
+		rx.setColor(new Color(0, 215, 123));
+
+		addTraces();
+	}
+
+	private void addTraces() {
+		chart.removeAllTraces();
 		chart.addTrace(tx);
 		chart.addTrace(rx);
 	}
@@ -164,80 +176,80 @@ public class NetInterfaces extends JPanel implements DModule {
 
 		panel_1.add(statusConsole, BorderLayout.CENTER);
 
-		startUpdater();
 	}
 
-	private void startUpdater() {
-		updateTimer.schedule(new TimerTask() {
-			Date start = new Date();
-			Date last = new Date();
+	class UpdateTask extends TimerTask {
 
-			@Override
-			public void run() {
-				if (isDetailOpen()) {
+		@Override
+		public void run() {
+			double time = System.currentTimeMillis() - start.getTime();
 
-					double time = System.currentTimeMillis() - start.getTime();
-
-					if (System.currentTimeMillis() - last.getTime() > updatePeriod * 2) {
-						tx.addPoint(time - 1, Double.NaN);
-						rx.addPoint(time - 1, Double.NaN);
-					}
-
-					Attribute txAttribute = profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_TX_SPEED);
-					Attribute rxAttribute = profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_RX_SPEED);
-					String txs = "loading";
-					String rxs = "loading";
-					double t;
-					double r;
-					if (txAttribute != null && rxAttribute != null) {
-						txs = txAttribute.get();
-						rxs = rxAttribute.get();
-
-						t = UnitTranslator.nicSpeed(txs);
-						r = UnitTranslator.nicSpeed(rxs);
-					} else {
-						t = Double.NaN;
-						r = Double.NaN;
-					}
-
-					val_usage.setText(String.format("DN: %s UP: %s", rxs, txs));
-
-					last = new Date();
-					tx.addPoint(time, t);
-					rx.addPoint(time, r);
-					chart.getAxisX().getRangePolicy().setRange(new Range(time, time - (60 * updatePeriod)));
-
-				}
-
+			if (System.currentTimeMillis() - last.getTime() > updatePeriod * 2) {
+				tx.addPoint(time - 1, Double.NaN);
+				rx.addPoint(time - 1, Double.NaN);
 			}
 
-		}, 0, updatePeriod);
+			String txs = getPrimaryNIC().get(AKeyNIC.NIC_TX_SPEED);
+			String rxs = getPrimaryNIC().get(AKeyNIC.NIC_RX_SPEED);
+			double t;
+			double r;
+			if (txs != null && rxs != null) {
+
+				t = UnitTranslator.nicSpeed(txs);
+				r = UnitTranslator.nicSpeed(rxs);
+				val_usage.setText(String.format("DN: %s UP: %s", rxs, txs));
+			} else {
+				t = Double.NaN;
+				r = Double.NaN;
+				val_usage.setText(String.format("DN: .. UP: .."));
+			}
+
+			last = new Date();
+			tx.addPoint(time, t);
+			rx.addPoint(time, r);
+			chart.getAxisX().getRangePolicy().setRange(new Range(time, time - (60 * updatePeriod)));
+
+		}
+
 	}
 
 	private ClientProfile profile;
+	private List<AttributeGroup> nicList;
+
+	private AttributeGroup getPrimaryNIC() {
+		return nicList.get(0);
+	}
+
 	private InfoMaster im;
-	private Timer updateTimer = new Timer();
 
 	@Override
 	public void setTarget(ClientProfile p) {
 
-		// clear chart only if the new profile differs from the old
-		if ((profile != null) && p.getCid() != profile.getCid()) {
-			tx.removeAllPoints();
-			rx.removeAllPoints();
+		List<ITrace2D> savedTraces = traceList.get(p.getCid());
+		if (savedTraces == null) {
+			initTraces();
+			savedTraces = new ArrayList<ITrace2D>();
+			savedTraces.add(tx);
+			savedTraces.add(rx);
+			traceList.put(p.getCid(), savedTraces);
+		} else {
+			tx = savedTraces.get(0);
+			rx = savedTraces.get(1);
+			addTraces();
 		}
 
 		profile = p;
+		nicList = profile.getGroupList(AttributeKey.Type.NIC);
 
 		// set static attributes
-		statConsoleMAC.setText(profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_MAC).get());
-		statConsoleIP.setText(profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_IP).get());
-		statConsoleNetmask.setText(profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_MASK).get());
+		statConsoleMAC.setText(getPrimaryNIC().get(AKeyNIC.NIC_MAC));
+		statConsoleIP.setText(getPrimaryNIC().get(AKeyNIC.NIC_IP));
+		statConsoleNetmask.setText(getPrimaryNIC().get(AKeyNIC.NIC_MASK));
 
 		// set title
-		mainPanel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)),
-				profile.getPrimaryNIC().queryAttribute(AttributeGroupType.NIC_DESC).get(), TitledBorder.CENTER,
-				TitledBorder.TOP, null, new Color(51, 51, 51)));
+		mainPanel.setBorder(
+				new TitledBorder(new LineBorder(new Color(184, 207, 229)), getPrimaryNIC().get(AKeyNIC.NIC_DESC),
+						TitledBorder.CENTER, TitledBorder.TOP, null, new Color(51, 51, 51)));
 	}
 
 	private SwingWorker<Void, Void> timeout = new SwingWorker<Void, Void>() {
@@ -250,13 +262,13 @@ public class NetInterfaces extends JPanel implements DModule {
 
 		@Override
 		protected void done() {
-			if (statConsoleMAC.getText().equals("Loading...")) {
+			if ("Loading...".equals(statConsoleMAC.getText())) {
 				statConsoleMAC.setText("N/A");
 			}
-			if (statConsoleIP.getText().equals("Loading...")) {
+			if ("Loading...".equals(statConsoleIP.getText())) {
 				statConsoleIP.setText("N/A");
 			}
-			if (statConsoleNetmask.getText().equals("Loading...")) {
+			if ("Loading...".equals(statConsoleNetmask.getText())) {
 				statConsoleNetmask.setText("N/A");
 			}
 
@@ -272,16 +284,20 @@ public class NetInterfaces extends JPanel implements DModule {
 	public void setShowing(boolean showing) {
 		this.showing = showing;
 		if (showing) {
-			im = new InfoMaster(InfoParam.newBuilder().setNicRxSpeed(true).setNicTxSpeed(true).build(),
+			im = new InfoMaster(ProtoUtil.getInfoParam(AKeyNIC.NIC_RX_SPEED, AKeyNIC.NIC_TX_SPEED).build(),
 					profile.getCid(), (int) updatePeriod);
 			StreamStore.addStream(im);
 
 			// launch timeout
 			timeout.execute();
+
+			startRefresh(new UpdateTask());
 		} else {
 			if (im != null) {
 				StreamStore.removeStreamBySID(im.getStreamID());
 			}
+
+			stopRefresh();
 		}
 	}
 
@@ -304,14 +320,6 @@ public class NetInterfaces extends JPanel implements DModule {
 	@Override
 	public boolean isDetailOpen() {
 		return showing;
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		if (updateTimer != null) {
-			updateTimer.cancel();
-		}
-		super.finalize();
 	}
 
 }

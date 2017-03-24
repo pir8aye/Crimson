@@ -23,7 +23,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.server.net.Receptor;
@@ -68,8 +70,11 @@ public final class ConnectionStore {
 				clients--;
 				ProfileStore.getClient(cvid).setOnline(false);
 				sendToViewersWithAuthorityOverClient(cvid, Perm.client.visibility,
-						Message.newBuilder().setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(cvid)
-								.putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(), "0")));
+						Message.newBuilder()
+								.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(cvid)
+										.addGroup(AttributeGroupContainer.newBuilder().setGroupId("")
+												.setGroupType(AttributeKey.Type.GENERAL.ordinal())
+												.putAttribute(AKeySimple.CLIENT_ONLINE.ordinal(), "0").build())));
 			}
 			r.close();
 		}

@@ -17,14 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sv.profile;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import javax.swing.ImageIcon;
 
@@ -32,76 +25,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Reporter;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
-import com.subterranean_security.crimson.core.profile.group.AttributeGroup;
-import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
-import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
-import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.sv.keylogger.Log;
-import com.subterranean_security.crimson.sv.profile.attribute.Attribute;
-import com.subterranean_security.crimson.sv.profile.attribute.UntrackedAttribute;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
-/**
- * @author Tyler Cook
- *
- */
-public class ClientProfile implements Serializable {
+public class ClientProfile extends Profile {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = LoggerFactory.getLogger(ClientProfile.class);
-
-	// Simple Attributes
-	private HashMap<SimpleAttribute, Attribute> attributes;
-
-	// Attribute Groups
-	private ArrayList<HashMap<String, AttributeGroup>> groups;
-
-	public Collection<AttributeGroup> getModernAttributesOfGroup(GroupAttributeType agt) {
-		Collection<AttributeGroup> set = groups.get(agt.ordinal()).values();
-		Iterator<AttributeGroup> it = set.iterator();
-		while (it.hasNext()) {
-			if (!it.next().isModern()) {
-				it.remove();
-			}
-		}
-		return set;
-	}
-
-	public int countModernAttributesGroups(AttributeGroupType agt) {
-		int total = 0;
-		for (AttributeGroup ag : groups.get(agt.ordinal()).values()) {
-			if (ag.isModern()) {
-				total++;
-			}
-		}
-		return total;
-	}
-
-	public int countAllAttributeGroups(AttributeGroupType agt) {
-		return groups.get(agt.ordinal()).values().size();
-	}
-
-	public AttributeGroup getPrimaryCPU() {
-		return getModernAttributesOfGroup(GroupAttributeType.CPU).iterator().next();
-	}
-
-	public AttributeGroup getPrimaryNIC() {
-		return getModernAttributesOfGroup(GroupAttributeType.NIC).iterator().next();
-	}
-
-	public ArrayList<AttributeGroup> getAttributeGroupList(GroupAttributeType g) {
-		ArrayList<AttributeGroup> list = new ArrayList<AttributeGroup>();
-		list.addAll(groups.get(g.ordinal()).values());
-		return list;
-	}
 
 	// Transient attributes
 	private transient ImageIcon ipLocationIcon;
@@ -109,9 +46,6 @@ public class ClientProfile implements Serializable {
 	private transient ImageIcon osMonitorIcon;
 	private transient boolean initialized;
 	private transient int messageLatency;
-
-	// Client CID
-	private int cid;
 
 	private int authID;
 
@@ -123,49 +57,23 @@ public class ClientProfile implements Serializable {
 		this.authID = authID;
 	}
 
-	private void createAttributeIfRequired(SimpleAttribute attribute) {
-		if (!attributes.containsKey(attribute)) {
-			// TODO TrackedAttribute
-			attributes.put(attribute, new UntrackedAttribute());
-		}
-	}
-
-	public String getAttr(SimpleAttribute attribute) {
-		return getAttribute(attribute).get();
-	}
-
-	public Attribute getAttribute(SimpleAttribute attribute) {
-		createAttributeIfRequired(attribute);
-		return attributes.get(attribute);
-	}
-
-	public void setAttr(SimpleAttribute attribute, String value) {
-		createAttributeIfRequired(attribute);
-		attributes.get(attribute).set(value);
-	}
-
 	// Keylogger options
 	private Log keylog;
 
+	public Log getKeylog() {
+		return keylog;
+	}
+
 	public ClientProfile(int cid) {
 		this();
-		this.cid = cid;
-		log.debug("Created new ClientProfile: {}", cid);
+		this.cvid = cid;
 	}
 
 	public ClientProfile() {
-		// Use strict capacity for HashMap because maximum size is known
-		attributes = new HashMap<SimpleAttribute, Attribute>(SimpleAttribute.values().length + 1, 1.0f);
-
-		setAttr(SimpleAttribute.CLIENT_ONLINE, "1");
-
+		super();
 		keylog = new Log();
+		set(AKeySimple.CLIENT_ONLINE, "1");
 
-		// initialize attribute groups
-		groups = new ArrayList<HashMap<String, AttributeGroup>>();
-		for (AttributeGroupType agt : AttributeGroupType.values()) {
-			groups.add(new HashMap<String, AttributeGroup>());
-		}
 	}
 
 	public ClientProfile initialize() {
@@ -182,14 +90,10 @@ public class ClientProfile implements Serializable {
 		return this;
 	}
 
-	public Log getKeylog() {
-		return keylog;
-	}
-
 	public void loadIcons() {
 		// os icon
-		if (osTypeIcon == null && getAttr(SimpleAttribute.OS_NAME) != null) {
-			String icon = getAttr(SimpleAttribute.OS_NAME).replaceAll(" ", "_").toLowerCase();
+		if (osTypeIcon == null && get(AKeySimple.OS_NAME) != null) {
+			String icon = get(AKeySimple.OS_NAME).replaceAll(" ", "_").toLowerCase();
 
 			// filtering
 			if (icon.contains("ubuntu")) {
@@ -198,28 +102,28 @@ public class ClientProfile implements Serializable {
 
 			// load icons or fallbacks
 			osTypeIcon = UIUtil.getIconOrFallback("icons16/platform/" + icon + ".png",
-					"icons16/platform/" + getAttr(SimpleAttribute.OS_FAMILY).toLowerCase() + ".png");
+					"icons16/platform/" + get(AKeySimple.OS_FAMILY).toLowerCase() + ".png");
 			osMonitorIcon = UIUtil.getIconOrFallback("icons32/platform/monitors/" + icon + ".png",
-					"icons32/platform/monitors/" + getAttr(SimpleAttribute.OS_FAMILY).toLowerCase() + ".png");
+					"icons32/platform/monitors/" + get(AKeySimple.OS_FAMILY).toLowerCase() + ".png");
 
-			osTypeIcon.setDescription(getAttr(SimpleAttribute.OS_NAME));
-			osMonitorIcon.setDescription(getAttr(SimpleAttribute.NET_HOSTNAME));
+			osTypeIcon.setDescription(get(AKeySimple.OS_NAME));
+			osMonitorIcon.setDescription(get(AKeySimple.NET_HOSTNAME));
 
 		}
 
 		// location
-		if (ipLocationIcon == null && getAttr(SimpleAttribute.NET_EXTERNALIP) != null) {
-			if (Validation.privateIP(getAttr(SimpleAttribute.NET_EXTERNALIP))) {
+		if (ipLocationIcon == null && get(AKeySimple.NET_EXTERNALIP) != null) {
+			if (Validation.privateIP(get(AKeySimple.NET_EXTERNALIP))) {
 				ipLocationIcon = UIUtil.getIcon("icons16/general/localhost.png");
 				ipLocationIcon.setDescription("Private IP");
 			} else {
 				try {
 					ipLocationIcon = UIUtil
-							.getIcon("flags/" + getAttr(SimpleAttribute.IPLOC_COUNTRYCODE).toLowerCase() + ".png");
-					ipLocationIcon.setDescription(getAttr(SimpleAttribute.IPLOC_COUNTRY));
+							.getIcon("flags/" + get(AKeySimple.IPLOC_COUNTRYCODE).toLowerCase() + ".png");
+					ipLocationIcon.setDescription(get(AKeySimple.IPLOC_COUNTRY));
 				} catch (NullPointerException e) {
-					Reporter.report(Reporter.newReport().setCrComment(
-							"No location icon found: " + getAttr(SimpleAttribute.IPLOC_COUNTRYCODE).toLowerCase())
+					Reporter.report(Reporter.newReport()
+							.setCrComment("No location icon found: " + get(AKeySimple.IPLOC_COUNTRYCODE).toLowerCase())
 							.build());
 
 					// fall back to default
@@ -242,12 +146,12 @@ public class ClientProfile implements Serializable {
 	}
 
 	public int getCid() {
-		return cid;
+		return cvid;
 	}
 
 	public void setCid(int cid) {
-		this.cid = cid;
-		setAttr(SimpleAttribute.CLIENT_CID, "" + cid);
+		this.cvid = cid;
+		set(AKeySimple.CLIENT_CID, "" + cid);
 	}
 
 	public ImageIcon getLocationIcon() {
@@ -262,117 +166,6 @@ public class ClientProfile implements Serializable {
 		return osMonitorIcon;
 	}
 
-	public Date getLastUpdate() {
-		Date d = new Date(0);
-
-		// Simple Attributes
-		for (Attribute a : attributes.values()) {
-			if (a.getTimestamp().after(d)) {
-				d = a.getTimestamp();
-			}
-		}
-
-		// Attribute Groups
-		for (GroupAttributeType gat : GroupAttributeType.values()) {
-			HashMap<String, AttributeGroup> map = groups.get(gat.ordinal());
-			for (String gid : map.keySet()) {
-				AttributeGroup ag = map.get(gid);
-				if (ag.isModern()) {
-					HashMap<AttributeGroupType, Attribute> amap = ag.getAttributeMap();
-					for (AttributeGroupType agt : amap.keySet()) {
-						Attribute a = amap.get(agt);
-						if (a.getTimestamp().after(d)) {
-							d = a.getTimestamp();
-						}
-					}
-				}
-
-			}
-		}
-
-		return d;
-	}
-
-	public EV_ProfileDelta getUpdates(Date last) {
-		Date start = new Date();
-		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(getCid());
-
-		// Simple Attributes
-		for (SimpleAttribute key : attributes.keySet()) {
-			Attribute a = attributes.get(key);
-			if (a.getTimestamp().after(last)) {
-				pd.putStrAttr(key.ordinal(), a.get());
-			}
-		}
-
-		// Attribute Groups
-		for (GroupAttributeType gat : GroupAttributeType.values()) {
-			HashMap<String, AttributeGroup> map = groups.get(gat.ordinal());
-			for (String gid : map.keySet()) {
-				AttributeGroup ag = map.get(gid);
-				if (ag.isModern()) {
-					HashMap<AttributeGroupType, Attribute> amap = ag.getAttributeMap();
-					for (AttributeGroupType agt : amap.keySet()) {
-						Attribute a = amap.get(agt);
-						if (a.getTimestamp().after(last)) {
-							pd.addGroupAttr(AttributeGroupContainer.newBuilder().setGroupType(gat.ordinal())
-									.setGroupId(gid).setAttributeType(agt.ordinal()).setValue(a.get()));
-						}
-					}
-				}
-
-			}
-		}
-
-		log.debug("Calulated profile update in {} ms", new Date().getTime() - start.getTime());
-		return pd.build();
-
-	}
-
-	public void amalgamate(EV_ProfileDelta c) {
-		Date start = new Date();
-		if (c.hasDepartureTime()) {
-			messageLatency = (int) (start.getTime() - c.getDepartureTime());
-		}
-
-		Map<Integer, String> map = c.getStrAttrMap();
-		for (Integer key : map.keySet()) {
-			// System.out.println("Setting (" +
-			// SimpleAttribute.ordinal[key].toSuperString() + "<>" +
-			// map.get(key) + ")");
-			setAttr(SimpleAttribute.ordinal[key], map.get(key));
-		}
-
-		// If FIG, then set all groups to old
-		if (c.hasFig() && c.getFig()) {
-			for (HashMap<String, AttributeGroup> g : groups) {
-				for (AttributeGroup ag : g.values()) {
-					ag.setModern(false);
-				}
-			}
-		}
-
-		for (AttributeGroupContainer agc : c.getGroupAttrList()) {
-			HashMap<String, AttributeGroup> group = groups.get(agc.getGroupType());
-			if (!group.containsKey(agc.getGroupId())) {
-				group.put(agc.getGroupId(), new AttributeGroup());
-			}
-
-			AttributeGroup ag = group.get(agc.getGroupId());
-			ag.setModern(true);
-			if (!ag.hasAttribute(agc.getAttributeType())) {
-				// TODO account for tracked attributes
-				ag.addAttribute(agc.getAttributeType());
-			}
-			ag.queryAttribute(agc.getAttributeType()).set(agc.getValue());
-
-		}
-
-		// TODO make amalgamation time available in some other way
-		// log.debug("Profile amalgamated in {} ms", new Date().getTime() -
-		// start.getTime());
-	}
-
 	/*
 	 * 
 	 * Convenience methods for attributes requiring type conversion
@@ -380,7 +173,7 @@ public class ClientProfile implements Serializable {
 	 */
 
 	public Trigger getKeyloggerTrigger() {
-		switch (getAttr(SimpleAttribute.KEYLOGGER_TRIGGER)) {
+		switch (get(AKeySimple.KEYLOGGER_TRIGGER)) {
 		case "0":
 			return Trigger.EVENT;
 		case "1":
@@ -390,19 +183,19 @@ public class ClientProfile implements Serializable {
 	}
 
 	public void setKeyloggerTrigger(Trigger trigger) {
-		setAttr(SimpleAttribute.KEYLOGGER_TRIGGER, "" + trigger.ordinal());
+		set(AKeySimple.KEYLOGGER_TRIGGER, "" + trigger.ordinal());
 	}
 
 	public int getKeyloggerTriggerValue() {
-		return Integer.parseInt(getAttr(SimpleAttribute.KEYLOGGER_TRIGGER_VALUE));
+		return Integer.parseInt(get(AKeySimple.KEYLOGGER_TRIGGER_VALUE));
 	}
 
 	public void setKeyloggerTriggerValue(int triggerValue) {
-		setAttr(SimpleAttribute.KEYLOGGER_TRIGGER_VALUE, "" + triggerValue);
+		set(AKeySimple.KEYLOGGER_TRIGGER_VALUE, "" + triggerValue);
 	}
 
 	public State getKeyloggerState() {
-		switch (getAttr(SimpleAttribute.KEYLOGGER_STATE)) {
+		switch (get(AKeySimple.KEYLOGGER_STATE)) {
 		case "0":
 			return State.UNINSTALLED;
 		case "1":
@@ -414,29 +207,29 @@ public class ClientProfile implements Serializable {
 	}
 
 	public void setKeyloggerState(State keyloggerState) {
-		setAttr(SimpleAttribute.KEYLOGGER_STATE, "" + keyloggerState.ordinal());
+		set(AKeySimple.KEYLOGGER_STATE, "" + keyloggerState.ordinal());
 	}
 
 	public OSFAMILY getOSFamily() {
-		return OSFAMILY.valueOf(getAttr(SimpleAttribute.OS_FAMILY).toUpperCase());
+		return OSFAMILY.valueOf(get(AKeySimple.OS_FAMILY).toUpperCase());
 	}
 
 	public void setOnline(boolean online) {
 		boolean state = getOnline();
 		if (online) {
 			if (!state) {
-				attributes.get(SimpleAttribute.CLIENT_ONLINE).set("1");
+				set(AKeySimple.CLIENT_ONLINE, "1");
 			}
 		} else {
 			if (state) {
-				attributes.get(SimpleAttribute.CLIENT_ONLINE).set("0");
+				set(AKeySimple.CLIENT_ONLINE, "0");
 			}
 		}
 
 	}
 
 	public boolean getOnline() {
-		return attributes.get(SimpleAttribute.CLIENT_ONLINE).equals("1");
+		return get(AKeySimple.CLIENT_ONLINE).equals("1");
 	}
 
 	public static class CidComparator implements Comparator<ClientProfile> {
@@ -447,18 +240,18 @@ public class ClientProfile implements Serializable {
 	}
 
 	public static class SimpleAttributeComparator implements Comparator<ClientProfile> {
-		private SimpleAttribute sa;
+		private AKeySimple sa;
 
-		public SimpleAttributeComparator(SimpleAttribute sa) {
+		public SimpleAttributeComparator(AKeySimple sa) {
 			this.sa = sa;
 		}
 
 		@Override
 		public int compare(ClientProfile o1, ClientProfile o2) {
-			if (o1.getAttr(sa) == null) {
-				return (o2.getAttr(sa) == null) ? 0 : 1;
+			if (o1.get(sa) == null) {
+				return (o2.get(sa) == null) ? 0 : 1;
 			}
-			return o1.getAttr(sa).compareTo(o2.getAttr(sa));
+			return o1.get(sa).compareTo(o2.get(sa));
 		}
 	}
 

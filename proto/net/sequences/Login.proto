@@ -1,24 +1,24 @@
-syntax = "proto2";
+syntax = "proto3";
 package com.subterranean_security.crimson.core.proto;
 
 import "net/sequences/Delta.proto";
+import "net/misc/Misc.proto";
 
 message RQ_Login {
-	required string username = 1;
+	string username = 1;
 }
 
 message RQ_LoginChallenge {
-	required bool cloud = 1;
-	required string salt = 2;
+	bool cloud = 1;
+	string salt = 2;
 }
 
 message RS_LoginChallenge {
-	required string result = 1;
+	string result = 1;
 }
 
 message RS_Login {
-	required bool response = 1;
-	optional EV_ServerProfileDelta spd = 2;
-	optional EV_ViewerProfileDelta vpd = 3;
+	Outcome response = 1;
+	EV_ServerProfileDelta spd = 2;
 }
 

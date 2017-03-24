@@ -25,9 +25,9 @@ import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.attribute.keys.AKeyNIC;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.platform.SigarStore;
-import com.subterranean_security.crimson.core.profile.group.AttributeGroupType;
-import com.subterranean_security.crimson.core.profile.group.GroupAttributeType;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 
 public class NIC {
@@ -97,7 +97,7 @@ public class NIC {
 	}
 
 	public static String computeGID(int i) {
-		return GroupAttributeType.NIC.ordinal() + getMAC(i).replaceAll(":", "");
+		return AttributeKey.Type.NIC.ordinal() + getMAC(i).replaceAll(":", "");
 	}
 
 	public static void refresh(int i) {
@@ -152,15 +152,23 @@ public class NIC {
 	public static ArrayList<AttributeGroupContainer> getAttributes() {
 		ArrayList<AttributeGroupContainer> a = new ArrayList<AttributeGroupContainer>();
 		for (int i = 0; i < getCount(); i++) {
-			AttributeGroupContainer.Builder template = AttributeGroupContainer.newBuilder()
-					.setGroupType(GroupAttributeType.NIC.ordinal()).setGroupId(computeGID(i));
+			AttributeGroupContainer.Builder container = AttributeGroupContainer.newBuilder()
+					.setGroupType(AttributeKey.Type.NIC.ordinal()).setGroupId(computeGID(i));
 
-			a.add(template.setAttributeType(AttributeGroupType.NIC_IP.ordinal()).setValue(getIP(i)).build());
-			a.add(template.setAttributeType(AttributeGroupType.NIC_MAC.ordinal()).setValue(getMAC(i)).build());
-			a.add(template.setAttributeType(AttributeGroupType.NIC_MASK.ordinal()).setValue(getNetmask(i)).build());
-			a.add(template.setAttributeType(AttributeGroupType.NIC_DESC.ordinal()).setValue(getDescription(i)).build());
+			container.putAttribute(AKeyNIC.NIC_IP.ordinal(), getIP(i));
+			container.putAttribute(AKeyNIC.NIC_MAC.ordinal(), getMAC(i));
+			container.putAttribute(AKeyNIC.NIC_MASK.ordinal(), getNetmask(i));
+			container.putAttribute(AKeyNIC.NIC_DESC.ordinal(), getDescription(i));
+
+			a.add(container.build());
+
 		}
 		return a;
+	}
+
+	public static String get(AKeyNIC key, int whichNIC) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

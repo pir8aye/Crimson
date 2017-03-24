@@ -26,6 +26,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -40,7 +42,7 @@ import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.profile.SimpleAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
@@ -58,13 +60,15 @@ import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPane
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.CPPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.controls.ep.Confirmation;
 
-public class ControlsTab extends JPanel implements CPPanel {
+public class ControlsTab extends JPanel implements CPPanel, Observer {
 
 	private static final long serialVersionUID = 1L;
 
 	private EPanel ep;
 	private ClientProfile profile;
 	private Console console;
+
+	private StatusConsole clientStatusConsole;
 
 	private JMenuItem mntmShutdown;
 	private JMenuItem mntmRestart;
@@ -89,9 +93,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 		this.console = console;
 
 		init();
-		refreshStatusConsole();
-		refreshControls();
-		startStreamingStatus();
+		initValues();
 	}
 
 	public void setControlsEnabled(boolean e) {
@@ -114,21 +116,6 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 		add(panel_3, BorderLayout.CENTER);
 
-		JProgressBar barShutdown = ProgressBarFactory.get();
-		barShutdown.setPreferredSize(new Dimension(100, 4));
-
-		JProgressBar barRestart = ProgressBarFactory.get();
-		barRestart.setPreferredSize(new Dimension(100, 4));
-
-		JProgressBar barStandby = ProgressBarFactory.get();
-		barStandby.setPreferredSize(new Dimension(100, 4));
-
-		JProgressBar barHibernate = ProgressBarFactory.get();
-		barHibernate.setPreferredSize(new Dimension(100, 4));
-
-		JProgressBar barUninstall = ProgressBarFactory.get();
-		barUninstall.setPreferredSize(new Dimension(100, 4));
-
 		clientStatusConsole = new StatusConsole();
 		clientStatusConsole.setPreferredSize(new Dimension(450, 100));
 		panel_3.add(clientStatusConsole);
@@ -140,8 +127,8 @@ public class ControlsTab extends JPanel implements CPPanel {
 		statConsoleLocation = clientStatusConsole.addRow("Location");
 		statConsoleLastContact = clientStatusConsole.addRow("Last Contact");
 
-		statConsoleInstallDate.setText(profile.getAttr(SimpleAttribute.CLIENT_INSTALL_DATE));
-		statConsoleLocation.setText(profile.getAttr(SimpleAttribute.CLIENT_BASE_PATH));
+		statConsoleInstallDate.setText(profile.get(AKeySimple.CLIENT_INSTALL_DATE));
+		statConsoleLocation.setText(profile.get(AKeySimple.CLIENT_BASE_PATH));
 
 		JProgressBar barUpdate = ProgressBarFactory.get();
 		barUpdate.setPreferredSize(new Dimension(100, 4));
@@ -232,10 +219,11 @@ public class ControlsTab extends JPanel implements CPPanel {
 			public void actionPerformed(ActionEvent e) {
 				setControlsEnabled(false);
 				barUpdate.setIndeterminate(true);
-				stopStreamingStatus();
+				stopStreaming();
 				statConsoleStatus.setText("UPDATING...");
-				console.addLine("Updating client (" + profile.getAttr(SimpleAttribute.CLIENT_VERSION) + " -> "
-						+ Common.version + ")", LineType.BLUE);
+				console.addLine(
+						"Updating client (" + profile.get(AKeySimple.CLIENT_VERSION) + " -> " + Common.version + ")",
+						LineType.BLUE);
 
 				new SwingWorker<Outcome, Void>() {
 
@@ -314,9 +302,7 @@ public class ControlsTab extends JPanel implements CPPanel {
 							setControlsEnabled(true);
 							return;
 						}
-						barUninstall.setIndeterminate(true);
-						console.addLine(
-								"Sending uninstall signal to client: " + profile.getAttr(SimpleAttribute.NET_HOSTNAME));
+						console.addLine("Sending uninstall signal to client: " + profile.get(AKeySimple.NET_HOSTNAME));
 
 						new SwingWorker<Outcome, Void>() {
 
@@ -336,7 +322,6 @@ public class ControlsTab extends JPanel implements CPPanel {
 								}
 
 								setControlsEnabled(true);
-								barUninstall.setIndeterminate(false);
 							};
 
 						}.execute();
@@ -359,109 +344,6 @@ public class ControlsTab extends JPanel implements CPPanel {
 		JMenu mnDesktop = new JMenu("Desktop");
 		menuBar.add(mnDesktop);
 
-	}
-
-	private static DateFormat uptimeFormat = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy");
-
-	public void refreshStatusConsole() {
-		try {
-			statConsoleUptime.setText(
-					DateUtil.timeBetween(new Date(), uptimeFormat.parse(profile.getAttr(SimpleAttribute.OS_START_TIME))));
-		} catch (ParseException e) {
-			statConsoleUptime.setText("N/A");
-		}
-
-		statConsoleStatus.setText(profile.getAttr(SimpleAttribute.CLIENT_STATUS));
-		statConsoleLastContact.setText(DateUtil.timeBetween(new Date(), profile.getLastUpdate()));
-	}
-
-	public void refreshControls() {
-		// refresh update
-	}
-
-	private Confirmation c;
-
-	private StatusConsole clientStatusConsole;
-
-	public void notifyConfirmation() {
-		synchronized (c) {
-			c.notifyAll();
-		}
-	}
-
-	@Override
-	public void clientOffline() {
-		setControlsEnabled(false);
-	}
-
-	@Override
-	public void serverOffline() {
-		clientOffline();
-
-	}
-
-	@Override
-	public void clientOnline() {
-		setControlsEnabled(true);
-	}
-
-	@Override
-	public void serverOnline() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private InfoMaster im = null;
-	private Timer refreshTimer = null;
-	private TimerTask task = new TimerTask() {
-
-		@Override
-		public void run() {
-			refreshStatusConsole();
-		}
-
-	};
-
-	public void startStreamingStatus() {
-		if (im == null) {
-			im = new InfoMaster(InfoParam.newBuilder().setClientStatus(true).build(), profile.getCid(), 1000);
-			StreamStore.addStream(im);
-			startRefreshingStatus();
-		}
-	}
-
-	public void startRefreshingStatus() {
-		if (refreshTimer == null) {
-			refreshTimer = new Timer();
-			refreshTimer.schedule(task, 0, 1000);
-		}
-
-	}
-
-	public void stopStreamingStatus() {
-		if (im != null) {
-			StreamStore.removeStreamBySID(im.getStreamID());
-			im = null;
-			stopRefreshingStatus();
-		}
-	}
-
-	public void stopRefreshingStatus() {
-		if (refreshTimer != null) {
-			refreshTimer.cancel();
-			refreshTimer = null;
-		}
-
-	}
-
-	@Override
-	public void tabOpened() {
-		startStreamingStatus();
-	}
-
-	@Override
-	public void tabClosed() {
-		stopStreamingStatus();
 	}
 
 	class CommandWorker extends SwingWorker<Outcome, Void> {
@@ -496,6 +378,118 @@ public class ControlsTab extends JPanel implements CPPanel {
 
 			setControlsEnabled(true);
 		};
+
+	}
+
+	private void initValues() {
+		refreshDates();
+		statConsoleStatus.setText(profile.get(AKeySimple.CLIENT_STATUS));
+	}
+
+	private static DateFormat uptimeFormat = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy");
+
+	public void refreshDates() {
+		try {
+			statConsoleUptime.setText(
+					DateUtil.timeBetween(new Date(), uptimeFormat.parse(profile.get(AKeySimple.OS_START_TIME))));
+		} catch (ParseException e) {
+			statConsoleUptime.setText("N/A");
+		}
+
+		statConsoleLastContact.setText(DateUtil.timeBetween(new Date(), profile.getLastUpdate()));
+	}
+
+	private Confirmation c;
+
+	public void notifyConfirmation() {
+		synchronized (c) {
+			c.notifyAll();
+		}
+	}
+
+	@Override
+	public void clientOffline() {
+		setControlsEnabled(false);
+	}
+
+	@Override
+	public void serverOffline() {
+		clientOffline();
+
+	}
+
+	@Override
+	public void clientOnline() {
+		setControlsEnabled(true);
+	}
+
+	@Override
+	public void serverOnline() {
+		// TODO check if client is online
+
+	}
+
+	private InfoMaster im;
+	private Timer refreshTimer;
+
+	class DateRefreshTask extends TimerTask {
+
+		@Override
+		public void run() {
+			refreshDates();
+		}
+
+	};
+
+	public void startStreaming() {
+		if (im == null) {
+			im = new InfoMaster(InfoParam.newBuilder().addKey(AKeySimple.CLIENT_STATUS.getFullID()).build(),
+					profile.getCid(), 1000);
+			StreamStore.addStream(im);
+		}
+	}
+
+	public void stopStreaming() {
+		if (im != null) {
+			StreamStore.removeStreamBySID(im.getStreamID());
+			im = null;
+		}
+	}
+
+	public void startRefreshingDates() {
+		if (refreshTimer == null) {
+			refreshTimer = new Timer();
+			// TODO use a decreasing timer
+			refreshTimer.schedule(new DateRefreshTask(), 0, 1000);
+		}
+	}
+
+	public void stopRefreshingDates() {
+		if (refreshTimer != null) {
+			refreshTimer.cancel();
+			refreshTimer = null;
+		}
+	}
+
+	@Override
+	public void tabOpened() {
+		profile.addObserver(this);
+		startStreaming();
+		startRefreshingDates();
+	}
+
+	@Override
+	public void tabClosed() {
+		profile.deleteObserver(this);
+		stopStreaming();
+		stopRefreshingDates();
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		if (arg1.equals(AKeySimple.CLIENT_STATUS)) {
+			statConsoleStatus.setText(profile.get(AKeySimple.CLIENT_STATUS));
+		}
 
 	}
 }

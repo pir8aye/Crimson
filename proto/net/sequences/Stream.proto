@@ -64,21 +64,9 @@ message Param {
 }
 
 message InfoParam {
-	optional bool active_window = 1;
-	optional string cpu_id = 2;
-	optional bool cpu_temp = 3;
-	optional bool cpu_usage = 4;
-	optional bool ram_usage = 5;
-	optional bool crimson_ram_usage = 6;
-	optional bool crimson_cpu_usage = 7;
-	optional string nic_id = 8;
-	optional bool nic_rx_speed = 9;
-	optional bool nic_rx_bytes = 10;
-	optional bool nic_rx_packets = 11;
-	optional bool nic_tx_speed = 12;
-	optional bool nic_tx_bytes = 13;
-	optional bool nic_tx_packets = 14;
-	optional bool client_status = 15;
+	optional string cpu_id = 1;
+	optional string nic_id = 2;
+	repeated int32 key = 3;
 }
 
 message RemoteParam {
