@@ -48,7 +48,7 @@
 
 		<Lib CID="c06">
 			<Name>Netty</Name>
-			<EVersion>4.0.30</EVersion>
+			<EVersion>4.1.9</EVersion>
 			<License>Apache 2</License>
 			<Requisites>SVCQI</Requisites>
 			v
@@ -118,10 +118,10 @@
 		</Lib>
 
 		<Lib CID="c16">
-			<Name>Blocking Map</Name>
-			<EVersion>1.0</EVersion>
-			<License>LGPL</License>
-			<Requisites>SVCQI</Requisites>
+			<Name>TTorrent</Name>
+			<EVersion>0.1.54</EVersion>
+			<License>Apache 2</License>
+			<Requisites>C</Requisites>
 		</Lib>
 
 		<Lib CID="c17">
@@ -158,14 +158,7 @@
 			<License>BSD</License>
 			<Requisites>SVQ</Requisites>
 		</Lib>
-		
-		<Lib CID="c22">
-			<Name>TTorrent</Name>
-			<EVersion>0.1.54</EVersion>
-			<License>Apache 2</License>
-			<Requisites>C</Requisites>
-		</Lib>
-		
+
 
 	</JAR>
 
