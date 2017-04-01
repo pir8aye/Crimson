@@ -42,11 +42,11 @@ public final class LogUtil {
 
 			JarUtil.extract(LogUtil.class.getClassLoader(),
 					"com/subterranean_security/crimson/core/res/xml/logback.xml", config.getAbsolutePath());
-			FileUtil.substitute(config, "%LEVEL%", Universal.isDebug ? LogLevel.DEBUG.toString().toLowerCase()
+			FileUtil.substitute(config, "%LEVEL%", Universal.debug ? LogLevel.DEBUG.toString().toLowerCase()
 					: LogLevel.INFO.toString().toLowerCase());
 			FileUtil.substitute(config, "%LOGDIR%", config.getParent().replaceAll("\\\\", "/"));
 			FileUtil.substitute(config, "%INSTANCE%", Universal.instance.toString().toLowerCase());
-			FileUtil.substitute(config, "%NETLEVEL%", Universal.isNetDebug ? LogLevel.DEBUG.toString().toLowerCase()
+			FileUtil.substitute(config, "%NETLEVEL%", Universal.debugRawNetwork ? LogLevel.DEBUG.toString().toLowerCase()
 					: LogLevel.ERROR.toString().toLowerCase());
 
 		}

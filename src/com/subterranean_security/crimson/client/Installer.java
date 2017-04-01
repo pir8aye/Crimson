@@ -208,7 +208,7 @@ public class Installer {
 			}
 		}
 
-		if (!Universal.isDebug) {
+		if (!Universal.debug) {
 			try {
 				Runtime.getRuntime().exec(os.getJavaw() + " -jar " + client.getAbsolutePath());
 			} catch (IOException e) {
