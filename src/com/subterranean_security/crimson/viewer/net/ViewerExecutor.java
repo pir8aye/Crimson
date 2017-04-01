@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.viewer.net;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.stream.Stream;
@@ -34,17 +33,14 @@ public class ViewerExecutor extends BasicExecutor {
 
 	private static final Logger log = LoggerFactory.getLogger(ViewerExecutor.class);
 
-	private ViewerConnector connector;
-
-	public ViewerExecutor(ViewerConnector vc) {
+	public ViewerExecutor() {
 		super();
-		connector = vc;
 
 		dispatchThread = new Thread(() -> {
 			while (!Thread.currentThread().isInterrupted()) {
 				Message m;
 				try {
-					m = connector.mq.take();
+					m = connector.msgQueue.take();
 				} catch (InterruptedException e) {
 					log.error("Message dispatch thread interrupted");
 					return;
@@ -67,24 +63,15 @@ public class ViewerExecutor extends BasicExecutor {
 						ProfileStore.update(m.getEvViewerProfileDelta());
 					} else if (m.hasEvKevent()) {
 						ev_kevent(m);
-					} else if (m.hasMiAssignCvid()) {
-						assign_1w(m);
 					} else {
-						connector.cq.put(m.getId(), m);
+						connector.addNewResponse(m);
 					}
 					ReferenceCountUtil.release(m);
 				});
 
 			}
 		});
-		dispatchThread.start();
 
-	}
-
-	private void assign_1w(Message m) {
-		Common.cvid = m.getMiAssignCvid().getId();
-		ProfileStore.getLocalViewer().setCvid(Common.cvid);
-		log.debug("Assigned new CVID: {}", Common.cvid);
 	}
 
 	private void ev_kevent(Message m) {

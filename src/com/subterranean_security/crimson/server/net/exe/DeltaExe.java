@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
@@ -34,8 +35,7 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.LocationUtil;
 import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.core.util.Validation;
-import com.subterranean_security.crimson.server.net.Receptor;
-import com.subterranean_security.crimson.server.store.ConnectionStore;
+import com.subterranean_security.crimson.server.net.ServerConnectionStore;
 import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -46,7 +46,7 @@ public final class DeltaExe {
 	private DeltaExe() {
 	}
 
-	public static void ev_profileDelta(Receptor r, EV_ProfileDelta pd) {
+	public static void ev_profileDelta(Connector r, EV_ProfileDelta pd) {
 		if (pd.getFig()) {
 			pd = EV_ProfileDelta.newBuilder(pd).addGroup(resolveLocation(r, pd)).build();
 		}
@@ -58,18 +58,18 @@ public final class DeltaExe {
 		}
 
 		ProfileStore.getClient(r.getCvid()).amalgamate(pd);
-		ConnectionStore.sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
+		ServerConnectionStore.sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
 				Message.newBuilder().setEvProfileDelta(pd));
 	}
 
-	private static AttributeGroupContainer resolveLocation(Receptor receptor, EV_ProfileDelta pd) {
+	private static AttributeGroupContainer resolveLocation(Connector receptor, EV_ProfileDelta pd) {
 		AttributeGroupContainer general = ProtoUtil.getGeneralGroup(pd);
 		AttributeGroupContainer.Builder update = AttributeGroupContainer.newBuilder(general).clearAttribute();
 
 		String ip = null;
 		if (!general.containsAttribute(AKeySimple.NET_EXTERNALIP.getFullID())) {
 			// amend IP
-			ip = receptor.getRemoteAddress();
+			ip = receptor.getRemoteIP();
 			update.putAttribute(AKeySimple.NET_EXTERNALIP.getFullID(), ip);
 		} else {
 			ip = general.getAttributeOrDefault(AKeySimple.NET_EXTERNALIP.getFullID(), "");
@@ -92,14 +92,14 @@ public final class DeltaExe {
 		return update.build();
 	}
 
-	public static void mi_trigger_profile_delta(Receptor r, Message m) {
+	public static void mi_trigger_profile_delta(Connector r, Message m) {
 
 		for (ClientProfile cp : ProfileStore.getClientsUnderAuthority(r.getCvid())) {
 			boolean flag = true;
 			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
 				if (pt.getCvid() == cp.getCid()) {
 					log.debug("Updating client in viewer");
-					r.handle.write(
+					r.write(
 							Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(pt.getTimestamp()))).build());
 					flag = false;
 					continue;
@@ -107,7 +107,7 @@ public final class DeltaExe {
 			}
 			if (flag) {
 				log.debug("Sending new client to viewer");
-				r.handle.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(0))).build());
+				r.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(0))).build());
 			}
 
 		}

@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_FileListing;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_Delete;
@@ -30,7 +31,6 @@ import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.store.FileManagerStore;
-import com.subterranean_security.crimson.server.net.Receptor;
 import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
@@ -41,7 +41,7 @@ public final class FileManagerExe {
 	private FileManagerExe() {
 	}
 
-	public static void rq_file_listing(Receptor receptor, Message m) {
+	public static void rq_file_listing(Connector receptor, Message m) {
 		ViewerProfile vp = ProfileStore.getViewer(receptor.getCvid());
 
 		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
@@ -58,7 +58,7 @@ public final class FileManagerExe {
 		}
 
 		try {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
+			receptor.write(Message.newBuilder().setId(m.getId())
 					.setRsFileListing(RS_FileListing.newBuilder().setPath(lf.pwd()).addAllListing(lf.list())).build());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -67,46 +67,46 @@ public final class FileManagerExe {
 		}
 	}
 
-	public static void rs_file_listing(Receptor receptor, Message m) {
+	public static void rs_file_listing(Connector receptor, Message m) {
 
 	}
 
-	public static void rs_file_handle(Receptor receptor, Message m) {
+	public static void rs_file_handle(Connector receptor, Message m) {
 
 	}
 
-	public static void rq_file_handle(Receptor receptor, Message m) {
+	public static void rq_file_handle(Connector receptor, Message m) {
 		ViewerProfile vp = ProfileStore.getViewer(receptor.getCvid());
 
 		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
 			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
 			return;
 		}
-		receptor.handle.write(Message.newBuilder().setId(m.getId())
+		receptor.write(Message.newBuilder().setId(m.getId())
 				.setRsFileHandle(RS_FileHandle.newBuilder().setFmid(FileManagerStore.add(new LocalFS(true, true))))
 				.build());
 
 	}
 
-	public static void rq_delete(Receptor receptor, Message m) {
+	public static void rq_delete(Connector receptor, Message m) {
 
 		// check permissions
 		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
+			receptor.write(Message.newBuilder().setId(m.getId())
 					.setRsDelete(RS_Delete.newBuilder()
 							.setOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions")))
 					.build());
 			return;
 		}
 
-		receptor.handle.write(Message.newBuilder().setId(m.getId())
+		receptor.write(Message.newBuilder().setId(m.getId())
 				.setRsDelete(RS_Delete.newBuilder()
 						.setOutcome(LocalFS.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
 				.build());
 	}
 
-	public static void rq_advanced_file_info(Receptor receptor, Message m) {
-		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+	public static void rq_advanced_file_info(Connector receptor, Message m) {
+		receptor.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsAdvancedFileInfo(LocalFS.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
 	}
 

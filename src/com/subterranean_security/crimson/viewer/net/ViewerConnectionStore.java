@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,11 +15,42 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.client.net;
+package com.subterranean_security.crimson.viewer.net;
 
-public final class ClientCommands {
+import java.util.Observable;
 
-	private ClientCommands() {
+import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.ConnectionStore.ConnectionEventListener;
+import com.subterranean_security.crimson.viewer.ViewerState;
+
+public final class ViewerConnectionStore {
+	private ViewerConnectionStore() {
 	}
 
+	public static void initialize() {
+		ConnectionStore.initialize(new ViewerConnectionEventListener());
+	}
+
+	private static class ViewerConnectionEventListener implements ConnectionEventListener {
+
+		@Override
+		public void update(Observable o, Object arg) {
+			Connector connector = (Connector) o;
+			ConnectionState state = (ConnectionState) arg;
+
+			if (connector.getCvid() == 0) {
+				switch (state) {
+				case NOT_CONNECTED:
+					ViewerState.goOffline();
+					break;
+				default:
+					break;
+
+				}
+			}
+		}
+
+	}
 }

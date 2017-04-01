@@ -35,13 +35,15 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.net.ViewerConnector;
-import com.subterranean_security.crimson.viewer.net.commands.LoginCom;
-import com.subterranean_security.crimson.viewer.store.ConnectionStore;
+import com.subterranean_security.crimson.viewer.net.ViewerExecutor;
+import com.subterranean_security.crimson.viewer.net.command.LoginCom;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
@@ -184,8 +186,12 @@ public class Relogin extends JPanel {
 
 		try {
 
+			Connector connector = new Connector(new ViewerExecutor());
+			connector.setCvid(0);
+
 			try {
-				ConnectionStore.put(0, new ViewerConnector(server, Integer.parseInt(port)));
+				connector.connect(ConnectionType.SOCKET, server, Integer.parseInt(port));
+				ConnectionStore.add(connector);
 			} catch (Throwable e) {
 				lbl_status.setBad("Unable to Connect");
 				return;

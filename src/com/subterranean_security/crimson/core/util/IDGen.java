@@ -18,27 +18,41 @@
 package com.subterranean_security.crimson.core.util;
 
 /**
- * 
- * This class is the central generator for ID numbers.
- * 
- * @author Tyler Cook
- *
+ * Unified place for getting different types of ID numbers.
  */
 public final class IDGen {
 	private IDGen() {
 	}
 
-	private static int counter = 0;
+	private static int msg = 0;
 
+	/**
+	 * Get an ID for use in a message which requires a response. IDs cycle from
+	 * 0 to 16 which saves a few bytes on the wire.
+	 * 
+	 * @return An ID ranging from 0-16
+	 */
 	public static int msg() {
-		if (counter == 16) {
-			counter = 0;
+		msg++;
+		if (msg == 16) {
+			msg = 0;
 		}
-		return ++counter;
+		return msg;
 	}
 
+	// TODO incremental
 	public static int cvid() {
 		return RandomUtil.nextInt();
+	}
+
+	/**
+	 * Generate a new long-cvid which is just a random string. Collisions are
+	 * not checked!
+	 * 
+	 * @return A 6 character long-cvid
+	 */
+	public static String lcvid() {
+		return RandomUtil.randString(6);
 	}
 
 	public static int fm() {

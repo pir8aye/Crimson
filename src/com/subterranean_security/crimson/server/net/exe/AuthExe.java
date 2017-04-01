@@ -17,28 +17,25 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.net.exe;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.security.auth.DestroyFailedException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
-import com.subterranean_security.crimson.core.net.ConnectionState;
+import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.server.net.Receptor;
-import com.subterranean_security.crimson.server.net.ServerCommands;
 import com.subterranean_security.crimson.server.store.Authentication;
-import com.subterranean_security.crimson.server.store.ConnectionStore;
 import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.Universal;
@@ -49,13 +46,15 @@ public final class AuthExe {
 	private AuthExe() {
 	}
 
-	public static void mi_challenge_result(Receptor r, Message m) {
+	public static void mi_challenge_result(Connector r, Message m) {
 		if (r.getState() != ConnectionState.AUTH_STAGE2) {
+			log.debug("Rejecting authorization challenge result for connector: {} due to invalid state: {}",
+					r.getCvid(), r.getState());
 			return;
 		}
-		if (m.getMiChallengeresult().getResult()) {
+		if (m.getMiChallengeResult().getResult()) {
 			acceptClient(r);
-			DeltaExe.ev_profileDelta(r, m.getMiChallengeresult().getPd());
+			DeltaExe.ev_profileDelta(r, m.getMiChallengeResult().getPd());
 		} else {
 			log.debug("Authentication failed");
 			r.close();
@@ -63,18 +62,15 @@ public final class AuthExe {
 
 	}
 
-	public static void mi_auth_request(Receptor r, Message m) {
+	public static void mi_auth_request(Connector r, Message m) {
 		if (r.getState() != ConnectionState.CONNECTED) {
+			log.debug("Rejecting authorization request for connector: {} due to invalid state: {}", r.getCvid(),
+					r.getState());
 			return;
 		} else {
 			r.setState(ConnectionState.AUTH_STAGE1);
 		}
 		MI_AuthRequest auth = m.getMiAuthRequest();
-		if (auth.getCvid() != 0) {
-			r.setCvid(auth.getCvid());
-		} else {
-			ServerCommands.setCvid(r, IDGen.cvid());
-		}
 
 		switch (auth.getType()) {
 
@@ -92,10 +88,10 @@ public final class AuthExe {
 
 			final String magic = RandomUtil.randString(64);
 			RQ_GroupChallenge rq = RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
-			r.handle.write(Message.newBuilder().setId(mSeqID).setRqGroupChallenge(rq).build());
+			r.write(Message.newBuilder().setId(mSeqID).setRqGroupChallenge(rq).build());
 
 			try {
-				RS_GroupChallenge rs = r.cq.take(mSeqID, 7, TimeUnit.SECONDS).getRsGroupChallenge();
+				RS_GroupChallenge rs = r.getResponse(mSeqID).get(7000).getRsGroupChallenge();
 				boolean flag = rs.getResult().equals(CryptoUtil.hashSign(magic, group.getGroupKey()));
 				try {
 					group.destroy();
@@ -108,8 +104,8 @@ public final class AuthExe {
 					log.info("Challenge 1 failed");
 					r.setState(ConnectionState.CONNECTED);
 				}
-				r.handle.write(Message.newBuilder().setId(mSeqID)
-						.setMiChallengeresult(MI_GroupChallengeResult.newBuilder().setResult(flag).build()).build());
+				r.write(Message.newBuilder().setId(mSeqID)
+						.setMiChallengeResult(MI_GroupChallengeResult.newBuilder().setResult(flag).build()).build());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -140,7 +136,7 @@ public final class AuthExe {
 
 	}
 
-	private static void acceptClient(Receptor receptor) {
+	private static void acceptClient(Connector receptor) {
 		receptor.setState(ConnectionState.AUTHENTICATED);
 		receptor.setInstance(Universal.Instance.CLIENT);
 

@@ -249,6 +249,8 @@ public class MenuControls extends JPanel {
 	private ViewerProfile vp;
 
 	public void refresh() {
+		System.out.println("vp == null: " + (vp == null));
+		System.out.println("vp.get() == null: " + (vp.get(AKeySimple.CLIENT_RAM_USAGE) == null));
 		valViewerRamUsage.setText(vp.get(AKeySimple.CLIENT_RAM_USAGE));
 		// valViewerCpuTemp.setText(ProfileStore.getLocalClient().getPrimaryCPU().getAttribute(AKeyCPU.CPU_TEMP).get());
 		valViewerCpuUsage.setText(vp.get(AKeySimple.CLIENT_CPU_USAGE) + " %");

@@ -483,6 +483,7 @@ public class BasicDatabase implements StorageFacility {
 
 	public void resetBasic() {
 		store("cvid", 0);
+		store("lcvid", new HashMap<String, Integer>());
 		store("reports.buffer", new ArrayList<MI_Report>());
 		store("crimson.version", Common.version);
 		store("crimson.build_number", Common.build);

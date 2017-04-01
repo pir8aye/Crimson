@@ -28,13 +28,13 @@ import org.jnativehook.keyboard.NativeKeyListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.client.store.ConnectionStore;
+import com.subterranean_security.crimson.client.net.ClientConnectionStore;
 import com.subterranean_security.crimson.core.misc.MemList;
-import com.subterranean_security.crimson.core.net.ConnectionState;
+import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 

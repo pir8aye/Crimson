@@ -31,7 +31,7 @@ import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.RAM;
-import com.subterranean_security.crimson.viewer.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 
 public class StatsPanel extends JPanel {
 

@@ -35,13 +35,14 @@ public final class ProfileStore {
 	private ProfileStore() {
 	}
 
-	private static ServerProfile server = new ServerProfile();
+	private static ServerProfile server;
 
-	private static String localUser = null;
+	private static String localUser;
 
 	public static MemList<ClientProfile> clients;
 
 	static {
+		server = new ServerProfile();
 		try {
 			clients = (MemList<ClientProfile>) DatabaseStore.getDatabase().getObject("profiles.clients");
 			clients.setDatabase(DatabaseStore.getDatabase());
@@ -148,7 +149,7 @@ public final class ProfileStore {
 
 				if (firstConnection && UINotification.getPolicy().getOnNewClientConnect()) {
 					UINotification.addConsoleInfo(
-							"(new client) Connection established: " + cp.get(AKeySimple.NET_EXTERNALIP));
+							"Connection established: " + cp.get(AKeySimple.NET_EXTERNALIP) + " (new client)");
 				} else if (UINotification.getPolicy().getOnOldClientConnect()) {
 					UINotification.addConsoleInfo("Connection established: " + cp.get(AKeySimple.NET_EXTERNALIP));
 				}

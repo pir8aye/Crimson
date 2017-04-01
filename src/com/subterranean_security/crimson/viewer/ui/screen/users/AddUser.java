@@ -44,7 +44,7 @@ import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.net.command.UserCom;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
@@ -276,7 +276,7 @@ public class AddUser extends JDialog {
 											.addFlag(Perm.server.settings.modify, chckbxServerSettings.isSelected())
 											.addFlag(Perm.server.fs.read, chckbxServerFilesystemRead.isSelected())
 											.addFlag(Perm.server.fs.read, chckbxServerFilesystemWrite.isSelected());
-									Outcome outcome = ViewerCommands.addUser(textField.getText(),
+									Outcome outcome = UserCom.addUser(textField.getText(),
 											UIUtil.getPassword(passwordField), vp);
 									if (outcome.getResult()) {
 										sl.setGood("Success!");

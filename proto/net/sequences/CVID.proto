@@ -1,6 +1,15 @@
-syntax = "proto2";
+syntax = "proto3";
 package com.subterranean_security.crimson.core.proto;
 
-message MI_AssignCVID {
-	required int32 id = 1;
+message RQ_Cvid {
+	// a list of long-cvids which this client/viewer has associated with in the past
+	repeated string lcvid = 1;
+}
+
+message RS_Cvid {
+	// the new short cvid to use for this session
+	int32 cvid = 1;
+	
+	// if the server did not recognize any long-cvid from the request, this string contains the new long-cvid
+	string lcvid = 2;
 }

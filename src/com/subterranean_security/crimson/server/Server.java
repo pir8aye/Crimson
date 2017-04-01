@@ -45,6 +45,7 @@ import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
+import com.subterranean_security.crimson.server.net.ServerConnectionStore;
 import com.subterranean_security.crimson.server.storage.ServerDatabase;
 import com.subterranean_security.crimson.server.store.Authentication;
 import com.subterranean_security.crimson.server.store.ListenerStore;
@@ -87,6 +88,9 @@ public final class Server {
 
 		// Clear /tmp/
 		TempUtil.clear();
+
+		// Initialize connection stores
+		ServerConnectionStore.initialize();
 
 		// initialize server database
 		initializeDatabase();

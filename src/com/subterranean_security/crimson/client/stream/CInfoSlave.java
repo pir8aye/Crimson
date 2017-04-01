@@ -17,11 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.stream;
 
-import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 
 public class CInfoSlave extends InfoSlave {

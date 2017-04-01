@@ -46,7 +46,7 @@ import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.net.command.UserCom;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 
@@ -279,7 +279,7 @@ public class EditUser extends JPanel {
 										.addFlag(Perm.server.users.create, chckbxAddUser.isSelected());
 								String oldPass = UIUtil.getPassword(fld_old);
 								String newPass = UIUtil.getPassword(fld_new);
-								return ViewerCommands.editUser(original.get(AKeySimple.VIEWER_USER),
+								return UserCom.editUser(original.get(AKeySimple.VIEWER_USER),
 										oldPass.isEmpty() ? null : oldPass, oldPass.isEmpty() ? null : newPass, vp);
 							}
 

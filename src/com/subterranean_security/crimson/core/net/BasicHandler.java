@@ -19,25 +19,65 @@ package com.subterranean_security.crimson.core.net;
 
 import java.net.InetSocketAddress;
 
+import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public abstract class BasicHandler extends SimpleChannelInboundHandler<Message> {
+public class BasicHandler extends SimpleChannelInboundHandler<Message> {
 
-	public volatile Channel channel;
+	protected Channel channel;
+	protected Connector connector;
 
 	public void write(Message msg) {
 		channel.writeAndFlush(msg);
 	}
 
 	public void write(Message.Builder msg) {
-		channel.writeAndFlush(msg.build());
+		write(msg.build());
 	}
 
-	public String getRemoteAddress() {
+	public String getRemoteIP() {
 		return ((InetSocketAddress) channel.remoteAddress()).getAddress().getHostAddress();
 	}
+
+	public int getRemotePort() {
+		return ((InetSocketAddress) channel.remoteAddress()).getPort();
+	}
+
+	public void setConnector(Connector connector) {
+		this.connector = connector;
+	}
+
+	@Override
+	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+		this.channel = ctx.channel();
+	};
+
+	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		ctx.close();
+		connector.setState(ConnectionState.NOT_CONNECTED);
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		ctx.close();
+		cause.printStackTrace();
+		connector.setState(ConnectionState.NOT_CONNECTED);
+	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext arg0, Message msg) throws Exception {
+		connector.msgQueue.add(msg);
+	}
+
+	// TODO is this needed?
+	// @Override
+	// public void channelReadComplete(ChannelHandlerContext ctx) {
+	// ctx.flush();
+	// }
 
 }

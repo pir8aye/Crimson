@@ -21,15 +21,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.server.net.Receptor;
-import com.subterranean_security.crimson.server.store.ConnectionStore;
 import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
@@ -87,13 +87,13 @@ public class SubscriberSlave extends Stream {
 	}
 
 	public void trigger(EV_KEvent k) {
-		Receptor r = ConnectionStore.getConnection(param.getVID());
+		Connector r = ConnectionStore.get(param.getVID());
 		if (r == null) {
 			// stop this stream
 			StreamStore.removeStreamBySID(getStreamID());
 			return;
 		}
-		r.handle.write(Message.newBuilder().setSid(param.getCID()).setEvKevent(k).build());
+		r.write(Message.newBuilder().setSid(param.getCID()).setEvKevent(k).build());
 
 	}
 

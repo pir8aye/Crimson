@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.net.commands;
+package com.subterranean_security.crimson.viewer.net.command;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,10 +23,11 @@ import java.io.IOException;
 
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.Torrent.RQ_AddTorrent;
-import com.subterranean_security.crimson.viewer.net.ViewerRouter;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 
 public final class TorrentCom {
 	private TorrentCom() {
@@ -36,7 +37,7 @@ public final class TorrentCom {
 		Outcome.Builder outcome = Outcome.newBuilder();
 
 		try {
-			Message m = ViewerRouter.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
 					.setRqAddTorrent(RQ_AddTorrent.newBuilder().setDestintation(destination)
 							.setTorrentFile(ByteString.readFrom(new FileInputStream(torrent)))),
 					5);
@@ -51,6 +52,9 @@ public final class TorrentCom {
 			outcome.setResult(false).setComment("Interrupted");
 		} catch (IOException e1) {
 			outcome.setResult(false).setComment("Torrent file not found");
+		} catch (Timeout e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return outcome.build();
 	}

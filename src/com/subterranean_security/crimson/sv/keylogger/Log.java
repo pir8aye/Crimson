@@ -110,6 +110,7 @@ public class Log extends Observable implements Serializable {
 		// update last updated
 		timestamp = target;
 
+		setChanged();
 		notifyObservers(evKevent);
 
 	}

@@ -22,7 +22,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.client.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 
@@ -38,7 +38,7 @@ public class ShutdownHook extends Thread {
 		log.info("Received shutdown signal");
 
 		log.debug("Terminating network connections");
-		ConnectionStore.close();
+		ConnectionStore.closeAll();
 
 		try {
 			log.debug("Closing database");

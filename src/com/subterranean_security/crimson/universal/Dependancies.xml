@@ -29,7 +29,7 @@
 			<Name>Crimson SV Library</Name>
 			<EVersion>1</EVersion>
 			<License>Apache 2</License>
-			<Requisites>SVI</Requisites>
+			<Requisites>SVIQ</Requisites>
 		</Lib>
 
 		<Lib CID="c04">

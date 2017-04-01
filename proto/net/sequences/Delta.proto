@@ -51,3 +51,9 @@ message EV_ViewerProfileDelta {
 	//string login_ip = 5;
 	
 }
+
+message EV_NetworkDelta {
+	bool added = 1;
+	int32 peer1 = 2;
+	int32 peer2 = 3;
+}

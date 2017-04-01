@@ -24,8 +24,8 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
 public class SubscriberMaster extends Stream {
 
@@ -50,7 +50,7 @@ public class SubscriberMaster extends Stream {
 
 	@Override
 	public void start() {
-		ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(0)
+		ConnectionStore.route(Message.newBuilder().setSid(param.getVID()).setRid(0)
 				.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
 
 	}

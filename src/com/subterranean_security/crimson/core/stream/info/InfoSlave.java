@@ -35,11 +35,11 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
-import com.subterranean_security.crimson.server.store.ConnectionStore;
 import com.subterranean_security.crimson.server.store.ListenerStore;
 
 public abstract class InfoSlave extends Stream {

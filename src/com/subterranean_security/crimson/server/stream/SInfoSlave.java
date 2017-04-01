@@ -17,13 +17,13 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server.stream;
 
+import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
-import com.subterranean_security.crimson.server.net.Receptor;
-import com.subterranean_security.crimson.server.store.ConnectionStore;
 
 public class SInfoSlave extends InfoSlave {
 
@@ -33,12 +33,12 @@ public class SInfoSlave extends InfoSlave {
 
 	@Override
 	public void send() {
-		Receptor r = ConnectionStore.getConnection(param.getVID());
+		Connector r = ConnectionStore.get(param.getVID());
 		if (r == null) {
 			StreamStore.removeStreamBySID(getStreamID());
 			return;
 		}
-		r.handle.write(Message.newBuilder().setRid(param.getCID()).setSid(param.getVID())
+		r.write(Message.newBuilder().setRid(param.getCID()).setSid(param.getVID())
 				.setEvServerProfileDelta(gatherServerInfo()).build());
 
 	}

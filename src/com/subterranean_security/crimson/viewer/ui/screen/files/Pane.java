@@ -32,7 +32,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 
 import com.subterranean_security.crimson.core.net.RequestTimeoutException;
@@ -41,9 +40,9 @@ import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.net.command.FileManagerCom;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.components.Console.LineType;
 import com.subterranean_security.crimson.viewer.ui.screen.files.ep.AdvancedFileInfo;
 import com.subterranean_security.crimson.viewer.ui.screen.files.ep.DeleteConfirmation;
 
@@ -87,7 +86,7 @@ public class Pane extends JPanel {
 					public void run() {
 
 						if (fmid != 0) {
-							ViewerCommands.closeFileHandle(cid, fmid);
+							FileManagerCom.closeFileHandle(cid, fmid);
 						}
 
 						switch (name) {
@@ -98,14 +97,14 @@ public class Pane extends JPanel {
 						case "server": {
 							type = TYPE.SERVER;
 							cid = 0;
-							fmid = ViewerCommands.getFileHandle(cid);
+							fmid = FileManagerCom.getFileHandle(cid);
 							break;
 						}
 						default: {
 							type = TYPE.CLIENT;
 							cid = ProfileStore.getClient(name).getCid();
 							System.out.println("Found cid: " + cid);
-							fmid = ViewerCommands.getFileHandle(cid);
+							fmid = FileManagerCom.getFileHandle(cid);
 							break;
 						}
 						}
@@ -186,7 +185,7 @@ public class Pane extends JPanel {
 			switch (type) {
 			case CLIENT:
 			case SERVER:
-				RS_FileListing rs = ViewerCommands.fm_up(cid, fmid, true, true);
+				RS_FileListing rs = FileManagerCom.fm_up(cid, fmid, true, true);
 				if (rs == null) {
 					throw new RequestTimeoutException();
 				} else {
@@ -246,7 +245,7 @@ public class Pane extends JPanel {
 			switch (type) {
 			case CLIENT:
 			case SERVER:
-				RS_FileListing rs = ViewerCommands.fm_down(cid, fmid, down, true, true);
+				RS_FileListing rs = FileManagerCom.fm_down(cid, fmid, down, true, true);
 				if (rs == null) {
 					throw new RequestTimeoutException();
 				} else {
@@ -305,7 +304,7 @@ public class Pane extends JPanel {
 			switch (type) {
 			case CLIENT:
 			case SERVER:
-				rs = ViewerCommands.fm_file_info(cid, path);
+				rs = FileManagerCom.fm_file_info(cid, path);
 				break;
 			case VIEWER:
 				rs = LocalFS.getInfo(path);
@@ -350,7 +349,7 @@ public class Pane extends JPanel {
 			switch (type) {
 			case CLIENT:
 			case SERVER:
-				RS_FileListing rs = ViewerCommands.fm_list(cid, fmid, true, true);
+				RS_FileListing rs = FileManagerCom.fm_list(cid, fmid, true, true);
 				if (rs == null) {
 					throw new RequestTimeoutException();
 				} else {

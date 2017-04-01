@@ -62,14 +62,15 @@
 		<appender-ref ref="STDOUT" />
 	</logger>
 
-	<logger name="com.subterranean_security.crimson.client.net.ClientHandler"
-		level="%NETLEVEL%" additivity="false">
-		<appender-ref ref="NETWORK" />
-	</logger>
-
 	<logger name="com.subterranean_security.crimson.core" level="%LEVEL%"
 		additivity="false">
 		<appender-ref ref="FILESYSTEM" />
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="com.subterranean_security.crimson.core.net.Connector"
+		level="%LEVEL%" additivity="false">
+		<appender-ref ref="NETWORK" />
 		<appender-ref ref="STDOUT" />
 	</logger>
 
@@ -79,12 +80,13 @@
 		<appender-ref ref="STDOUT" />
 	</logger>
 
-	<logger name="com.subterranean_security.crimson.server.net.ServerHandler"
-		level="%NETLEVEL%" additivity="false">
-		<appender-ref ref="NETWORK" />
-	</logger>
-
 	<logger name="com.subterranean_security.crimson.sv" level="%LEVEL%"
+		additivity="false">
+		<appender-ref ref="FILESYSTEM" />
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="com.subterranean_security.crimson.cv" level="%LEVEL%"
 		additivity="false">
 		<appender-ref ref="FILESYSTEM" />
 		<appender-ref ref="STDOUT" />
@@ -94,11 +96,6 @@
 		additivity="false">
 		<appender-ref ref="FILESYSTEM" />
 		<appender-ref ref="STDOUT" />
-	</logger>
-
-	<logger name="com.subterranean_security.crimson.viewer.net.ViewerHandler"
-		level="%NETLEVEL%" additivity="false">
-		<appender-ref ref="NETWORK" />
 	</logger>
 
 	<logger name="com.subterranean_security.services" level="%LEVEL%"

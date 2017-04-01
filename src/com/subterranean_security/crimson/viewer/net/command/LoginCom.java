@@ -15,11 +15,12 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.net.commands;
+package com.subterranean_security.crimson.viewer.net.command;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.proto.Delta.MI_TriggerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.core.proto.Login.RQ_Login;
@@ -28,10 +29,10 @@ import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
@@ -47,12 +48,12 @@ public final class LoginCom {
 
 		int id = IDGen.msg();
 
-		ViewerRouter.route(Message.newBuilder().setId(id).setRqLogin(RQ_Login.newBuilder().setUsername(user)));
+		ConnectionStore.route(Message.newBuilder().setId(id).setRqLogin(RQ_Login.newBuilder().setUsername(user)));
 
 		RS_Login loginResponse = null;
 		try {
 
-			Message response = ViewerRouter.getReponse(0, id, 5);
+			Message response = ConnectionStore.waitForResponse(0, id, 5);
 			if (response == null) {
 				return outcome.setComment("Request timeout").build();
 			} else if (response.hasRqLoginChallenge()) {
@@ -63,6 +64,9 @@ public final class LoginCom {
 
 		} catch (InterruptedException e) {
 			return outcome.build();
+		} catch (Timeout e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		if (loginResponse != null) {
@@ -97,14 +101,18 @@ public final class LoginCom {
 		RQ_LoginChallenge challenge = m.getRqLoginChallenge();
 		String result = challenge.getCloud() ? CryptoUtil.hashOpencartPassword(pass, challenge.getSalt())
 				: CryptoUtil.hashCrimsonPassword(pass, challenge.getSalt());
-		ViewerRouter.route(Message.newBuilder().setId(m.getId())
+		ConnectionStore.route(Message.newBuilder().setId(m.getId())
 				.setRsLoginChallenge(RS_LoginChallenge.newBuilder().setResult(result)).build());
 
 		try {
-			Message response = ViewerRouter.getReponse(0, m.getId(), 5);
+			Message response = ConnectionStore.waitForResponse(0, m.getId(), 5);
 
 			return (response != null && response.hasRsLogin()) ? response.getRsLogin() : null;
 		} catch (InterruptedException e) {
+			return null;
+		} catch (Timeout e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -120,7 +128,7 @@ public final class LoginCom {
 			mi.addProfileTimestamp(
 					ProfileTimestamp.newBuilder().setCvid(cp.getCid()).setTimestamp(cp.getLastUpdate().getTime()));
 		}
-		ViewerRouter.route(Message.newBuilder().setMiTriggerProfileDelta(mi));
+		ConnectionStore.route(Message.newBuilder().setMiTriggerProfileDelta(mi));
 
 	}
 

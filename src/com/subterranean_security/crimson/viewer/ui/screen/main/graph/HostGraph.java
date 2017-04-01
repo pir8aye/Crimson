@@ -26,6 +26,8 @@ import java.awt.event.MouseWheelListener;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map.Entry;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JPanel;
 
@@ -35,6 +37,9 @@ import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.core.net.NetworkNode;
+import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.util.JarUtil;
@@ -43,7 +48,7 @@ import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.main.ContextMenuFactory;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
-public class HostGraph extends JPanel implements MouseWheelListener {
+public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 
 	private static final long serialVersionUID = 1L;
 
@@ -66,6 +71,8 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 			addServer();
 			addInitialClients();
 		}
+
+		ConnectionStore.getNetworkTree().addObserver(this);
 
 	}
 
@@ -227,9 +234,33 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 					vertexHeight, "shape=image;image=" + iconLocation);
 			vertices.put(v, p.getCid());
 
-			graph.insertEdge(parent, null, "", serverVertex, v,
-					"startArrow=oval;endArrow=oval;sourcePerimeterSpacing=4;startFill=0;endFill=0;");
+		} finally {
+			graph.getModel().endUpdate();
+		}
 
+		for (NetworkNode node : ConnectionStore.getNetworkTree().getAdjacent()) {
+			addConnection(p.getCid(), node.getCvid());
+		}
+
+	}
+
+	public void addConnection(int peer1, int peer2) {
+		Object o1 = null;
+		Object o2 = null;
+
+		for (Entry<Object, Integer> entry : vertices.entrySet()) {
+			if (o1 != null && o2 != null)
+				break;
+			if (entry.getValue() == peer1)
+				o1 = entry.getKey();
+			else if (entry.getValue() == peer2)
+				o2 = entry.getKey();
+		}
+
+		graph.getModel().beginUpdate();
+		try {
+			graph.insertEdge(parent, null, "", o1, o2,
+					"startArrow=oval;endArrow=oval;sourcePerimeterSpacing=4;startFill=0;endFill=0;");
 		} finally {
 			graph.getModel().endUpdate();
 		}
@@ -272,6 +303,15 @@ public class HostGraph extends JPanel implements MouseWheelListener {
 		} else {
 			// TODO complex attribute
 			return "";
+		}
+
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		EV_NetworkDelta nd = (EV_NetworkDelta) arg1;
+		if (nd.getAdded()) {
+			addConnection(nd.getPeer1(), nd.getPeer2());
 		}
 
 	}

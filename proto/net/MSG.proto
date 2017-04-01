@@ -1,6 +1,8 @@
 syntax = "proto2";
 package com.subterranean_security.crimson.core.proto;
 
+import "net/SMSG.proto";
+
 import "net/sequences/Chat.proto";
 import "net/sequences/Login.proto";
 import "net/sequences/Keylogger.proto";
@@ -19,6 +21,7 @@ import "net/sequences/Update.proto";
 import "net/sequences/State.proto";
 import "net/sequences/Screenshot.proto";
 import "net/sequences/Torrent.proto";
+import "net/sequences/Network.proto";
 
 message Message {
 	optional int32 id = 2;
@@ -33,6 +36,7 @@ message Message {
 	optional EV_ViewerProfileDelta ev_viewer_profile_delta = 9;
 	optional EV_KEvent ev_kevent = 10;
 	optional EV_ChatMessage ev_chat_message = 11;
+	optional EV_NetworkDelta ev_network_delta = 12;
 	
 	optional RQ_Login rq_login = 100;
 	optional RS_Login rs_login = 101;
@@ -40,7 +44,7 @@ message Message {
 	optional RS_LoginChallenge rs_login_challenge = 103;
 	optional RQ_GroupChallenge rq_group_challenge = 104;
 	optional RS_GroupChallenge rs_group_challenge = 105;
-	optional MI_GroupChallengeResult mi_challengeresult = 106;
+	optional MI_GroupChallengeResult mi_challenge_result = 106;
 	optional RQ_Generate rq_generate = 107;
 	optional RS_Generate rs_generate = 108;
 	optional RQ_FileListing rq_file_listing = 109;
@@ -82,11 +86,31 @@ message Message {
 	optional RS_Chat rs_chat = 145;
 	optional RQ_AddTorrent rq_add_torrent = 146;
 	optional RS_AddTorrent rs_add_torrent = 147;
+	
+	// Network.proto
+	optional RQ_DirectConnection rq_direct_connection = 148;
+	optional RS_DirectConnection rs_direct_connection = 149;
+	optional RQ_MakeDirectConnection rq_make_direct_connection = 150;
+	optional RS_MakeDirectConnection rs_make_direct_connection = 151;
 
 	optional MI_TriggerProfileDelta mi_trigger_profile_delta = 199;
 	optional MI_StreamStart mi_stream_start = 200;
 	optional MI_StreamStop mi_stream_stop = 201;
 	optional MI_AuthRequest mi_auth_request = 202;
 	optional MI_Report mi_report = 203;
-	optional MI_AssignCVID mi_assign_cvid = 204;
+	
+	// CVID.proto
+	optional RQ_Cvid rq_cvid = 204;
+	optional RS_Cvid rs_cvid = 205;
+	
+	// Service messages
+	optional RQ_Activation rq_activation = 301;
+	optional RS_Activation rs_activation = 302;
+	optional RQ_RetrieveKeys rq_retrieve_keys = 303;
+	optional RS_RetrieveKeys rs_retrieve_keys = 304;
+	optional RQ_CloudUser rq_cloud_user = 305;
+	optional RS_CloudUser rs_cloud_user = 306;
+	optional RQ_LatestVersion rq_latest_version = 307;
+	optional RS_LatestVersion rs_latest_version = 308;
+
 }

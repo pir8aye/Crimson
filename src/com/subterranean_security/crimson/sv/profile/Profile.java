@@ -89,6 +89,8 @@ public abstract class Profile extends Observable implements Serializable {
 
 	public void set(AKeySimple key, String value) {
 		getAttribute(key).set(value);
+
+		setChanged();
 		notifyObservers(key);
 	}
 
@@ -139,8 +141,6 @@ public abstract class Profile extends Observable implements Serializable {
 						new AttributeGroup(container.getGroupType(), container.getGroupId()));
 			}
 
-			System.out.println(
-					"Amalgamating. group_type: " + container.getGroupType() + " group_id: " + container.getGroupId());
 			groupMap.get(container.getGroupId()).absorb(container);
 
 		}

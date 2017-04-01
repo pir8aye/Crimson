@@ -25,10 +25,10 @@ import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
 import com.subterranean_security.crimson.core.proto.Stream.EventData;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.cv.ui.remote.RDArea;
-import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
 public class RemoteMaster extends Stream {
 
@@ -40,7 +40,7 @@ public class RemoteMaster extends Stream {
 
 			while (!Thread.interrupted()) {
 				try {
-					ViewerRouter.route(Message.newBuilder().setRid(cid)
+					ConnectionStore.route(Message.newBuilder().setRid(cid)
 							.setEvStreamData(
 									EV_StreamData.newBuilder().setStreamID(getStreamID()).setEventData(queue.take()))
 							.build());

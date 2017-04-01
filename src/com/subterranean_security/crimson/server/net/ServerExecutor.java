@@ -26,7 +26,7 @@ import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
-import com.subterranean_security.crimson.core.net.ConnectionState;
+import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_CreateAuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
@@ -51,6 +51,7 @@ import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_EditUser;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
@@ -58,11 +59,11 @@ import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.sc.Logsystem;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.net.exe.AuthExe;
+import com.subterranean_security.crimson.server.net.exe.CvidExe;
 import com.subterranean_security.crimson.server.net.exe.DeltaExe;
 import com.subterranean_security.crimson.server.net.exe.FileManagerExe;
 import com.subterranean_security.crimson.server.net.exe.LoginExe;
 import com.subterranean_security.crimson.server.store.Authentication;
-import com.subterranean_security.crimson.server.store.ConnectionStore;
 import com.subterranean_security.crimson.server.store.ListenerStore;
 import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.server.stream.SInfoSlave;
@@ -79,18 +80,15 @@ import io.netty.util.ReferenceCountUtil;
 public class ServerExecutor extends BasicExecutor {
 	private static final Logger log = LoggerFactory.getLogger(ServerExecutor.class);
 
-	private Receptor receptor;
-
-	public ServerExecutor(Receptor r) {
+	public ServerExecutor() {
 		super();
-		receptor = r;
 
 		dispatchThread = new Thread(new Runnable() {
 			public void run() {
 				while (!Thread.interrupted()) {
 					Message m;
 					try {
-						m = receptor.uq.take();
+						m = connector.msgQueue.take();
 					} catch (InterruptedException e) {
 						return;
 					}
@@ -98,33 +96,33 @@ public class ServerExecutor extends BasicExecutor {
 						if (m.hasRid() && m.getRid() != 0) {
 							// route
 							try {
-								ConnectionStore.getConnection(m.getRid()).handle.write(m);
+								ConnectionStore.get(m.getRid()).write(m);
 							} catch (NullPointerException e) {
 								log.debug("Could not forward message to CVID: {}", m.getRid());
-								r.handle.write(Message.newBuilder()
+								connector.write(Message.newBuilder()
 										.setEvEndpointClosed(EV_EndpointClosed.newBuilder().setCVID(m.getRid()))
 										.build());
 							}
 						} else if (m.hasEvProfileDelta()) {
-							DeltaExe.ev_profileDelta(r, m.getEvProfileDelta());
+							DeltaExe.ev_profileDelta(connector, m.getEvProfileDelta());
 						} else if (m.hasEvKevent()) {
 							ev_kevent(m);
 						} else if (m.hasRqLogin()) {
-							LoginExe.rq_login(r, m);
+							LoginExe.rq_login(connector, m);
 						} else if (m.hasRqGenerate()) {
 							rq_generate(m);
 						} else if (m.hasRqGroupChallenge()) {
 							rq_group_challenge(m);
 						} else if (m.hasMiAuthRequest()) {
-							AuthExe.mi_auth_request(r, m);
-						} else if (m.hasMiChallengeresult()) {
-							AuthExe.mi_challenge_result(r, m);
+							AuthExe.mi_auth_request(connector, m);
+						} else if (m.hasMiChallengeResult()) {
+							AuthExe.mi_challenge_result(connector, m);
 						} else if (m.hasRqFileListing()) {
-							FileManagerExe.rq_file_listing(r, m);
+							FileManagerExe.rq_file_listing(connector, m);
 						} else if (m.hasRsFileListing()) {
-							FileManagerExe.rs_file_listing(r, m);
+							FileManagerExe.rs_file_listing(connector, m);
 						} else if (m.hasRqAdvancedFileInfo()) {
-							FileManagerExe.rq_advanced_file_info(r, m);
+							FileManagerExe.rq_advanced_file_info(connector, m);
 						} else if (m.hasMiStreamStart()) {
 							mi_stream_start(m);
 						} else if (m.hasMiStreamStop()) {
@@ -142,23 +140,25 @@ public class ServerExecutor extends BasicExecutor {
 						} else if (m.hasRqChangeClientState()) {
 							rq_change_client_state(m);
 						} else if (m.hasRqFileHandle()) {
-							FileManagerExe.rq_file_handle(r, m);
+							FileManagerExe.rq_file_handle(connector, m);
 						} else if (m.hasRsFileHandle()) {
-							FileManagerExe.rs_file_handle(r, m);
+							FileManagerExe.rs_file_handle(connector, m);
 						} else if (m.hasRqDelete()) {
-							FileManagerExe.rq_delete(r, m);
+							FileManagerExe.rq_delete(connector, m);
 						} else if (m.hasRqKeyUpdate()) {
 							rq_key_update(m);
 						} else if (m.hasMiTriggerProfileDelta()) {
-							DeltaExe.mi_trigger_profile_delta(r, m);
+							DeltaExe.mi_trigger_profile_delta(connector, m);
 						} else if (m.hasRqCreateAuthMethod()) {
 							rq_create_auth_method(m);
 						} else if (m.hasRqRemoveAuthMethod()) {
 							rq_remove_auth_method(m);
 						} else if (m.hasRqLogs()) {
 							rq_logs(m);
+						} else if (m.hasRqCvid()) {
+							CvidExe.rq_cvid(connector, m);
 						} else {
-							receptor.cq.put(m.getId(), m);
+							connector.addNewResponse(m);
 						}
 
 						ReferenceCountUtil.release(m);
@@ -167,13 +167,12 @@ public class ServerExecutor extends BasicExecutor {
 			}
 
 		});
-		dispatchThread.start();
 
 	}
 
 	private void ev_kevent(Message m) {
 		try {
-			ProfileStore.getClient(receptor.getCvid()).getKeylog().addEvent(m.getEvKevent());
+			ProfileStore.getClient(connector.getCvid()).getKeylog().addEvent(m.getEvKevent());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -202,9 +201,9 @@ public class ServerExecutor extends BasicExecutor {
 		Date target = new Date(rq.getStartDate());
 
 		// check permissions
-		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(rq.getCid(),
+		if (!ProfileStore.getViewer(connector.getCvid()).getPermissions().getFlag(rq.getCid(),
 				Perm.client.keylogger.read_logs)) {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
+			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(false)).build());
 			return;
 		}
@@ -212,19 +211,19 @@ public class ServerExecutor extends BasicExecutor {
 		ClientProfile cp = ProfileStore.getClient(rq.getCid());
 		if (cp != null) {
 			for (EV_KEvent k : cp.getKeylog().getEventsAfter(target)) {
-				receptor.handle.write(Message.newBuilder().setSid(rq.getCid()).setEvKevent(k).build());
+				connector.write(Message.newBuilder().setSid(rq.getCid()).setEvKevent(k).build());
 			}
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
+			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(true)).build());
 		} else {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
+			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(false)).build());
 		}
 
 	}
 
 	private void rq_group_challenge(Message m) {
-		if (receptor.getState() != ConnectionState.AUTH_STAGE2) {
+		if (connector.getState() != ConnectionState.AUTH_STAGE2) {
 			return;
 		}
 		RQ_GroupChallenge rq = m.getRqGroupChallenge();
@@ -232,7 +231,7 @@ public class ServerExecutor extends BasicExecutor {
 
 		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder()
 				.setResult(CryptoUtil.signGroupChallenge(rq.getMagic(), group.getPrivateKey())).build();
-		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
+		connector.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
@@ -245,8 +244,8 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_generate(Message m) {
 
 		// check permissions
-		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.generator.generate)) {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
+		if (!ProfileStore.getViewer(connector.getCvid()).getPermissions().getFlag(Perm.server.generator.generate)) {
+			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsGenerate(RS_Generate.newBuilder()
 							.setReport(GenReport.newBuilder().setResult(false).setComment("Insufficient permissions")))
 					.build());
@@ -268,15 +267,15 @@ public class ServerExecutor extends BasicExecutor {
 					.setReport(g.getReport());
 
 			if (m.getRqGenerate().hasSendToCid()) {
-				ConnectionStore.getConnection(m.getRqGenerate().getSendToCid()).handle
+				ConnectionStore.get(m.getRqGenerate().getSendToCid())
 						.write(Message.newBuilder().setRsGenerate(rs).build());
-				receptor.handle.write(Message.newBuilder().setId(m.getId())
+				connector.write(Message.newBuilder().setId(m.getId())
 						.setRsGenerate(RS_Generate.newBuilder().setReport(g.getReport())).build());
 			} else {
-				receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsGenerate(rs).build());
+				connector.write(Message.newBuilder().setId(m.getId()).setRsGenerate(rs).build());
 			}
 		} catch (Exception e) {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
+			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsGenerate(RS_Generate.newBuilder().setReport(g.getReport())).build());
 		}
 
@@ -284,20 +283,21 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void rq_add_listener(Message m) {
 		// check permissions
-		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.network.create_listener)) {
-			receptor.handle.write(Message.newBuilder().setId(m.getId())
+		if (!ProfileStore.getViewer(connector.getCvid()).getPermissions()
+				.getFlag(Perm.server.network.create_listener)) {
+			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsAddListener(
 							RS_AddListener.newBuilder().setResult(false).setComment("Insufficient permissions"))
 					.build());
 			return;
 		}
 
-		receptor.handle.write(Message.newBuilder().setId(m.getId())
+		connector.write(Message.newBuilder().setId(m.getId())
 				.setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
 		ListenerStore.listeners.add(new Listener(m.getRqAddListener().getConfig()));
 		Message update = Message.newBuilder().setEvServerProfileDelta(
 				EV_ServerProfileDelta.newBuilder().addListener(m.getRqAddListener().getConfig())).build();
-		ConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
+		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
 
 	}
 
@@ -307,7 +307,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	private void rq_add_user(Message m) {
 		// TODO check permissions
-		receptor.handle.write(
+		connector.write(
 				Message.newBuilder().setId(m.getId()).setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
 
 		DatabaseStore.getDatabase().addLocalUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
@@ -321,13 +321,13 @@ public class ServerExecutor extends BasicExecutor {
 								.addGroup(ProtoUtil.getNewGeneralGroup()
 										.putAttribute(AKeySimple.VIEWER_USER.getFullID(), m.getRqAddUser().getUser()))))
 				.build();
-		ConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
+		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
 
 	}
 
 	private void rq_edit_user(Message m) {
 		// TODO check permissions
-		receptor.handle.write(
+		connector.write(
 				Message.newBuilder().setId(m.getId()).setRsEditUser(RS_EditUser.newBuilder().setResult(true)).build());
 
 		RQ_AddUser rqad = m.getRqEditUser().getUser();
@@ -360,7 +360,7 @@ public class ServerExecutor extends BasicExecutor {
 		Message update = Message.newBuilder()
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addViewerUser(b)).build();
 
-		ConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
+		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
 
 	}
 
@@ -386,11 +386,11 @@ public class ServerExecutor extends BasicExecutor {
 			break;
 		}
 
-		receptor.handle.write(Message.newBuilder().setId(m.getId()).setRsChangeServerState(RS_ChangeServerState
-				.newBuilder().setOutcome(Outcome.newBuilder().setResult(result).setComment(comment))).build());
+		connector.write(Message.newBuilder().setId(m.getId()).setRsChangeServerState(RS_ChangeServerState.newBuilder()
+				.setOutcome(Outcome.newBuilder().setResult(result).setComment(comment))).build());
 
 		// notify viewers
-		ConnectionStore.sendToAll(Universal.Instance.VIEWER,
+		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER,
 				Message.newBuilder()
 						.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().setPd(EV_ProfileDelta.newBuilder()
 								.addGroup(ProtoUtil.getNewGeneralGroup().putAttribute(
@@ -405,7 +405,7 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_create_auth_method(Message m) {
 		Outcome outcome = Authentication.create(m.getRqCreateAuthMethod().getAuthMethod());
 
-		receptor.handle.write(Message.newBuilder().setId(m.getId())
+		connector.write(Message.newBuilder().setId(m.getId())
 				.setRsCreateAuthMethod(RS_CreateAuthMethod.newBuilder().setOutcome(outcome)).build());
 
 	}
@@ -413,7 +413,7 @@ public class ServerExecutor extends BasicExecutor {
 	private void rq_remove_auth_method(Message m) {
 		Authentication.remove(m.getRqRemoveAuthMethod().getId());
 		// TODO check if removed
-		receptor.handle.write(
+		connector.write(
 				Message.newBuilder().setRsRemoveAuthMethod(RS_RemoveAuthMethod.newBuilder().setResult(true)).build());
 	}
 
@@ -427,7 +427,7 @@ public class ServerExecutor extends BasicExecutor {
 				rs.addLog(LogFile.newBuilder().setName(lt).setLog(Logsystem.getLog(lt)));
 			}
 		}
-		receptor.handle.write(Message.newBuilder().setRsLogs(rs).build());
+		connector.write(Message.newBuilder().setRsLogs(rs).build());
 	}
 
 }

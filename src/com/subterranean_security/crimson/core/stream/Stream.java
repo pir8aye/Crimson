@@ -24,9 +24,9 @@ import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
 import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.Universal.Instance;
-import com.subterranean_security.crimson.viewer.net.ViewerRouter;
 
 public abstract class Stream {
 
@@ -64,7 +64,7 @@ public abstract class Stream {
 	public void start() {
 		running = true;
 		if (Universal.instance == Universal.Instance.VIEWER) {
-			ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
+			ConnectionStore.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
 					.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param)));
 		}
 
@@ -74,7 +74,7 @@ public abstract class Stream {
 		running = false;
 		timer.cancel();
 		if (Universal.instance == Universal.Instance.VIEWER) {
-			ViewerRouter.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
+			ConnectionStore.route(Message.newBuilder().setSid(param.getVID()).setRid(param.getCID())
 					.setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param.getStreamID())));
 		}
 	}

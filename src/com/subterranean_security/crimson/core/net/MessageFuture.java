@@ -15,49 +15,33 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.store;
+package com.subterranean_security.crimson.core.net;
 
-import java.util.HashMap;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class MessageFuture {
 
-import com.subterranean_security.crimson.core.net.BasicConnector;
-import com.subterranean_security.crimson.viewer.net.ViewerConnector;
+	public Message message;
 
-public final class ConnectionStore {
-	private ConnectionStore() {
-	}
-
-	private static final Logger log = LoggerFactory.getLogger(ConnectionStore.class);
-
-	private static HashMap<Integer, BasicConnector> connections = new HashMap<Integer, BasicConnector>();
-
-	public static void put(int cvid, BasicConnector vc) {
-		log.debug("Added new connection (CVID: {})", cvid);
-		connections.put(cvid, vc);
-	}
-
-	public static BasicConnector get(int cvid) {
-		return connections.get(cvid);
-	}
-
-	public static ViewerConnector getVC(int cvid) {
-		return (ViewerConnector) connections.get(cvid);
-	}
-
-	public static void closeAll() {
-		for (Integer i : connections.keySet()) {
-			try {
-				connections.remove(i).close();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	public void setMessage(Message m) {
+		if (m != null) {
+			this.message = m;
+			synchronized (this) {
+				notifyAll();
 			}
 		}
 	}
 
-	public static int getSize() {
-		return connections.size();
+	public Message get(long timeout) throws Timeout, InterruptedException {
+		synchronized (this) {
+			wait(timeout);
+		}
+
+		if (message == null)
+			throw new Timeout();
+		return message;
+	}
+
+	public class Timeout extends Exception {
 	}
 }

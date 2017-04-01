@@ -25,14 +25,16 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.MemList;
+import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
-import com.subterranean_security.crimson.server.net.Receptor;
+import com.subterranean_security.crimson.server.net.ServerConnectionStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -90,7 +92,7 @@ public class Authentication {
 		methods.add(am);
 
 		// update viewers
-		ConnectionStore.sendToAll(Universal.Instance.VIEWER, Message.newBuilder()
+		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER, Message.newBuilder()
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addAuthMethod(am)).build());
 		return outcome.setResult(true).build();
 	}
@@ -163,9 +165,9 @@ public class Authentication {
 			}
 		}
 		for (int id : changed) {
-			Receptor r = ConnectionStore.getConnection(id);
+			Connector r = ConnectionStore.get(id);
 			if (r != null) {
-				r.handle.write(Message.newBuilder()
+				r.write(Message.newBuilder()
 						.setEvViewerProfileDelta(EV_ViewerProfileDelta.newBuilder()
 								.addViewerPermissions(ViewerPermissions.translateFlag(cid, Perm.client.visibility)))
 						.build());

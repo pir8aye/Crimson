@@ -38,6 +38,7 @@ import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
+import com.subterranean_security.crimson.viewer.net.ViewerConnectionStore;
 import com.subterranean_security.crimson.viewer.store.LocalServerStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.MovablePanel;
@@ -119,6 +120,9 @@ public class Viewer {
 		SLAnimator.start();
 
 		loadState();
+
+		// Initialize connection stores
+		ViewerConnectionStore.initialize();
 
 		// show login dialog
 		LoginDialog login = new LoginDialog(LocalServerStore.bundledServer.exists() && !localServerFound);

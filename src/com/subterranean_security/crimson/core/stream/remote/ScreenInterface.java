@@ -33,11 +33,11 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 
-import com.subterranean_security.crimson.client.store.ConnectionStore;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.DirtyBlock;
 import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 
 public final class ScreenInterface {
 

@@ -51,16 +51,18 @@ import javax.swing.text.BadLocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.Validation;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.net.ViewerConnector;
-import com.subterranean_security.crimson.viewer.net.commands.LoginCom;
-import com.subterranean_security.crimson.viewer.store.ConnectionStore;
+import com.subterranean_security.crimson.viewer.net.ViewerExecutor;
+import com.subterranean_security.crimson.viewer.net.command.LoginCom;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -355,8 +357,11 @@ public class LoginPanel extends JPanel {
 				long t1 = System.currentTimeMillis();
 				Outcome.Builder outcome = Outcome.newBuilder().setResult(false);
 
+				Connector connector = new Connector(new ViewerExecutor());
+				connector.setCvid(0);
 				try {
-					ConnectionStore.put(0, new ViewerConnector(server, Integer.parseInt(port)));
+					connector.connect(ConnectionType.SOCKET, server, Integer.parseInt(port));
+					ConnectionStore.add(connector);
 				} catch (Exception e) {
 					try {
 						outcome.setComment(

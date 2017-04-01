@@ -29,7 +29,7 @@ import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.NET;
-import com.subterranean_security.crimson.viewer.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
@@ -137,7 +137,7 @@ public class StatsPanel extends JPanel {
 	}
 
 	public void refresh() {
-		label_5.setText(ConnectionStore.getVC(0).getRemoteAddress());
+		label_5.setText(ConnectionStore.get(0).getRemoteIP());
 		label_3.setText(NET.getDefaultInternalIP());
 		label_1.setText("" + ProfileStore.getServer().listeners.size());
 		lblNewLabel.setText("" + ProfileStore.getServer().get(AKeySimple.SERVER_CONNECTED_CLIENTS));
