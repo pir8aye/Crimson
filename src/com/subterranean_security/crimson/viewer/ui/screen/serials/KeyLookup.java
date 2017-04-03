@@ -39,7 +39,7 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.proto.SMSG.RS_RetrieveKeys;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.services.Services;
@@ -112,11 +112,11 @@ public class KeyLookup extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 
 				String user = fld_email.getText();
-				if (!Validation.email(user)) {
+				if (!ValidationUtil.email(user)) {
 					sl.setBad("INVALID EMAIL");
 					return;
 				}
-				if (!Validation.password(fld_pass)) {
+				if (!ValidationUtil.password(fld_pass)) {
 					sl.setBad("INVALID PASSWORD");
 					return;
 				}

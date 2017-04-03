@@ -33,7 +33,7 @@ import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.SMSG.RS_CloudUser;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.server.ServerState;
 import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
@@ -61,7 +61,7 @@ public final class LoginExe {
 
 		// validate username
 		String user = m.getRqLogin().getUsername();
-		if (!Validation.username(user))
+		if (!ValidationUtil.username(user))
 			return outcome.setResult(false).setComment("The provided username is invalid")
 					.setTime(System.currentTimeMillis() - t1).build();
 

@@ -47,7 +47,7 @@ import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.viewer.net.command.ListenerCom;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
@@ -299,7 +299,7 @@ public class AddListener extends JPanel {
 	}
 
 	public boolean verify() {
-		if (!Validation.port(fld_port.getText())) {
+		if (!ValidationUtil.port(fld_port.getText())) {
 			sl.setBad("Invalid port");
 			return false;
 		}

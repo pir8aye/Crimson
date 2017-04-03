@@ -53,11 +53,13 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
+import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.core.util.ValidationUtil;
+import com.subterranean_security.crimson.cv.net.command.CvidCom;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ViewerState;
@@ -96,7 +98,7 @@ public class LoginPanel extends JPanel {
 		this.parent = parent;
 		init();
 
-		if (Universal.isDebug) {
+		if (Universal.debug) {
 			fld_user.setText("admin");
 			fld_pass.setText("default");
 			new SwingWorker<Void, Void>() {
@@ -358,7 +360,6 @@ public class LoginPanel extends JPanel {
 				Outcome.Builder outcome = Outcome.newBuilder().setResult(false);
 
 				Connector connector = new Connector(new ViewerExecutor());
-				connector.setCvid(0);
 				try {
 					connector.connect(ConnectionType.SOCKET, server, Integer.parseInt(port));
 					ConnectionStore.add(connector);
@@ -371,6 +372,16 @@ public class LoginPanel extends JPanel {
 					}
 
 					return outcome.build();
+				}
+
+				try {
+					CvidCom.getCvid(connector);
+				} catch (Timeout e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 
 				// set local viewer profile name
@@ -451,19 +462,19 @@ public class LoginPanel extends JPanel {
 
 	private boolean testValues(String server, String port, String user) {
 		removeErrorBorders();
-		if (!Validation.port(port)) {
+		if (!ValidationUtil.port(port)) {
 			setPortError();
 			return false;
 		}
-		if (!Validation.password(fld_pass)) {
+		if (!ValidationUtil.password(fld_pass)) {
 			setPassError();
 			return false;
 		}
-		if (!Validation.username(user)) {
+		if (!ValidationUtil.username(user)) {
 			setUserError();
 			return false;
 		}
-		if (!Validation.dns(server) && !Validation.ip(server)) {
+		if (!ValidationUtil.dns(server) && !ValidationUtil.ipv4(server)) {
 			setServerError();
 			return false;
 		}

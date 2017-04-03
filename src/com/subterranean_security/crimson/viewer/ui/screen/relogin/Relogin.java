@@ -37,10 +37,12 @@ import javax.swing.border.EtchedBorder;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
+import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
-import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.core.util.ValidationUtil;
+import com.subterranean_security.crimson.cv.net.command.CvidCom;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.net.ViewerExecutor;
 import com.subterranean_security.crimson.viewer.net.command.LoginCom;
@@ -187,7 +189,6 @@ public class Relogin extends JPanel {
 		try {
 
 			Connector connector = new Connector(new ViewerExecutor());
-			connector.setCvid(0);
 
 			try {
 				connector.connect(ConnectionType.SOCKET, server, Integer.parseInt(port));
@@ -195,6 +196,16 @@ public class Relogin extends JPanel {
 			} catch (Throwable e) {
 				lbl_status.setBad("Unable to Connect");
 				return;
+			}
+
+			try {
+				CvidCom.getCvid(connector);
+			} catch (Timeout e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 
 			// request login from server
@@ -239,7 +250,7 @@ public class Relogin extends JPanel {
 
 	private boolean testValues() {
 
-		return Validation.password(fld_pass);
+		return ValidationUtil.password(fld_pass);
 
 	}
 

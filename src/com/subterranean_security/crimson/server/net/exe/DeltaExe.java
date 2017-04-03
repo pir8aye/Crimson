@@ -34,7 +34,7 @@ import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.LocationUtil;
 import com.subterranean_security.crimson.core.util.ProtoUtil;
-import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.server.net.ServerConnectionStore;
 import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
@@ -75,7 +75,7 @@ public final class DeltaExe {
 			ip = general.getAttributeOrDefault(AKeySimple.NET_EXTERNALIP.getFullID(), "");
 		}
 
-		if (!Validation.privateIP(ip)) {
+		if (!ValidationUtil.privateIP(ip)) {
 			try {
 				HashMap<String, String> location = LocationUtil.resolve(ip);
 				update.putAttribute(AKeySimple.IPLOC_COUNTRYCODE.getFullID(), location.get("countrycode"));

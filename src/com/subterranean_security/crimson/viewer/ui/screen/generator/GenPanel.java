@@ -61,7 +61,7 @@ import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
@@ -676,27 +676,27 @@ public class GenPanel extends JPanel {
 		}
 
 		// test paths
-		if (config.hasPathWin() && !Validation.path(config.getPathWin())) {
+		if (config.hasPathWin() && !ValidationUtil.path(config.getPathWin())) {
 			lbl_status.setBad("Invalid Windows install path");
 			return false;
 		}
 
-		if (config.hasPathLin() && !Validation.path(config.getPathLin())) {
+		if (config.hasPathLin() && !ValidationUtil.path(config.getPathLin())) {
 			lbl_status.setBad("Invalid Linux install path");
 			return false;
 		}
 
-		if (config.hasPathOsx() && !Validation.path(config.getPathOsx())) {
+		if (config.hasPathOsx() && !ValidationUtil.path(config.getPathOsx())) {
 			lbl_status.setBad("Invalid OSX install path");
 			return false;
 		}
 
-		if (config.hasPathSol() && !Validation.path(config.getPathSol())) {
+		if (config.hasPathSol() && !ValidationUtil.path(config.getPathSol())) {
 			lbl_status.setBad("Invalid Solaris install path");
 			return false;
 		}
 
-		if (config.hasPathBsd() && !Validation.path(config.getPathBsd())) {
+		if (config.hasPathBsd() && !ValidationUtil.path(config.getPathBsd())) {
 			lbl_status.setBad("Invalid BSD install path");
 			return false;
 		}

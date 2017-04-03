@@ -51,7 +51,7 @@ import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
@@ -221,7 +221,7 @@ public class CreateGroup extends JPanel {
 	}
 
 	private boolean testValues() {
-		if (!Validation.groupname(textField.getText())) {
+		if (!ValidationUtil.group(textField.getText())) {
 			sl.setBad("Invalid group name");
 			return false;
 		}

@@ -29,7 +29,7 @@ import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
-import com.subterranean_security.crimson.core.util.Validation;
+import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
@@ -113,7 +113,7 @@ public class ClientProfile extends Profile {
 
 		// location
 		if (ipLocationIcon == null && get(AKeySimple.NET_EXTERNALIP) != null) {
-			if (Validation.privateIP(get(AKeySimple.NET_EXTERNALIP))) {
+			if (ValidationUtil.privateIP(get(AKeySimple.NET_EXTERNALIP))) {
 				ipLocationIcon = UIUtil.getIcon("icons16/general/localhost.png");
 				ipLocationIcon.setDescription("Private IP");
 			} else {
