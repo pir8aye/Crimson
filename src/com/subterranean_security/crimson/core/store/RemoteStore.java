@@ -17,8 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.store;
 
-import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
-import com.subterranean_security.crimson.core.stream.remote.RemoteSlave;
+import com.subterranean_security.crimson.core.net.stream.remote.RemoteMaster;
+import com.subterranean_security.crimson.core.net.stream.remote.RemoteSlave;
 
 public final class RemoteStore {
 	private RemoteStore() {

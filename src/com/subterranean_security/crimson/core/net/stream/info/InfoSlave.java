@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.info;
+package com.subterranean_security.crimson.core.net.stream.info;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,7 @@ import com.subterranean_security.crimson.core.attribute.keys.AKeyNIC;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.misc.StatStream;
+import com.subterranean_security.crimson.core.net.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.CRIMSON;
 import com.subterranean_security.crimson.core.platform.info.NIC;
@@ -35,14 +36,12 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.server.store.ListenerStore;
 
-public abstract class InfoSlave extends Stream {
+public abstract class InfoSlave extends PeriodicStream {
 
 	/**
 	 * The last profile delta. Subsequent updates use this as a base.
@@ -61,9 +60,18 @@ public abstract class InfoSlave extends Stream {
 
 	private List<AttributeKey> keys;
 
-	public InfoSlave(Param p) {
-		param = p;
-		initKeys(p.getInfoParam().getKeyList());
+	public InfoSlave(Param param, int endpoint) {
+		super(param, endpoint);
+		initialize();
+	}
+
+	public InfoSlave(Param param) {
+		super(param);
+		initialize();
+	}
+
+	private void initialize() {
+		initKeys(param().getInfoParam().getKeyList());
 
 		pd = EV_ProfileDelta.newBuilder().setCvid(Common.cvid);
 
@@ -106,8 +114,8 @@ public abstract class InfoSlave extends Stream {
 
 	private void initializeCPU() {
 		String cpuID = null;
-		if (param.getInfoParam().hasCpuId()) {
-			cpuID = param.getInfoParam().getCpuId();
+		if (param().getInfoParam().hasCpuId()) {
+			cpuID = param().getInfoParam().getCpuId();
 			for (int i = 0; i < CPU.getCount(); i++) {
 				if (cpuID.equals(CPU.computeGID(i))) {
 					whichCPU = i;
@@ -128,8 +136,8 @@ public abstract class InfoSlave extends Stream {
 
 	private void initializeNIC() {
 		String nicID = null;
-		if (param.getInfoParam().hasNicId()) {
-			nicID = param.getInfoParam().getNicId();
+		if (param().getInfoParam().hasNicId()) {
+			nicID = param().getInfoParam().getNicId();
 			for (int i = 0; i < NIC.getCount(); i++) {
 				if (nicID.equals(NIC.computeGID(i))) {
 					whichNIC = i;
@@ -205,10 +213,6 @@ public abstract class InfoSlave extends Stream {
 			poll(lastGeneralContainer, AKeySimple.CLIENT_CPU_USAGE, CPU.getClientUsage());
 		if (keys.contains(AKeySimple.SERVER_STATUS))
 			poll(lastGeneralContainer, AKeySimple.SERVER_STATUS, ListenerStore.isRunning() ? "1" : "0");
-		if (keys.contains(AKeySimple.SERVER_CONNECTED_CLIENTS))
-			poll(lastGeneralContainer, AKeySimple.SERVER_CONNECTED_CLIENTS, "" + ConnectionStore.countClients());
-		if (keys.contains(AKeySimple.SERVER_CONNECTED_VIEWERS))
-			poll(lastGeneralContainer, AKeySimple.SERVER_CONNECTED_VIEWERS, "" + ConnectionStore.countUsers());
 
 		if (lastGeneralContainer.getAttributeCount() > 0)
 			pd.addGroup(lastGeneralContainer);
@@ -217,13 +221,11 @@ public abstract class InfoSlave extends Stream {
 		if (lastNicContainer.getAttributeCount() > 0)
 			pd.addGroup(lastNicContainer);
 
-		System.out.println("Gathered info for " + pd.getGroupCount() + " groups");
-
 		return pd.build();
 	}
 
 	private void poll(AttributeGroupContainer.Builder container, AttributeKey key, String value) {
-		if (container.getAttributeOrDefault(key.getFullID(), "").equals(value)) {
+		if (value.equals(container.getAttributeOrDefault(key.getFullID(), null))) {
 			container.removeAttribute(key.getFullID());
 		} else {
 			container.putAttribute(key.getFullID(), value);
@@ -232,7 +234,7 @@ public abstract class InfoSlave extends Stream {
 
 	@Override
 	public void start() {
-		timer.schedule(sendTask, 0, param.hasPeriod() ? param.getPeriod() : 1000);
+		timer.schedule(sendTask, 0, param().hasPeriod() ? param().getPeriod() : 1000);
 	}
 
 	@Override

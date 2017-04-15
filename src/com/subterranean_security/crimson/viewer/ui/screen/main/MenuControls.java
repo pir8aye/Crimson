@@ -32,16 +32,16 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeyCPU;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
+import com.subterranean_security.crimson.core.net.stream.info.InfoMaster;
+import com.subterranean_security.crimson.core.net.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.info.InfoMaster;
-import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.ViewerState;
+import com.subterranean_security.crimson.viewer.net.stream.VInfoSlave;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
-import com.subterranean_security.crimson.viewer.stream.VInfoSlave;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class MenuControls extends JPanel {
@@ -68,8 +68,6 @@ public class MenuControls extends JPanel {
 
 	public MenuControls() {
 		init();
-		sp = ProfileStore.getServer();
-		vp = ProfileStore.getLocalViewer();
 	}
 
 	public void init() {
@@ -245,12 +243,10 @@ public class MenuControls extends JPanel {
 
 	}
 
-	private ServerProfile sp;
-	private ViewerProfile vp;
-
 	public void refresh() {
-		System.out.println("vp == null: " + (vp == null));
-		System.out.println("vp.get() == null: " + (vp.get(AKeySimple.CLIENT_RAM_USAGE) == null));
+		ServerProfile sp = ProfileStore.getServer();
+		ViewerProfile vp = ProfileStore.getLocalViewer();
+
 		valViewerRamUsage.setText(vp.get(AKeySimple.CLIENT_RAM_USAGE));
 		// valViewerCpuTemp.setText(ProfileStore.getLocalClient().getPrimaryCPU().getAttribute(AKeyCPU.CPU_TEMP).get());
 		valViewerCpuUsage.setText(vp.get(AKeySimple.CLIENT_CPU_USAGE) + " %");

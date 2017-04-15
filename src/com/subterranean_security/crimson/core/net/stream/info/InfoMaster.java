@@ -15,29 +15,38 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.client.stream;
+package com.subterranean_security.crimson.core.net.stream.info;
+
+import java.util.Random;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.net.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 
-public class CInfoSlave extends InfoSlave {
+public class InfoMaster extends PeriodicStream {
 
-	public CInfoSlave(Param p) {
-		super(p);
-		// TODO Auto-generated constructor stub
+	public InfoMaster(InfoParam ip, int CID, int period) {
+		super(Param.newBuilder().setPeriod(period).setInfoParam(ip).setStreamID(new Random().nextInt()).setCID(CID)
+				.setVID(Common.cvid).build());
+		start();
+	}
+
+	public InfoMaster(InfoParam ip, int period) {
+		this(ip, 0, period);
+	}
+
+	@Override
+	public void received(Message m) {
+		// receiving is handled by executor
+
 	}
 
 	@Override
 	public void send() {
-		EV_ProfileDelta pd = gather();
-		if (pd.getGroupCount() != 0) {
-			ConnectionStore
-					.route(Message.newBuilder().setSid(Common.cvid).setRid(param.getVID()).setEvProfileDelta(pd));
-		}
+		// do nothing
+
 	}
 
 }

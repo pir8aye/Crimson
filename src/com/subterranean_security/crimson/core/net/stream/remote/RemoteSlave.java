@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.remote;
+package com.subterranean_security.crimson.core.net.stream.remote;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -24,16 +24,15 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.net.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
 import com.subterranean_security.crimson.core.proto.Stream.EventData;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.RemoteStore;
-import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.util.Native;
 
-public class RemoteSlave extends Stream {
+public class RemoteSlave extends PeriodicStream {
 
 	private Thread poller = new Thread(new Runnable() {
 
@@ -42,12 +41,12 @@ public class RemoteSlave extends Stream {
 			Date iterationStart;
 			while (!Thread.interrupted()) {
 				iterationStart = new Date();
-				ScreenInterface.captureDelta(param.getVID(), getStreamID());
+				ScreenInterface.captureDelta(param().getVID(), getStreamID());
 
 				// dynamic wait
 				try {
 					int iterationDuration = (int) (new Date().getTime() - iterationStart.getTime());
-					Thread.sleep(iterationDuration > param.getPeriod() ? 0 : param.getPeriod() - iterationDuration);
+					Thread.sleep(iterationDuration > param().getPeriod() ? 0 : param().getPeriod() - iterationDuration);
 				} catch (InterruptedException e) {
 					return;
 				}
@@ -57,19 +56,20 @@ public class RemoteSlave extends Stream {
 	});
 
 	public RemoteSlave(Param p) {
-		param = p;
+		// TODO VID or CID depends on instance
+		super(p, p.getVID());
 
 		RemoteStore.setSlave(this);
 
 		for (GraphicsDevice gd : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
-			if (gd.getIDstring().equals(param.getRemoteParam().getMonitor())) {
+			if (gd.getIDstring().equals(param().getRemoteParam().getMonitor())) {
 				ScreenInterface.setDevice(gd);
 				break;
 			}
 		}
 
-		ScreenInterface.setColorQuality(param.getRemoteParam().getColorType());
-		ScreenInterface.setCompQuality(param.getRemoteParam().getCompType());
+		ScreenInterface.setColorQuality(param().getRemoteParam().getColorType());
+		ScreenInterface.setCompQuality(param().getRemoteParam().getCompType());
 
 		start();
 	}
@@ -95,7 +95,7 @@ public class RemoteSlave extends Stream {
 
 	@Override
 	public void start() {
-		switch (param.getRemoteParam().getRmethod()) {
+		switch (param().getRemoteParam().getRmethod()) {
 		case NATIVE:
 			Native.startRD();
 			break;
@@ -115,7 +115,7 @@ public class RemoteSlave extends Stream {
 	public void stop() {
 		timer.cancel();
 
-		switch (param.getRemoteParam().getRmethod()) {
+		switch (param().getRemoteParam().getRmethod()) {
 		case NATIVE:
 			// TODO
 			break;
@@ -129,14 +129,14 @@ public class RemoteSlave extends Stream {
 
 	}
 
+	// TODO investigate
 	private LinkedList<EV_StreamData> uQueue = new LinkedList<EV_StreamData>();
 
 	@Override
 	public void send() {
 
 		if (uQueue.size() != 0) {
-			ConnectionStore.route(
-					Message.newBuilder().setSid(Common.cvid).setRid(param.getVID()).setEvStreamData(uQueue.poll()));
+			write(Message.newBuilder().setSid(Common.cvid).setRid(param().getVID()).setEvStreamData(uQueue.poll()));
 		}
 
 	}

@@ -15,76 +15,43 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.remote;
+package com.subterranean_security.crimson.core.net.stream.subscriber;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Random;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.net.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
-import com.subterranean_security.crimson.core.proto.Stream.EventData;
+import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
-import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
+import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.cv.ui.remote.RDArea;
 
-public class RemoteMaster extends Stream {
+public class SubscriberMaster extends PeriodicStream {
 
-	private RDArea rda;
-	private int cid;
-
-	private Thread eventThread = new Thread(new Runnable() {
-		public void run() {
-
-			while (!Thread.interrupted()) {
-				try {
-					ConnectionStore.route(Message.newBuilder().setRid(cid)
-							.setEvStreamData(
-									EV_StreamData.newBuilder().setStreamID(getStreamID()).setEventData(queue.take()))
-							.build());
-				} catch (InterruptedException e) {
-					return;
-				}
-
-			}
-		}
-	});
-
-	public RemoteMaster(RemoteParam rp, int cid, RDArea rda) {
-		this.rda = rda;
-		this.cid = cid;
-		param = Param.newBuilder().setPeriod(100).setRemoteParam(rp).setStreamID(IDGen.stream()).setCID(cid)
-				.setVID(Common.cvid).build();
-		eventThread.start();
-	}
-
-	public RemoteMaster(RemoteParam rp, RDArea rda) {
-		this(rp, 0, rda);
+	public SubscriberMaster(SubscriberParam sp, int CID) {
+		super(Param.newBuilder().setSubscriberParam(sp).setStreamID(new Random().nextInt()).setCID(CID)
+				.setVID(Common.cvid).build());
+		start();
 	}
 
 	@Override
 	public void received(Message m) {
-		// update rda
-		if (m.getEvStreamData().hasDirtyRect()) {
-			rda.updateScreen(m.getEvStreamData().getDirtyRect());
-		} else if (m.getEvStreamData().hasDirtyBlock()) {
-			rda.updateScreen(m.getEvStreamData().getDirtyBlock());
-		}
+		// receiving is handled by executor
 
 	}
 
 	@Override
 	public void send() {
-		// send events
+		// do nothing
 
 	}
 
-	private LinkedBlockingQueue<EventData> queue = new LinkedBlockingQueue<EventData>();
+	@Override
+	public void start() {
+		ConnectionStore.route(Message.newBuilder().setSid(param().getVID()).setRid(0)
+				.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param())));
 
-	public void sendEvent(EventData event) {
-		queue.offer(event);
 	}
 
 }

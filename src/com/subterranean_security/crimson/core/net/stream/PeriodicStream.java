@@ -15,39 +15,58 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.info;
+package com.subterranean_security.crimson.core.net.stream;
 
-import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
+import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
+import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStop;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
-import com.subterranean_security.crimson.core.stream.Stream;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.universal.Universal;
 
-public class InfoMaster extends Stream {
+public abstract class PeriodicStream extends Stream {
 
-	public InfoMaster(InfoParam ip, int CID, int period) {
-
-		param = Param.newBuilder().setPeriod(period).setInfoParam(ip).setStreamID(new Random().nextInt()).setCID(CID)
-				.setVID(Common.cvid).build();
-		start();
+	public PeriodicStream(Param param, int endpointCvid) {
+		super(param, endpointCvid);
 	}
 
-	public InfoMaster(InfoParam ip, int period) {
-		this(ip, 0, period);
+	public PeriodicStream(Param param) {
+		super(param);
 	}
 
-	@Override
-	public void received(Message m) {
-		// receiving is handled by executor
+	protected Timer timer = new Timer();
+	protected TimerTask sendTask = new TimerTask() {
+		@Override
+		public void run() {
+			send();
+		}
+
+	};
+
+	/**
+	 * Called periodically to pump the stream
+	 */
+	public abstract void send();
+
+	public void start() {
+		running = true;
+		if (Universal.instance == Universal.Instance.VIEWER) {
+			ConnectionStore.route(Message.newBuilder().setSid(param().getVID()).setRid(param().getCID())
+					.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param())));
+		}
 
 	}
 
-	@Override
-	public void send() {
-		// do nothing
-
+	public void stop() {
+		running = false;
+		timer.cancel();
+		if (Universal.instance == Universal.Instance.VIEWER) {
+			ConnectionStore.route(Message.newBuilder().setSid(param().getVID()).setRid(param().getCID())
+					.setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param().getStreamID())));
+		}
 	}
 
 }

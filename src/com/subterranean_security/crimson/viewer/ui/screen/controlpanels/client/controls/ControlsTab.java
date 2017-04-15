@@ -43,11 +43,11 @@ import javax.swing.border.BevelBorder;
 
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
+import com.subterranean_security.crimson.core.net.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.util.DateUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
@@ -229,7 +229,7 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.updateClient(profile.getCid());
+						return ViewerCommands.updateClient(profile.getCvid());
 					}
 
 					protected void done() {
@@ -308,7 +308,7 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 
 							@Override
 							protected Outcome doInBackground() throws Exception {
-								return ViewerCommands.changeClientState(profile.getCid(), StateType.UNINSTALL);
+								return ViewerCommands.changeClientState(profile.getCvid(), StateType.UNINSTALL);
 							}
 
 							protected void done() {
@@ -359,7 +359,7 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 
 		@Override
 		protected Outcome doInBackground() throws Exception {
-			return ViewerCommands.changeClientState(profile.getCid(), state);
+			return ViewerCommands.changeClientState(profile.getCvid(), state);
 		}
 
 		protected void done() {
@@ -444,7 +444,7 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 	public void startStreaming() {
 		if (im == null) {
 			im = new InfoMaster(InfoParam.newBuilder().addKey(AKeySimple.CLIENT_STATUS.getFullID()).build(),
-					profile.getCid(), 1000);
+					profile.getCvid(), 1000);
 			StreamStore.addStream(im);
 		}
 	}

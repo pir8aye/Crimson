@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.stream;
+package com.subterranean_security.crimson.server.net.stream;
 
 //TODO
 // Use this class to prevent querying the client for stream data more than necessary

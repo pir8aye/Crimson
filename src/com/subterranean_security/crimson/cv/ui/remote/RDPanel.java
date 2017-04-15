@@ -37,9 +37,9 @@ import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeyDISP;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
+import com.subterranean_security.crimson.core.net.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.cv.ui.remote.ep.Settings;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;

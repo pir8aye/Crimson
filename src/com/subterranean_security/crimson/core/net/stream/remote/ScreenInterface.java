@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream.remote;
+package com.subterranean_security.crimson.core.net.stream.remote;
 
 import java.awt.AWTException;
 import java.awt.Graphics2D;

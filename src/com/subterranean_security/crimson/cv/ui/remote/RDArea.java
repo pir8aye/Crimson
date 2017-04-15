@@ -36,11 +36,11 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 
+import com.subterranean_security.crimson.core.net.stream.remote.RemoteMaster;
+import com.subterranean_security.crimson.core.net.stream.remote.ScreenInterface;
 import com.subterranean_security.crimson.core.proto.Stream.DirtyBlock;
 import com.subterranean_security.crimson.core.proto.Stream.DirtyRect;
 import com.subterranean_security.crimson.core.proto.Stream.EventData;
-import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
-import com.subterranean_security.crimson.core.stream.remote.ScreenInterface;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class RDArea extends JLabel {

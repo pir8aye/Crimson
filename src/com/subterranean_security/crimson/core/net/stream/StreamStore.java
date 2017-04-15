@@ -15,24 +15,59 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.stream;
+package com.subterranean_security.crimson.core.net.stream;
 
-import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
-import com.subterranean_security.crimson.core.stream.info.InfoSlave;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
-import com.subterranean_security.crimson.viewer.ui.screen.main.MenuControls;
+import java.util.HashMap;
+import java.util.Iterator;
 
-public class VInfoSlave extends InfoSlave {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	public VInfoSlave(InfoParam ip) {
-		super(ip);
+/**
+ * Stream endpoint storage class
+ *
+ */
+public final class StreamStore {
+	private static Logger log = LoggerFactory.getLogger(StreamStore.class);
+
+	private StreamStore() {
 	}
 
-	@Override
-	public void send() {
+	private static HashMap<Integer, Stream> streams = new HashMap<Integer, Stream>();
 
-		ProfileStore.getLocalViewer().amalgamate(gather());
-		MenuControls.mc.refresh();
+	public static Stream getStream(int id) {
+		return streams.get(id);
+	}
+
+	public static HashMap<Integer, Stream> getStreams() {
+		return streams;
+	}
+
+	public static void removeStreamBySID(int id) {
+		try {
+			streams.remove(id).stop();
+		} catch (NullPointerException e) {
+			// that stream doesnt exist
+		}
+	}
+
+	public static void removeStreamsByCVID(int cvid) {
+		Iterator<Stream> it = streams.values().iterator();
+		while (it.hasNext()) {
+			Stream s = it.next();
+			if (s.param().getVID() == cvid || s.param().getCID() == cvid) {
+				log.debug("Removed half-open stream");
+				StreamStore.removeStreamBySID(s.getStreamID());
+			}
+		}
+	}
+
+	public static void addStream(Stream s) {
+		streams.put(s.getStreamID(), s);
+	}
+
+	public static int size() {
+		return streams.size();
 	}
 
 }

@@ -15,56 +15,27 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.stream;
+package com.subterranean_security.crimson.server.net.stream;
 
-import java.util.HashMap;
-import java.util.Iterator;
+import com.subterranean_security.crimson.core.net.stream.info.InfoSlave;
+import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Stream.Param;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class SInfoSlave extends InfoSlave {
 
-/**
- * Stream endpoint storage class
- *
- */
-public enum StreamStore {
-	;
-	private static Logger log = LoggerFactory.getLogger(StreamStore.class);
-	private static HashMap<Integer, Stream> streams = new HashMap<Integer, Stream>();
-
-	public static Stream getStream(int id) {
-		return streams.get(id);
+	public SInfoSlave(Param p) {
+		super(p, p.getVID());
 	}
 
-	public static HashMap<Integer, Stream> getStreams() {
-		return streams;
+	@Override
+	public void send() {
+		write(Message.newBuilder().setRid(param().getCID()).setSid(param().getVID())
+				.setEvServerProfileDelta(gatherServerInfo()));
 	}
 
-	public static void removeStreamBySID(int id) {
-		try {
-			streams.remove(id).stop();
-		} catch (NullPointerException e) {
-			// that stream doesnt exist
-		}
-	}
-
-	public static void removeStreamsByCVID(int cvid) {
-		Iterator<Stream> it = streams.values().iterator();
-		while (it.hasNext()) {
-			Stream s = it.next();
-			if (s.param.getVID() == cvid || s.param.getCID() == cvid) {
-				log.debug("Removed half-open stream");
-				StreamStore.removeStreamBySID(s.getStreamID());
-			}
-		}
-	}
-
-	public static void addStream(Stream s) {
-		streams.put(s.getStreamID(), s);
-	}
-
-	public static int size() {
-		return streams.size();
+	private EV_ServerProfileDelta gatherServerInfo() {
+		return EV_ServerProfileDelta.newBuilder().setPd(gather()).build();
 	}
 
 }
