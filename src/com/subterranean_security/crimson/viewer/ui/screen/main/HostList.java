@@ -107,14 +107,13 @@ public class HostList extends JPanel {
 	}
 
 	public void addClient(ClientProfile cp) {
-		cp.loadIcons();
 		tm.add(cp);
 	}
 
 	// TODO only update cell
 	public void updateField(ClientProfile cp, AttributeKey aa) {
 		for (int i = 0; i < tm.getClientList().size(); i++) {
-			if (cp.getCid() == tm.getClientList().get(i).getCid()) {
+			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
 				tm.fireTableRowsUpdated(i, i);
 				return;
 			}
@@ -123,7 +122,7 @@ public class HostList extends JPanel {
 
 	public void removeClient(ClientProfile cp) {
 		for (int i = 0; i < tm.getClientList().size(); i++) {
-			if (cp.getCid() == tm.getClientList().get(i).getCid()) {
+			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
 				tm.getClientList().remove(i);
 				tm.fireTableRowsDeleted(i, i);
 				return;
@@ -161,7 +160,7 @@ public class HostList extends JPanel {
 	public void select(ClientProfile cp) {
 		List<ClientProfile> profiles = tm.getClientList();
 		for (int i = 0; i < profiles.size(); i++) {
-			if (cp.getCid() == profiles.get(i).getCid()) {
+			if (cp.getCvid() == profiles.get(i).getCvid()) {
 				table.setRowSelectionInterval(i, i);
 				return;
 			}

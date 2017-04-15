@@ -53,10 +53,6 @@ public class ServerProfile extends Profile {
 		messageLatency = new UntrackedAttribute();
 	}
 
-	public int getCvid() {
-		return cvid;
-	}
-
 	public String getMessageLatency() {
 		return messageLatency.get();
 	}
@@ -87,7 +83,6 @@ public class ServerProfile extends Profile {
 		}
 
 		for (EV_ViewerProfileDelta lc : c.getViewerUserList()) {
-
 			boolean modified = false;
 			for (ViewerProfile l : users) {
 				if (l.get(AKeySimple.VIEWER_USER).equals(

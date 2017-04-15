@@ -106,12 +106,6 @@ public final class ClientConnectionStore {
 					break;
 				case CONNECTED:
 					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					try {
 						CvidCom.getCvid(connector);
 					} catch (Timeout e1) {
 						// TODO Auto-generated catch block

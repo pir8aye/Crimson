@@ -157,7 +157,7 @@ public class Keylogger extends JPanel implements CPPanel, Observer {
 					ep.drop();
 					((Settings) ep.getEP()).save();
 				} else {
-					ep.raise(new Settings(profile.getCid(), profile.getKeyloggerState(), profile.getKeyloggerTrigger(),
+					ep.raise(new Settings(profile.getCvid(), profile.getKeyloggerState(), profile.getKeyloggerTrigger(),
 							profile.getKeyloggerTriggerValue()), 140);
 				}
 

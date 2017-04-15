@@ -51,14 +51,6 @@ public class ViewerProfile extends Profile {
 		this.permissions = p;
 	}
 
-	public Integer getCvid() {
-		return cvid;
-	}
-
-	public void setCvid(int cvid) {
-		this.cvid = cvid;
-	}
-
 	public String getLastLoginIp() {
 		TrackedAttribute tr = (TrackedAttribute) getAttribute(AKeySimple.VIEWER_LOGIN_IP);
 		if (tr.size() < 2) {
