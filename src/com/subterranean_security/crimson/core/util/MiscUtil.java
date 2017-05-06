@@ -17,60 +17,27 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
 
+/**
+ * Miscellanous utilities
+ */
 public final class MiscUtil {
 	private MiscUtil() {
 	}
 
+	/**
+	 * Return the stacktrace of an exception
+	 * 
+	 * @param e
+	 * @return A String representing the stacktrace of the given exception
+	 */
 	public static String getStack(Throwable e) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
 		return sw.toString();
-	}
-
-	public static byte[] compress(byte[] target) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			OutputStream out = new DeflaterOutputStream(baos);
-			out.write(target);
-			out.close();
-		} catch (IOException e) {
-			throw new AssertionError(e);
-		}
-		return baos.toByteArray();
-	}
-
-	public static byte[] decompress(byte[] bytes) {
-		InputStream in = new InflaterInputStream(new ByteArrayInputStream(bytes));
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			byte[] buffer = new byte[8192];
-			int len;
-			while ((len = in.read(buffer)) > 0)
-				baos.write(buffer, 0, len);
-			return baos.toByteArray();
-		} catch (IOException e) {
-			throw new AssertionError(e);
-		}
-	}
-
-	public static double average(ArrayList<Double> list) {
-		double sum = 0;
-		for (double d : list) {
-			sum += d;
-		}
-		return sum / list.size();
 	}
 
 }
