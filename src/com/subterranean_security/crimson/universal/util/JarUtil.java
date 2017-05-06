@@ -129,29 +129,42 @@ public final class JarUtil {
 	}
 
 	/**
-	 * Gets the size of a jar resource by reading the entire file to memory. Can
-	 * be improved by throwing away data as it is read. (Copy readResource code)
+	 * Get the size of a jar resource by simply reading the resource
 	 * 
 	 * @param path
-	 * @return
+	 *            Location of resource in jar
+	 * @return The size of the target resource in bytes
 	 */
-	public static int getResourceSize(String path) {
-		try {
-			return JarUtil.readResource(path).length;
-		} catch (Exception e) {
-			return 0;
+	public static long getResourceSize(String path) throws IOException {
+		long size = 0;
+		try (InputStream is = new BufferedInputStream(JarUtil.class.getResourceAsStream(path))) {
+			while (is.read() != -1)
+				size++;
 		}
+
+		return size;
 	}
 
 	/**
-	 * Reads a resource from the instance jar
+	 * Determine if the jar contains a specific resource
+	 * 
+	 * @param path
+	 *            Location of resource
+	 * @return True if the specified resource exists in the jar
+	 */
+	public static boolean containsResource(String path) {
+		return JarUtil.class.getResourceAsStream(path) != null;
+	}
+
+	/**
+	 * Reads a resource from the instance's jar
 	 *
 	 * @param path
 	 *            path to resource
 	 * @return resource as a byte[]
 	 * @throws IOException
 	 */
-	public static byte[] readResource(String path) throws Exception {
+	public static byte[] readResource(String path) throws IOException {
 		try (InputStream is = new BufferedInputStream(JarUtil.class.getResourceAsStream(path))) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 
