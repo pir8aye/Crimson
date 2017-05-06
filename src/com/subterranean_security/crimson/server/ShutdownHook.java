@@ -17,8 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,14 +38,14 @@ public class ShutdownHook extends Thread {
 		try {
 			log.debug("Closing database");
 			DatabaseStore.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error("Failed to close database: {}", e.getMessage());
 		}
 
 		try {
 			log.debug("Closing preferences");
 			PrefStore.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error("Failed to close preferences: {}", e.getMessage());
 		}
 	}
