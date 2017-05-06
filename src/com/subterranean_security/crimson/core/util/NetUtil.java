@@ -28,29 +28,29 @@ import com.subterranean_security.crimson.core.platform.Platform;
 
 public class NetUtil {
 
-	// TODO implement
-	public static String post(String host, String parameters) {
-		return "OK";
-	}
+	private static final int DOWNLOAD_LIMIT = 100 * 1024 * 1024 * 1024;
 
 	/**
-	 * Download small files from the internet
+	 * Download small files ( < 100 MiB) from a website
 	 * 
-	 * @return
+	 * @return A byte array containing the file with no padding
 	 */
-	public static byte[] download(String rlocation) throws IOException {
+	public static byte[] download(String direct) throws IOException {
+		if (direct == null)
+			throw new IllegalArgumentException();
 
-		URLConnection con;
-		DataInputStream dis;
+		URLConnection con = new URL(direct).openConnection();
+
+		if (con.getContentLength() > DOWNLOAD_LIMIT)
+			throw new IllegalArgumentException("File too large");
+
 		byte[] fileData = null;
-
-		con = new URL(rlocation).openConnection();
-		dis = new DataInputStream(con.getInputStream());
-		fileData = new byte[con.getContentLength()];
-		for (int i = 0; i < fileData.length; i++) {
-			fileData[i] = dis.readByte();
+		try (DataInputStream dis = new DataInputStream(con.getInputStream())) {
+			fileData = new byte[con.getContentLength()];
+			for (int i = 0; i < fileData.length; i++) {
+				fileData[i] = dis.readByte();
+			}
 		}
-		dis.close();
 
 		return fileData;
 	}
@@ -85,13 +85,20 @@ public class NetUtil {
 	}
 
 	/**
-	 * Tests the availability of a port on a remote host by making a connection.
+	 * Tests the availability of a port on a remote host by making a connection
 	 * 
 	 * @param host
+	 *            The target dns name or ip address
 	 * @param port
-	 * @return
+	 *            The target port
+	 * @return True if the port is open
 	 */
-	public static boolean testPortVisibility(String host, int port) {
+	public static boolean checkPort(String host, int port) {
+		if (!ValidationUtil.dns(host) && !ValidationUtil.ipv4(host))
+			throw new IllegalArgumentException("Invalid host: " + host);
+		if (!ValidationUtil.port(port))
+			throw new IllegalArgumentException("Invalid port: " + port);
+
 		try (Socket sock = new Socket(host, port)) {
 			return sock.isConnected();
 		} catch (UnknownHostException e) {
