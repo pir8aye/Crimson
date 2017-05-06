@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
+import com.subterranean_security.crimson.core.net.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel.Type;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -52,7 +52,7 @@ public class Preview extends JPanel implements DModule {
 	public void setTarget(ClientProfile p) {
 		System.out.println("Preview::setTarget");
 		removeAll();
-		rdp = new RDPanel(Type.VIEW_ONLY, p.getCid(), false);
+		rdp = new RDPanel(Type.VIEW_ONLY, p.getCvid(), false);
 		add(rdp, BorderLayout.CENTER);
 	}
 

@@ -41,8 +41,8 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.attribute.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AKeyCPU;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.info.InfoMaster;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
+import com.subterranean_security.crimson.core.net.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.common.components.StatusConsole;
@@ -53,6 +53,7 @@ import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
 import info.monitorenter.util.Range;
+import javax.swing.border.MatteBorder;
 
 public class Processor extends TracedPanel implements DModule {
 
@@ -144,10 +145,15 @@ public class Processor extends TracedPanel implements DModule {
 
 		val_usage = new JLabel("Loading...");
 		val_usage.setFont(new Font("Dialog", Font.BOLD, 9));
+
+		JPanel val_usage_panel = new JPanel(new BorderLayout());
+		val_usage_panel.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
+		val_usage_panel.add(val_usage);
+
 		GridBagConstraints gbc_lblNewLabel_5 = new GridBagConstraints();
 		gbc_lblNewLabel_5.gridx = 0;
 		gbc_lblNewLabel_5.gridy = 1;
-		panel_3.add(val_usage, gbc_lblNewLabel_5);
+		panel_3.add(val_usage_panel, gbc_lblNewLabel_5);
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -219,12 +225,12 @@ public class Processor extends TracedPanel implements DModule {
 
 	@Override
 	public void setTarget(ClientProfile p) {
-		List<ITrace2D> savedTraces = traceList.get(p.getCid());
+		List<ITrace2D> savedTraces = traceList.get(p.getCvid());
 		if (savedTraces == null) {
 			initTraces();
 			savedTraces = new ArrayList<ITrace2D>();
 			savedTraces.add(trace);
-			traceList.put(p.getCid(), savedTraces);
+			traceList.put(p.getCvid(), savedTraces);
 		} else {
 			trace = savedTraces.get(0);
 			addTraces();
@@ -234,6 +240,12 @@ public class Processor extends TracedPanel implements DModule {
 		cpuList = profile.getGroupList(AttributeKey.Type.CPU);
 
 		// set static attributes
+		try {
+			System.out.println("cpu model: " + getPrimaryCPU().get(AKeyCPU.CPU_MODEL));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		statConsoleModel.setText(getPrimaryCPU().get(AKeyCPU.CPU_MODEL));
 		statConsoleFreq.setText(getPrimaryCPU().get(AKeyCPU.CPU_FREQUENCY_MAX));
 
@@ -272,7 +284,7 @@ public class Processor extends TracedPanel implements DModule {
 		if (showing) {
 
 			im = new InfoMaster(ProtoUtil.getInfoParam(AKeyCPU.CPU_TOTAL_USAGE, AKeyCPU.CPU_TEMP).build(),
-					profile.getCid(), (int) updatePeriod);
+					profile.getCvid(), (int) updatePeriod);
 			StreamStore.addStream(im);
 
 			// launch timeout

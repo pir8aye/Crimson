@@ -41,8 +41,8 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.attribute.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AKeyNIC;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.info.InfoMaster;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
+import com.subterranean_security.crimson.core.net.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -225,13 +225,13 @@ public class NetInterfaces extends TracedPanel implements DModule {
 	@Override
 	public void setTarget(ClientProfile p) {
 
-		List<ITrace2D> savedTraces = traceList.get(p.getCid());
+		List<ITrace2D> savedTraces = traceList.get(p.getCvid());
 		if (savedTraces == null) {
 			initTraces();
 			savedTraces = new ArrayList<ITrace2D>();
 			savedTraces.add(tx);
 			savedTraces.add(rx);
-			traceList.put(p.getCid(), savedTraces);
+			traceList.put(p.getCvid(), savedTraces);
 		} else {
 			tx = savedTraces.get(0);
 			rx = savedTraces.get(1);
@@ -285,7 +285,7 @@ public class NetInterfaces extends TracedPanel implements DModule {
 		this.showing = showing;
 		if (showing) {
 			im = new InfoMaster(ProtoUtil.getInfoParam(AKeyNIC.NIC_RX_SPEED, AKeyNIC.NIC_TX_SPEED).build(),
-					profile.getCid(), (int) updatePeriod);
+					profile.getCvid(), (int) updatePeriod);
 			StreamStore.addStream(im);
 
 			// launch timeout
