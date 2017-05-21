@@ -2,164 +2,159 @@
 <DependancyInfo>
 
 	<!-- S = Server, V = Viewer, C = Client, Q = Viridian, I = Installer -->
-	<JAR>
+	<Lib CID="c00">
+		<Name>Crimson Core</Name>
+		<EVersion>1</EVersion>
+		<License>Apache 2</License>
+		<Requisites>SVCIQ</Requisites>
+	</Lib>
 
-		<Lib CID="c00">
-			<Name>Crimson Core</Name>
-			<EVersion>1</EVersion>
-			<License>Apache 2</License>
-			<Requisites>SVCIQ</Requisites>
-		</Lib>
+	<Lib CID="c01">
+		<Name>HCP</Name>
+		<EVersion>1</EVersion>
+		<License>Apache 2</License>
+		<Requisites>SVCI</Requisites>
+	</Lib>
 
-		<Lib CID="c01">
-			<Name>HCP</Name>
-			<EVersion>1</EVersion>
-			<License>Apache 2</License>
-			<Requisites>SVCI</Requisites>
-		</Lib>
+	<Lib CID="c02">
+		<Name>Crimson SC Library</Name>
+		<EVersion>1</EVersion>
+		<License>Apache 2</License>
+		<Requisites>SC</Requisites>
+	</Lib>
 
-		<Lib CID="c02">
-			<Name>Crimson SC Library</Name>
-			<EVersion>1</EVersion>
-			<License>Apache 2</License>
-			<Requisites>SC</Requisites>
-		</Lib>
+	<Lib CID="c03">
+		<Name>Crimson SV Library</Name>
+		<EVersion>1</EVersion>
+		<License>Apache 2</License>
+		<Requisites>SVIQ</Requisites>
+	</Lib>
 
-		<Lib CID="c03">
-			<Name>Crimson SV Library</Name>
-			<EVersion>1</EVersion>
-			<License>Apache 2</License>
-			<Requisites>SVIQ</Requisites>
-		</Lib>
+	<Lib CID="c04">
+		<Name>Crimson CV Library</Name>
+		<EVersion>1</EVersion>
+		<License>Apache 2</License>
+		<Requisites>VC</Requisites>
+	</Lib>
 
-		<Lib CID="c04">
-			<Name>Crimson CV Library</Name>
-			<EVersion>1</EVersion>
-			<License>Apache 2</License>
-			<Requisites>VC</Requisites>
-		</Lib>
+	<Lib CID="c05">
+		<Name>Crimson Services</Name>
+		<EVersion>1</EVersion>
+		<License>Proprietary</License>
+		<Requisites>SVCI</Requisites>
+	</Lib>
 
-		<Lib CID="c05">
-			<Name>Crimson Services</Name>
-			<EVersion>1</EVersion>
-			<License>Proprietary</License>
-			<Requisites>SVCI</Requisites>
-		</Lib>
+	<Lib CID="c06">
+		<Name>Netty</Name>
+		<EVersion>4.1.9</EVersion>
+		<License>Apache 2</License>
+		<Requisites>SVCQI</Requisites>
+		v
+	</Lib>
 
-		<Lib CID="c06">
-			<Name>Netty</Name>
-			<EVersion>4.1.9</EVersion>
-			<License>Apache 2</License>
-			<Requisites>SVCQI</Requisites>
-			v
-		</Lib>
+	<Lib CID="c07">
+		<Name>SQLite JDBC</Name>
+		<EVersion>3.8.10.1</EVersion>
+		<License>Apache 2</License>
+		<Requisites>SVCI</Requisites>
+	</Lib>
 
-		<Lib CID="c07">
-			<Name>SQLite JDBC</Name>
-			<EVersion>3.8.10.1</EVersion>
-			<License>Apache 2</License>
-			<Requisites>SVCI</Requisites>
-		</Lib>
+	<Lib CID="c08">
+		<Name>Sliding Layout</Name>
+		<EVersion>1.1.1</EVersion>
+		<License>Apache 2</License>
+		<Requisites>V</Requisites>
+	</Lib>
 
-		<Lib CID="c08">
-			<Name>Sliding Layout</Name>
-			<EVersion>1.1.1</EVersion>
-			<License>Apache 2</License>
-			<Requisites>V</Requisites>
-		</Lib>
+	<Lib CID="c09">
+		<Name>Protobuf</Name>
+		<EVersion>3.3.1</EVersion>
+		<License>BSD</License>
+		<Requisites>SVCQI</Requisites>
+	</Lib>
 
-		<Lib CID="c09">
-			<Name>Protobuf</Name>
-			<EVersion>3.1.0</EVersion>
-			<License>BSD</License>
-			<Requisites>SVCQI</Requisites>
-		</Lib>
+	<Lib CID="c10">
+		<Name>SLF4J</Name>
+		<EVersion>1.7.13</EVersion>
+		<License>MIT</License>
+		<Requisites>SVCQI</Requisites>
+	</Lib>
 
-		<Lib CID="c10">
-			<Name>SLF4J</Name>
-			<EVersion>1.7.13</EVersion>
-			<License>MIT</License>
-			<Requisites>SVCQI</Requisites>
-		</Lib>
+	<Lib CID="c11">
+		<Name>Logback Core</Name>
+		<EVersion>1.1.3</EVersion>
+		<License>LGPL</License>
+		<Requisites>SVCQI</Requisites>
+	</Lib>
 
-		<Lib CID="c11">
-			<Name>Logback Core</Name>
-			<EVersion>1.1.3</EVersion>
-			<License>LGPL</License>
-			<Requisites>SVCQI</Requisites>
-		</Lib>
+	<Lib CID="c12">
+		<Name>Logback Classic</Name>
+		<EVersion>1.1.3</EVersion>
+		<License>LGPL</License>
+		<Requisites>SVCQI</Requisites>
+	</Lib>
 
-		<Lib CID="c12">
-			<Name>Logback Classic</Name>
-			<EVersion>1.1.3</EVersion>
-			<License>LGPL</License>
-			<Requisites>SVCQI</Requisites>
-		</Lib>
+	<Lib CID="c13">
+		<Name>Hyperic SIGAR</Name>
+		<EVersion>1.6.4</EVersion>
+		<License>Apache 2</License>
+		<Requisites>SVC</Requisites>
+	</Lib>
 
-		<Lib CID="c13">
-			<Name>Hyperic SIGAR</Name>
-			<EVersion>1.6.4</EVersion>
-			<License>Apache 2</License>
-			<Requisites>SVC</Requisites>
-		</Lib>
+	<Lib CID="c14">
+		<Name>Java Mail</Name>
+		<EVersion>1.4.5</EVersion>
+		<License>Oracle License</License>
+		<Requisites>Q</Requisites>
+	</Lib>
 
-		<Lib CID="c14">
-			<Name>Java Mail</Name>
-			<EVersion>1.4.5</EVersion>
-			<License>Oracle License</License>
-			<Requisites>Q</Requisites>
-		</Lib>
+	<Lib CID="c15">
+		<Name>Zeroturnaround zt-zip</Name>
+		<EVersion>1.9</EVersion>
+		<License>Apache 2</License>
+		<Requisites>SI</Requisites>
+	</Lib>
 
-		<Lib CID="c15">
-			<Name>Zeroturnaround zt-zip</Name>
-			<EVersion>1.9</EVersion>
-			<License>Apache 2</License>
-			<Requisites>SI</Requisites>
-		</Lib>
+	<Lib CID="c16">
+		<Name>TTorrent</Name>
+		<EVersion>0.1.54</EVersion>
+		<License>Apache 2</License>
+		<Requisites>C</Requisites>
+	</Lib>
 
-		<Lib CID="c16">
-			<Name>TTorrent</Name>
-			<EVersion>0.1.54</EVersion>
-			<License>Apache 2</License>
-			<Requisites>C</Requisites>
-		</Lib>
+	<Lib CID="c17">
+		<Name>JGraphX</Name>
+		<EVersion>3.3.0.1</EVersion>
+		<License>BSD</License>
+		<Requisites>V</Requisites>
+	</Lib>
 
-		<Lib CID="c17">
-			<Name>JGraphX</Name>
-			<EVersion>3.3.0.1</EVersion>
-			<License>BSD</License>
-			<Requisites>V</Requisites>
-		</Lib>
+	<Lib CID="c18">
+		<Name>JChart2D</Name>
+		<EVersion>3.2.2</EVersion>
+		<License>LGPL</License>
+		<Requisites>V</Requisites>
+	</Lib>
 
-		<Lib CID="c18">
-			<Name>JChart2D</Name>
-			<EVersion>3.2.2</EVersion>
-			<License>LGPL</License>
-			<Requisites>V</Requisites>
-		</Lib>
+	<Lib CID="c19">
+		<Name>JNativeHook</Name>
+		<EVersion>2.0.3</EVersion>
+		<License>LGPL</License>
+		<Requisites>C</Requisites>
+	</Lib>
 
-		<Lib CID="c19">
-			<Name>JNativeHook</Name>
-			<EVersion>2.0.3</EVersion>
-			<License>LGPL</License>
-			<Requisites>C</Requisites>
-		</Lib>
+	<Lib CID="c20">
+		<Name>mslinks</Name>
+		<EVersion>1</EVersion>
+		<License>DWTFYWTPL</License>
+		<Requisites>I</Requisites>
+	</Lib>
 
-		<Lib CID="c20">
-			<Name>mslinks</Name>
-			<EVersion>1</EVersion>
-			<License>DWTFYWTPL</License>
-			<Requisites>I</Requisites>
-		</Lib>
-
-		<Lib CID="c21">
-			<Name>JSch</Name>
-			<EVersion>0.1.54</EVersion>
-			<License>BSD</License>
-			<Requisites>SVQ</Requisites>
-		</Lib>
-
-
-	</JAR>
+	<Lib CID="c21">
+		<Name>JSch</Name>
+		<EVersion>0.1.54</EVersion>
+		<License>BSD</License>
+		<Requisites>SVQ</Requisites>
+	</Lib>
 
 </DependancyInfo>
