@@ -118,7 +118,7 @@ public class CreateGroup extends JPanel {
 						sl.setInfo("Creating group");
 						timer.cancel();
 						Outcome outcome = ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
-								.setId(IDGen.authenticationMethod()).setCreation(new Date().getTime())
+								.setId(IDGen.auth()).setCreation(new Date().getTime())
 								.addOwner(ProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER))
 								.setType(AuthType.GROUP).setName(textField.getText())
 								.setGroupSeedPrefix(key_prefix.getText() + RandomUtil.randString(32)).build());

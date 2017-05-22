@@ -67,7 +67,7 @@ public final class IDGen {
 		return Math.abs(RandomUtil.nextInt());
 	}
 
-	public static int authenticationMethod() {
+	public static int auth() {
 		return Math.abs(RandomUtil.nextInt());
 	}
 
