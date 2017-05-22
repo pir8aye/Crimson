@@ -33,12 +33,12 @@ import com.subterranean_security.crimson.viewer.ui.common.panels.sl.hpanel.Norma
 public class LoginDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	public final LoginPanel loginPanel = new LoginPanel(this);
+	public final LoginPanel loginPanel;
 	private HPanel hp;
 
 	public LoginDialog(boolean localServer) {
 
-		loginPanel.addRecents(localServer);
+		loginPanel = new LoginPanel(this, localServer);
 
 		setTitle("Crimson - Login");
 		setSize(UICommon.dim_login);
