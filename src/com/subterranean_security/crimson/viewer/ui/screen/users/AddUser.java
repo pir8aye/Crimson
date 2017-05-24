@@ -315,11 +315,9 @@ public class AddUser extends JDialog {
 		}
 
 		// check for username conflicts
-		for (ViewerProfile vp : ProfileStore.getServer().users) {
-			if (vp.get(AKeySimple.VIEWER_USER).equals(textField.getText())) {
-				sl.setBad("Username taken");
-				return false;
-			}
+		if (ProfileStore.getViewer(textField.getText()) != null) {
+			sl.setBad("Username taken");
+			return false;
 		}
 
 		if (!ValidationUtil.password(passwordField)) {

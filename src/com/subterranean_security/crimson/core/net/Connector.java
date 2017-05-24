@@ -236,7 +236,7 @@ public class Connector extends Observable {
 				p.addLast(sslCtx.newHandler(ch.alloc(), host, port));
 			}
 
-			if (Universal.isNetDebug) {
+			if (Universal.debugRawNetwork) {
 				p.addLast(new LoggingHandler(Connector.class));
 			}
 

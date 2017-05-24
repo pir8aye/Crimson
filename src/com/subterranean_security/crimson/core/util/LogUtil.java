@@ -17,53 +17,24 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
-import java.io.File;
-import java.util.logging.LogManager;
-
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.platform.Environment;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.util.JarUtil;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import io.netty.handler.logging.LogLevel;
 
 public final class LogUtil {
 	private LogUtil() {
 	}
 
+	/**
+	 * Set system properties for logback and trigger the configuration
+	 */
 	public static void configure() {
-		File config = new File(Common.Directories.varLog.getAbsolutePath() + "/logback-"
-				+ Universal.instance.toString().toLowerCase() + ".xml");
-		if (!config.exists()) {
+		System.setProperty("log.directory", Environment.log.getAbsolutePath());
+		System.setProperty("log.level", Universal.debug ? "debug" : "error");
+		System.setProperty("log.instance", Universal.instance.toString());
 
-			JarUtil.extract(LogUtil.class.getClassLoader(),
-					"com/subterranean_security/crimson/core/res/xml/logback.xml", config.getAbsolutePath());
-			FileUtil.substitute(config, "%LEVEL%", Universal.debug ? LogLevel.DEBUG.toString().toLowerCase()
-					: LogLevel.INFO.toString().toLowerCase());
-			FileUtil.substitute(config, "%LOGDIR%", config.getParent().replaceAll("\\\\", "/"));
-			FileUtil.substitute(config, "%INSTANCE%", Universal.instance.toString().toLowerCase());
-			FileUtil.substitute(config, "%NETLEVEL%", Universal.debugRawNetwork ? LogLevel.DEBUG.toString().toLowerCase()
-					: LogLevel.ERROR.toString().toLowerCase());
-
-		}
-
-		LogManager.getLogManager().reset();
-		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-
-		JoranConfigurator configurator = new JoranConfigurator();
-		configurator.setContext(context);
-
-		context.reset();
-		try {
-			configurator.doConfigure(config.getAbsolutePath());
-		} catch (JoranException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// trigger
+		LoggerFactory.getLogger(LogUtil.class);
 	}
-
 }

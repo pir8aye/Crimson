@@ -17,25 +17,23 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.universal.stores;
 
-import java.io.IOException;
-
-import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 
 public final class DatabaseStore {
 	private DatabaseStore() {
 	}
 
-	private static StorageFacility database;
+	private static BasicStorageFacility database;
 
-	public static void setFacility(StorageFacility sf) {
+	public static void setFacility(BasicStorageFacility sf) {
 		database = sf;
 	}
 
-	public static StorageFacility getDatabase() {
+	public static BasicStorageFacility getDatabase() {
 		return database;
 	}
 
-	public static void close() throws IOException {
+	public static void close() {
 
 		// close database
 		if (database != null) {
@@ -45,10 +43,6 @@ public final class DatabaseStore {
 				database = null;
 			}
 		}
-
-	}
-
-	public enum DTag {
 
 	}
 

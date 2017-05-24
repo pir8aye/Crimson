@@ -17,10 +17,10 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.settings;
 
-import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 
 public interface SPanel {
-	public void setValues(StorageFacility db);
+	public void setValues(BasicStorageFacility db);
 
-	public void saveValues(StorageFacility db);
+	public void saveValues(BasicStorageFacility db);
 }

@@ -27,6 +27,8 @@ import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
+import com.subterranean_security.crimson.core.net.stream.subscriber.SubscriberSlave;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_CreateAuthMethod;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RS_GroupChallenge;
@@ -39,7 +41,6 @@ import com.subterranean_security.crimson.core.proto.Generator.RS_Generate;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Keylogger.RQ_KeyUpdate;
 import com.subterranean_security.crimson.core.proto.Keylogger.RS_KeyUpdate;
-import com.subterranean_security.crimson.core.proto.Listener.RS_AddListener;
 import com.subterranean_security.crimson.core.proto.Log.LogFile;
 import com.subterranean_security.crimson.core.proto.Log.LogType;
 import com.subterranean_security.crimson.core.proto.Log.RS_Logs;
@@ -52,8 +53,6 @@ import com.subterranean_security.crimson.core.proto.Users.RQ_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_AddUser;
 import com.subterranean_security.crimson.core.proto.Users.RS_EditUser;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.sc.Logsystem;
@@ -63,17 +62,18 @@ import com.subterranean_security.crimson.server.net.exe.CvidExe;
 import com.subterranean_security.crimson.server.net.exe.DeltaExe;
 import com.subterranean_security.crimson.server.net.exe.FileManagerExe;
 import com.subterranean_security.crimson.server.net.exe.LoginExe;
-import com.subterranean_security.crimson.server.store.Authentication;
+import com.subterranean_security.crimson.server.net.exe.NetworkExe;
+import com.subterranean_security.crimson.server.net.stream.SInfoSlave;
+import com.subterranean_security.crimson.server.store.AuthStore;
 import com.subterranean_security.crimson.server.store.ListenerStore;
 import com.subterranean_security.crimson.server.store.ProfileStore;
-import com.subterranean_security.crimson.server.stream.SInfoSlave;
+import com.subterranean_security.crimson.server.store.ServerDatabaseStore;
 import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -93,6 +93,9 @@ public class ServerExecutor extends BasicExecutor {
 						return;
 					}
 					pool.submit(() -> {
+						if (Universal.debugNetwork) {
+							log.debug("Received: {}", m.toString());
+						}
 						if (m.hasRid() && m.getRid() != 0) {
 							// route
 							try {
@@ -157,6 +160,8 @@ public class ServerExecutor extends BasicExecutor {
 							rq_logs(m);
 						} else if (m.hasRqCvid()) {
 							CvidExe.rq_cvid(connector, m);
+						} else if (m.hasRqDirectConnection()) {
+							NetworkExe.rq_direct_connection(connector, m);
 						} else {
 							connector.addNewResponse(m);
 						}
@@ -165,7 +170,6 @@ public class ServerExecutor extends BasicExecutor {
 					});
 				}
 			}
-
 		});
 
 	}
@@ -227,7 +231,7 @@ public class ServerExecutor extends BasicExecutor {
 			return;
 		}
 		RQ_GroupChallenge rq = m.getRqGroupChallenge();
-		AuthenticationGroup group = Authentication.getGroup(rq.getGroupName());
+		AuthenticationGroup group = AuthStore.getGroup(rq.getGroupName());
 
 		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder()
 				.setResult(CryptoUtil.signGroupChallenge(rq.getMagic(), group.getPrivateKey())).build();
@@ -286,14 +290,13 @@ public class ServerExecutor extends BasicExecutor {
 		if (!ProfileStore.getViewer(connector.getCvid()).getPermissions()
 				.getFlag(Perm.server.network.create_listener)) {
 			connector.write(Message.newBuilder().setId(m.getId())
-					.setRsAddListener(
-							RS_AddListener.newBuilder().setResult(false).setComment("Insufficient permissions"))
+					.setRsOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions"))
 					.build());
 			return;
 		}
 
-		connector.write(Message.newBuilder().setId(m.getId())
-				.setRsAddListener(RS_AddListener.newBuilder().setResult(true)).build());
+		connector.write(
+				Message.newBuilder().setId(m.getId()).setRsOutcome(Outcome.newBuilder().setResult(true)).build());
 		ListenerStore.listeners.add(new Listener(m.getRqAddListener().getConfig()));
 		Message update = Message.newBuilder().setEvServerProfileDelta(
 				EV_ServerProfileDelta.newBuilder().addListener(m.getRqAddListener().getConfig())).build();
@@ -310,13 +313,12 @@ public class ServerExecutor extends BasicExecutor {
 		connector.write(
 				Message.newBuilder().setId(m.getId()).setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
 
-		DatabaseStore.getDatabase().addLocalUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
+		ServerDatabaseStore.getDatabase().addLocalUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
 				new ViewerPermissions(m.getRqAddUser().getPermissionsList()));
 
 		Message update = Message.newBuilder()
-				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder()
-						.addViewerUser(EV_ViewerProfileDelta.newBuilder()
-								.addAllViewerPermissions(m.getRqAddUser().getPermissionsList()))
+				.setEvViewerProfileDelta(EV_ViewerProfileDelta.newBuilder()
+						.addAllViewerPermissions(m.getRqAddUser().getPermissionsList())
 						.setPd(EV_ProfileDelta.newBuilder()
 								.addGroup(ProtoUtil.getNewGeneralGroup()
 										.putAttribute(AKeySimple.VIEWER_USER.getFullID(), m.getRqAddUser().getUser()))))
@@ -351,14 +353,14 @@ public class ServerExecutor extends BasicExecutor {
 			b.addAllViewerPermissions(rqad.getPermissionsList());
 		}
 
-		if (rqad.hasPassword() && DatabaseStore.getDatabase().validLogin(rqad.getUser(), CryptoUtil.hashCrimsonPassword(
-				m.getRqEditUser().getOldPassword(), DatabaseStore.getDatabase().getSalt(rqad.getUser())))) {
-			DatabaseStore.getDatabase().changePassword(rqad.getUser(), rqad.getPassword());
+		if (rqad.hasPassword() && ServerDatabaseStore.getDatabase().validLogin(rqad.getUser(),
+				CryptoUtil.hashCrimsonPassword(m.getRqEditUser().getOldPassword(),
+						ServerDatabaseStore.getDatabase().getSalt(rqad.getUser())))) {
+			ServerDatabaseStore.getDatabase().changePassword(rqad.getUser(), rqad.getPassword());
 
 		}
 
-		Message update = Message.newBuilder()
-				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addViewerUser(b)).build();
+		Message update = Message.newBuilder().setEvViewerProfileDelta(b).build();
 
 		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
 
@@ -403,7 +405,7 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_create_auth_method(Message m) {
-		Outcome outcome = Authentication.create(m.getRqCreateAuthMethod().getAuthMethod());
+		Outcome outcome = AuthStore.create(m.getRqCreateAuthMethod().getAuthMethod());
 
 		connector.write(Message.newBuilder().setId(m.getId())
 				.setRsCreateAuthMethod(RS_CreateAuthMethod.newBuilder().setOutcome(outcome)).build());
@@ -411,7 +413,7 @@ public class ServerExecutor extends BasicExecutor {
 	}
 
 	private void rq_remove_auth_method(Message m) {
-		Authentication.remove(m.getRqRemoveAuthMethod().getId());
+		AuthStore.remove(m.getRqRemoveAuthMethod().getId());
 		// TODO check if removed
 		connector.write(
 				Message.newBuilder().setRsRemoveAuthMethod(RS_RemoveAuthMethod.newBuilder().setResult(true)).build());

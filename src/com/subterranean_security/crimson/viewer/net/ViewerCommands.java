@@ -236,7 +236,7 @@ public final class ViewerCommands {
 		ClientConfig client = getClientConfig(cid);
 		if (client == null) {
 			outcome.setResult(false).setComment("Could not obtain client configuration");
-		} else if (client.getBuildNumber() >= Common.build && !Universal.isDebug) {
+		} else if (client.getBuildNumber() >= Common.build && !Universal.debug) {
 			outcome.setResult(false).setComment("No updated needed");
 		} else {
 			try {

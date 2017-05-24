@@ -46,12 +46,17 @@ public final class Universal {
 	 * When true, debug messages will be logged and additional functionality
 	 * enabled
 	 */
-	public static final boolean isDebug = true;
+	public static final boolean debug = true;
 
 	/**
-	 * When true, network data is logged
+	 * When true, raw network data is logged
 	 */
-	public static final boolean isNetDebug = true;
+	public static final boolean debugRawNetwork = false;
+
+	/**
+	 * When true, decoded network data is logged
+	 */
+	public static final boolean debugNetwork = true;
 
 	/**
 	 * Identifies this instance based upon a manifest attribute
@@ -84,7 +89,7 @@ public final class Universal {
 
 		try {
 			return Instance.valueOf(JarUtil.getManifestValue("Instance",
-					new File(Universal.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())));
+					new File(Universal.class.getProtectionDomain().getCodeSource().getLocation().toURI())));
 		} catch (IOException e) {
 			System.exit(0);
 		} catch (URISyntaxException e) {

@@ -29,8 +29,11 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -45,6 +48,9 @@ import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 
+/**
+ * User interface utilities
+ */
 public final class UIUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(UIUtil.class);
@@ -65,10 +71,22 @@ public final class UIUtil {
 		return icons;
 	}
 
+	private static Map<String, ImageIcon> cache = new HashMap<String, ImageIcon>();
+
 	public static ImageIcon getIcon(String rpath) {
+		if (!cache.containsKey(rpath)) {
+			ImageIcon icon = getIcon(
+					UIUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/" + rpath));
+			if (icon != null) {
+				cache.put(rpath, icon);
+			}
+		}
+		return cache.get(rpath);
+	}
+
+	private static ImageIcon getIcon(URL rpath) {
 		try {
-			return new ImageIcon(ImageIO
-					.read(UIUtil.class.getResource("/com/subterranean_security/crimson/viewer/ui/res/image/" + rpath)));
+			return new ImageIcon(ImageIO.read(rpath));
 		} catch (Exception e) {
 			return null;
 		}

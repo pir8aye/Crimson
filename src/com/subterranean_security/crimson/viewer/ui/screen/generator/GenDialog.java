@@ -94,7 +94,7 @@ public class GenDialog extends JDialog {
 									&& ((String) gp.atab.groupSelectionBox.getSelectedItem()).equals("Create Group")) {
 								if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
 										.addOwner(ProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER))
-										.setId(IDGen.authenticationMethod()).setCreation(new Date().getTime())
+										.setId(IDGen.auth()).setCreation(new Date().getTime())
 										.setType(AuthType.GROUP).setName(config.getGroupName())
 										.setGroupSeedPrefix(gp.getGroupPrefix()).build()).getResult()) {
 									UINotification.addConsoleBad("Failed to create authentication group");
@@ -104,7 +104,7 @@ public class GenDialog extends JDialog {
 									&& !gp.atab.chckbxDontInstallPassword.isSelected()) {
 								if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
 										.addOwner(ProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER))
-										.setId(IDGen.authenticationMethod()).setCreation(new Date().getTime())
+										.setId(IDGen.auth()).setCreation(new Date().getTime())
 										.setType(AuthType.PASSWORD).setName(gp.atab.fld_password_name.getText())
 										.setPassword(gp.atab.getPassword()).build()).getResult()) {
 									UINotification.addConsoleBad("Failed to create password");

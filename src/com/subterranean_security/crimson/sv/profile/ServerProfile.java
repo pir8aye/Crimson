@@ -26,12 +26,9 @@ import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ServerProfileDelta;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
-import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.server.store.ListenerStore;
-import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 
@@ -43,7 +40,6 @@ public class ServerProfile extends Profile {
 
 	public ArrayList<ListenerConfig> listeners = new ArrayList<ListenerConfig>();
 	public ArrayList<AuthMethod> authMethods = new ArrayList<AuthMethod>();
-	public ArrayList<ViewerProfile> users = new ArrayList<ViewerProfile>();
 
 	// General attributes
 	private Attribute messageLatency;
@@ -82,24 +78,6 @@ public class ServerProfile extends Profile {
 			UIStore.netMan.lp.lt.fireTableDataChanged();
 		}
 
-		for (EV_ViewerProfileDelta lc : c.getViewerUserList()) {
-			boolean modified = false;
-			for (ViewerProfile l : users) {
-				if (l.get(AKeySimple.VIEWER_USER).equals(
-						ProtoUtil.getGeneralGroup(lc).getAttributeOrDefault(AKeySimple.VIEWER_USER.getFullID(), ""))) {
-					modified = true;
-					l.amalgamate(lc);
-					break;
-				}
-			}
-			if (!modified) {
-
-				ViewerProfile vp = new ViewerProfile();
-				vp.amalgamate(lc);
-				users.add(vp);
-			}
-
-		}
 		for (AuthMethod am : c.getAuthMethodList()) {
 			boolean modified = false;
 			for (AuthMethod a : authMethods) {
@@ -122,32 +100,13 @@ public class ServerProfile extends Profile {
 	public EV_ServerProfileDelta getUpdates(Date lastUpdate, ViewerProfile vp) {
 		EV_ServerProfileDelta.Builder spd = EV_ServerProfileDelta.newBuilder();
 
-		try {
-			// add general attributes
-			spd.setPd(EV_ProfileDelta.newBuilder(super.getUpdates(lastUpdate))
-					.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.SERVER_STATUS.getFullID(),
-							ListenerStore.isRunning() ? "1" : "0")));
+		// add general attributes
+		spd.setPd(EV_ProfileDelta.newBuilder(super.getUpdates(lastUpdate)).addGroup(AttributeGroupContainer.newBuilder()
+				.putAttribute(AKeySimple.SERVER_STATUS.getFullID(), ListenerStore.isRunning() ? "1" : "0")));
 
-			// add listeners
-			for (Listener l : ListenerStore.listeners) {
-				spd.addListener(l.getConfig());
-			}
-
-			// add viewers
-			for (Integer i : ProfileStore.getViewerKeyset()) {
-
-				ViewerProfile vpi = ProfileStore.getViewer(i);
-				if (vpi.equals(vp)) {
-					// give full rights to the viewer's own profile
-					spd.addViewerUser(vpi.gatherForServer(null));
-				} else {
-					spd.addViewerUser(vpi.gatherForServer(vp.getPermissions()));
-				}
-
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		// add listeners
+		for (Listener l : ListenerStore.listeners) {
+			spd.addListener(l.getConfig());
 		}
 
 		return spd.build();

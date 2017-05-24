@@ -27,7 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.ListHeaderPopup;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SPanel;
@@ -65,13 +65,13 @@ public class SPanelHostList extends JPanel implements SPanel {
 	}
 
 	@Override
-	public void setValues(StorageFacility db) {
+	public void setValues(BasicStorageFacility db) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void saveValues(StorageFacility db) {
+	public void saveValues(BasicStorageFacility db) {
 		// TODO Auto-generated method stub
 
 	}

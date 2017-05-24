@@ -40,12 +40,12 @@ public final class ListenerCom {
 		Outcome.Builder outcome = Outcome.newBuilder().setResult(false);
 
 		try {
-			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRqAddListener(RQ_AddListener.newBuilder().setConfig(lf)), 3);
-			if (m.hasRsAddListener()) {
-				outcome.setResult(m.getRsAddListener().getResult());
-				if (m.getRsAddListener().hasComment())
-					outcome.setComment(m.getRsAddListener().getComment());
+			Message m = ConnectionStore
+					.routeAndWait(Message.newBuilder().setRqAddListener(RQ_AddListener.newBuilder().setConfig(lf)), 3);
+			if (m.hasRsOutcome()) {
+				outcome.setResult(m.getRsOutcome().getResult());
+				if (m.getRsOutcome().hasComment())
+					outcome.setComment(m.getRsOutcome().getComment());
 
 			}
 		} catch (InterruptedException e) {
@@ -69,10 +69,10 @@ public final class ListenerCom {
 		try {
 			Message m = ConnectionStore.routeAndWait(
 					Message.newBuilder().setRqRemoveListener(RQ_RemoveListener.newBuilder().setId(id)), 3);
-			if (m.hasRsRemoveListener()) {
-				outcome.setResult(m.getRsRemoveListener().getResult());
-				if (m.getRsRemoveListener().hasComment())
-					outcome.setComment(m.getRsRemoveListener().getComment());
+			if (m.hasRsOutcome()) {
+				outcome.setResult(m.getRsOutcome().getResult());
+				if (m.getRsOutcome().hasComment())
+					outcome.setComment(m.getRsOutcome().getComment());
 
 			}
 		} catch (InterruptedException e) {

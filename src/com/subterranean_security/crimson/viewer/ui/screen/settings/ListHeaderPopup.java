@@ -27,7 +27,7 @@ import javax.swing.JPopupMenu;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.screen.main.HostList;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
@@ -40,9 +40,9 @@ public class ListHeaderPopup extends JPopupMenu {
 
 	private AttributeKey[] headers;
 
-	private StorageFacility db;
+	private BasicStorageFacility db;
 
-	public ListHeaderPopup(StorageFacility db) {
+	public ListHeaderPopup(BasicStorageFacility db) {
 		this.db = db;
 		try {
 			headers = (AttributeKey[]) db.getObject("hostlist.headers");

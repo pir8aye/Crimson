@@ -30,8 +30,8 @@ import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.core.attribute.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AKeyDISP;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam.RMethod;
-import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel;
 
 public class Settings extends JPanel {
@@ -89,7 +89,7 @@ public class Settings extends JPanel {
 		}
 
 		if (parent.stream != null) {
-			switch (parent.stream.param.getRemoteParam().getRmethod()) {
+			switch (parent.stream.param().getRemoteParam().getRmethod()) {
 			case NATIVE:
 				methodBox.setSelectedIndex(1);
 				break;

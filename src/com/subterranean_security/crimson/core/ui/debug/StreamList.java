@@ -29,8 +29,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.core.net.stream.Stream;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
 
 public class StreamList extends JPanel {
 

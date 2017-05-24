@@ -18,6 +18,7 @@
 package com.subterranean_security.crimson.server.store;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
@@ -67,7 +68,7 @@ public class ProfileStore {
 	}
 
 	public static void addClient(ClientProfile p) {
-		clientProfiles.put(p.getCid(), p);
+		clientProfiles.put(p.getCvid(), p);
 	}
 
 	public static ViewerProfile getViewer(int vid) {
@@ -93,12 +94,12 @@ public class ProfileStore {
 		return null;
 	}
 
-	public static ArrayList<ViewerProfile> getViewersWithAuthorityOnClient(int cid) {
-		ArrayList<ViewerProfile> vps = new ArrayList<ViewerProfile>();
+	public static List<ViewerProfile> getViewersWithAuthorityOverClient(int cid) {
+		List<ViewerProfile> vps = new ArrayList<ViewerProfile>();
 		try {
-			for (Integer i : viewerProfiles.keySet()) {
+			for (int vid : viewerProfiles.keySet()) {
 				// TODO filter
-				vps.add(viewerProfiles.get(i));
+				vps.add(viewerProfiles.get(vid));
 
 			}
 		} catch (Exception e) {
@@ -108,12 +109,12 @@ public class ProfileStore {
 		return vps;
 	}
 
-	public static ArrayList<ClientProfile> getClientsUnderAuthority(int vid) {
-		ArrayList<ClientProfile> cps = new ArrayList<ClientProfile>();
+	public static List<ClientProfile> getClientsUnderAuthorityOfViewer(int vid) {
+		List<ClientProfile> cps = new ArrayList<ClientProfile>();
 		try {
-			for (Integer i : clientProfiles.keySet()) {
+			for (int cid : clientProfiles.keySet()) {
 				// TODO filter
-				cps.add(clientProfiles.get(i));
+				cps.add(clientProfiles.get(cid));
 
 			}
 		} catch (Exception e) {

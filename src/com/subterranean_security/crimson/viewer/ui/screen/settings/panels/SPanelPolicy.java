@@ -25,7 +25,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SPanel;
@@ -66,7 +66,7 @@ public class SPanelPolicy extends JPanel implements SPanel {
 	}
 
 	@Override
-	public void setValues(StorageFacility db) {
+	public void setValues(BasicStorageFacility db) {
 		try {
 			chckbxAlwaysShowLicense.setSelected(PrefStore.getPref().getBoolean(PrefStore.PTag.GENERAL_EULA_SHOW));
 			chckbxShowHelpMenus.setSelected(PrefStore.getPref().getBoolean(PrefStore.PTag.GENERAL_HELP_SHOW));
@@ -78,7 +78,7 @@ public class SPanelPolicy extends JPanel implements SPanel {
 	}
 
 	@Override
-	public void saveValues(StorageFacility db) {
+	public void saveValues(BasicStorageFacility db) {
 		PrefStore.getPref().putBoolean(PrefStore.PTag.GENERAL_EULA_SHOW, chckbxAlwaysShowLicense.isSelected());
 		PrefStore.getPref().putBoolean(PrefStore.PTag.GENERAL_HELP_SHOW, chckbxShowHelpMenus.isSelected());
 	}

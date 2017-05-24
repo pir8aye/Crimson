@@ -21,10 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.net.BasicExecutor;
+import com.subterranean_security.crimson.core.net.stream.Stream;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
-import com.subterranean_security.crimson.core.stream.Stream;
-import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 
 import io.netty.util.ReferenceCountUtil;
@@ -47,6 +48,9 @@ public class ViewerExecutor extends BasicExecutor {
 				}
 
 				pool.submit(() -> {
+					if (Universal.debugNetwork) {
+						log.debug("Received: {}", m.toString());
+					}
 					if (m.hasEvStreamData()) {
 						System.out.println("Got stream data");
 						Stream s = StreamStore.getStream(m.getEvStreamData().getStreamID());

@@ -29,6 +29,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -49,6 +50,7 @@ import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.sv.permissions.Perm;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.command.ListenerCom;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
@@ -337,9 +339,10 @@ public class AddListener extends JPanel {
 	public void updateOwners() {
 		String[] o = null;
 		if (ProfileStore.getLocalViewer().getPermissions().getFlag(Perm.Super)) {
-			o = new String[ProfileStore.getServer().users.size()];
+			List<ViewerProfile> viewers = ProfileStore.getViewers();
+			o = new String[viewers.size()];
 			for (int i = 0; i < o.length; i++) {
-				o[i] = ProfileStore.getServer().users.get(i).get(AKeySimple.VIEWER_USER);
+				o[i] = viewers.get(i).get(AKeySimple.VIEWER_USER);
 			}
 		} else {
 			o = new String[] { ProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER) };

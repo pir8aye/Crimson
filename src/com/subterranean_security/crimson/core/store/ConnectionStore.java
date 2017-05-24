@@ -82,12 +82,25 @@ public final class ConnectionStore {
 		}
 	}
 
+	/**
+	 * Tests for a direct connection
+	 * 
+	 * @param cvid
+	 * @return True if there exists a direct connection to the specified cvid
+	 */
+	public static boolean connectedDirectly(int cvid) {
+		return directConnections.containsKey(cvid);
+	}
+
+	private static int users;
+	private static int clients;
+
 	public static int countUsers() {
-		return 0;
+		return users;
 	}
 
 	public static int countClients() {
-		return 0;
+		return clients;
 	}
 
 	public static Set<Integer> getKeySet() {

@@ -48,7 +48,7 @@ public final class PrefStore {
 	}
 
 	public enum PTag {
-		GENERAL_EULA_SHOW, GENERAL_HELP_SHOW, GENERAL_TRAY_MINIMIZE, VIEW_KEYLOG_FLAT, VIEW_MAIN_LAST, VIEW_DETAIL_NIC, VIEW_DETAIL_PROCESSOR, VIEW_DETAIL_PREVIEW, VIEW_DETAIL_MAP;
+		GENERAL_EULA_SHOW, GENERAL_HELP_SHOW, GENERAL_TRAY_MINIMIZE, VIEW_KEYLOG_FLAT, VIEW_MAIN_LAST, VIEW_DETAIL_NIC, VIEW_DETAIL_PROCESSOR, VIEW_DETAIL_PREVIEW, VIEW_DETAIL_MAP, LOGIN_RECENT;
 
 		public boolean defaultBoolean() {
 			switch (this) {
@@ -78,6 +78,8 @@ public final class PrefStore {
 			switch (this) {
 			case VIEW_MAIN_LAST:
 				return "list";
+			case LOGIN_RECENT:
+				return "";
 			default:
 				break;
 

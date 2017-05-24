@@ -204,7 +204,7 @@ public class ViewNetworktarget extends JPanel {
 		new SwingWorker<String, Void>() {
 			@Override
 			protected String doInBackground() throws Exception {
-				return NetUtil.testPortVisibility(server, port) ? "Visible" : "Not Visible";
+				return NetUtil.checkPort(server, port) ? "Visible" : "Not Visible";
 			}
 
 			protected void done() {

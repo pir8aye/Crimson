@@ -25,7 +25,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JMenu;
@@ -39,9 +38,10 @@ import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
-import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.sv.profile.Profile;
+import com.subterranean_security.crimson.sv.profile.ServerProfile;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.command.FileManagerCom;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.screen.files.ep.AdvancedFileInfo;
 import com.subterranean_security.crimson.viewer.ui.screen.files.ep.DeleteConfirmation;
@@ -62,12 +62,12 @@ public class Pane extends JPanel {
 	// for viewers
 	private LocalFS lf = new LocalFS(true, true);
 
-	private int cid;
+	private Profile selected;
 	private int fmid;
 
 	public boolean loading = false;
 	public PathPanel pwd = new PathPanel();
-	private JComboBox typeBox;
+	private JComboBox<Profile> typeBox;
 	public JButton btnUp;
 	public JButton btnProperties;
 	public JButton btnDelete;
@@ -77,45 +77,43 @@ public class Pane extends JPanel {
 		setLayout(new BorderLayout(0, 0));
 		add(ft, BorderLayout.CENTER);
 
-		typeBox = new JComboBox();
+		typeBox = new JComboBox<Profile>();
 		typeBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				ImageIcon selected = (ImageIcon) typeBox.getSelectedItem();
-				String name = selected.getDescription().toLowerCase();// npe
-				new Thread(new Runnable() {
-					public void run() {
 
-						if (fmid != 0) {
-							FileManagerCom.closeFileHandle(cid, fmid);
+				new SwingWorker<Void, Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						if (selected != null) {
+							FileManagerCom.closeFileHandle(selected.getCvid(), fmid);
 						}
 
-						switch (name) {
-						case "viewer": {
+						selected = (Profile) typeBox.getSelectedItem();
+
+						if (selected instanceof ViewerProfile)
 							type = TYPE.VIEWER;
-							break;
-						}
-						case "server": {
+						else if (selected instanceof ServerProfile) {
 							type = TYPE.SERVER;
-							cid = 0;
-							fmid = FileManagerCom.getFileHandle(cid);
-							break;
-						}
-						default: {
+							fmid = FileManagerCom.getFileHandle(selected.getCvid());
+						} else {
 							type = TYPE.CLIENT;
-							cid = ProfileStore.getClient(name).getCid();
-							System.out.println("Found cid: " + cid);
-							fmid = FileManagerCom.getFileHandle(cid);
-							break;
+							fmid = FileManagerCom.getFileHandle(selected.getCvid());
 						}
-						}
-						refresh();
+
+						return null;
 					}
-				}).start();
+
+					protected void done() {
+						refresh();
+					};
+
+				}.execute();
 
 			}
 		});
-		typeBox.setRenderer(new ComboBoxRenderer());
-		typeBox.setModel(new FileComboBoxModel());
+		typeBox.setRenderer(new HostBoxRenderer());
+		typeBox.setModel(new HostBoxModel());
 		typeBox.setSelectedIndex(0);
 		add(typeBox, BorderLayout.SOUTH);
 
@@ -185,7 +183,7 @@ public class Pane extends JPanel {
 			switch (type) {
 			case CLIENT:
 			case SERVER:
-				RS_FileListing rs = FileManagerCom.fm_up(cid, fmid, true, true);
+				RS_FileListing rs = FileManagerCom.fm_up(selected.getCvid(), fmid, true, true);
 				if (rs == null) {
 					throw new RequestTimeoutException();
 				} else {
@@ -245,7 +243,7 @@ public class Pane extends JPanel {
 			switch (type) {
 			case CLIENT:
 			case SERVER:
-				RS_FileListing rs = FileManagerCom.fm_down(cid, fmid, down, true, true);
+				RS_FileListing rs = FileManagerCom.fm_down(selected.getCvid(), fmid, down, true, true);
 				if (rs == null) {
 					throw new RequestTimeoutException();
 				} else {
@@ -304,7 +302,7 @@ public class Pane extends JPanel {
 			switch (type) {
 			case CLIENT:
 			case SERVER:
-				rs = FileManagerCom.fm_file_info(cid, path);
+				rs = FileManagerCom.fm_file_info(selected.getCvid(), path);
 				break;
 			case VIEWER:
 				rs = LocalFS.getInfo(path);
@@ -334,7 +332,7 @@ public class Pane extends JPanel {
 		for (FileItem fi : f) {
 			targets.add(pwd.getPwd() + "/" + fi.getIcon().getDescription());
 		}
-		parent.ep.raise(new DeleteConfirmation(this, cid, targets, type), 100);
+		parent.ep.raise(new DeleteConfirmation(this, selected.getCvid(), targets, type), 100);
 
 	}
 
@@ -349,7 +347,7 @@ public class Pane extends JPanel {
 			switch (type) {
 			case CLIENT:
 			case SERVER:
-				RS_FileListing rs = FileManagerCom.fm_list(cid, fmid, true, true);
+				RS_FileListing rs = FileManagerCom.fm_list(selected.getCvid(), fmid, true, true);
 				if (rs == null) {
 					throw new RequestTimeoutException();
 				} else {

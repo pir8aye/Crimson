@@ -33,27 +33,24 @@ import com.subterranean_security.crimson.core.misc.MemMap;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.storage.BasicDatabase;
+import com.subterranean_security.crimson.core.storage.ServerStorageFacility;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
-public class ServerDatabase extends BasicDatabase {
+public class ServerDatabase extends BasicDatabase implements ServerStorageFacility {
 	private static final Logger log = LoggerFactory.getLogger(ServerDatabase.class);
 
-	public ServerDatabase(String pref, File sqlite) {
-		super(pref, sqlite);
+	public ServerDatabase(File sqlite) {
+		super(sqlite);
 	}
 
 	@Override
 	public void initialize() throws IOException, ClassNotFoundException, SQLException {
 		super.initialize();
-	}
-
-	public void initSql() throws IOException, ClassNotFoundException, SQLException {
-		super.initSql();
-		if (!isTableConstructed()) {
+		if (!isConstructed()) {
 			construct();
 		}
 	}
@@ -62,11 +59,10 @@ public class ServerDatabase extends BasicDatabase {
 		execute("CREATE TABLE `users` (`Id` INTEGER PRIMARY KEY AUTOINCREMENT, `Username` TEXT, `Salt` TEXT, `Hash` TEXT);");
 	}
 
-	private boolean isTableConstructed() {
+	private boolean isConstructed() {
 		try {
 			return db.getMetaData().getTables(null, null, "users", null).next();
 		} catch (SQLException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}

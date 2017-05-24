@@ -34,12 +34,11 @@ import com.subterranean_security.crimson.core.proto.SMSG.RS_CloudUser;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
-import com.subterranean_security.crimson.server.ServerState;
 import com.subterranean_security.crimson.server.store.ProfileStore;
+import com.subterranean_security.crimson.server.store.ServerDatabaseStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.services.Services;
 
 public final class LoginExe {
@@ -65,7 +64,7 @@ public final class LoginExe {
 			return outcome.setResult(false).setComment("The provided username is invalid")
 					.setTime(System.currentTimeMillis() - t1).build();
 
-		if (ServerState.isExampleMode()) {
+		if (Boolean.parseBoolean(System.getProperty("mode.example", "false"))) {
 			vp = new ViewerProfile(receptor.getCvid());
 			user = "user_" + Math.abs(RandomUtil.nextInt());
 			passLogin(receptor, m.getId(), vp);
@@ -77,7 +76,7 @@ public final class LoginExe {
 		vp = ProfileStore.getViewer(user);
 
 		if (vp == null) {
-			if (ServerState.isCloudMode()) {
+			if (Boolean.parseBoolean(System.getProperty("mode.cloud", "false"))) {
 				// check if the cloud server has this profile
 				cloud = Services.getCloudUser(user);
 				if (cloud != null) {
@@ -117,8 +116,8 @@ public final class LoginExe {
 		try {
 			log.debug("Issuing user challenge");
 			RQ_LoginChallenge.Builder challenge = RQ_LoginChallenge.newBuilder().setCloud(false);
-			if (DatabaseStore.getDatabase().userExists(user)) {
-				challenge.setSalt(DatabaseStore.getDatabase().getSalt(user));
+			if (ServerDatabaseStore.getDatabase().userExists(user)) {
+				challenge.setSalt(ServerDatabaseStore.getDatabase().getSalt(user));
 			} else {
 				throw new Exception("Provided user could not be found");
 			}
@@ -126,8 +125,8 @@ public final class LoginExe {
 			MessageFuture future = receptor
 					.writeAndGetResponse(Message.newBuilder().setId(m.getId()).setRqLoginChallenge(challenge).build());
 
-			outcome.setResult(
-					DatabaseStore.getDatabase().validLogin(user, future.get(5000).getRsLoginChallenge().getResult()));
+			outcome.setResult(ServerDatabaseStore.getDatabase().validLogin(user,
+					future.get(5000).getRsLoginChallenge().getResult()));
 		} catch (Exception e) {
 			outcome.setResult(false).setComment(e.getMessage());
 		}

@@ -38,10 +38,10 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.core.net.stream.StreamStore;
+import com.subterranean_security.crimson.core.net.stream.subscriber.SubscriberMaster;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.subscriber.SubscriberMaster;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
@@ -83,9 +83,9 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 		new Thread(new Runnable() {
 			public void run() {
-				ViewerCommands.trigger_key_update(profile.getCid(), cp.getKeylog().timestamp);
+				ViewerCommands.trigger_key_update(profile.getCvid(), cp.getKeylog().timestamp);
 				keylogStream = new SubscriberMaster(SubscriberParam.newBuilder().setKeylog(true).build(),
-						profile.getCid());
+						profile.getCvid());
 				StreamStore.addStream(keylogStream);
 			}
 		}).start();
@@ -326,7 +326,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 				Iterator<ClientCPFrame> it = UIStore.clientControlPanels.iterator();
 				while (it.hasNext()) {
 					ClientCPFrame cf = it.next();
-					if (profile.getCid() == cf.profile.getCid()) {
+					if (profile.getCvid() == cf.profile.getCvid()) {
 						it.remove();
 						break;
 					}

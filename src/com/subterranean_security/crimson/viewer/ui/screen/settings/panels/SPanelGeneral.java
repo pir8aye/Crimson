@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SPanel;
@@ -72,7 +72,7 @@ public class SPanelGeneral extends JPanel implements SPanel {
 	}
 
 	@Override
-	public void setValues(StorageFacility db) {
+	public void setValues(BasicStorageFacility db) {
 		try {
 			runInTray.setSelected(PrefStore.getPref().getBoolean(PrefStore.PTag.GENERAL_TRAY_MINIMIZE));
 		} catch (Exception e) {
@@ -83,7 +83,7 @@ public class SPanelGeneral extends JPanel implements SPanel {
 	}
 
 	@Override
-	public void saveValues(StorageFacility db) {
+	public void saveValues(BasicStorageFacility db) {
 		PrefStore.getPref().putBoolean(PrefStore.PTag.GENERAL_TRAY_MINIMIZE, runInTray.isSelected());
 
 	}

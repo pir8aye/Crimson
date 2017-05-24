@@ -30,10 +30,12 @@ import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.proto.State.StateType;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.cv.ui.remote.RDFrame;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel.Type;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.net.command.NetworkCom;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.UINotification;
@@ -45,42 +47,76 @@ public final class ContextMenuFactory {
 
 	private static ClientProfile selected;
 
+	// main menu
 	private static JMenuItem control;
-	private static JMenuItem screenshot;
-	private static JMenuItem remote;
 	private static JMenuItem showInGraph;
 	private static JMenuItem showInList;
 	private static JMenuItem showInHistory;
 
+	// quick menu
 	private static JMenu quick;
+	private static JMenuItem screenshot;
+	private static JMenuItem remote;
+
+	// state menu
+	private static JMenu state;
 	private static JMenuItem poweroff;
 	private static JMenuItem restart;
 	private static JMenuItem refresh;
-
 	private static JMenuItem uninstall;
+
+	// network menu
+	private static JMenu network;
+	private static JMenuItem trace;
+	private static JMenuItem establishDirect;
+	private static JMenuItem removeDirect;
 
 	public static JPopupMenu getMenu(ClientProfile cp, String view) {
 		selected = cp;
-		JPopupMenu popup = new JPopupMenu();
-		popup.add(control);
-		popup.add(new JSeparator());
+
+		// setup network menu
+		network.removeAll();
+		network.add(trace);
+		if (ConnectionStore.connectedDirectly(cp.getCvid())) {
+			network.add(removeDirect);
+		} else {
+			network.add(establishDirect);
+		}
+
+		// setup state menu
+		state.removeAll();
+		state.add(poweroff);
+		state.add(restart);
+		state.add(uninstall);
+
+		// setup quick menu
+		quick.removeAll();
+		quick.add(network);
+		quick.add(screenshot);
+		quick.add(remote);
+		quick.add(state);
+		quick.add(refresh);
+
+		// setup main menu
+		JPopupMenu main = new JPopupMenu();
+		main.add(control);
+		main.add(new JSeparator());
 		if (view.equals("list")) {
-			popup.add(showInGraph);
-			popup.add(showInHistory);
+			main.add(showInGraph);
+			main.add(showInHistory);
 		}
 		if (view.equals("graph")) {
-			popup.add(showInList);
-			popup.add(showInHistory);
+			main.add(showInList);
+			main.add(showInHistory);
 		}
 		if (view.equals("history")) {
-			popup.add(showInGraph);
-			popup.add(showInList);
+			main.add(showInGraph);
+			main.add(showInList);
 		}
-		popup.add(new JSeparator());
+		main.add(new JSeparator());
+		main.add(quick);
 
-		popup.add(quick);
-
-		return popup;
+		return main;
 	}
 
 	static {
@@ -93,7 +129,7 @@ public final class ContextMenuFactory {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						for (ClientCPFrame frame : UIStore.clientControlPanels) {
-							if (frame.profile.getCid() == selected.getCid()) {
+							if (frame.profile.getCvid() == selected.getCvid()) {
 								// there is already an open control panel
 								frame.setLocationRelativeTo(null);
 								frame.toFront();
@@ -153,7 +189,7 @@ public final class ContextMenuFactory {
 
 					@Override
 					protected Outcome doInBackground() throws Exception {
-						return ViewerCommands.quickScreenshot(selected.getCid());
+						return ViewerCommands.quickScreenshot(selected.getCvid());
 					}
 
 					protected void done() {
@@ -175,7 +211,6 @@ public final class ContextMenuFactory {
 				}.execute();
 			}
 		});
-		quick.add(screenshot);
 
 		remote = new JMenuItem("Remote Desktop");
 		remote.setIcon(UIUtil.getIcon("icons16/general/monitor_wallpaper.png"));
@@ -183,16 +218,14 @@ public final class ContextMenuFactory {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				RDFrame rdf = new RDFrame(Type.INTERACT, selected.getCid());
+				RDFrame rdf = new RDFrame(Type.INTERACT, selected.getCvid());
 				rdf.setVisible(true);
 
 			}
 		});
-		quick.add(remote);
 
-		JMenu state = new JMenu("Change State");
+		state = new JMenu("Change State");
 		state.setIcon(UIUtil.getIcon("icons16/general/power_surge.png"));
-		quick.add(state);
 
 		poweroff = new JMenuItem("Shutdown");
 		poweroff.setIcon(UIUtil.getIcon("icons16/general/lcd_tv_off.png"));
@@ -202,7 +235,7 @@ public final class ContextMenuFactory {
 
 				new Thread() {
 					public void run() {
-						Outcome outcome = ViewerCommands.changeClientState(selected.getCid(), StateType.SHUTDOWN);
+						Outcome outcome = ViewerCommands.changeClientState(selected.getCvid(), StateType.SHUTDOWN);
 						if (!outcome.getResult()) {
 							// TODO
 						}
@@ -212,7 +245,6 @@ public final class ContextMenuFactory {
 			}
 
 		});
-		state.add(poweroff);
 
 		restart = new JMenuItem("Restart");
 		restart.setIcon(UIUtil.getIcon("icons16/general/arrow_redo.png"));
@@ -222,7 +254,7 @@ public final class ContextMenuFactory {
 
 				new Thread() {
 					public void run() {
-						Outcome outcome = ViewerCommands.changeClientState(selected.getCid(), StateType.RESTART);
+						Outcome outcome = ViewerCommands.changeClientState(selected.getCvid(), StateType.RESTART);
 						if (!outcome.getResult()) {
 							// TODO
 						}
@@ -232,11 +264,9 @@ public final class ContextMenuFactory {
 			}
 
 		});
-		state.add(restart);
 
 		uninstall = new JMenuItem("Uninstall Crimson");
 		uninstall.setIcon(UIUtil.getIcon("icons16/general/radioactivity.png"));
-		state.add(uninstall);
 
 		refresh = new JMenuItem("Refresh");
 		refresh.setIcon(UIUtil.getIcon("icons16/general/inbox_download.png"));
@@ -253,7 +283,58 @@ public final class ContextMenuFactory {
 			}
 
 		});
-		quick.add(refresh);
+
+		network = new JMenu("Network");
+		network.setIcon(UIUtil.getIcon("icons16/general/network_ethernet.png"));
+
+		trace = new JMenuItem("Traceroute");
+		trace.setIcon(UIUtil.getIcon("icons16/general/traceroute.png"));
+		trace.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				new Thread() {
+					public void run() {
+
+					}
+				}.start();
+
+			}
+
+		});
+		quick.add(trace);
+
+		establishDirect = new JMenuItem("Establish Direct Connection");
+		establishDirect.setIcon(UIUtil.getIcon("icons16/general/networking_green.png"));
+		establishDirect.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				new Thread() {
+					public void run() {
+						NetworkCom.establishDirectConnection(selected.getCvid());
+					}
+				}.start();
+
+			}
+
+		});
+
+		removeDirect = new JMenuItem("Remove Direct Connection");
+		removeDirect.setIcon(UIUtil.getIcon("icons16/general/networking_red.png"));
+		removeDirect.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+				new Thread() {
+					public void run() {
+
+					}
+				}.start();
+
+			}
+
+		});
 	}
 
 }

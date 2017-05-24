@@ -35,7 +35,7 @@ import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.server.store.Authentication;
+import com.subterranean_security.crimson.server.store.AuthStore;
 import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.Universal;
@@ -75,7 +75,7 @@ public final class AuthExe {
 		switch (auth.getType()) {
 
 		case GROUP:
-			final AuthenticationGroup group = Authentication.getGroup(auth.getGroupName());
+			final AuthenticationGroup group = AuthStore.getGroup(auth.getGroupName());
 			if (group == null) {
 				log.debug("Authentication failed: Invalid Group: {}", auth.getGroupName());
 				r.setState(ConnectionState.CONNECTED);
@@ -115,7 +115,7 @@ public final class AuthExe {
 			break;
 
 		case PASSWORD:
-			AuthMethod am = Authentication.getPassword(auth.getPassword());
+			AuthMethod am = AuthStore.getPassword(auth.getPassword());
 			if (am == null) {
 				log.debug("Password authentication failed");
 				r.setState(ConnectionState.CONNECTED);

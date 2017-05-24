@@ -44,10 +44,11 @@ public final class NetworkCom {
 		Outcome.Builder outcome = Outcome.newBuilder().setResult(false);
 
 		try {
-			Message rs = ConnectionStore.get(0).writeAndGetResponse(
-					Message.newBuilder().setRqDirectConnection(RQ_DirectConnection.newBuilder().setCid(cid)).build())
+			Message rs = ConnectionStore.get(0).writeAndGetResponse(Message.newBuilder()
+					.setRqDirectConnection(RQ_DirectConnection.newBuilder().setCid(cid).setListenerPort(10102)).build())
 					.get(7000);
 			if (rs.hasRsDirectConnection() && rs.getRsDirectConnection().hasRequest()) {
+				// request has been granted
 				makeDirectConnection(cid, rs.getRsDirectConnection().getRequest());
 			}
 		} catch (Timeout e) {
@@ -65,7 +66,6 @@ public final class NetworkCom {
 		Connector connector = new Connector(new ViewerExecutor());
 
 		try {
-
 			connector.connect(ConnectionType.DATAGRAM, rq.getHost(), rq.getPort());
 		} catch (ConnectException e) {
 			// TODO Auto-generated catch block

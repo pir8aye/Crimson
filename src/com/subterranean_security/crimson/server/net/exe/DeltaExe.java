@@ -94,13 +94,12 @@ public final class DeltaExe {
 
 	public static void mi_trigger_profile_delta(Connector r, Message m) {
 
-		for (ClientProfile cp : ProfileStore.getClientsUnderAuthority(r.getCvid())) {
+		for (ClientProfile cp : ProfileStore.getClientsUnderAuthorityOfViewer(r.getCvid())) {
 			boolean flag = true;
 			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
 				if (pt.getCvid() == cp.getCvid()) {
 					log.debug("Updating client in viewer");
-					r.write(
-							Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(pt.getTimestamp()))).build());
+					r.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(pt.getTimestamp()))).build());
 					flag = false;
 					continue;
 				}
