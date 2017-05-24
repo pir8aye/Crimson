@@ -51,6 +51,7 @@ import javax.swing.text.BadLocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
@@ -60,8 +61,8 @@ import com.subterranean_security.crimson.core.ui.FieldLimiter;
 import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.cv.net.command.CvidCom;
-import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.stores.DatabaseStore;
+import com.subterranean_security.crimson.universal.stores.PrefStore;
+import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.net.ViewerExecutor;
 import com.subterranean_security.crimson.viewer.net.command.LoginCom;
@@ -94,30 +95,11 @@ public class LoginPanel extends JPanel {
 
 	public boolean result = false;
 
-	public LoginPanel(final LoginDialog parent) {
+	public LoginPanel(final LoginDialog parent, boolean localServer) {
 		this.parent = parent;
 		init();
-
-		if (Universal.debug) {
-			fld_user.setText("admin");
-			fld_pass.setText("default");
-			new SwingWorker<Void, Void>() {
-				@Override
-				protected Void doInBackground() throws Exception {
-					Thread.sleep(500);
-					return null;
-				}
-
-				protected void done() {
-					for (char c : "10101".toCharArray()) {
-						fld_port.dispatchEvent(new KeyEvent(fld_port, KeyEvent.KEY_TYPED, System.currentTimeMillis(),
-								KeyEvent.KEY_FIRST, KeyEvent.VK_UNDEFINED, c));
-
-					}
-				};
-			}.execute();
-
-		}
+		initRecents(localServer);
+		initValues();
 
 	}
 
@@ -171,13 +153,6 @@ public class LoginPanel extends JPanel {
 				case "Local Server": {
 					server = "127.0.0.1";
 					port = "10101";
-					break;
-				}
-				case "Live Example Server": {
-					server = "example.subterranean-security.com";
-					port = "10101";
-					fld_user.setText("testuser");
-					fld_pass.setText("this-password-does-not-matter");
 					break;
 				}
 				default: {
@@ -345,6 +320,52 @@ public class LoginPanel extends JPanel {
 		btn_login.setMaximumSize(new Dimension(60, 25));
 	}
 
+	private void initRecents(boolean localServer) {
+		ArrayList<String> recent = new ArrayList<String>();
+
+		if (localServer) {
+			recent.add("Local Server");
+		}
+
+		for (String saved : PrefStore.getPref().getString(PTag.LOGIN_RECENT).split(",")) {
+			recent.add(saved);
+		}
+
+		String[] r = new String[recent.size()];
+		for (int i = 0; i < recent.size(); i++) {
+			r[i] = recent.get(i);
+		}
+
+		fld_address.setModel(new DefaultComboBoxModel<String>(r));
+		fld_address.setSelectedIndex(-1);
+	}
+
+	/**
+	 * Pre-fill fields to speed up testing
+	 */
+	private void initValues() {
+		fld_user.setText(System.getProperty("crimson.debug.prefill.username", ""));
+		fld_pass.setText(System.getProperty("crimson.debug.prefill.password", ""));
+		fld_address.getEditor().setItem(System.getProperty("crimson.debug.prefill.address", ""));
+
+		// TODO find better way
+		new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+				Thread.sleep(500);
+				return null;
+			}
+
+			protected void done() {
+				for (char c : System.getProperty("crimson.debug.prefill.port", "").toCharArray()) {
+					fld_port.dispatchEvent(new KeyEvent(fld_port, KeyEvent.KEY_TYPED, System.currentTimeMillis(),
+							KeyEvent.KEY_FIRST, KeyEvent.VK_UNDEFINED, c));
+
+				}
+			};
+		}.execute();
+	}
+
 	private void login(String server, String port, String user) {
 
 		if (!testValues(server, port, user)) {
@@ -384,8 +405,7 @@ public class LoginPanel extends JPanel {
 					e1.printStackTrace();
 				}
 
-				// set local viewer profile name
-				ProfileStore.setLocalUser(user);
+				ProfileStore.initialize(Common.lcvid);
 
 				// request login from server
 				Outcome loginOutcome = LoginCom.login(user, UIUtil.getPassword(fld_pass));
@@ -394,21 +414,8 @@ public class LoginPanel extends JPanel {
 					outcome.setResult(true);
 					ViewerState.goOnline(server, Integer.parseInt(port));
 
-					// TODO relocate
-					if (!server.equals("127.0.0.1")) {
-						// update recents
-						try {
-							String successfulLogin = server + ":" + port;
-							ArrayList<String> recents = (ArrayList<String>) DatabaseStore.getDatabase()
-									.getObject("login.recents");
-							recents.remove(successfulLogin);
-							recents.add(successfulLogin);
-
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
+					// update recents
+					addRecent(server + ":" + port);
 
 				} else {
 					ConnectionStore.closeAll();
@@ -539,28 +546,19 @@ public class LoginPanel extends JPanel {
 		lbl_status.setBad("Invalid password");
 	}
 
-	public void addRecents(boolean localServer) {
-		ArrayList<String> r = new ArrayList<String>();
-		try {
-			r.addAll((ArrayList<String>) DatabaseStore.getDatabase().getObject("login.recents"));
-		} catch (Exception e) {
-			log.error("Failed to load recent connections");
-			e.printStackTrace();
-			return;
+	private void addRecent(String entry) {
+		if (!entry.startsWith("127.0.0.1")) {
+			StringBuffer buffer = new StringBuffer();
+			buffer.append(entry);
+
+			for (String saved : PrefStore.getPref().getString(PTag.LOGIN_RECENT).split(",")) {
+				if (!saved.equals(entry)) {
+					buffer.append(',');
+					buffer.append(saved);
+				}
+			}
+			PrefStore.getPref().putString(PTag.LOGIN_RECENT, buffer.toString());
 		}
-
-		r.add(0, "Live Example Server");
-		if (localServer) {
-			r.add(0, "Local Server");
-		}
-
-		String[] recent = new String[r.size()];
-
-		for (int i = 0; i < r.size(); i++) {
-			recent[i] = r.get(i);
-		}
-
-		fld_address.setModel(new DefaultComboBoxModel<String>(recent));
-		fld_address.setSelectedIndex(-1);
 	}
+
 }
