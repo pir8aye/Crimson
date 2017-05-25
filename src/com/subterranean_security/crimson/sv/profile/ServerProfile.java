@@ -102,10 +102,11 @@ public class ServerProfile extends Profile {
 
 		// add general attributes
 		spd.setPd(EV_ProfileDelta.newBuilder(super.getUpdates(lastUpdate)).addGroup(AttributeGroupContainer.newBuilder()
-				.putAttribute(AKeySimple.SERVER_STATUS.getFullID(), ListenerStore.isRunning() ? "1" : "0")));
+				.putAttribute(AKeySimple.SERVER_ACTIVE_LISTENERS.getFullID(), "" + ListenerStore.getActive())
+				.putAttribute(AKeySimple.SERVER_INACTIVE_LISTENERS.getFullID(), "" + ListenerStore.getInactive())));
 
 		// add listeners
-		for (Listener l : ListenerStore.listeners) {
+		for (Listener l : ListenerStore.getLoaded()) {
 			spd.addListener(l.getConfig());
 		}
 

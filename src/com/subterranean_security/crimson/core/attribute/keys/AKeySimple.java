@@ -49,7 +49,7 @@ public enum AKeySimple implements AttributeKey {
 	// Windows specific attributes
 	WIN_IE_VERSION, WIN_POWERSHELL_VERSION, WIN_SERIAL, WIN_INSTALLDATE,
 	// Server specific
-	SERVER_CONNECTED_CLIENTS, SERVER_CONNECTED_VIEWERS, SERVER_TOTAL_CLIENTS, SERVER_TOTAL_VIEWERS, SERVER_STATUS,
+	SERVER_CONNECTED_CLIENTS, SERVER_CONNECTED_VIEWERS, SERVER_TOTAL_CLIENTS, SERVER_TOTAL_VIEWERS, SERVER_ACTIVE_LISTENERS, SERVER_INACTIVE_LISTENERS,
 	// Viewer specific
 	VIEWER_USER, VIEWER_LOGIN_TIME, VIEWER_LOGIN_IP;
 
@@ -165,7 +165,8 @@ public enum AKeySimple implements AttributeKey {
 		case SERVER_CONNECTED_VIEWERS:
 		case SERVER_TOTAL_CLIENTS:
 		case SERVER_TOTAL_VIEWERS:
-		case SERVER_STATUS:
+		case SERVER_ACTIVE_LISTENERS:
+		case SERVER_INACTIVE_LISTENERS:
 			return instance == Instance.SERVER || instance == Instance.VIEWER;
 		default:
 			return true;
@@ -179,7 +180,8 @@ public enum AKeySimple implements AttributeKey {
 		case SERVER_CONNECTED_VIEWERS:
 		case SERVER_TOTAL_CLIENTS:
 		case SERVER_TOTAL_VIEWERS:
-		case SERVER_STATUS:
+		case SERVER_ACTIVE_LISTENERS:
+		case SERVER_INACTIVE_LISTENERS:
 			return false;
 		default:
 			return true;

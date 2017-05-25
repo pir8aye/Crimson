@@ -211,8 +211,10 @@ public abstract class InfoSlave extends PeriodicStream {
 			poll(lastGeneralContainer, AKeySimple.CLIENT_RAM_USAGE, RAM.getClientUsage());
 		if (keys.contains(AKeySimple.CLIENT_CPU_USAGE))
 			poll(lastGeneralContainer, AKeySimple.CLIENT_CPU_USAGE, CPU.getClientUsage());
-		if (keys.contains(AKeySimple.SERVER_STATUS))
-			poll(lastGeneralContainer, AKeySimple.SERVER_STATUS, ListenerStore.isRunning() ? "1" : "0");
+		if (keys.contains(AKeySimple.SERVER_ACTIVE_LISTENERS))
+			poll(lastGeneralContainer, AKeySimple.SERVER_ACTIVE_LISTENERS, "" + ListenerStore.getActive());
+		if (keys.contains(AKeySimple.SERVER_INACTIVE_LISTENERS))
+			poll(lastGeneralContainer, AKeySimple.SERVER_INACTIVE_LISTENERS, "" + ListenerStore.getInactive());
 
 		if (lastGeneralContainer.getAttributeCount() > 0)
 			pd.addGroup(lastGeneralContainer);

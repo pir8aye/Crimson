@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sv.net;
 
-import java.io.Serializable;
 import java.security.cert.CertificateException;
 
 import javax.net.ssl.SSLException;
@@ -49,45 +48,77 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
-public class Listener implements AutoCloseable, Serializable {
+public class Listener {
 
-	private static final long serialVersionUID = 1L;
-	private transient ChannelFuture future;
-	private transient EventLoopGroup bossGroup;
-	private transient EventLoopGroup workerGroup;
+	private ChannelFuture future;
+	private EventLoopGroup bossGroup;
+	private EventLoopGroup workerGroup;
 
 	private ListenerConfig config;
 
 	public Listener(ListenerConfig lc) {
+		if (lc == null)
+			throw new IllegalArgumentException();
+
 		config = lc;
-		start();
 	}
 
+	/**
+	 * @return The ListenerConfig associated with this listener
+	 */
 	public ListenerConfig getConfig() {
 		return config;
 	}
 
+	/**
+	 * Start this listener
+	 * 
+	 * @pre: isActive() == false
+	 * @post: isActive() == true
+	 */
 	public void start() {
-		bossGroup = new NioEventLoopGroup();
-		workerGroup = new NioEventLoopGroup();
+		if (!isActive()) {
+			bossGroup = new NioEventLoopGroup();
+			workerGroup = new NioEventLoopGroup();
 
-		ServerBootstrap b = new ServerBootstrap();
-		b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)//
-				.childHandler(new ReceiverInitializer())//
-				.option(ChannelOption.SO_BACKLOG, 128)//
-				.childOption(ChannelOption.SO_KEEPALIVE, true);
+			ServerBootstrap b = new ServerBootstrap();
+			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)//
+					.childHandler(new ReceiverInitializer())//
+					.option(ChannelOption.SO_BACKLOG, 128)//
+					.childOption(ChannelOption.SO_KEEPALIVE, true);
 
-		future = b.bind(config.getPort());
+			future = b.bind(config.getPort());
 
+		}
 	}
 
-	public void close() throws InterruptedException {
-		try {
-			future.channel().closeFuture().sync();
-		} finally {
-			workerGroup.shutdownGracefully();
-			bossGroup.shutdownGracefully();
+	/**
+	 * Stop this listener
+	 * 
+	 * @pre: isActive() == true
+	 * @post: isActive() == false
+	 */
+	public void stop() {
+		if (isActive()) {
+			try {
+				future.channel().closeFuture().sync();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				workerGroup.shutdownGracefully();
+				bossGroup.shutdownGracefully();
+			}
 		}
+	}
+
+	/**
+	 * Get the activity of this listener
+	 * 
+	 * @return True is this listener has been started and not yet stopped
+	 */
+	public boolean isActive() {
+		return bossGroup != null && workerGroup != null;
 	}
 
 }
@@ -123,7 +154,7 @@ class ReceiverInitializer extends ChannelInitializer<SocketChannel> {
 			p.addLast(sslCtx.newHandler(ch.alloc()));
 		}
 
-		if (Universal.isNetDebug) {
+		if (Universal.debugRawNetwork) {
 			p.addLast(new LoggingHandler(Connector.class));
 		}
 

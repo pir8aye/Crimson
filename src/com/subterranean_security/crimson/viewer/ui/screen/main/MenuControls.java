@@ -264,13 +264,9 @@ public class MenuControls extends JPanel {
 			valStatus.setText("Offline");
 			valStatus.setForeground(Color.gray);// TODO
 
-		} else if (ProfileStore.getServer().get(AKeySimple.SERVER_STATUS).equals("1")) {
-			valStatus.setText("Running");
-			valStatus.setForeground(new Color(0, 149, 39));
-
 		} else {
-			valStatus.setText("Stopped");
-			valStatus.setForeground(new Color(200, 0, 0));
+			valStatus.setText("Online");
+			// valStatus.setForeground(new Color(200, 0, 0));
 
 		}
 

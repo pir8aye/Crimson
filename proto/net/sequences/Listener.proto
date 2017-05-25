@@ -1,32 +1,23 @@
-syntax = "proto2";
+syntax = "proto3";
 package com.subterranean_security.crimson.core.proto;
 
 message RQ_AddListener {
-	required ListenerConfig config = 1;
-}
-
-message RS_AddListener {
-	required bool result = 1;
-	optional string comment = 2;
+	ListenerConfig config = 1;
 }
 
 message RQ_RemoveListener {
-	required int32 id = 1;
-}
-
-message RS_RemoveListener {
-	required bool result = 1;
-	optional string comment = 2;
+	int32 id = 1;
 }
 
 message ListenerConfig {
-	required int32 id = 1;
-	required int32 port = 2;
-	optional string name = 3;
-	required string owner = 4;
-	optional bool localhost_exclusive = 5;
-	optional bool upnp = 6;
-	optional bool client_acceptor = 7;
-	optional bool viewer_acceptor = 8;
+	int32 id = 1;
+	int32 port = 2;
+	string name = 3;
+	string owner = 4;
+	bool localhost_exclusive = 5;
+	bool upnp = 6;
+	bool client_acceptor = 7;
+	bool viewer_acceptor = 8;
+	bool datagram_listener = 9;
 	
 }
