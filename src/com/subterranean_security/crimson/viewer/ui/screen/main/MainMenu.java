@@ -39,7 +39,6 @@ import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.files.FMFrame.Type;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.GenDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;
-import com.subterranean_security.crimson.viewer.ui.screen.serials.AddSerial;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SettingsDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.users.UserMan;
 
@@ -254,19 +253,10 @@ public class MainMenu extends JPanel {
 		mnAbout.add(wmAbout);
 
 		final WideMenuItem wmUpgrade = new WideMenuItem(UIUtil.getIcon("icons16/general/barcode_2d.png"),
-				ViewerState.trialMode ? "Activate Key" : "Serial Manager",
-				ViewerState.trialMode ? "Enter a serial key" : "Add/Remove Keys");
+				"Serial Manager", "Add/Remove Keys");
 		wmUpgrade.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-
-				if (ViewerState.trialMode) {
-					// show add serial EP
-					MainFrame.main.ep.raise(new AddSerial(MainFrame.main.ep), 100);
-				} else {
-					// open serial manager
-				}
-
 				wmUpgrade.resetBG();
 				MenuSelectionManager.defaultManager().clearSelectedPath();
 			}

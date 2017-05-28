@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.store;
 
+import java.net.ConnectException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,13 +28,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
+import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.net.NetworkNode;
 import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.universal.TempReservedCvids;
+import com.subterranean_security.crimson.core.net.ViridianExecutor;
 
 public final class ConnectionStore {
 	private static final Logger log = LoggerFactory.getLogger(ConnectionStore.class);
@@ -42,8 +47,8 @@ public final class ConnectionStore {
 	}
 
 	/**
-	 * Stores direct connections which may be between this viewer and the server
-	 * or a client
+	 * Stores direct connections which may exist between a viewer and the server
+	 * or between a viewer and a client
 	 */
 	private static Map<Integer, Connector> directConnections;
 
@@ -116,8 +121,8 @@ public final class ConnectionStore {
 	}
 
 	public static ConnectionState getServerConnectionState() {
-		if (ConnectionStore.get(0) != null) {
-			return ConnectionStore.get(0).getState();
+		if (ConnectionStore.get(TempReservedCvids.SERVER) != null) {
+			return ConnectionStore.get(TempReservedCvids.SERVER).getState();
 		}
 		return ConnectionState.NOT_CONNECTED;
 	}
@@ -154,8 +159,8 @@ public final class ConnectionStore {
 		if (directConnections.containsKey(m.getRid())) {
 			get(m.getRid()).write(m);
 		} else {
-			if (directConnections.containsKey(0)) {
-				get(0).write(m);
+			if (directConnections.containsKey(TempReservedCvids.SERVER)) {
+				get(TempReservedCvids.SERVER).write(m);
 			}
 		}
 	}
@@ -179,4 +184,30 @@ public final class ConnectionStore {
 	public interface ConnectionEventListener extends Observer {
 
 	}
+
+	public static boolean connectViridian() {
+		if (directConnections.containsKey(TempReservedCvids.VIRIDIAN)) {
+			return true;
+		}
+
+		Connector connector = new Connector(new ViridianExecutor());
+		connector.setCvid(TempReservedCvids.VIRIDIAN);
+		try {
+			connector.connect(ConnectionType.SOCKET, "subterranean-security.pw", 10102);
+		} catch (ConnectException | InterruptedException e) {
+			return false;
+		}
+
+		add(connector);
+
+		// trigger report buffer flush
+		new Thread(new Runnable() {
+			public void run() {
+				Reporter.flushBuffer();
+			}
+		}).start();
+
+		return true;
+	}
+
 }
