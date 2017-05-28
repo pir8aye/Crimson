@@ -43,6 +43,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
+import java.util.Base64;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
@@ -106,7 +107,7 @@ public final class CryptoUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new String(B64Util.encode(hash));
+		return Base64.getEncoder().encodeToString(hash);
 	}
 
 	public static String hashOpencartPassword(String pass, String salt) {
@@ -125,8 +126,7 @@ public final class CryptoUtil {
 
 	public static String hashSign(String magic, String key) {
 		try {
-
-			return new String(B64Util.encode(hash("SHA-256", (magic + key).getBytes())));
+			return Base64.getEncoder().encodeToString(hash("SHA-256", (magic + key).getBytes()));
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -144,7 +144,7 @@ public final class CryptoUtil {
 			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
 			dsa.initSign(pkey);
 			dsa.update(magic.getBytes());
-			return new String(B64Util.encode(dsa.sign()));
+			return Base64.getEncoder().encodeToString(dsa.sign());
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -170,7 +170,7 @@ public final class CryptoUtil {
 			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
 			dsa.initVerify(pkey);
 			dsa.update(magic.getBytes());
-			return dsa.verify(B64Util.decode(signature));
+			return dsa.verify(Base64.getDecoder().decode(signature));
 		} catch (InvalidKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -228,7 +228,7 @@ public final class CryptoUtil {
 
 		try {
 			PrintWriter pw = new PrintWriter(output);
-			pw.println(B64Util.encode(am.toByteArray()));
+			pw.println(Base64.getEncoder().encodeToString(am.toByteArray()));
 
 			pw.close();
 		} catch (FileNotFoundException e) {
@@ -241,7 +241,7 @@ public final class CryptoUtil {
 
 		try (BufferedReader br = new BufferedReader(new FileReader(input))) {
 
-			return AuthMethod.parseFrom(B64Util.decode(br.readLine()));
+			return AuthMethod.parseFrom(Base64.getDecoder().decode(br.readLine()));
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

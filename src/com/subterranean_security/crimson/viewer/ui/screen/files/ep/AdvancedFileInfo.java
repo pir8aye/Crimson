@@ -22,6 +22,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Base64;
 import java.util.Date;
 
 import javax.swing.Box;
@@ -33,9 +34,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.misc.ObjectTransfer;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
-import com.subterranean_security.crimson.core.util.B64Util;
+import com.subterranean_security.crimson.core.util.SerialUtil;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.viewer.ui.common.components.DataViewer;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
@@ -77,7 +77,7 @@ public class AdvancedFileInfo extends JPanel {
 		lblIcon.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblIcon);
 		try {
-			lblIcon.setIcon((Icon) ObjectTransfer.Default.deserialize(B64Util.decode(rs.getLocalIcon())));
+			lblIcon.setIcon((Icon) SerialUtil.deserialize(Base64.getDecoder().decode(rs.getLocalIcon())));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

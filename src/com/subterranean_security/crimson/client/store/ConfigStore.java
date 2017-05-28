@@ -17,8 +17,9 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.store;
 
+import java.util.Base64;
+
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
-import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 public final class ConfigStore {
@@ -33,7 +34,7 @@ public final class ConfigStore {
 
 	public static void loadConfig() {
 		try {
-			ic = ClientConfig.parseFrom(B64Util.decode(DatabaseStore.getDatabase().getString("ic")));
+			ic = ClientConfig.parseFrom(Base64.getDecoder().decode(DatabaseStore.getDatabase().getString("ic")));
 		} catch (Exception e) {
 			System.exit(0);
 		}
@@ -44,7 +45,7 @@ public final class ConfigStore {
 	}
 
 	public static void saveIC() {
-		DatabaseStore.getDatabase().store("ic", new String(B64Util.encode(getConfig().toByteArray())));
+		DatabaseStore.getDatabase().store("ic", Base64.getEncoder().encodeToString(getConfig().toByteArray()));
 	}
 
 }

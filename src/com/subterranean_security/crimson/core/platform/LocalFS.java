@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 
 import javax.swing.filechooser.FileSystemView;
 
@@ -33,13 +34,12 @@ import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.misc.ObjectTransfer;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.util.B64Util;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.core.util.SerialUtil;
 
 /**
  * This class provides convenient access to the local filesystem.
@@ -135,8 +135,8 @@ public class LocalFS {
 		File f = new File(path);
 
 		RS_AdvancedFileInfo.Builder rs = RS_AdvancedFileInfo.newBuilder();
-		rs.setLocalIcon(new String(
-				B64Util.encode(ObjectTransfer.Default.serialize(FileSystemView.getFileSystemView().getSystemIcon(f)))));
+		rs.setLocalIcon(Base64.getEncoder()
+				.encodeToString(SerialUtil.serialize(FileSystemView.getFileSystemView().getSystemIcon(f))));
 		rs.setName(f.getName());
 		rs.setPath(f.getParent());
 		rs.setSize(f.length());

@@ -30,7 +30,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.misc.ObjectTransfer;
+import com.subterranean_security.crimson.core.util.SerialUtil;
 
 public class HiddenMenu extends JPanel {
 
@@ -101,7 +101,7 @@ public class HiddenMenu extends JPanel {
 	public int getHHeight() {
 		HiddenMenu clone = null;
 		try {
-			clone = (HiddenMenu) ObjectTransfer.Default.deserialize(ObjectTransfer.Default.serialize(this));
+			clone = (HiddenMenu) SerialUtil.deserialize(SerialUtil.serialize(this));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
