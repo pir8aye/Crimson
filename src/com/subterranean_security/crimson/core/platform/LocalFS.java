@@ -18,150 +18,151 @@
 
 package com.subterranean_security.crimson.core.platform;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Base64;
-
-import javax.swing.filechooser.FileSystemView;
-
-import org.hyperic.sigar.FileInfo;
-import org.hyperic.sigar.SigarException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
-import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
-import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.core.util.SerialUtil;
 
 /**
- * This class provides convenient access to the local filesystem.
+ * This class provides a convenient handle on the local filesystem.
  * 
- * @author Tyler Cook
- *
+ * @test: LocalFSTest
  */
 public class LocalFS {
 
-	private static final Logger log = LoggerFactory.getLogger(LocalFS.class);
-
+	/**
+	 * The current directory
+	 */
 	private Path ref;
 
-	private int fmid;
+	/**
+	 * The unique file-manager ID
+	 */
+	private int id;
 
-	public int getFmid() {
-		return fmid;
+	/**
+	 * @return The file-manager ID associated with this LocalFS
+	 */
+	public int getId() {
+		return id;
 	}
 
-	private boolean mtime;
-	private boolean size;
+	/**
+	 * If modification times should be included in file listings
+	 */
+	private boolean mtimes;
 
-	public LocalFS(boolean size, boolean mtime) {
+	/**
+	 * If file sizes should be included in file listings
+	 */
+	private boolean sizes;
+
+	public LocalFS(boolean sizes, boolean mtimes) {
 		this(System.getProperty("user.home"));
-		this.size = size;
-		this.mtime = mtime;
+		this.sizes = sizes;
+		this.mtimes = mtimes;
 	}
 
 	public LocalFS(String start) {
+		if (start == null)
+			throw new IllegalArgumentException();
+
 		ref = Paths.get(start);
-		fmid = IDGen.fm();
-		log.debug("Initialized local filesystem handle (FMID: {}, PATH: {})", fmid, pwd());
+		id = IDGen.fm();
 	}
 
+	/**
+	 * @return The absolute path to the present working directory
+	 */
 	public String pwd() {
 		return ref.toString();
 	}
 
-	public void up() {
+	/**
+	 * Move the working directory up a single level.
+	 * 
+	 * @return True if the working directory has been changed, false otherwise
+	 */
+	public boolean up() {
 		Path potential = ref.getParent();
 		if (potential != null) {
 			ref = potential;
+			return true;
 		}
+		return false;
 	}
 
-	public void down(String name) {
-		Path potential = Paths.get(ref.toString(), name);
+	/**
+	 * Move the working directory down into the specified directory.
+	 * 
+	 * @param directory
+	 *            The desired directory relative to the current working
+	 *            directory
+	 * @return True if the working directory has been changed, false otherwise
+	 */
+	public boolean down(String directory) {
+		if (directory == null)
+			throw new IllegalArgumentException();
+
+		Path potential = Paths.get(ref.toString(), directory);
 		if (Files.isDirectory(potential) && Files.exists(potential)) {
 			ref = potential;
+			return true;
 		}
-
+		return false;
 	}
 
-	public void setPath(String path) {
+	/**
+	 * Move the working directory to the specified path
+	 * 
+	 * @param path
+	 *            The absolute path which will become the new working directory
+	 * @return True if the working directory has been changed, false otherwise
+	 */
+	public boolean setPath(String path) {
+		if (path == null)
+			throw new IllegalArgumentException();
+
 		Path potential = Paths.get(path);
 		if (Files.isDirectory(potential) && Files.exists(potential)) {
 			ref = potential;
+			return true;
 		}
+		return false;
 	}
 
-	public ArrayList<FileListlet> list() throws IOException {
+	/**
+	 * @return A listing of the files and directories in the working directory
+	 * @throws IOException
+	 */
+	public List<FileListlet> list() throws IOException {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(ref)) {
-			ArrayList<FileListlet> list = new ArrayList<FileListlet>();
+			List<FileListlet> list = new ArrayList<FileListlet>();
 			for (Path entry : stream) {
-				FileListlet.Builder builder = FileListlet.newBuilder();
-				builder.setName(entry.getFileName().toString());
-				builder.setDir(Files.isDirectory(entry));
-				if (mtime) {
-					builder.setMtime(Files.getLastModifiedTime(entry).toMillis());
+				FileListlet.Builder listlet = FileListlet.newBuilder();
+				listlet.setName(entry.getFileName().toString());
+				listlet.setDir(Files.isDirectory(entry));
+
+				if (mtimes) {
+					listlet.setMtime(Files.getLastModifiedTime(entry).toMillis());
 				}
-				if (size) {
-					if (builder.getDir()) {
-
-						try {
-							builder.setSize(entry.toFile().list().length);
-						} catch (NullPointerException e) {
-
-						}
+				if (sizes) {
+					if (listlet.getDir()) {
+						listlet.setSize(entry.toFile().list().length);
 					} else {
-						builder.setSize(Files.size(entry));
+						listlet.setSize(Files.size(entry));
 					}
 
 				}
-				list.add(builder.build());
+				list.add(listlet.build());
 			}
 			return list;
 		}
 	}
-
-	private static FileInfo fileInfo = new FileInfo();
-
-	public static RS_AdvancedFileInfo getInfo(String path) {
-		File f = new File(path);
-
-		RS_AdvancedFileInfo.Builder rs = RS_AdvancedFileInfo.newBuilder();
-		rs.setLocalIcon(Base64.getEncoder()
-				.encodeToString(SerialUtil.serialize(FileSystemView.getFileSystemView().getSystemIcon(f))));
-		rs.setName(f.getName());
-		rs.setPath(f.getParent());
-		rs.setSize(f.length());
-		rs.setMtime(f.lastModified());
-		try {
-			fileInfo.gather(SigarStore.getSigar(), f.getAbsolutePath());
-			rs.setAtime(fileInfo.getAtime());
-			rs.setCtime(fileInfo.getCtime());
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return rs.build();
-	}
-
-	public static Outcome delete(Iterable<String> targets, boolean overwrite) {
-		Outcome.Builder outcome = Outcome.newBuilder().setResult(true);
-		for (String s : targets) {
-			if (!FileUtil.delete(new File(s), overwrite)) {
-				outcome.setResult(false);
-			}
-		}
-
-		return outcome.build();
-	}
-
 }
