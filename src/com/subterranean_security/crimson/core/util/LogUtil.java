@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
+import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
+
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.platform.Environment;
@@ -30,9 +32,9 @@ public final class LogUtil {
 	 * Set system properties for logback and trigger the configuration
 	 */
 	public static void configure() {
-		System.setProperty("log.directory", Environment.log.getAbsolutePath());
-		System.setProperty("log.level", Universal.debug ? "debug" : "error");
-		System.setProperty("log.instance", Universal.instance.toString());
+		System.setProperty("logging.directory", Environment.log.getAbsolutePath());
+		System.setProperty("logging.level", DEV_MODE ? "debug" : "error");
+		System.setProperty("logging.instance", Universal.instance.toString());
 
 		// trigger
 		LoggerFactory.getLogger(LogUtil.class);

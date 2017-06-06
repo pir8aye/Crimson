@@ -19,19 +19,19 @@ package com.subterranean_security.crimson.core.net.stream.subscriber;
 
 import java.util.Random;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.MI_StreamStart;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 
 public class SubscriberMaster extends PeriodicStream {
 
 	public SubscriberMaster(SubscriberParam sp, int CID) {
 		super(Param.newBuilder().setSubscriberParam(sp).setStreamID(new Random().nextInt()).setCID(CID)
-				.setVID(Common.cvid).build());
+				.setVID(LcvidStore.cvid).build());
 		start();
 	}
 

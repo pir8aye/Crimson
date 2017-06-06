@@ -21,7 +21,6 @@ import javax.security.auth.DestroyFailedException;
 
 import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.store.ConfigStore;
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
@@ -29,6 +28,7 @@ import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.IDGen;
 
 public final class AuthCom {
@@ -38,7 +38,7 @@ public final class AuthCom {
 	public static void auth(Connector c) {
 		AuthType authType = ConfigStore.getConfig().getAuthType();
 
-		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(Common.cvid).setType(authType);
+		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(LcvidStore.cvid).setType(authType);
 
 		switch (authType) {
 		case GROUP:

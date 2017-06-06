@@ -40,7 +40,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.util.DateUtil;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
@@ -138,7 +137,7 @@ public class AboutDialog extends JDialog {
 				stat_version.add(panel_1);
 				panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 				{
-					JLabel lblVal = new JLabel(Common.version);
+					JLabel lblVal = new JLabel(Universal.version);
 					lblVal.setFont(new Font("Dialog", Font.BOLD, 11));
 					lblVal.setHorizontalAlignment(SwingConstants.CENTER);
 					lblVal.setPreferredSize(new Dimension(299, 15));

@@ -23,7 +23,6 @@ import org.hyperic.sigar.Sigar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.CRIMSON;
 import com.subterranean_security.crimson.core.platform.info.NET;
@@ -41,7 +40,7 @@ public final class SigarStore {
 
 	public static void loadSigar() {
 		System.setProperty("java.library.path",
-				new File(Common.Directories.base.getAbsolutePath() + "/lib/jni/" + Platform.osFamily.toString())
+				new File(Environment.base.getAbsolutePath() + "/lib/jni/" + Platform.osFamily.toString())
 						.getAbsolutePath());
 
 		try {

@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net;
 
+import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -26,7 +28,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.proto.Chat.RQ_Chat;
 import com.subterranean_security.crimson.core.proto.ClientAuth.RQ_CreateAuthMethod;
@@ -48,6 +49,7 @@ import com.subterranean_security.crimson.core.proto.State.RQ_ChangeServerState;
 import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.proto.Update.RQ_GetClientConfig;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.universal.Universal;
@@ -90,7 +92,7 @@ public final class ViewerCommands {
 		log.debug("Changing client state: {}", st.toString());
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
 					.setRqChangeClientState(RQ_ChangeClientState.newBuilder().setNewState(st)), 3);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
@@ -215,7 +217,7 @@ public final class ViewerCommands {
 	public static ClientConfig getClientConfig(int cid) {
 		log.debug("Retrieving client config");
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
 					.setRqGetClientConfig(RQ_GetClientConfig.newBuilder()), 3);
 			if (m != null) {
 				return m.getRsGetClientConfig().getConfig();
@@ -236,7 +238,7 @@ public final class ViewerCommands {
 		ClientConfig client = getClientConfig(cid);
 		if (client == null) {
 			outcome.setResult(false).setComment("Could not obtain client configuration");
-		} else if (client.getBuildNumber() >= Common.build && !Universal.debug) {
+		} else if (client.getBuildNumber() >= Universal.build && !DEV_MODE) {
 			outcome.setResult(false).setComment("No updated needed");
 		} else {
 			try {
@@ -267,7 +269,7 @@ public final class ViewerCommands {
 	public static Outcome quickScreenshot(int cid) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
 					.setRqQuickScreenshot(RQ_QuickScreenshot.newBuilder()), 10);
 			File file = new File(
 					System.getProperty("user.home") + "/Crimson/" + screenshotDate.format(new Date()) + ".jpg");
@@ -295,7 +297,7 @@ public final class ViewerCommands {
 	public static LogFile getLog(int cid, LogType type) {
 		try {
 			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRid(cid).setSid(Common.cvid).setRqLogs(RQ_Logs.newBuilder().setLog(type)),
+					Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid).setRqLogs(RQ_Logs.newBuilder().setLog(type)),
 					3);
 
 			if (m != null) {
@@ -314,7 +316,7 @@ public final class ViewerCommands {
 	public static List<LogFile> getLogs(int cid) {
 		try {
 			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRid(cid).setSid(Common.cvid).setRqLogs(RQ_Logs.newBuilder()), 3);
+					Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid).setRqLogs(RQ_Logs.newBuilder()), 3);
 
 			if (m != null) {
 				return m.getRsLogs().getLogList();
@@ -333,7 +335,7 @@ public final class ViewerCommands {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = ConnectionStore
-					.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid).setRqChangeSetting(rq), 5);
+					.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid).setRqChangeSetting(rq), 5);
 
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timed out");
@@ -366,7 +368,7 @@ public final class ViewerCommands {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRid(cid).setSid(Common.cvid).setRqChat(RQ_Chat.newBuilder()), 5);
+					Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid).setRqChat(RQ_Chat.newBuilder()), 5);
 
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timed out");

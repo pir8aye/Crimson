@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
+import static com.subterranean_security.crimson.universal.Flags.LOG_NET;
+
 import java.awt.HeadlessException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,7 +39,6 @@ import com.subterranean_security.crimson.client.modules.Power;
 import com.subterranean_security.crimson.client.modules.QuickScreenshot;
 import com.subterranean_security.crimson.client.net.stream.CInfoSlave;
 import com.subterranean_security.crimson.client.store.ConfigStore;
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.HCP;
 import com.subterranean_security.crimson.core.net.BasicExecutor;
@@ -72,13 +73,13 @@ import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Update.RS_GetClientConfig;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.FileManagerStore;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
 import com.subterranean_security.crimson.sc.Logsystem;
-import com.subterranean_security.crimson.universal.Universal;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -98,7 +99,7 @@ public class ClientExecutor extends BasicExecutor {
 				}
 
 				pool.submit(() -> {
-					if (Universal.debugNetwork) {
+					if (LOG_NET) {
 						log.debug("Received: {}", m.toString());
 					}
 					if (m.hasEvStreamData()) {
@@ -346,14 +347,14 @@ public class ClientExecutor extends BasicExecutor {
 	private void rq_advanced_file_info(Message m) {
 		log.debug("rq_advance_file_info");
 		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
-				.setRsAdvancedFileInfo(LocalFS.getInfo(m.getRqAdvancedFileInfo().getFile())));
+				.setRsAdvancedFileInfo(FileUtil.getInfo(m.getRqAdvancedFileInfo().getFile())));
 	}
 
 	private void rq_delete(Message m) {
 		log.debug("rq_delete");
 		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsDelete(RS_Delete.newBuilder()
-						.setOutcome(LocalFS.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))));
+						.setOutcome(FileUtil.deleteAll(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))));
 	}
 
 	private void stream_start_ev(Message m) {
@@ -372,7 +373,7 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	private void rq_get_client_config(Message m) {
-		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
+		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(LcvidStore.cvid)
 				.setRsGetClientConfig(RS_GetClientConfig.newBuilder().setConfig(ConfigStore.getConfig())));
 	}
 
@@ -403,7 +404,7 @@ public class ClientExecutor extends BasicExecutor {
 			e.printStackTrace();
 			return;
 		}
-		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
+		ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(LcvidStore.cvid)
 				.setRsQuickScreenshot(RS_QuickScreenshot.newBuilder().setBin(ByteString.copyFrom(baos.toByteArray()))));
 		try {
 			baos.close();
@@ -424,7 +425,7 @@ public class ClientExecutor extends BasicExecutor {
 			}
 		}
 		ConnectionStore
-				.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid).setRsLogs(rs));
+				.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(LcvidStore.cvid).setRsLogs(rs));
 	}
 
 	private void rq_change_setting(Message m) {
@@ -469,7 +470,7 @@ public class ClientExecutor extends BasicExecutor {
 				}
 			}
 		} finally {
-			ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(Common.cvid)
+			ConnectionStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(LcvidStore.cvid)
 					.setRsChangeSetting(RS_ChangeSetting.newBuilder().setResult(outcome)));
 		}
 

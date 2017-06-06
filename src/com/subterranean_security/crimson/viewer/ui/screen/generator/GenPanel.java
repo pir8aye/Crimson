@@ -17,6 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.generator;
 
+import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -53,18 +55,17 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
-import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
+import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.ATab;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.FTab;
@@ -104,7 +105,7 @@ public class GenPanel extends JPanel {
 
 		changeToJar();
 
-		if (Universal.debug) {
+		if (DEV_MODE) {
 			ntab.table.add(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build());
 			fld_path.setText("C:/Users/dev/Desktop/client.jar");
 			cbx_waiver.setSelected(true);
@@ -565,7 +566,7 @@ public class GenPanel extends JPanel {
 
 		// general
 		ic.setOutputType((String) type_comboBox.getSelectedItem());
-		ic.setBuildNumber(Common.build);
+		ic.setBuildNumber(Universal.build);
 
 		// network
 		for (NetworkTarget nt : ntab.table.getTargets()) {

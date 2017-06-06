@@ -23,12 +23,12 @@ import java.awt.event.InputEvent;
 import java.util.Date;
 import java.util.LinkedList;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.EV_StreamData;
 import com.subterranean_security.crimson.core.proto.Stream.EventData;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.store.RemoteStore;
 import com.subterranean_security.crimson.core.util.Native;
 
@@ -136,7 +136,7 @@ public class RemoteSlave extends PeriodicStream {
 	public void send() {
 
 		if (uQueue.size() != 0) {
-			write(Message.newBuilder().setSid(Common.cvid).setRid(param().getVID()).setEvStreamData(uQueue.poll()));
+			write(Message.newBuilder().setSid(LcvidStore.cvid).setRid(param().getVID()).setEvStreamData(uQueue.poll()));
 		}
 
 	}

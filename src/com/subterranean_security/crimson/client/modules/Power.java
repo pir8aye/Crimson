@@ -21,8 +21,8 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.HCP;
+import com.subterranean_security.crimson.core.platform.Environment;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 
@@ -148,7 +148,7 @@ public final class Power {
 		}
 
 		try {
-			HCP.uninstall(new String[] { Common.Directories.base.getAbsolutePath() }, auxilaryCmd, 5);
+			HCP.uninstall(new String[] { Environment.base.getAbsolutePath() }, auxilaryCmd, 5);
 		} catch (Exception e) {
 			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
 		}

@@ -19,17 +19,17 @@ package com.subterranean_security.crimson.core.net.stream.info;
 
 import java.util.Random;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 
 public class InfoMaster extends PeriodicStream {
 
 	public InfoMaster(InfoParam ip, int CID, int period) {
 		super(Param.newBuilder().setPeriod(period).setInfoParam(ip).setStreamID(new Random().nextInt()).setCID(CID)
-				.setVID(Common.cvid).build());
+				.setVID(LcvidStore.cvid).build());
 		start();
 	}
 

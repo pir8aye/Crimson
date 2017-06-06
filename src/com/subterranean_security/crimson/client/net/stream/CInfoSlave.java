@@ -17,11 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net.stream;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 
 public class CInfoSlave extends InfoSlave {
 
@@ -33,7 +33,7 @@ public class CInfoSlave extends InfoSlave {
 	public void send() {
 		EV_ProfileDelta pd = gather();
 		if (pd.getGroupCount() != 0) {
-			write(Message.newBuilder().setSid(Common.cvid).setRid(param().getVID()).setEvProfileDelta(pd));
+			write(Message.newBuilder().setSid(LcvidStore.cvid).setRid(param().getVID()).setEvProfileDelta(pd));
 		}
 	}
 

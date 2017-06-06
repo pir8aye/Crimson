@@ -76,7 +76,7 @@ public final class JarUtil {
 		if (attribute == null)
 			throw new IllegalArgumentException();
 
-		return getManifestValue(attribute, Universal.file);
+		return getManifestValue(attribute, Universal.jar);
 	}
 
 	/**

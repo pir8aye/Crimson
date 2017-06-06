@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.cv.net.command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.MessageFlowException;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
@@ -29,6 +28,8 @@ import com.subterranean_security.crimson.core.proto.CVID.RS_Cvid;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.universal.Universal;
+import com.subterranean_security.crimson.universal.Universal.Instance;
 
 /**
  * Commands related to obtaining a CVID (Client/Viewer ID).
@@ -50,14 +51,13 @@ public final class CvidCom {
 	 * @throws InterruptedException
 	 */
 	public static void getCvid(Connector c) throws Timeout, InterruptedException {
-		RQ_Cvid.Builder rq = RQ_Cvid.newBuilder().addAllLcvid(LcvidStore.getLcvidSet());
-
-		log.debug("Requesting CVID from server. LCVID count: {}", rq.getLcvidCount());
+		RQ_Cvid.Builder rq = RQ_Cvid.newBuilder().addAllLcvid(LcvidStore.getLcvidSet())
+				.setViewer(Universal.instance == Instance.VIEWER);
 
 		Message rs = c.writeAndGetResponse(Message.newBuilder().setId(IDGen.msg()).setRqCvid(rq).build()).get(5000);
 		if (rs.hasRsCvid()) {
-			Common.cvid = rs.getRsCvid().getCvid();
-			Common.lcvid = rs.getRsCvid().getLcvid();
+			LcvidStore.cvid = rs.getRsCvid().getCvid();
+			LcvidStore.lcvid = rs.getRsCvid().getLcvid();
 
 			// add this lcvid to the database if necessary
 			LcvidStore.addLcvid(rs.getRsCvid().getLcvid());
@@ -66,6 +66,6 @@ public final class CvidCom {
 			throw new MessageFlowException(RQ_Cvid.class, rs, RS_Cvid.class);
 		}
 
-		log.debug("CVID: {}", Common.cvid);
+		log.debug("CVID: {}", LcvidStore.cvid);
 	}
 }

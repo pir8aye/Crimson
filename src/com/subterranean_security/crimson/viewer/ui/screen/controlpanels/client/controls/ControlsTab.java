@@ -41,7 +41,6 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.net.stream.StreamStore;
 import com.subterranean_security.crimson.core.net.stream.info.InfoMaster;
@@ -50,6 +49,7 @@ import com.subterranean_security.crimson.core.proto.State.StateType;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.util.DateUtil;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
@@ -222,7 +222,7 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 				stopStreaming();
 				statConsoleStatus.setText("UPDATING...");
 				console.addLine(
-						"Updating client (" + profile.get(AKeySimple.CLIENT_VERSION) + " -> " + Common.version + ")",
+						"Updating client (" + profile.get(AKeySimple.CLIENT_VERSION) + " -> " + Universal.version + ")",
 						LineType.BLUE);
 
 				new SwingWorker<Outcome, Void>() {

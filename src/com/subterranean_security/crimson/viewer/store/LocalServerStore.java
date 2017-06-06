@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.platform.Environment;
 
 public final class LocalServerStore {
 	private LocalServerStore() {
@@ -36,8 +36,7 @@ public final class LocalServerStore {
 	/**
 	 * The server executable
 	 */
-	public static final File bundledServer = new File(
-			Common.Directories.base.getAbsolutePath() + "/Crimson-Server.jar");
+	public static final File bundledServer = new File(Environment.base.getAbsolutePath() + "/Crimson-Server.jar");
 
 	public static Process process;
 	private static OutputStream os;

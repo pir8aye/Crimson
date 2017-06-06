@@ -21,7 +21,7 @@ import java.awt.CardLayout;
 
 import javax.swing.JPanel;
 
-import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.common.components.Console;
@@ -49,7 +49,7 @@ public class MainPanel extends JPanel {
 			loadGraph();
 		}
 
-		console.addLine("Welcome to Crimson (build " + Common.build + ")");
+		console.addLine("Welcome to Crimson (build " + Universal.build + ")");
 
 	}
 

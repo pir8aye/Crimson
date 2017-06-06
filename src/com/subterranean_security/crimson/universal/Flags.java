@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,42 +15,34 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.files;
+package com.subterranean_security.crimson.universal;
 
-import java.awt.Component;
+public final class Flags {
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+	/**
+	 * Implications of DEV_MODE:
+	 * <ul>
+	 * <li>the log level is set to DEBUG</li>
+	 * <li>a test client will be automatically generated on server startup</li>
+	 * <li>the EULA will not be shown</li>
+	 * </ul>
+	 */
+	public static final boolean DEV_MODE = true;
 
-public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
+	/**
+	 * Implications of LOG_NET_RAW:
+	 * <ul>
+	 * <li>raw, undecoded network I/O will be logged</li>
+	 * </ul>
+	 */
+	public static final boolean LOG_NET_RAW = false;
 
-	public ComboBoxRenderer() {
-		super();
-		setOpaque(true);
-	}
-
-	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-			boolean cellHasFocus) {
-
-		// this.removeAll();
-		if (isSelected) {
-			setBackground(list.getSelectionBackground());
-			setForeground(list.getSelectionForeground());
-		} else {
-			setBackground(list.getBackground());
-			setForeground(list.getForeground());
-		}
-
-		if (value instanceof ImageIcon) {
-			ImageIcon icon = (ImageIcon) value;
-			this.setIcon(icon);
-			this.setText(icon.getDescription());
-
-		}
-		return this;
-
-	}
+	/**
+	 * Implications of LOG_NET:
+	 * <ul>
+	 * <li>decoded network I/O will be logged</li>
+	 * </ul>
+	 */
+	public static final boolean LOG_NET = true;
 
 }

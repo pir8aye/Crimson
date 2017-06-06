@@ -23,12 +23,12 @@ import java.util.Observer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.net.stream.Stream;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.server.store.ProfileStore;
 import com.subterranean_security.crimson.sv.keylogger.Log;
@@ -44,7 +44,7 @@ public class SubscriberSlave extends Stream implements Observer {
 	}
 
 	public SubscriberSlave(SubscriberParam sp) {
-		this(Param.newBuilder().setSubscriberParam(sp).setStreamID(IDGen.stream()).setVID(Common.cvid).build());
+		this(Param.newBuilder().setSubscriberParam(sp).setStreamID(IDGen.stream()).setVID(LcvidStore.cvid).build());
 	}
 
 	@Override

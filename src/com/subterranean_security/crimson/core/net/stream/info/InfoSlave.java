@@ -20,12 +20,10 @@ package com.subterranean_security.crimson.core.net.stream.info;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.attribute.keys.AKeyCPU;
 import com.subterranean_security.crimson.core.attribute.keys.AKeyNIC;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.misc.StatStream;
 import com.subterranean_security.crimson.core.net.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.CRIMSON;
@@ -36,6 +34,8 @@ import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Stream.InfoParam;
 import com.subterranean_security.crimson.core.proto.Stream.Param;
+import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.struct.stat_stream.StatStream;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
@@ -73,7 +73,7 @@ public abstract class InfoSlave extends PeriodicStream {
 	private void initialize() {
 		initKeys(param().getInfoParam().getKeyList());
 
-		pd = EV_ProfileDelta.newBuilder().setCvid(Common.cvid);
+		pd = EV_ProfileDelta.newBuilder().setCvid(LcvidStore.cvid);
 
 		initializeContainers();
 
@@ -102,7 +102,7 @@ public abstract class InfoSlave extends PeriodicStream {
 	}
 
 	public InfoSlave(InfoParam ip) {
-		this(Param.newBuilder().setInfoParam(ip).setStreamID(IDGen.stream()).setVID(Common.cvid).build());
+		this(Param.newBuilder().setInfoParam(ip).setStreamID(IDGen.stream()).setVID(LcvidStore.cvid).build());
 	}
 
 	private void initializeContainers() {

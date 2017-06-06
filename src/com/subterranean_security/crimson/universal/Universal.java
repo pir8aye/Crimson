@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,32 +35,33 @@ import org.w3c.dom.NodeList;
 import com.subterranean_security.crimson.universal.util.JarUtil;
 
 public final class Universal {
+
 	private Universal() {
 	}
 
 	/**
-	 * Initialization Timestamp
+	 * Instance initialization Timestamp
 	 */
 	public static final Date start = new Date();
 
 	/**
-	 * When true, debug messages will be logged and additional functionality
-	 * enabled
+	 * The running instance's jar
 	 */
-	public static final boolean debug = true;
+	public static final File jar = discoverJar();
 
 	/**
-	 * When true, raw network data is logged
+	 * Version Syntax: X.X.X.X with major versions being on the left and minor
+	 * versions and fixes on the right
 	 */
-	public static final boolean debugRawNetwork = false;
+	public static final String version = discoverVersion();
 
 	/**
-	 * When true, decoded network data is logged
+	 * The build number
 	 */
-	public static final boolean debugNetwork = true;
+	public static final int build = discoverBuild();
 
 	/**
-	 * Identifies this instance based upon a manifest attribute
+	 * Identifies this instance
 	 */
 	public static final Instance instance = discoverInstance();
 
@@ -85,16 +87,40 @@ public final class Universal {
 		}
 	}
 
-	private static Instance discoverInstance() {
-
+	private static File discoverJar() {
 		try {
-			return Instance.valueOf(JarUtil.getManifestValue("Instance",
-					new File(Universal.class.getProtectionDomain().getCodeSource().getLocation().toURI())));
-		} catch (IOException e) {
-			System.exit(0);
+			return new File(Universal.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 		} catch (URISyntaxException e) {
-			System.exit(0);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static String discoverVersion() {
+		try {
+			return JarUtil.getManifestValue("Crimson-Version");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static int discoverBuild() {
+		try {
+			return Integer.parseInt(JarUtil.getManifestValue("Build-Number"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	private static Instance discoverInstance() {
+		try {
+			return Instance.valueOf(JarUtil.getManifestValue("Instance", jar));
 		} catch (Throwable t) {
+			System.out.println("Failed to read instance");
 			System.exit(0);
 		}
 
@@ -102,7 +128,7 @@ public final class Universal {
 	}
 
 	public static void loadTemporarily(String libZip, File temp) throws IOException, SecurityException {
-		JarUtil.extractZip(Universal.class.getResourceAsStream(libZip), temp.getAbsolutePath());
+		JarUtil.extract(Universal.class.getResourceAsStream(libZip), temp.getAbsolutePath());
 
 		for (String lib : getInstancePrerequisites(discoverInstance())) {
 			JarUtil.load(temp.getAbsolutePath() + "/java/" + lib + ".jar");
@@ -111,7 +137,7 @@ public final class Universal {
 	}
 
 	public static ArrayList<String> getInstancePrerequisites(Universal.Instance instance) {
-		ArrayList<Element> elements = null;
+		List<Element> elements = null;
 		try {
 			elements = readDependancyXML();
 		} catch (Exception e) {
@@ -128,7 +154,7 @@ public final class Universal {
 		return req;
 	}
 
-	private static ArrayList<Element> readDependancyXML() throws Exception {
+	private static List<Element> readDependancyXML() throws Exception {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 
@@ -137,7 +163,7 @@ public final class Universal {
 
 		doc.getDocumentElement().normalize();
 		NodeList nList = doc.getElementsByTagName("Lib");
-		ArrayList<Element> elements = new ArrayList<Element>();
+		List<Element> elements = new ArrayList<Element>();
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
