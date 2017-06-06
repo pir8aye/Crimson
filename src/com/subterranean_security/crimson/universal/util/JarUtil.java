@@ -42,24 +42,210 @@ public final class JarUtil {
 	private JarUtil() {
 	}
 
+	/**
+	 * Retrieve the value of a manifest attribute from the specified jar
+	 * 
+	 * @param attribute
+	 *            The attribute to query
+	 * @param jarFile
+	 *            The jar file to query
+	 * @return The attribute's value
+	 * @throws IOException
+	 */
 	public static String getManifestValue(String attribute, File jarFile) throws IOException {
+		if (attribute == null || jarFile == null)
+			throw new IllegalArgumentException();
+
 		try (JarFile jar = new JarFile(jarFile)) {
+			if (jar.getManifest() == null)
+				throw new IOException("Manifest not found");
+
 			return jar.getManifest().getMainAttributes().getValue(attribute);
 		}
 	}
 
-	public static String getManifestValue(String attr) throws IOException {
-		try {
-			return getManifestValue(attr,
-					new File(Universal.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
-		} catch (Throwable e1) {
+	/**
+	 * Retrieve the value of a manifest attribute from the instance jar.
+	 * 
+	 * @param attribute
+	 *            The attribute to query
+	 * @return The attribute's value
+	 * @throws IOException
+	 */
+	public static String getManifestValue(String attribute) throws IOException {
+		if (attribute == null)
+			throw new IllegalArgumentException();
+
+		return getManifestValue(attribute, Universal.file);
+	}
+
+	/**
+	 * Calculate the size of a resource by reading it entirely.
+	 * 
+	 * @param path
+	 *            Location of resource in jar
+	 * @return The size of the target resource in bytes
+	 */
+	public static long getResourceSize(String path) throws IOException {
+		long size = 0;
+		try (InputStream is = new BufferedInputStream(JarUtil.class.getResourceAsStream(path))) {
+			byte[] buf = new byte[4096];
+			int r = is.read(buf);
+			while (r != -1) {
+				size += r;
+				r = is.read(buf);
+			}
 		}
 
-		return null;
+		return size;
+	}
+
+	/**
+	 * Determine if the jar contains a specific resource
+	 * 
+	 * @param path
+	 *            Location of resource
+	 * @return True if the specified resource exists in the jar
+	 */
+	public static boolean containsResource(String path) {
+		if (path == null)
+			throw new IllegalArgumentException();
+
+		return JarUtil.class.getResourceAsStream(path) != null;
+	}
+
+	/**
+	 * Read a small resource from the instance's jar.
+	 *
+	 * @param path
+	 *            Location of resource
+	 * @return resource as a byte[]
+	 * @throws IOException
+	 */
+	public static byte[] readResource(String path) throws IOException {
+		if (path == null)
+			throw new IllegalArgumentException();
+
+		try (InputStream is = new BufferedInputStream(JarUtil.class.getResourceAsStream(path))) {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+			for (int b; (b = is.read()) != -1;) {
+				out.write(b);
+			}
+
+			return out.toByteArray();
+		}
+	}
+
+	public static URL[] getClassPath() {
+		return ((URLClassLoader) ClassLoader.getSystemClassLoader()).getURLs();
+	}
+
+	/**
+	 * Test if the specified class exists
+	 * 
+	 * @param c
+	 * @return True if the class exists
+	 */
+	public static boolean classExists(String c) {
+		try {
+			Class.forName(c, false, Universal.class.getClassLoader());
+		} catch (Throwable t) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Extract a resource
+	 * 
+	 * @param cl
+	 *            The target classloader
+	 * @param res
+	 *            The target resource
+	 * @param dest
+	 *            The target destination
+	 * @throws IOException
+	 */
+	public static void extract(ClassLoader cl, String res, String dest) throws IOException {
+		if (cl == null)
+			throw new IllegalArgumentException();
+		if (res == null)
+			throw new IllegalArgumentException();
+		if (dest == null)
+			throw new IllegalArgumentException();
+
+		try (InputStream stream = cl.getResourceAsStream(res); FileOutputStream fos = new FileOutputStream(dest)) {
+			byte[] buf = new byte[2048];
+			int r = stream.read(buf);
+			while (r != -1) {
+				fos.write(buf, 0, r);
+				r = stream.read(buf);
+			}
+		}
 
 	}
 
+	/**
+	 * Extract a resource from the instance jar
+	 * 
+	 * @param res
+	 *            The target resource
+	 * @param dest
+	 *            The target destination
+	 * @throws IOException
+	 */
+	public static void extract(String res, String dest) throws IOException {
+		extract(JarUtil.class.getClassLoader(), res, dest);
+	}
+
+	/**
+	 * Extract an entire jar/zip file before the zip library has loaded.
+	 * 
+	 * @param zipFilePath
+	 *            The inputstream of a zip file
+	 * @param destDirectory
+	 *            The extraction target
+	 * @throws IOException
+	 */
+	public static void extract(InputStream zipFilePath, String destDirectory) throws IOException {
+		if (zipFilePath == null)
+			throw new IllegalArgumentException();
+		if (destDirectory == null)
+			throw new IllegalArgumentException();
+
+		File destDir = new File(destDirectory);
+		if (!destDir.exists() && !destDir.mkdirs()) {
+			throw new IOException("Failed to make directory: " + destDir.getAbsolutePath());
+		}
+
+		try (ZipInputStream zipIn = new ZipInputStream(zipFilePath)) {
+			ZipEntry entry = zipIn.getNextEntry();
+			// iterates over entries in the zip file
+			while (entry != null) {
+				String filePath = destDir.getAbsolutePath() + File.separator + entry.getName();
+				if (!entry.isDirectory()) {
+					// if the entry is a file, extracts it
+					try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
+						byte[] bytesIn = new byte[4096];
+						int read = 0;
+						while ((read = zipIn.read(bytesIn)) != -1) {
+							bos.write(bytesIn, 0, read);
+						}
+					}
+				} else {
+					new File(filePath).mkdir();
+				}
+				zipIn.closeEntry();
+				entry = zipIn.getNextEntry();
+			}
+		}
+	}
+
 	public static void loadFully(String path) throws IOException, ClassNotFoundException {
+		if (path == null)
+			throw new IllegalArgumentException();
+
 		try (JarFile jarFile = new JarFile(path)) {
 			Enumeration<JarEntry> e = jarFile.entries();
 
@@ -82,6 +268,9 @@ public final class JarUtil {
 	}
 
 	public static void load(String path) throws SecurityException, FileNotFoundException {
+		if (path == null)
+			throw new IllegalArgumentException();
+
 		File f = new File(path);
 		if (!f.exists()) {
 			throw new FileNotFoundException();
@@ -95,130 +284,5 @@ public final class JarUtil {
 		} catch (MalformedURLException e) {
 			throw new FileNotFoundException();
 		}
-	}
-
-	public static void extract(ClassLoader cl, String res, String dest) {
-		InputStream stream = cl.getResourceAsStream(res);
-
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(dest);
-			byte[] buf = new byte[2048];
-			int r = stream.read(buf);
-			while (r != -1) {
-				fos.write(buf, 0, r);
-				r = stream.read(buf);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if (fos != null) {
-				try {
-					fos.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	public static void extract(String res, String dest) {
-		extract(JarUtil.class.getClassLoader(), res, dest);
-	}
-
-	/**
-	 * Get the size of a jar resource by simply reading the resource
-	 * 
-	 * @param path
-	 *            Location of resource in jar
-	 * @return The size of the target resource in bytes
-	 */
-	public static long getResourceSize(String path) throws IOException {
-		long size = 0;
-		try (InputStream is = new BufferedInputStream(JarUtil.class.getResourceAsStream(path))) {
-			while (is.read() != -1)
-				size++;
-		}
-
-		return size;
-	}
-
-	/**
-	 * Determine if the jar contains a specific resource
-	 * 
-	 * @param path
-	 *            Location of resource
-	 * @return True if the specified resource exists in the jar
-	 */
-	public static boolean containsResource(String path) {
-		return JarUtil.class.getResourceAsStream(path) != null;
-	}
-
-	/**
-	 * Reads a resource from the instance's jar
-	 *
-	 * @param path
-	 *            path to resource
-	 * @return resource as a byte[]
-	 * @throws IOException
-	 */
-	public static byte[] readResource(String path) throws IOException {
-		try (InputStream is = new BufferedInputStream(JarUtil.class.getResourceAsStream(path))) {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-			for (int b; (b = is.read()) != -1;) {
-				out.write(b);
-			}
-
-			return out.toByteArray();
-		}
-	}
-
-	public static URL[] getClassPath() {
-		return ((URLClassLoader) ClassLoader.getSystemClassLoader()).getURLs();
-	}
-
-	public static boolean classExists(String c) {
-		try {
-			Class.forName(c, false, Universal.class.getClassLoader());
-		} catch (Throwable t) {
-			return false;
-		}
-		return true;
-	}
-
-	public static void extractZip(InputStream zipFilePath, String destDirectory) throws IOException {
-		if (zipFilePath == null) {
-			throw new IOException();
-		}
-		File destDir = new File(destDirectory);
-		if (!destDir.exists()) {
-			destDir.mkdir();
-		}
-		ZipInputStream zipIn = new ZipInputStream(zipFilePath);
-		ZipEntry entry = zipIn.getNextEntry();
-		// iterates over entries in the zip file
-		while (entry != null) {
-			String filePath = destDirectory + File.separator + entry.getName();
-			if (!entry.isDirectory()) {
-				// if the entry is a file, extracts it
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				byte[] bytesIn = new byte[4096];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1) {
-					bos.write(bytesIn, 0, read);
-				}
-				bos.close();
-			} else {
-				// if the entry is a directory, make the directory
-				File dir = new File(filePath);
-				dir.mkdir();
-			}
-			zipIn.closeEntry();
-			entry = zipIn.getNextEntry();
-		}
-		zipIn.close();
 	}
 }
