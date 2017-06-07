@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules;
+package com.subterranean_security.crimson.viewer.ui.screen.main.dmodules;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -39,50 +39,51 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.attribute.AttributeGroup;
-import com.subterranean_security.crimson.core.attribute.keys.AKeyCPU;
+import com.subterranean_security.crimson.core.attribute.keys.AKeyNIC;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.net.stream.StreamStore;
 import com.subterranean_security.crimson.core.net.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.util.ProtoUtil;
+import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.viewer.ui.common.components.StatusConsole;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DModule;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.dpanel.DModule;
 
 import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
+import info.monitorenter.gui.chart.rangepolicies.RangePolicyMinimumViewport;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
 import info.monitorenter.util.Range;
-import javax.swing.border.MatteBorder;
 
-public class Processor extends TracedPanel implements DModule {
+public class NetInterfaces extends TracedPanel implements DModule {
 
 	private static final long serialVersionUID = 1L;
 
-	private ITrace2D trace;
+	private ITrace2D tx;
+	private ITrace2D rx;
 
 	private boolean showing = false;
 
 	private JLabel val_usage;
 
-	private JLabel statConsoleModel;
-	private JLabel statConsoleFreq;
-	private JLabel statConsoleTemp;
+	private JLabel statConsoleMAC;
+	private JLabel statConsoleIP;
+	private JLabel statConsoleNetmask;
 
-	public Processor() {
+	public NetInterfaces() {
 		super();
 		initChart();
 		init();
 	}
 
-	private void initChart() {
+	public void initChart() {
 
 		chart = new Chart2D();
-
 		chart.setUseAntialiasing(true);
 		chart.setBackground(Color.WHITE);
 		chart.getAxisX().setVisible(false);
-		chart.getAxisY().setRangePolicy(new RangePolicyFixedViewport(new Range(0, 100)));
+		chart.getAxisY().setRangePolicy(new RangePolicyMinimumViewport(new Range(0, 1024)));
 		chart.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(0, 60)));
 		chart.getAxisX().setPaintGrid(false);
 		chart.getAxisX().setPaintScale(false);
@@ -92,34 +93,39 @@ public class Processor extends TracedPanel implements DModule {
 		chart.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		chart.setPaintLabels(false);
 		chart.setAutoscrolls(true);
+
 	}
 
 	private void initTraces() {
 
-		trace = new Trace2DLtd(60);
-		trace.setColor(Color.RED);
+		tx = new Trace2DLtd(60);
+		tx.setColor(new Color(251, 0, 24));
+
+		rx = new Trace2DLtd(60);
+		rx.setColor(new Color(0, 215, 123));
 
 		addTraces();
 	}
 
 	private void addTraces() {
 		chart.removeAllTraces();
-		chart.addTrace(trace);
+		chart.addTrace(tx);
+		chart.addTrace(rx);
 	}
 
-	private void init() {
+	public void init() {
 		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Processor", TitledBorder.CENTER,
-				TitledBorder.TOP, null, new Color(51, 51, 51)));
-		add(panel);
+		mainPanel = new JPanel();
+		mainPanel.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Primary Network Interface",
+				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(51, 51, 51)));
+		add(mainPanel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWeights = new double[] { 1.0 };
 		gbl_panel.rowHeights = new int[] { 57, 0, 0 };
 		gbl_panel.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-		panel.setLayout(gbl_panel);
+		mainPanel.setLayout(gbl_panel);
 
 		JPanel panel_3 = new JPanel();
 		panel_3.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -128,7 +134,7 @@ public class Processor extends TracedPanel implements DModule {
 		gbc_panel_3.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_3.gridx = 0;
 		gbc_panel_3.gridy = 0;
-		panel.add(panel_3, gbc_panel_3);
+		mainPanel.add(panel_3, gbc_panel_3);
 		GridBagLayout gbl_panel_3 = new GridBagLayout();
 		gbl_panel_3.columnWidths = new int[] { 0, 0 };
 		gbl_panel_3.rowHeights = new int[] { 57, 0, 0 };
@@ -145,15 +151,10 @@ public class Processor extends TracedPanel implements DModule {
 
 		val_usage = new JLabel("Loading...");
 		val_usage.setFont(new Font("Dialog", Font.BOLD, 9));
-
-		JPanel val_usage_panel = new JPanel(new BorderLayout());
-		val_usage_panel.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
-		val_usage_panel.add(val_usage);
-
 		GridBagConstraints gbc_lblNewLabel_5 = new GridBagConstraints();
 		gbc_lblNewLabel_5.gridx = 0;
 		gbc_lblNewLabel_5.gridy = 1;
-		panel_3.add(val_usage_panel, gbc_lblNewLabel_5);
+		panel_3.add(val_usage, gbc_lblNewLabel_5);
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -161,19 +162,19 @@ public class Processor extends TracedPanel implements DModule {
 		gbc_panel_1.fill = GridBagConstraints.BOTH;
 		gbc_panel_1.gridx = 0;
 		gbc_panel_1.gridy = 1;
-		panel.add(panel_1, gbc_panel_1);
+		mainPanel.add(panel_1, gbc_panel_1);
+		panel_1.setLayout(new BorderLayout(0, 0));
 
 		statusConsole = new StatusConsole();
-		statConsoleModel = statusConsole.addRow("Model");
-		statConsoleFreq = statusConsole.addRow("Frequency");
-		statConsoleTemp = statusConsole.addRow("Core Temp");
+		statConsoleMAC = statusConsole.addRow("MAC");
+		statConsoleIP = statusConsole.addRow("IP");
+		statConsoleNetmask = statusConsole.addRow("Netmask");
 
-		statConsoleModel.setText("Loading...");
-		statConsoleFreq.setText("Loading...");
-		statConsoleTemp.setText("Loading...");
+		statConsoleMAC.setText("Loading...");
+		statConsoleIP.setText("Loading...");
+		statConsoleNetmask.setText("Loading...");
 
-		panel_1.setLayout(new BorderLayout(0, 0));
-		panel_1.add(statusConsole);
+		panel_1.add(statusConsole, BorderLayout.CENTER);
 
 	}
 
@@ -183,72 +184,72 @@ public class Processor extends TracedPanel implements DModule {
 		public void run() {
 			double time = System.currentTimeMillis() - start.getTime();
 
-			// break trace if the last update was longer than two
-			// periods ago
 			if (System.currentTimeMillis() - last.getTime() > updatePeriod * 2) {
-				trace.addPoint(time - 1, Double.NaN);
+				tx.addPoint(time - 1, Double.NaN);
+				rx.addPoint(time - 1, Double.NaN);
 			}
 
-			// usage
-			String usage = getPrimaryCPU().get(AKeyCPU.CPU_TOTAL_USAGE);
-			double u;
-			if (usage != null) {
-				u = Double.parseDouble(usage);
+			String txs = getPrimaryNIC().get(AKeyNIC.NIC_TX_SPEED);
+			String rxs = getPrimaryNIC().get(AKeyNIC.NIC_RX_SPEED);
+			double t;
+			double r;
+			if (txs != null && rxs != null) {
 
-				val_usage.setText(String.format("Average Utilization: %5.2f%%", u));
+				t = UnitTranslator.nicSpeed(txs);
+				r = UnitTranslator.nicSpeed(rxs);
+				val_usage.setText(String.format("DN: %s UP: %s", rxs, txs));
 			} else {
-				u = Double.NaN;
+				t = Double.NaN;
+				r = Double.NaN;
+				val_usage.setText(String.format("DN: .. UP: .."));
 			}
 
 			last = new Date();
-			trace.addPoint(time, u);
-
+			tx.addPoint(time, t);
+			rx.addPoint(time, r);
 			chart.getAxisX().getRangePolicy().setRange(new Range(time, time - (60 * updatePeriod)));
-
-			// set dynamic attributes
-			// temperature
-			String temp = getPrimaryCPU().get(AKeyCPU.CPU_TEMP);
-			if (temp != null) {
-				statConsoleTemp.setText(temp);
-			}
 
 		}
 
 	}
 
 	private ClientProfile profile;
-	private List<AttributeGroup> cpuList;
+	private List<AttributeGroup> nicList;
 
-	private AttributeGroup getPrimaryCPU() {
-		return cpuList.get(0);
+	private AttributeGroup getPrimaryNIC() {
+		return nicList.get(0);
 	}
+
+	private InfoMaster im;
 
 	@Override
 	public void setTarget(ClientProfile p) {
+
 		List<ITrace2D> savedTraces = traceList.get(p.getCvid());
 		if (savedTraces == null) {
 			initTraces();
 			savedTraces = new ArrayList<ITrace2D>();
-			savedTraces.add(trace);
+			savedTraces.add(tx);
+			savedTraces.add(rx);
 			traceList.put(p.getCvid(), savedTraces);
 		} else {
-			trace = savedTraces.get(0);
+			tx = savedTraces.get(0);
+			rx = savedTraces.get(1);
 			addTraces();
 		}
 
 		profile = p;
-		cpuList = profile.getGroupList(AttributeKey.Type.CPU);
+		nicList = profile.getGroupList(AttributeKey.Type.NIC);
 
 		// set static attributes
-		try {
-			System.out.println("cpu model: " + getPrimaryCPU().get(AKeyCPU.CPU_MODEL));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		statConsoleModel.setText(getPrimaryCPU().get(AKeyCPU.CPU_MODEL));
-		statConsoleFreq.setText(getPrimaryCPU().get(AKeyCPU.CPU_FREQUENCY_MAX));
+		statConsoleMAC.setText(getPrimaryNIC().get(AKeyNIC.NIC_MAC));
+		statConsoleIP.setText(getPrimaryNIC().get(AKeyNIC.NIC_IP));
+		statConsoleNetmask.setText(getPrimaryNIC().get(AKeyNIC.NIC_MASK));
 
+		// set title
+		mainPanel.setBorder(
+				new TitledBorder(new LineBorder(new Color(184, 207, 229)), getPrimaryNIC().get(AKeyNIC.NIC_DESC),
+						TitledBorder.CENTER, TitledBorder.TOP, null, new Color(51, 51, 51)));
 	}
 
 	private SwingWorker<Void, Void> timeout = new SwingWorker<Void, Void>() {
@@ -261,39 +262,41 @@ public class Processor extends TracedPanel implements DModule {
 
 		@Override
 		protected void done() {
-			if ("Loading...".equals(statConsoleModel.getText())) {
-				statConsoleModel.setText("N/A");
+			if ("Loading...".equals(statConsoleMAC.getText())) {
+				statConsoleMAC.setText("N/A");
 			}
-			if ("Loading...".equals(statConsoleFreq.getText())) {
-				statConsoleFreq.setText("N/A");
+			if ("Loading...".equals(statConsoleIP.getText())) {
+				statConsoleIP.setText("N/A");
 			}
-			if ("Loading...".equals(statConsoleTemp.getText())) {
-				statConsoleTemp.setText("N/A");
+			if ("Loading...".equals(statConsoleNetmask.getText())) {
+				statConsoleNetmask.setText("N/A");
 			}
+
 		};
 
 	};
 
-	private StatusConsole statusConsole;
+	private JPanel mainPanel;
 
-	private InfoMaster im;
+	private StatusConsole statusConsole;
 
 	@Override
 	public void setShowing(boolean showing) {
 		this.showing = showing;
 		if (showing) {
-
-			im = new InfoMaster(ProtoUtil.getInfoParam(AKeyCPU.CPU_TOTAL_USAGE, AKeyCPU.CPU_TEMP).build(),
+			im = new InfoMaster(ProtoUtil.getInfoParam(AKeyNIC.NIC_RX_SPEED, AKeyNIC.NIC_TX_SPEED).build(),
 					profile.getCvid(), (int) updatePeriod);
 			StreamStore.addStream(im);
 
 			// launch timeout
 			timeout.execute();
+
 			startRefresh(new UpdateTask());
 		} else {
 			if (im != null) {
 				StreamStore.removeStreamBySID(im.getStreamID());
 			}
+
 			stopRefresh();
 		}
 	}

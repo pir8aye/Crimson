@@ -32,10 +32,10 @@ import com.subterranean_security.crimson.viewer.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.Tray;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.dpanel.DPanel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MPanel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.npanel.NPanel;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.DPanel;
 
 public class MainFrame extends JFrame {
 

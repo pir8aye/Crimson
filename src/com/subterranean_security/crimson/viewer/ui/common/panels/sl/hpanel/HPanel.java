@@ -26,14 +26,17 @@ import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.MovablePanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.SlidingPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
 import aurelienribon.slidinglayout.SLKeyframe;
-import aurelienribon.slidinglayout.SLPanel;
 import aurelienribon.slidinglayout.SLSide;
 
-public class HPanel extends SLPanel {
+/**
+ * A Hidden Panel (HPanel) has a hidden menu below a typical menu.
+ */
+public class HPanel extends SlidingPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -47,17 +50,14 @@ public class HPanel extends SLPanel {
 	public HiddenMenu hmenu;
 	public NormalMenu nmenu;
 
-	private static int transitionTime = 900;
-
 	private static int nMenuHeight = 30;
 
-	private boolean moving = false;
-
-	public boolean isMoving() {
-		return moving;
+	public HPanel(JPanel main) {
+		this(main, 0.9f);
 	}
 
-	public HPanel(JPanel main) {
+	public HPanel(JPanel main, float transitionTime) {
+		this.transitionTime = transitionTime;
 
 		movingMain = new MovablePanel(main);
 		movingMain.setAction(actionUP);
@@ -87,8 +87,8 @@ public class HPanel extends SLPanel {
 		@Override
 		public void run() {
 			moving = true;
-			HPanel.this.createTransition()
-					.push(new SLKeyframe(pos2, transitionTime / 1000f).setCallback(new SLKeyframe.Callback() {
+			HPanel.this.createTransition().push(new SLKeyframe(pos2, transitionTime)
+					.setStartSide(SLSide.BOTTOM, movingHMenu).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
 							hmenu.nowShowing();
@@ -103,7 +103,7 @@ public class HPanel extends SLPanel {
 		@Override
 		public void run() {
 			moving = true;
-			HPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
+			HPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime)
 					.setEndSide(SLSide.BOTTOM, movingHMenu).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {

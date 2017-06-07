@@ -17,23 +17,29 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.common.panels.sl.npanel;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.MovablePanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.SlidingPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
 import aurelienribon.slidinglayout.SLKeyframe;
-import aurelienribon.slidinglayout.SLPanel;
 import aurelienribon.slidinglayout.SLSide;
 
-public class NPanel extends SLPanel {
+/**
+ * A Notification Panel (NPanel) shows a clickable notification at the bottom of
+ * the screen for a short amount of time.
+ */
+public class NPanel extends SlidingPanel {
 
 	private static final long serialVersionUID = 1L;
+	private static final int OVERFLOW_CAPACITY = 5;
 
 	private SLConfig pos1;
 	private SLConfig pos2;
@@ -41,11 +47,18 @@ public class NPanel extends SLPanel {
 	private MovablePanel movingBar;
 	private MovablePanel movingMain;
 
-	private Notification note = new Notification();
+	private List<Notification> overflow;
 
 	public NPanel(JPanel main) {
+		this(main, 0.9f);
+	}
 
-		movingBar = new MovablePanel(note);
+	public NPanel(JPanel main, float transitionTime) {
+		this.transitionTime = transitionTime;
+
+		overflow = new LinkedList<>();
+
+		movingBar = new MovablePanel();
 		movingMain = new MovablePanel(main);
 		movingMain.setAction(actionUP);
 
@@ -54,102 +67,57 @@ public class NPanel extends SLPanel {
 
 		this.setTweenManager(SLAnimator.createTweenManager());
 		this.initialize(pos1);
-		nThread.start();
-
 	}
 
-	private ArrayBlockingQueue<Object[]> noteQ = new ArrayBlockingQueue<Object[]>(3);
-
 	public void addNote(String type, String s) {
-
-		addNote(type, s, " ", new Runnable() {
-			public void run() {
-				// default action
-			}
-
+		addNote(type, s, " ", () -> {
 		});
-
 	}
 
 	public void addNote(String type, String text, String subtext, Runnable r) {
+		if (overflow.size() > OVERFLOW_CAPACITY) {
+			// drop note
+			return;
+		}
 
-		// ignore if queue is full
-		noteQ.offer(new Object[] { type, text, subtext, r });
+		Notification note = new Notification(type, text, subtext, r);
+
+		if (!open) {
+			raise(note);
+		} else {
+			overflow.add(note);
+		}
 
 	}
 
-	Runnable run = new Runnable() {
-		public void run() {
-			movingMain.runAction();
-		}
-	};
-
-	Thread nThread = new Thread(new Runnable() {
-		public void run() {
-			while (!Thread.interrupted()) {
-
-				Object[] o = null;
-				try {
-					o = noteQ.take();
-				} catch (InterruptedException e1) {
-					return;
-				}
-
-				if (o == null) {
-					return;
-				}
-				note.set((String) o[0], (String) o[1], (String) o[2], (Runnable) o[3]);
-				// move the note panel up
-				movingMain.runAction();
-				try {
-					SwingUtilities.invokeAndWait(run);
-				} catch (InvocationTargetException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-				try {
-					Thread.sleep(5000);
-
-				} catch (InterruptedException e) {
-
-				} finally {
-					// move the note back down
-					try {
-						SwingUtilities.invokeAndWait(run);
-					} catch (InvocationTargetException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-
-				}
-
-				try {
-					Thread.sleep(900);
-				} catch (InterruptedException e) {
-					return;
-				}
-
-			}
-
-		}
-
-	});
+	private void raise(Notification note) {
+		movingBar.setPanel(note);
+		movingMain.runAction();
+	}
 
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
-			NPanel.this.createTransition().push(new SLKeyframe(pos2, 0.9f).setStartSide(SLSide.BOTTOM, movingBar)
-					.setCallback(new SLKeyframe.Callback() {
+			moving = true;
+			open = true;
+			NPanel.this.createTransition().push(new SLKeyframe(pos2, transitionTime)
+					.setStartSide(SLSide.BOTTOM, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
+							moving = false;
 							movingMain.setAction(actionDN);
+
+							new SwingWorker<Void, Void>() {
+								@Override
+								protected Void doInBackground() throws Exception {
+									Thread.sleep(5000);
+									return null;
+								}
+
+								protected void done() {
+									movingMain.runAction();
+								};
+							}.execute();
 						}
 					})).play();
 		}
@@ -158,11 +126,22 @@ public class NPanel extends SLPanel {
 	private final Runnable actionDN = new Runnable() {
 		@Override
 		public void run() {
-			NPanel.this.createTransition().push(new SLKeyframe(pos1, 0.9f).setEndSide(SLSide.BOTTOM, movingBar)
-					.setCallback(new SLKeyframe.Callback() {
+			moving = true;
+			NPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime)
+					.setEndSide(SLSide.BOTTOM, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
+							moving = false;
+							open = false;
 							movingMain.setAction(actionUP);
+
+							if (overflow.size() > 0) {
+								SwingUtilities.invokeLater(() -> {
+									raise(overflow.remove(0));
+								});
+
+							}
+
 						}
 					})).play();
 		}

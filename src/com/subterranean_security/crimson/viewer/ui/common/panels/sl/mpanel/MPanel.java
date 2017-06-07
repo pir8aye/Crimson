@@ -26,7 +26,11 @@ import com.subterranean_security.crimson.viewer.ui.common.panels.sl.SlidingPanel
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
 import aurelienribon.slidinglayout.SLKeyframe;
+import aurelienribon.slidinglayout.SLSide;
 
+/**
+ * The Main Panel (MPanel) shows a vertical main menu with sliding submenus
+ */
 public class MPanel extends SlidingPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -38,8 +42,6 @@ public class MPanel extends SlidingPanel {
 	private MovablePanel detail;
 	private MovablePanel main;
 
-	private boolean open = false;
-
 	public MPanel(JPanel jp) {
 
 		bar = new MovablePanel(new VerticalMenu(this));
@@ -47,19 +49,15 @@ public class MPanel extends SlidingPanel {
 		main = new MovablePanel(jp);
 		main.setAction(actionUP);
 
-		pos1 = new SLConfig(this).gap(0, 0).row(1f).col(30).col(1f).place(0, 1, main).place(0, 0, bar);
-		pos2 = new SLConfig(this).gap(0, 0).row(1f).col(30).col(120).col(1f).place(0, 0, bar).place(0, 1, detail)
+		pos1 = new SLConfig(this).gap(0, 0).row(1f).col(30).col(1f).place(0, 0, bar).place(0, 1, main);
+		pos2 = new SLConfig(this).gap(0, 0).row(1f).col(30).col(130).col(1f).place(0, 0, bar).place(0, 1, detail)
 				.place(0, 2, main);
 
-		transitionTime = 800;
+		transitionTime = 0.8f;
 
 		this.setTweenManager(SLAnimator.createTweenManager());
 		this.initialize(pos1);
 
-	}
-
-	public boolean isOpen() {
-		return open;
 	}
 
 	/**
@@ -86,13 +84,13 @@ public class MPanel extends SlidingPanel {
 			detail.setPanel(panel);
 
 			open = true;
-			moving = true;
 			main.runAction();
-			endMotion();
 		}
 		return true;
 	}
 
+	// TODO replace with better technique to minimize delay between drop and
+	// raise. Probably implement this in the action's done()
 	class WaitAndRaise extends SwingWorker<Void, Void> {
 
 		private JPanel panel;
@@ -103,7 +101,7 @@ public class MPanel extends SlidingPanel {
 		}
 
 		protected Void doInBackground() throws Exception {
-			Thread.sleep(transitionTime);
+			Thread.sleep((int) (transitionTime * 1000));
 			return null;
 		}
 
@@ -111,16 +109,13 @@ public class MPanel extends SlidingPanel {
 			open = true;
 			detail.setPanel(panel);
 
-			moving = true;
 			main.runAction();
-			endMotion();
 		}
 	}
 
 	public void drop() {
 		if (isOpen()) {
 			main.runAction();
-			endMotion();
 			open = false;
 
 		}
@@ -129,10 +124,12 @@ public class MPanel extends SlidingPanel {
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
-			MPanel.this.createTransition()
-					.push(new SLKeyframe(pos2, transitionTime / 1000f).setCallback(new SLKeyframe.Callback() {
+			moving = true;
+			MPanel.this.createTransition().push(new SLKeyframe(pos2, transitionTime).setStartSide(SLSide.LEFT, detail)
+					.setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
+							moving = false;
 							main.setAction(actionDN);
 						}
 					})).play();
@@ -142,10 +139,12 @@ public class MPanel extends SlidingPanel {
 	private final Runnable actionDN = new Runnable() {
 		@Override
 		public void run() {
-			MPanel.this.createTransition()
-					.push(new SLKeyframe(pos1, transitionTime / 1000f).setCallback(new SLKeyframe.Callback() {
+			moving = true;
+			MPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime).setEndSide(SLSide.LEFT, detail)
+					.setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
+							moving = false;
 							main.setAction(actionUP);
 						}
 					})).play();

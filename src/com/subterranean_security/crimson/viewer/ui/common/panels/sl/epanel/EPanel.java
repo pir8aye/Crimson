@@ -24,14 +24,17 @@ import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.MovablePanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.SlidingPanel;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
 import aurelienribon.slidinglayout.SLKeyframe;
-import aurelienribon.slidinglayout.SLPanel;
 import aurelienribon.slidinglayout.SLSide;
 
-public class EPanel extends SLPanel {
+/**
+ * An Extended Panel (EPanel) shows an additional panel over another panel.
+ */
+public class EPanel extends SlidingPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -45,17 +48,13 @@ public class EPanel extends SLPanel {
 
 	private ENote note = new ENote();
 
-	private boolean open = false;
-	private boolean moving = false;
-
-	private int transitionTime = 900;
-
 	public EPanel(JPanel main) {
 		this(main, SLSide.BOTTOM);
 	}
 
 	public EPanel(JPanel main, SLSide o) {
 		this.orientation = o;
+		this.transitionTime = 0.9f;
 
 		movingBar = new MovablePanel(note);
 		movingMain = new MovablePanel(main);
@@ -78,14 +77,6 @@ public class EPanel extends SLPanel {
 		this.setTweenManager(SLAnimator.createTweenManager());
 		this.initialize(pos1);
 
-	}
-
-	public boolean isOpen() {
-		return open;
-	}
-
-	public boolean isMoving() {
-		return moving;
 	}
 
 	public void raise(JPanel panel, int height, boolean persist) {
@@ -164,16 +155,14 @@ public class EPanel extends SLPanel {
 			open = true;
 			note.setPanel(panel);
 
-			moving = true;
 			movingMain.runAction();
-			new EndMotion().execute();
 		}
 
 	}
 
 	class WaitAndRaise extends SwingWorker<Void, Void> {
 		protected Void doInBackground() throws Exception {
-			Thread.sleep(transitionTime);
+			Thread.sleep((int) (transitionTime * 1000));
 			return null;
 		}
 
@@ -181,21 +170,7 @@ public class EPanel extends SLPanel {
 			open = true;
 			note.setPanel(lastPanel);
 
-			moving = true;
 			movingMain.runAction();
-			new EndMotion().execute();
-		}
-	}
-
-	class EndMotion extends SwingWorker<Void, Void> {
-		protected Void doInBackground() throws Exception {
-			moving = true;
-			Thread.sleep(transitionTime);
-			return null;
-		}
-
-		protected void done() {
-			moving = false;
 		}
 	}
 
@@ -206,7 +181,6 @@ public class EPanel extends SLPanel {
 	public void drop(boolean checkPersist) {
 		if (isOpen()) {
 			movingMain.runAction();
-			new EndMotion().execute();
 			open = false;
 
 			if (checkPersist && persistPanel != null) {
@@ -225,10 +199,12 @@ public class EPanel extends SLPanel {
 	private final Runnable actionUP = new Runnable() {
 		@Override
 		public void run() {
-			EPanel.this.createTransition().push(new SLKeyframe(pos2, transitionTime / 1000f)
+			moving = true;
+			EPanel.this.createTransition().push(new SLKeyframe(pos2, transitionTime)
 					.setStartSide(orientation, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
+							moving = false;
 							movingMain.setAction(actionDN);
 						}
 					})).play();
@@ -238,10 +214,12 @@ public class EPanel extends SLPanel {
 	private final Runnable actionDN = new Runnable() {
 		@Override
 		public void run() {
-			EPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
-					.setEndSide(orientation, movingBar).setCallback(new SLKeyframe.Callback() {
+			moving = true;
+			EPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime).setEndSide(orientation, movingBar)
+					.setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
+							moving = false;
 							movingMain.setAction(actionUP);
 						}
 					})).play();

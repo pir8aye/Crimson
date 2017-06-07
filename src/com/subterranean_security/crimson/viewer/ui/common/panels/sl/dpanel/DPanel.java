@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
+package com.subterranean_security.crimson.viewer.ui.common.panels.sl.dpanel;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
@@ -32,24 +32,28 @@ import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
-import com.subterranean_security.crimson.universal.stores.PrefStore.PTag;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.lpanel.LPanel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.MovablePanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.SlidingPanel;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.dpanel.DModule;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules.NetInterfaces;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules.Preview;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules.Processor;
-import com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules.WorldMap;
+import com.subterranean_security.crimson.viewer.ui.screen.main.dmodules.NetInterfaces;
+import com.subterranean_security.crimson.viewer.ui.screen.main.dmodules.Preview;
+import com.subterranean_security.crimson.viewer.ui.screen.main.dmodules.Processor;
+import com.subterranean_security.crimson.viewer.ui.screen.main.dmodules.WorldMap;
 
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.slidinglayout.SLConfig;
 import aurelienribon.slidinglayout.SLKeyframe;
-import aurelienribon.slidinglayout.SLPanel;
 import aurelienribon.slidinglayout.SLSide;
 
-public class DPanel extends SLPanel {
+/**
+ * A Detail Panel (DPanel) shows a panel containing host information on the
+ * right side of the screen.
+ */
+public class DPanel extends SlidingPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -61,20 +65,12 @@ public class DPanel extends SLPanel {
 
 	public Detail detail = new Detail(this);
 
-	private boolean showing = false;
-	private boolean moving = false;
-
-	public boolean isOpen() {
-		return showing;
-	}
-
-	public boolean isMoving() {
-		return moving;
-	}
-
-	private static int transitionTime = 900;
-
 	public DPanel(JPanel main) {
+		this(main, 0.9f);
+	}
+
+	public DPanel(JPanel main, float transitionTime) {
+		this.transitionTime = transitionTime;
 
 		movingBar = new MovablePanel(detail);
 		movingMain = new MovablePanel(main);
@@ -99,13 +95,13 @@ public class DPanel extends SLPanel {
 
 	public void showDetail(ClientProfile sp) {
 		if (!moving) {
-			if (!showing) {
+			if (!open) {
 				// refresh width
 				// refreshWidth();
 
 				// move the detail panel out
 				movingMain.runAction();
-				showing = true;
+				open = true;
 			}
 
 			detail.nowOpen(sp);
@@ -115,11 +111,11 @@ public class DPanel extends SLPanel {
 	}
 
 	public void closeDetail() {
-		if (showing && !moving) {
+		if (open && !moving) {
 			// move the detail panel back
 			movingMain.runAction();
 			detail.nowClosed();
-			showing = false;
+			open = false;
 
 		}
 
@@ -129,12 +125,12 @@ public class DPanel extends SLPanel {
 		@Override
 		public void run() {
 			moving = true;
-			DPanel.this.createTransition().push(new SLKeyframe(pos2, transitionTime / 1000f)
+			DPanel.this.createTransition().push(new SLKeyframe(pos2, transitionTime)
 					.setStartSide(SLSide.RIGHT, movingBar).setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
-							movingMain.setAction(actionDN);
 							moving = false;
+							movingMain.setAction(actionDN);
 						}
 					})).play();
 		}
@@ -144,12 +140,12 @@ public class DPanel extends SLPanel {
 		@Override
 		public void run() {
 			moving = true;
-			DPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime / 1000f)
-					.setEndSide(SLSide.RIGHT, movingBar).setCallback(new SLKeyframe.Callback() {
+			DPanel.this.createTransition().push(new SLKeyframe(pos1, transitionTime).setEndSide(SLSide.RIGHT, movingBar)
+					.setCallback(new SLKeyframe.Callback() {
 						@Override
 						public void done() {
-							movingMain.setAction(actionUP);
 							moving = false;
+							movingMain.setAction(actionUP);
 						}
 					})).play();
 		}

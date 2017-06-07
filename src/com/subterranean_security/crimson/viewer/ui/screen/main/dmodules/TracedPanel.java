@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.main.detail.dmodules;
+package com.subterranean_security.crimson.viewer.ui.screen.main.dmodules;
 
 import java.util.Date;
 import java.util.HashMap;

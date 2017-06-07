@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2017 Subterranean Security                    *
+ *                    Copyright 2016 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,43 +15,26 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common.panels.sl;
+package com.subterranean_security.crimson.viewer.ui.common.panels.sl.dpanel;
 
-import aurelienribon.slidinglayout.SLPanel;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
-public abstract class SlidingPanel extends SLPanel {
+public interface DModule extends Comparable<DModule> {
 
-	private static final long serialVersionUID = 1L;
+	void setTarget(ClientProfile p);
 
-	/**
-	 * The time needed for the transition
-	 */
-	protected float transitionTime;
+	boolean isDetailOpen();
 
-	/**
-	 * Whether the panel is currently engaged in a transition
-	 */
-	protected boolean moving;
+	void setShowing(boolean showing);
 
-	/**
-	 * Whether the panel is currently "open". Not all panels may have a
-	 * meaningful open state.
-	 */
-	protected boolean open;
+	void updateGraphics();
 
-	/**
-	 * @return True if the panel is moving, false otherwise
-	 */
-	public boolean isMoving() {
-		return moving;
-	}
+	int getWeight();
+	
+	int getDWidth();
 
-	/**
-	 * @return True if the panel is open, false if the panel is closed or does
-	 *         not define an open state
-	 */
-	public boolean isOpen() {
-		return open;
+	default int compareTo(DModule o) {
+		return (getWeight() - o.getWeight());
 	}
 
 }

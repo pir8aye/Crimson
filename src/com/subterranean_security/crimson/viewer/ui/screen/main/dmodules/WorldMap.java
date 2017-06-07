@@ -15,26 +15,57 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.screen.main.detail;
+package com.subterranean_security.crimson.viewer.ui.screen.main.dmodules;
+
+import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.dpanel.DModule;
 
-public interface DModule extends Comparable<DModule> {
+public class WorldMap extends JPanel implements DModule {
 
-	void setTarget(ClientProfile p);
+	private static final long serialVersionUID = 1L;
 
-	boolean isDetailOpen();
+	@Override
+	public void setTarget(ClientProfile p) {
+		// TODO Auto-generated method stub
 
-	void setShowing(boolean showing);
+	}
 
-	void updateGraphics();
+	@Override
+	public void updateGraphics() {
+		// TODO Auto-generated method stub
 
-	int getWeight();
-	
-	int getDWidth();
+	}
 
-	default int compareTo(DModule o) {
-		return (getWeight() - o.getWeight());
+	@Override
+	public void setShowing(boolean showing) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int getWeight() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int compareTo(DModule o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getDWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isDetailOpen() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

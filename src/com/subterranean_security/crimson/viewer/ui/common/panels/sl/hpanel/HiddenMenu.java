@@ -63,8 +63,8 @@ public class HiddenMenu extends JPanel {
 
 	private void initBtns(JButton[] btns) {
 		JPanel buttons = new JPanel();
-		buttons.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Additional Actions",
-				TitledBorder.LEADING, TitledBorder.TOP, new Font("Dialog", Font.BOLD, 10), new Color(51, 51, 51)));
+		buttons.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "More Actions",
+				TitledBorder.LEADING, TitledBorder.TOP, new Font("Dialog", Font.BOLD, 10), null));
 		buttons.setLayout(new BorderLayout(0, 0));
 
 		btn = new JPanel(new FlowLayout(FlowLayout.LEFT, 7, 2));

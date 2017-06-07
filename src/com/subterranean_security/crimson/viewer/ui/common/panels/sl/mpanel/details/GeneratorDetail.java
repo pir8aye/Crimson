@@ -27,12 +27,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.about.AboutDialog;
-import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
-import com.subterranean_security.crimson.viewer.ui.screen.serials.AddSerial;
 
 public class GeneratorDetail extends JPanel {
 
@@ -88,13 +85,6 @@ public class GeneratorDetail extends JPanel {
 		btnSerialKey.setSize(88, 20);
 		btnSerialKey.setFocusable(false);
 		btnSerialKey.addActionListener(e -> {
-			if (ViewerState.trialMode) {
-				// show add serial EP
-				MainFrame.main.ep.raise(new AddSerial(MainFrame.main.ep), 100);
-			} else {
-				// open serial manager
-			}
-			parent.drop();
 		});
 		btnSerialKey.setMargin(new Insets(2, 4, 2, 4));
 		panel.add(btnSerialKey);

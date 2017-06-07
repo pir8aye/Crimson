@@ -33,51 +33,22 @@ import com.subterranean_security.crimson.viewer.ui.UIUtil;
 public class Notification extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private JLabel text = new JLabel();
-	private JLabel icon = new JLabel();
-	private Runnable r;
-	private final JPanel panel = new JPanel();
-	private final JLabel label = new JLabel(" ");
+	private JLabel text;
+	private JLabel icon;
+	private JPanel panel;
 	private JLabel subtext;
 
-	public Notification() {
+	public Notification(String type, String string, String subtext, Runnable r) {
+		init();
+
+		this.subtext.setText(subtext);
+		this.text.setText(string);
 		this.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-
 				new Thread(r).start();
-
 			}
 		});
-
-		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		setLayout(new BorderLayout(0, 0));
-		add(icon, BorderLayout.WEST);
-
-		add(panel, BorderLayout.CENTER);
-		panel.setLayout(new BorderLayout(0, 0));
-		text.setOpaque(true);
-		panel.add(text, BorderLayout.CENTER);
-
-		text.setFont(new Font("Dialog", Font.BOLD, 10));
-
-		subtext = new JLabel(" ");
-		subtext.setFocusable(false);
-		subtext.setBackground(null);
-		panel.add(subtext, BorderLayout.SOUTH);
-		subtext.setForeground(Color.GRAY);
-		subtext.setHorizontalAlignment(SwingConstants.CENTER);
-		subtext.setFont(new Font("Dialog", Font.BOLD, 9));
-		label.setFont(new Font("Dialog", Font.BOLD, 9));
-
-		panel.add(label, BorderLayout.NORTH);
-	}
-
-	public void set(String type, String string, String subtext, Runnable r) {
-		this.subtext.setText(subtext);
-
-		text.setText(string);
-		this.r = r;
 
 		switch (type) {
 		case ("error"): {
@@ -94,5 +65,33 @@ public class Notification extends JPanel {
 		}
 		}
 
+	}
+
+	private void init() {
+		setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		setLayout(new BorderLayout(0, 0));
+
+		icon = new JLabel();
+		add(icon, BorderLayout.WEST);
+
+		panel = new JPanel(new BorderLayout(0, 0));
+		add(panel, BorderLayout.CENTER);
+
+		text = new JLabel();
+		text.setOpaque(true);
+		text.setFont(new Font("Dialog", Font.BOLD, 10));
+		panel.add(text, BorderLayout.CENTER);
+
+		subtext = new JLabel(" ");
+		subtext.setFocusable(false);
+		subtext.setBackground(null);
+		subtext.setForeground(Color.GRAY);
+		subtext.setHorizontalAlignment(SwingConstants.CENTER);
+		subtext.setFont(new Font("Dialog", Font.BOLD, 9));
+		panel.add(subtext, BorderLayout.SOUTH);
+
+		JLabel spacer = new JLabel(" ");
+		spacer.setFont(new Font("Dialog", Font.BOLD, 9));
+		panel.add(spacer, BorderLayout.NORTH);
 	}
 }
