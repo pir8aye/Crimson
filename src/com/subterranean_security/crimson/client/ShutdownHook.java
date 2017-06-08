@@ -24,7 +24,10 @@ import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 
-public class ShutdownHook extends Thread {
+/**
+ * Terminate the client instance
+ */
+public final class ShutdownHook extends Thread {
 
 	private static final Logger log = LoggerFactory.getLogger(ShutdownHook.class);
 
