@@ -20,33 +20,88 @@ package com.subterranean_security.crimson.sv.permissions;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import com.subterranean_security.crimson.core.util.IDGen.Reserved;
+
+/**
+ * Both server and client permissions are handled by a ViewerPermissions
+ * object.<br>
+ * <br>
+ * 
+ * A permission flag is encoded in a 64 bit long:<br>
+ * [32 bits] CVID/AuthID<br>
+ * [16 bits] Reserved<br>
+ * [16 bits] Permission Identifier<br>
+ * 
+ */
 public class ViewerPermissions implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<Long> flags = new ArrayList<Long>();
+	private Set<Long> flags;
 
 	public ViewerPermissions() {
+		flags = new TreeSet<Long>();
+	}
 
+	public ViewerPermissions(ViewerPermissions base) {
+		this();
+		flags.addAll(base.flags);
 	}
 
 	public ViewerPermissions(List<Long> data) {
-		load(data);
+		this();
+		flags.addAll(data);
 	}
 
-	public ViewerPermissions addFlag(int perm, boolean b) {
+	public void add(List<Long> data) {
+		flags.addAll(data);
+	}
+
+	public void intersect(List<Long> data) {
+
+	}
+
+	public void subtract(List<Long> data) {
+
+	}
+
+	/**
+	 * Set a permission
+	 * 
+	 * @param cid
+	 * @param perm
+	 * @param b
+	 * @return this
+	 */
+	public ViewerPermissions setFlag(int cid, short perm, boolean b) {
 		if (b)
-			return addFlag(0, perm);
+			return addFlag(cid, perm);
 		else
-			return this;
+			return delFlag(cid, perm);
 	}
 
-	public ViewerPermissions addFlag(int perm) {
-		return addFlag(0, perm);
+	/**
+	 * Set a server permission
+	 * 
+	 * @param perm
+	 * @param b
+	 * @return
+	 */
+	public ViewerPermissions setFlag(short perm, boolean b) {
+		return setFlag(Reserved.SERVER, perm, b);
 	}
 
-	public ViewerPermissions addFlag(int cid, int perm) {
+	/**
+	 * Add a permission
+	 * 
+	 * @param cid
+	 * @param perm
+	 * @return
+	 */
+	public ViewerPermissions addFlag(int cid, short perm) {
 		long flag = translateFlag(cid, perm);
 		if (!flags.contains(flag)) {
 			flags.add(flag);
@@ -54,38 +109,101 @@ public class ViewerPermissions implements Serializable {
 		return this;
 	}
 
-	public boolean getFlag(int perm) {
-		return getFlag(0, perm);
+	/**
+	 * Add a server permission
+	 * 
+	 * @param perm
+	 * @return
+	 */
+	public ViewerPermissions addFlag(short perm) {
+		return addFlag(Reserved.SERVER, perm);
 	}
 
-	public boolean getFlag(int cid, int perm) {
+	/**
+	 * Remove a permission
+	 * 
+	 * @param cid
+	 * @param perm
+	 * @return this
+	 */
+	public ViewerPermissions delFlag(int cid, short perm) {
+		flags.remove(translateFlag(cid, perm));
+		return this;
+	}
+
+	/**
+	 * Remove a server permission
+	 * 
+	 * @param perm
+	 * @return
+	 */
+	public ViewerPermissions delFlag(short perm) {
+		return delFlag(Reserved.SERVER, perm);
+	}
+
+	/**
+	 * Query a permission
+	 * 
+	 * @param cid
+	 * @param perm
+	 * @return
+	 */
+	public boolean getFlag(int cid, short perm) {
 		return (flags.contains((long) Perm.Super) || flags.contains(translateFlag(cid, perm)));
 	}
 
-	public void load(List<Long> data) {
-		flags.addAll(data);
+	/**
+	 * Query a server permission
+	 * 
+	 * @param perm
+	 * @return
+	 */
+	public boolean getFlag(short perm) {
+		return getFlag(Reserved.SERVER, perm);
 	}
 
-	public List<Integer> listPermissions(int cid) {
-		List<Integer> list = new ArrayList<Integer>();
+	/**
+	 * Get all permissions for a specific CVID/AuthID
+	 * 
+	 * @param cid
+	 * @return
+	 */
+	public List<Short> getPermissions(int cid) {
+		List<Short> list = new ArrayList<>();
 		for (long l : flags) {
-			if ((l & 0xFFFFFFFF) == cid) {
-				list.add((int) (l >> 32));
+			if ((l >> 32) == cid) {
+				list.add((short) (l & 0xFFFF));
 			}
 		}
 		return list;
 	}
 
-	public List<Long> listPermissions() {
-		return flags;
+	/**
+	 * Get all flags
+	 * 
+	 * @return
+	 */
+	public List<Long> getFlags() {
+		List<Long> list = new ArrayList<>();
+		list.addAll(flags);
+		return list;
 	}
 
-	public static long translateFlag(int cid, int perm) {
-		// the permission identifier exists in the upper 32 bits
-		long flag = ((long) perm) << 32;
+	/**
+	 * Transform a CVID/AuthID and Permission into a flag using the default
+	 * encoding scheme.
+	 * 
+	 * @param cid
+	 * @param perm
+	 * @return
+	 */
+	public static long translateFlag(int cid, short perm) {
+		// the CVID/AuthID exists in the upper 32 bits
+		long flag = ((long) cid) << 32;
 
-		// the cid occupies the lower 32 bits
-		flag += cid;
+		// the permission identifier occupies the lower 16 bits
+		flag += ((long) perm);
+
 		return flag;
 	}
 
