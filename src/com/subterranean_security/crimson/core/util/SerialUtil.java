@@ -15,71 +15,67 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.misc;
+package com.subterranean_security.crimson.core.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
 
-public enum ObjectTransfer {
-	;
+public final class SerialUtil {
 
-	public static class ProtoBuffer {
+	public static final boolean compress = false;
 
-		public static byte[] serialize(Object o) {
+	/**
+	 * Serialize an object with the default serializer.
+	 * 
+	 * @param object
+	 *            Object which must be Serializable
+	 * @return An array representing the object
+	 */
+	public static byte[] serialize(Object object) {
+		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 
-			return null;
+		OutputStream out = byteOut;
+		if (compress) {
+			out = new DeflaterOutputStream(byteOut);
 		}
 
-		public static Object deserialize(byte[] bytes) {
-
-			return null;
+		try (ObjectOutputStream oos = new ObjectOutputStream(out)) {
+			oos.writeObject(object);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
+		return byteOut.toByteArray();
 	}
 
-	public static class Default {
+	/**
+	 * Deserialize an object which was serialized with the default serializer
+	 * 
+	 * @param object
+	 * @return The restored object
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	public static Serializable deserialize(byte[] object) throws IOException, ClassNotFoundException {
+		ByteArrayInputStream byteIn = new ByteArrayInputStream(object);
 
-		public static byte[] serialize(Serializable object) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos;
-			try {
-				oos = new ObjectOutputStream(baos);
-				oos.writeObject(object);
-				oos.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			return baos.toByteArray();
-
+		InputStream in = byteIn;
+		if (compress) {
+			in = new InflaterInputStream(byteIn);
 		}
 
-		public static byte[] serialize(Object o) {
-			return serialize((Serializable) o);
+		try (ObjectInputStream ois = new ObjectInputStream(in)) {
+			return (Serializable) ois.readObject();
 		}
-
-		public static Serializable deserialize(byte[] object) throws Exception {
-			if (object == null) {
-				throw new Exception();
-			}
-			ObjectInputStream ois = null;
-			try {
-				ois = new ObjectInputStream(new ByteArrayInputStream(object));
-				return (Serializable) ois.readObject();
-			} catch (IllegalArgumentException | IOException | ClassNotFoundException e1) {
-				throw new Exception();
-			} finally {
-				try {
-					ois.close();
-				} catch (Exception e) {
-				}
-			}
-		}
-
 	}
+
 }
