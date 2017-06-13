@@ -15,37 +15,35 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.misc;
+package com.subterranean_security.crimson.core.struct.collections.cached;
 
-import java.io.Serializable;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
-import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 
-public class MemMap<K, V> implements Serializable, Map<K, V> {
+/**
+ * 
+ *
+ * @param <K>
+ * @param <V>
+ */
+public class CachedMap<K, V> extends CachedCollection implements Map<K, V> {
 
 	private static final long serialVersionUID = 1L;
 
-	private transient StorageFacility database;
-
 	private HashMap<K, Integer> index;
 
-	public MemMap(StorageFacility d) {
+	public CachedMap(BasicStorageFacility d) {
 		this();
 		setDatabase(d);
 	}
 
-	public MemMap() {
+	public CachedMap() {
 		index = new HashMap<K, Integer>();
-	}
-
-	public void setDatabase(StorageFacility d) {
-		this.database = d;
 	}
 
 	@Override
@@ -61,18 +59,12 @@ public class MemMap<K, V> implements Serializable, Map<K, V> {
 		return value;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public V get(Object key) {
-		try {
-			return (V) database.getObject(index.get(key));
-		} catch (NoSuchElementException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		if (index.get(key) == null)
+			return null;
+		return (V) database.getObject(index.get(key));
 	}
 
 	@Override
@@ -106,7 +98,7 @@ public class MemMap<K, V> implements Serializable, Map<K, V> {
 	}
 
 	@Override
-	public Set<java.util.Map.Entry<K, V>> entrySet() {
+	public Set<Entry<K, V>> entrySet() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -116,8 +108,13 @@ public class MemMap<K, V> implements Serializable, Map<K, V> {
 	}
 
 	@Override
+	// TODO return a CachedList
 	public Collection<V> values() {
-		throw new UnsupportedOperationException();
+		Collection<V> values = new ArrayList<>();
+		for (K key : keySet()) {
+			values.add(get(key));
+		}
+		return values;
 	}
 
 }

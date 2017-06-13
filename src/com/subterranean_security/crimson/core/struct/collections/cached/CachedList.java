@@ -15,46 +15,36 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.misc;
+package com.subterranean_security.crimson.core.struct.collections.cached;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
-import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 
 /**
- * A MemList indexes values which are stored in an underlying database
+ * A CachedList indexes values which are stored in an underlying database
  *
  * @param <T>
+ *            The type of values stored in the database
  */
-public class MemList<T> implements Serializable, List<T> {
+public class CachedList<T> extends CachedCollection implements List<T> {
 
 	private static final long serialVersionUID = 1L;
 
-	private transient StorageFacility database;
-
 	private List<Integer> index;
 
-	public MemList() {
+	public CachedList() {
 		index = new ArrayList<Integer>();
 	}
 
-	public MemList(StorageFacility d) {
+	public CachedList(BasicStorageFacility d) {
 		this();
 		setDatabase(d);
-	}
-
-	/**
-	 * Use the specified storage facility for list elements
-	 * 
-	 * @param d
-	 */
-	public void setDatabase(StorageFacility d) {
-		this.database = d;
 	}
 
 	@Override
@@ -74,7 +64,6 @@ public class MemList<T> implements Serializable, List<T> {
 		} catch (Exception e) {
 			return null;
 		}
-
 	}
 
 	@Override
@@ -128,7 +117,27 @@ public class MemList<T> implements Serializable, List<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		throw new UnsupportedOperationException();
+		return new Iterator<T>() {
+
+			private int current = 0;
+
+			@Override
+			public boolean hasNext() {
+				return current < index.size();
+			}
+
+			@Override
+			public T next() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+				return get(current++);
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 
 	@Override
@@ -138,12 +147,66 @@ public class MemList<T> implements Serializable, List<T> {
 
 	@Override
 	public ListIterator<T> listIterator() {
-		throw new UnsupportedOperationException();
+		return listIterator(0);
 	}
 
 	@Override
 	public ListIterator<T> listIterator(int arg0) {
-		throw new UnsupportedOperationException();
+		return new ListIterator<T>() {
+
+			private int current = arg0;
+
+			@Override
+			public boolean hasNext() {
+				return current < index.size();
+			}
+
+			@Override
+			public T next() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+
+				return get(current++);
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void add(T arg0) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public boolean hasPrevious() {
+				return current > 0;
+			}
+
+			@Override
+			public int nextIndex() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public T previous() {
+				if (!hasPrevious())
+					throw new NoSuchElementException();
+
+				return get(current--);
+			}
+
+			@Override
+			public int previousIndex() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void set(T arg0) {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 
 	@Override
@@ -162,13 +225,30 @@ public class MemList<T> implements Serializable, List<T> {
 	}
 
 	@Override
-	public T set(int arg0, T arg1) {
-		throw new UnsupportedOperationException();
+	public T set(int i, T value) {
+		if (i < 0 || i >= index.size())
+			throw new IndexOutOfBoundsException();
+
+		// remember previous element
+		T t = get(i);
+
+		// delete
+		database.delete(index.get(i));
+
+		// replace
+		index.add(i, database.store(value));
+
+		return t;
 	}
 
 	@Override
-	public List<T> subList(int arg0, int arg1) {
-		throw new UnsupportedOperationException();
+	public List<T> subList(int i1, int i2) {
+		CachedList<T> sub = new CachedList<>(database);
+		for (int i = i1; i < i2; i++) {
+			sub.index.add(index.get(i));
+		}
+
+		return sub;
 	}
 
 	@Override

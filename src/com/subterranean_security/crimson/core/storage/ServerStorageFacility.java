@@ -17,70 +17,9 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.storage;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.NoSuchElementException;
-
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 
-public interface StorageFacility extends AutoCloseable {
-
-	public void initialize() throws IOException, ClassNotFoundException, SQLException;
-
-	@Override
-	public void close() throws IOException;
-
-	public void store(String key, Object object);
-
-	public int store(Object object);
-
-	public void delete(String key);
-
-	public void delete(int id);
-
-	/*
-	 * String values
-	 */
-
-	public String getString(String key) throws SQLException, NoSuchElementException;
-
-	public String getString(int id) throws IOException;
-
-	/*
-	 * Integer values
-	 */
-
-	public int getInteger(String key) throws SQLException, NoSuchElementException;
-
-	public int getInteger(int id) throws IOException;
-
-	/*
-	 * Long values
-	 */
-
-	public long getLong(String key) throws SQLException, NoSuchElementException;
-
-	public long getLong(int id) throws IOException;
-
-	/*
-	 * Boolean values
-	 */
-
-	public boolean getBoolean(String key) throws SQLException, NoSuchElementException;
-
-	public boolean getBoolean(int id) throws IOException;
-
-	/*
-	 * Object values
-	 */
-
-	public Object getObject(String key) throws SQLException, NoSuchElementException;
-
-	public Object getObject(int id) throws SQLException, NoSuchElementException;
-
-	/*
-	 * Server exclusive methods
-	 */
+public interface ServerStorageFacility extends BasicStorageFacility {
 
 	public boolean userExists(String user);
 

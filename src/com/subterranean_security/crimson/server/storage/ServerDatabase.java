@@ -22,18 +22,17 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
-import com.subterranean_security.crimson.core.misc.MemList;
-import com.subterranean_security.crimson.core.misc.MemMap;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.storage.BasicDatabase;
 import com.subterranean_security.crimson.core.storage.ServerStorageFacility;
+import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
+import com.subterranean_security.crimson.core.struct.collections.cached.CachedMap;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
@@ -163,14 +162,13 @@ public class ServerDatabase extends BasicDatabase implements ServerStorageFacili
 		}
 
 		// create ViewerProfile
-		ViewerProfile vp = new ViewerProfile(IDGen.cvid());
+		ViewerProfile vp = new ViewerProfile();
 		vp.set(AKeySimple.VIEWER_USER, user);
 		vp.setPermissions(permissions);
 
 		try {
-			// TODO use serverstore and fix cinstaller
-			MemMap<Integer, ViewerProfile> map = (MemMap<Integer, ViewerProfile>) getObject("profiles.viewers");
-			map.setDatabase(this);
+			CachedMap<Integer, ViewerProfile> map = (CachedMap<Integer, ViewerProfile>) getCachedCollection(
+					"profiles.viewers");
 			map.put(vp.getCvid(), vp);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -184,10 +182,10 @@ public class ServerDatabase extends BasicDatabase implements ServerStorageFacili
 	public void resetServer() {
 		resetBasic();
 
-		store("auth.methods", new MemList<AuthMethod>());
-		store("listeners", new ArrayList<ListenerConfig>());
-		store("profiles.clients", new MemMap<Integer, ClientProfile>());
-		store("profiles.viewers", new MemMap<Integer, ViewerProfile>());
+		store("auth.methods", new CachedList<AuthMethod>());
+		store("listeners", new CachedList<ListenerConfig>());
+		store("profiles.clients", new CachedMap<Integer, ClientProfile>());
+		store("profiles.viewers", new CachedMap<Integer, ViewerProfile>());
 		store("profiles.idcount", 0);
 	}
 

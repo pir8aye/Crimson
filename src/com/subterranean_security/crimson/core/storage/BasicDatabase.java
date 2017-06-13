@@ -19,8 +19,6 @@ package com.subterranean_security.crimson.core.storage;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,118 +27,112 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
-import javax.sql.rowset.serial.SerialException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
-import com.subterranean_security.crimson.core.misc.MemList;
-import com.subterranean_security.crimson.core.misc.ObjectTransfer;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
-import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
-import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.core.struct.collections.cached.CachedCollection;
+import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
+import com.subterranean_security.crimson.core.util.SerialUtil;
+import com.subterranean_security.crimson.universal.Universal;
 
-public class BasicDatabase implements StorageFacility {
+public class BasicDatabase extends DoubleCacheDatabase implements BasicStorageFacility {
 	private static final Logger log = LoggerFactory.getLogger(BasicDatabase.class);
 
-	private HashMap<String, Object> map = new HashMap<String, Object>();
-	private HashMap<Integer, Object> heap = new HashMap<Integer, Object>();
+	/**
+	 * Initialize a new mysql database
+	 * 
+	 * @param url
+	 *            The location of the database
+	 * @param user
+	 *            The database username
+	 * @param pass
+	 *            The user password
+	 */
+	public BasicDatabase(String url, String user, String pass) {
+		this();
+		if (url == null)
+			throw new IllegalArgumentException();
+		if (user == null)
+			throw new IllegalArgumentException();
+		if (pass == null)
+			throw new IllegalArgumentException();
 
-	protected Connection db;
-	public File sqlite;
+		this.url = url;
+		this.user = user;
+		this.pass = pass;
+	}
 
-	public BasicDatabase(String pref, File sqlite) {
+	/**
+	 * Initialize a new sqlite database
+	 * 
+	 * @param sqlite
+	 *            The file for the database
+	 */
+	public BasicDatabase(File sqlite) {
+		this();
+		if (sqlite == null)
+			throw new IllegalArgumentException("File is null");
+
 		this.sqlite = sqlite;
+	}
+
+	private BasicDatabase() {
+		map = new HashMap<String, Object>();
+		heap = new HashMap<Integer, Object>();
 	}
 
 	@Override
 	public void initialize() throws IOException, ClassNotFoundException, SQLException {
-		initSql();
-	}
-
-	public void initSql() throws IOException, ClassNotFoundException, SQLException {
-
-		// load driver
-		Class.forName("org.sqlite.JDBC");
-
-		// create database if needed
-		sqlite.createNewFile();
-
-		// create connection
-		db = DriverManager.getConnection("jdbc:sqlite:" + sqlite.getAbsolutePath());
+		super.initialize();
 
 		// construct database if needed
-		if (!isTableConstructed()) {
+		if (!isConstructed()) {
 			construct();
 		}
-
-		// increase run count
-		// try {
-		// store("runs", getInteger("runs") + 1);
-		// } catch (Exception e) {
-		// log.error("Could not update run count");
-		// e.printStackTrace();
-		// }
 	}
 
 	/**
-	 * Construct a basic database
+	 * Construct the tables which consist of:<br>
+	 * <ul>
+	 * <li>A "map" which associates Strings and stored objects.</li>
+	 * <li>A "heap" which associates Integers and stored objects.</li>
+	 * </ul>
 	 * 
 	 * @throws SQLException
 	 */
 	private void construct() throws SQLException {
-		execute("CREATE TABLE `map` (`Name` TEXT UNIQUE, `Data` BLOB);");
-		execute("INSERT INTO `map` VALUES ('runs','0');");
-		execute("CREATE TABLE `heap` (`Id` INTEGER PRIMARY KEY AUTOINCREMENT, `Data`  BLOB);");
+		execute("CREATE TABLE `MAP` (`Id` TEXT UNIQUE, `Data` BLOB);");
+		execute("CREATE TABLE `HEAP` (`Id` INTEGER PRIMARY KEY AUTOINCREMENT, `Data`  BLOB);");
 	}
 
-	private boolean isTableConstructed() {
+	/**
+	 * @return True if this database has been constructed
+	 */
+	private boolean isConstructed() {
 		try {
-			return db.getMetaData().getTables(null, null, "map", null).next();
-		} catch (SQLException e) {
-			e.printStackTrace();
+			return db.getMetaData().getTables(null, null, "MAP", null).next()
+					&& db.getMetaData().getTables(null, null, "HEAP", null).next();
+		} catch (Exception e) {
 			return false;
 		}
 	}
 
 	/**
-	 * Query the heap
+	 * Get a Object from the map.
 	 * 
 	 * @param id
-	 * @return
-	 * @throws Exception
+	 * @return The Object associated with the specified key or null
+	 * @throws NoSuchElementException
 	 */
-	private byte[] query(int id) throws Exception {
-
-		PreparedStatement stmt = db.prepareStatement("SELECT * FROM heap WHERE `Id`=?");
-		stmt.setInt(1, id);
-
-		ResultSet rs = stmt.executeQuery();
-		if (!rs.next()) {
-			log.error("Query for: " + id + " failed");
-			throw new Exception();
-		} else {
-			return rs.getBytes("Data");
-		}
-
-	}
-
-	/**
-	 * Get serialized object from heap
-	 * 
-	 * @param id
-	 * @return
-	 * @throws Exception
-	 */
-	public Object getObject(int id) throws SQLException, NoSuchElementException {
+	public Object getObject(int id) {
 		if (!heap.containsKey(id)) {
 			try {
-				heap.put(id, ObjectTransfer.Default.deserialize(query(id)));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				heap.put(id, SerialUtil.deserialize(query(id)));
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException | IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -149,326 +141,233 @@ public class BasicDatabase implements StorageFacility {
 	}
 
 	/**
-	 * Query the map
+	 * Get a Object from the heap.
 	 * 
 	 * @param key
-	 * @return
-	 * @throws Exception
+	 * @return The Object associated with the specified key or null
+	 * @throws NoSuchElementException
 	 */
-	private Object query(String key) throws SQLException, NoSuchElementException {
-
-		// get the object from the database
-		PreparedStatement stmt = db.prepareStatement("SELECT * FROM map WHERE `Name`=?");
-		stmt.setString(1, key);
-
-		ResultSet rs = stmt.executeQuery();
-		if (!rs.next()) {
-			throw new NoSuchElementException();
-		} else {
+	public Object getObject(String key) {
+		if (!map.containsKey(key)) {
 			try {
-				return ObjectTransfer.Default.deserialize(rs.getBytes("Data"));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				map.put(key, SerialUtil.deserialize(query(key)));
+			} catch (SQLException | IOException e) {
 				e.printStackTrace();
-				return null;
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 			}
 		}
-
-	}
-
-	/**
-	 * Get String from map
-	 * 
-	 * @param key
-	 * @return
-	 * @throws Exception
-	 */
-	public String getString(String key) throws SQLException, NoSuchElementException {
-
-		if (map.containsKey(key)) {
-			return (String) map.get(key);
-		}
-
-		// get the string from the database
-		PreparedStatement stmt = db.prepareStatement("SELECT * FROM map WHERE `Name`=?");
-		stmt.setString(1, key);
-
-		ResultSet rs = stmt.executeQuery();
-		if (!rs.next()) {
-			throw new NoSuchElementException();
-		} else {
-			return rs.getString("Data");
-		}
-
-	}
-
-	/**
-	 * Get Long from map
-	 * 
-	 * @param key
-	 * @return
-	 * @throws Exception
-	 */
-	public long getLong(String key) throws SQLException, NoSuchElementException {
-
-		if (map.containsKey(key)) {
-			return (long) map.get(key);
-		}
-
-		// get the string from the database
-		PreparedStatement stmt = db.prepareStatement("SELECT * FROM map WHERE `Name`=?");
-		stmt.setString(1, key);
-
-		ResultSet rs = stmt.executeQuery();
-		if (!rs.next()) {
-			throw new NoSuchElementException();
-		} else {
-			return rs.getLong("Data");
-		}
-
-	}
-
-	/**
-	 * Get Integer from map
-	 * 
-	 * @param key
-	 * @return
-	 * @throws Exception
-	 */
-	public int getInteger(String key) throws SQLException, NoSuchElementException {
-
-		if (map.containsKey(key)) {
-			return (int) map.get(key);
-		}
-
-		// get the integer from the database
-		PreparedStatement stmt = db.prepareStatement("SELECT * FROM map WHERE `Name`=?");
-		stmt.setString(1, key);
-
-		ResultSet rs = stmt.executeQuery();
-		if (!rs.next()) {
-			throw new NoSuchElementException();
-		} else {
-			return rs.getInt("Data");
-		}
-
-	}
-
-	/**
-	 * Get Boolean from map
-	 * 
-	 * @param key
-	 * @return
-	 * @throws Exception
-	 */
-	public boolean getBoolean(String key) throws SQLException, NoSuchElementException {
-
-		if (map.containsKey(key)) {
-			return (boolean) map.get(key);
-		}
-
-		// get the boolean from the database
-		PreparedStatement stmt = db.prepareStatement("SELECT * FROM map WHERE `Name`=?");
-		stmt.setString(1, key);
-
-		ResultSet rs = stmt.executeQuery();
-		if (!rs.next()) {
-			throw new NoSuchElementException();
-		} else {
-			return rs.getBoolean("Data");
-		}
-
-	}
-
-	/**
-	 * Get serialized object from map
-	 * 
-	 * @param key
-	 * @return
-	 * @throws Exception
-	 */
-	@Override
-	public Object getObject(String key) throws SQLException, NoSuchElementException {
-		if (map.containsKey(key)) {
-			return map.get(key);
-		}
-
-		map.put(key, query(key));
 		return map.get(key);
 
 	}
 
 	/**
-	 * Store serialized object in map
+	 * Get a String from the map.
 	 * 
-	 * @param s
-	 * @param o
+	 * @param key
+	 * @return The String associated with the specified key or null
+	 * @throws NoSuchElementException
 	 */
-	@Override
-	public void store(String s, Object o) {
-		synchronized (map) {
-			map.put(s, o);
+	public String getString(String key) {
+		if (!map.containsKey(key)) {
+			try (PreparedStatement stmt = db.prepareStatement("SELECT * FROM MAP WHERE `Id`=?")) {
+				stmt.setString(1, key);
+
+				ResultSet rs = stmt.executeQuery();
+				if (rs.next()) {
+					map.put(key, rs.getString("Data"));
+				} else
+					throw new NoSuchElementException();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
+		return (String) map.get(key);
+	}
+
+	/**
+	 * Get a Long from the map.
+	 * 
+	 * @param key
+	 * @return The Long associated with the specified key or null
+	 * @throws NoSuchElementException
+	 */
+	public long getLong(String key) {
+		if (!map.containsKey(key)) {
+			try (PreparedStatement stmt = db.prepareStatement("SELECT * FROM MAP WHERE `Id`=?")) {
+				stmt.setString(1, key);
+
+				ResultSet rs = stmt.executeQuery();
+				if (rs.next()) {
+					map.put(key, rs.getLong("Data"));
+				} else
+					throw new NoSuchElementException();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return (long) map.get(key);
+	}
+
+	/**
+	 * Get a Integer from the map.
+	 * 
+	 * @param key
+	 * @return The Integer associated with the specified key or null
+	 * @throws NoSuchElementException
+	 */
+	public int getInteger(String key) {
+		if (!map.containsKey(key)) {
+			try (PreparedStatement stmt = db.prepareStatement("SELECT * FROM MAP WHERE `Id`=?")) {
+				stmt.setString(1, key);
+
+				ResultSet rs = stmt.executeQuery();
+				if (rs.next()) {
+					map.put(key, rs.getInt("Data"));
+				} else
+					throw new NoSuchElementException();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return (int) map.get(key);
+	}
+
+	/**
+	 * Get a Boolean from the map.
+	 * 
+	 * @param key
+	 * @return The Boolean associated with the specified key or null
+	 * @throws NoSuchElementException
+	 */
+	public boolean getBoolean(String key) {
+		if (!map.containsKey(key)) {
+			try (PreparedStatement stmt = db.prepareStatement("SELECT * FROM MAP WHERE `Id`=?")) {
+				stmt.setString(1, key);
+
+				ResultSet rs = stmt.executeQuery();
+				if (rs.next()) {
+					map.put(key, rs.getBoolean("Data"));
+				} else
+					throw new NoSuchElementException();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return (boolean) map.get(key);
 
 	}
 
 	/**
-	 * Store serialized object in heap
+	 * Get a String from the heap.
 	 * 
-	 * @param o
-	 * @return
+	 * @param id
+	 * @return The String associated with the specified key or null
+	 * @throws NoSuchElementException
 	 */
-	public int store(Object o) {
-		int id = reserveRow();
-		heap.put(id, o);
-		return id;
-
-	}
-
-	private int reserveRow() {
-		try {
-			String placeholder = RandomUtil.randString(64);
-			PreparedStatement stmt = db.prepareStatement("INSERT INTO heap(Data) VALUES (?)");
-			stmt.setBytes(1, placeholder.getBytes());
-			stmt.executeUpdate();
-
-			PreparedStatement stmt2 = db.prepareStatement("SELECT * FROM heap WHERE `Data`=?");
-			stmt2.setBytes(1, placeholder.getBytes());
-
-			ResultSet rs = stmt2.executeQuery();
-			if (!rs.next()) {
-
-				throw new Exception();
-			} else {
-				return rs.getInt("Id");
-			}
-		} catch (SerialException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0;
-	}
-
-	public void close() {
-		try {
-			flushMap();
-			flushHeap();
-		} catch (SerialException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		try {
-			db.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	public void flushMap() throws SerialException, SQLException {
-		for (String key : map.keySet()) {
-			PreparedStatement stmt = db.prepareStatement("INSERT OR REPLACE INTO map(Name, Data) VALUES (?, ?)");
-			stmt.setString(1, key);
-			if (map.get(key) instanceof String) {
-				stmt.setString(2, (String) map.get(key));
-			} else if (map.get(key) instanceof Integer) {
-				stmt.setInt(2, (int) map.get(key));
-			} else if (map.get(key) instanceof Long) {
-				stmt.setLong(2, (long) map.get(key));
-			} else if (map.get(key) instanceof Boolean) {
-				stmt.setBoolean(2, (boolean) map.get(key));
-			} else {
-				stmt.setBytes(2, ObjectTransfer.Default.serialize(map.get(key)));
-			}
-
-			stmt.executeUpdate();
-		}
-
-	}
-
-	public void flushHeap() throws SQLException {
-		for (Integer id : heap.keySet()) {
-			PreparedStatement stmt = db.prepareStatement("INSERT OR REPLACE INTO heap(Id, Data) VALUES (?, ?)");
-			stmt.setInt(1, id);
-			stmt.setBytes(2, ObjectTransfer.Default.serialize(heap.get(id)));
-			stmt.executeUpdate();
-		}
-	}
-
-	public void delete(String key) {
-		synchronized (map) {
-			map.remove(key);
-			try {
-				PreparedStatement stmt = db.prepareStatement("DELETE FROM map WHERE `Name`=?");
-				stmt.setString(1, key);
-				stmt.executeUpdate();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-	}
-
-	public void delete(int id) {
-		synchronized (heap) {
-			map.remove(id);
-			try {
-				PreparedStatement stmt = db.prepareStatement("DELETE FROM heap WHERE `Id`=?");
+	public String getString(int id) {
+		if (!heap.containsKey(id)) {
+			try (PreparedStatement stmt = db.prepareStatement("SELECT * FROM HEAP WHERE `Id`=?")) {
 				stmt.setInt(1, id);
-				stmt.executeUpdate();
+
+				ResultSet rs = stmt.executeQuery();
+				if (rs.next()) {
+					heap.put(id, rs.getString("Data"));
+				} else
+					throw new NoSuchElementException();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		return (String) heap.get(id);
 	}
 
-	public void execute(String s) throws SQLException {
-		db.createStatement().executeUpdate(s);
+	/**
+	 * Get a Integer from the heap.
+	 * 
+	 * @param id
+	 * @return The Integer associated with the specified key or null
+	 * @throws NoSuchElementException
+	 */
+	public int getInteger(int id) {
+		if (!heap.containsKey(id)) {
+			try (PreparedStatement stmt = db.prepareStatement("SELECT * FROM HEAP WHERE `Id`=?")) {
+				stmt.setInt(1, id);
+
+				ResultSet rs = stmt.executeQuery();
+				if (rs.next()) {
+					heap.put(id, rs.getInt("Data"));
+				} else
+					throw new NoSuchElementException();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return (int) heap.get(id);
 	}
 
-	@Override
-	public String getString(int id) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * Get a Long from the heap.
+	 * 
+	 * @param id
+	 * @return The Long associated with the specified key or null
+	 * @throws NoSuchElementException
+	 */
+	public long getLong(int id) {
+		if (!heap.containsKey(id)) {
+			try (PreparedStatement stmt = db.prepareStatement("SELECT * FROM HEAP WHERE `Id`=?")) {
+				stmt.setInt(1, id);
+
+				ResultSet rs = stmt.executeQuery();
+				if (rs.next()) {
+					heap.put(id, rs.getLong("Data"));
+				} else
+					throw new NoSuchElementException();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return (long) heap.get(id);
 	}
 
-	@Override
-	public int getInteger(int id) throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+	/**
+	 * Get a Boolean from the heap.
+	 * 
+	 * @param id
+	 * @return The Boolean associated with the specified key or null
+	 * @throws NoSuchElementException
+	 */
+	public boolean getBoolean(int id) {
+		if (!heap.containsKey(id)) {
+			try (PreparedStatement stmt = db.prepareStatement("SELECT * FROM HEAP WHERE `Id`=?")) {
+				stmt.setInt(1, id);
+
+				ResultSet rs = stmt.executeQuery();
+				if (rs.next()) {
+					heap.put(id, rs.getBoolean("Data"));
+				} else
+					throw new NoSuchElementException();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return (boolean) heap.get(id);
 	}
 
-	@Override
-	public long getLong(int id) throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public boolean getBoolean(int id) throws IOException {
-		// TODO Auto-generated method stub
-		return false;
+	/**
+	 * Get a CachedCollection from the map.
+	 * 
+	 * @param key
+	 * @return The collection associated with the specified key or null
+	 */
+	public CachedCollection getCachedCollection(String key) {
+		CachedCollection cc = (CachedCollection) getObject(key);
+		cc.setDatabase(this);
+		return cc;
 	}
 
 	public void resetViewer() {
 		resetBasic();
-
-		store("show_detail", true);
-		store("login.recents", new ArrayList<String>());
-		store("profiles.clients", new MemList<ClientProfile>());
 	}
 
 	public void resetClient() {
@@ -478,49 +377,19 @@ public class BasicDatabase implements StorageFacility {
 		store("login-times", new ArrayList<Long>());
 		store("login-ips", new ArrayList<String>());
 
-		store("keylogger.buffer", new MemList<EV_KEvent>());
+		store("keylogger.buffer", new CachedList<EV_KEvent>());
 	}
 
 	public void resetBasic() {
 		store("cvid", 0);
 		store("lcvid", new HashMap<String, Integer>());
 		store("reports.buffer", new ArrayList<MI_Report>());
-		store("crimson.version", Common.version);
-		store("crimson.build_number", Common.build);
+		store("crimson.version", Universal.version);
+		store("crimson.build_number", Universal.build);
 
 		store("error_reporting", true);
 		store("reports.sent", 0);
 		store("language", "en");
-	}
-
-	@Override
-	// SERVER ONLY
-	public boolean userExists(String user) {
-		return false;
-	}
-
-	@Override
-	// SERVER ONLY
-	public String getSalt(String user) {
-		return null;
-	}
-
-	@Override
-	// SERVER ONLY
-	public boolean validLogin(String user, String password) {
-		return false;
-	}
-
-	@Override
-	// SERVER ONLY
-	public boolean changePassword(String user, String password) {
-		return false;
-	}
-
-	@Override
-	// SERVER ONLY
-	public boolean addLocalUser(String user, String password, ViewerPermissions permissions) {
-		return false;
 	}
 
 }
