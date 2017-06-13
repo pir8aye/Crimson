@@ -17,28 +17,21 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.details;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.Insets;
-
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MConstants;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MDetail;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MPanel;
-import com.subterranean_security.crimson.viewer.ui.screen.about.AboutDialog;
 
-public class GeneratorDetail extends JPanel {
+public class GeneratorDetail extends MDetail {
 
 	private static final long serialVersionUID = 1L;
 
-	private MPanel parent;
-
 	public GeneratorDetail(MPanel mp) {
-		parent = mp;
+		super(mp);
 
 		init();
 		initValues();
@@ -46,64 +39,37 @@ public class GeneratorDetail extends JPanel {
 	}
 
 	private void init() {
-		setLayout(null);
-		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		lbl_header.setText("Generator");
+		lbl_header.setIcon(UIUtil.getIcon("icons16/general/compile.png"));
 
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(null);
 		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel.setBounds(10, 39, 104, 88);
+		panel.setBounds(MConstants.PANEL_X_OFFSET, 39, MConstants.PANEL_WIDTH, 108);
 		add(panel);
-		panel.setLayout(null);
 
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel_1.setBounds(10, 8, 104, 21);
-		add(panel_1);
-		panel_1.setLayout(new BorderLayout(0, 0));
-
-		JLabel lblInterface = new JLabel("About");
-		lblInterface.setHorizontalAlignment(SwingConstants.CENTER);
-		lblInterface.setIcon(UIUtil.getIcon("c-16.png"));
-		panel_1.add(lblInterface);
-
-		JButton btnLogs = new JButton(UIUtil.getIcon("icons16/general/error_log.png"));
-		btnLogs.setText("Logs");
-		btnLogs.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnLogs.setLocation(8, 56);
-		btnLogs.setSize(88, 20);
-		btnLogs.setFocusable(false);
-		panel.add(btnLogs);
-		btnLogs.addActionListener(e -> {
+		JButton btnJar = getButton(8, "icons16/general/java.png", "Jar");
+		btnJar.addActionListener(e -> {
 			parent.drop();
 		});
-		btnLogs.setMargin(new Insets(2, 4, 2, 4));
+		panel.add(btnJar);
 
-		JButton btnSerialKey = new JButton(UIUtil.getIcon("icons16/general/barcode_2d.png"));
-		btnSerialKey.setText("Serial Key");
-		btnSerialKey.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnSerialKey.setLocation(8, 32);
-		btnSerialKey.setSize(88, 20);
-		btnSerialKey.setFocusable(false);
-		btnSerialKey.addActionListener(e -> {
+		JButton btnExe = getButton(32, "icons16/files/file_extension_exe.png", "Exe");
+		btnExe.addActionListener(e -> {
 		});
-		btnSerialKey.setMargin(new Insets(2, 4, 2, 4));
-		panel.add(btnSerialKey);
+		panel.add(btnExe);
 
-		JButton btnAbout = new JButton(UIUtil.getIcon("c-16.png"));
-		btnAbout.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnAbout.setText("About");
-		btnAbout.setLocation(8, 8);
-		btnAbout.setSize(88, 20);
-		btnAbout.setFocusable(false);
-		btnAbout.addActionListener(e -> {
-			// TODO DONT allow multiple instances
-			AboutDialog ad = new AboutDialog();
-			ad.setVisible(true);
-
+		JButton btnSh = getButton(56, "icons16/general/java.png", "Sh Script");
+		btnSh.addActionListener(e -> {
 			parent.drop();
 		});
-		btnAbout.setMargin(new Insets(2, 4, 2, 4));
-		panel.add(btnAbout);
+		panel.add(btnSh);
+
+		JButton btnQr = getButton(80, "icons16/general/barcode_2d.png", "QR Code");
+		btnQr.addActionListener(e -> {
+			parent.drop();
+		});
+		panel.add(btnQr);
+
 	}
 
 	private void initValues() {

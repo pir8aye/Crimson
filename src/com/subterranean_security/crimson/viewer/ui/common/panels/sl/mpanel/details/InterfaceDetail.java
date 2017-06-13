@@ -35,30 +35,35 @@ import javax.swing.border.EtchedBorder;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.Tray;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MConstants;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MDetail;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
-public class InterfaceDetail extends JPanel {
+public class InterfaceDetail extends MDetail {
 
 	private static final long serialVersionUID = 1L;
 
 	private JToggleButton tglbtnList;
 	private JToggleButton tglbtnGraph;
 
+	private JToggleButton tglbtnHistory;
+
 	public InterfaceDetail(MPanel mp) {
+		super(mp);
+
 		init();
 		initValues();
 	}
 
 	private void init() {
-		setLayout(null);
-		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		lbl_header.setText("Interface");
+		lbl_header.setIcon(UIUtil.getIcon("icons16/general/application.png"));
 
-		JPanel panel = new JPanel();
-		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel.setBounds(10, 39, 104, 85);
-		add(panel);
-		panel.setLayout(null);
+		JPanel body1 = new JPanel(null);
+		body1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		body1.setBounds(MConstants.PANEL_X_OFFSET, 39, MConstants.PANEL_WIDTH, 88);
+		add(body1);
 
 		tglbtnList = new JToggleButton("Host List");
 		tglbtnList.setIcon(UIUtil.getIcon("icons16/general/view_list.png"));
@@ -70,8 +75,8 @@ public class InterfaceDetail extends JPanel {
 
 		tglbtnList.setFont(new Font("Dialog", Font.BOLD, 10));
 		tglbtnList.setMargin(new Insets(2, 2, 2, 2));
-		tglbtnList.setBounds(8, 8, 88, 20);
-		panel.add(tglbtnList);
+		tglbtnList.setBounds(MConstants.BUTTON_X_OFFSET, 8, MConstants.BUTTON_WIDTH, 20);
+		body1.add(tglbtnList);
 
 		tglbtnGraph = new JToggleButton("Host Graph");
 		tglbtnGraph.setIcon(UIUtil.getIcon("icons16/general/view_graph.png"));
@@ -83,41 +88,28 @@ public class InterfaceDetail extends JPanel {
 		});
 
 		tglbtnGraph.setFont(new Font("Dialog", Font.BOLD, 10));
-		tglbtnGraph.setBounds(8, 32, 88, 20);
-		panel.add(tglbtnGraph);
+		tglbtnGraph.setBounds(MConstants.BUTTON_X_OFFSET, 32, MConstants.BUTTON_WIDTH, 20);
+		body1.add(tglbtnGraph);
+
+		tglbtnHistory = new JToggleButton("History");
+		tglbtnHistory.setIcon(UIUtil.getIcon("icons16/general/view_history.png"));
+		tglbtnHistory.setEnabled(false);
+		tglbtnHistory.setMargin(new Insets(2, 4, 2, 4));
+		tglbtnHistory.setFont(new Font("Dialog", Font.BOLD, 10));
+		tglbtnHistory.setBounds(MConstants.BUTTON_X_OFFSET, 56, MConstants.BUTTON_WIDTH, 20);
+		body1.add(tglbtnHistory);
 
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(tglbtnList);
 		bg.add(tglbtnGraph);
+		bg.add(tglbtnHistory);
 
-		JButton btnViewHistory = new JButton("History");
-		btnViewHistory.setIcon(UIUtil.getIcon("icons16/general/view_history.png"));
-		btnViewHistory.setEnabled(false);
-		btnViewHistory.setMargin(new Insets(2, 4, 2, 4));
-		btnViewHistory.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnViewHistory.setBounds(8, 56, 88, 20);
-		panel.add(btnViewHistory);
+		JPanel body2 = new JPanel(null);
+		body2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		body2.setBounds(MConstants.PANEL_X_OFFSET, 134, MConstants.PANEL_WIDTH, 60);
+		add(body2);
 
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel_1.setBounds(10, 8, 104, 21);
-		add(panel_1);
-		panel_1.setLayout(new BorderLayout(0, 0));
-
-		JLabel lblInterface = new JLabel("Interface");
-		lblInterface.setHorizontalAlignment(SwingConstants.CENTER);
-		lblInterface.setIcon(UIUtil.getIcon("icons16/general/application.png"));
-		panel_1.add(lblInterface);
-
-		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel_2.setBounds(10, 134, 104, 60);
-		add(panel_2);
-		panel_2.setLayout(null);
-
-		JButton btnViewConsole = new JButton("Console");
-		btnViewConsole.setMargin(new Insets(2, 2, 2, 2));
-		btnViewConsole.setIcon(UIUtil.getIcon("icons16/general/view_console.png"));
+		JButton btnViewConsole = getButton(8, "icons16/general/view_console.png", "Console");
 		btnViewConsole.setSelected(true);
 		btnViewConsole.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -133,41 +125,26 @@ public class InterfaceDetail extends JPanel {
 
 			}
 		});
-		btnViewConsole.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnViewConsole.setBounds(8, 8, 88, 20);
-		panel_2.add(btnViewConsole);
+		body2.add(btnViewConsole);
 
-		JButton btnSidebar = new JButton("Sidebar");
-		btnSidebar.setIcon(UIUtil.getIcon("icons16/general/sidebar.png"));
-		btnSidebar.setMargin(new Insets(2, 2, 2, 2));
-		btnSidebar.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnSidebar.setBounds(8, 32, 88, 20);
-		panel_2.add(btnSidebar);
+		JButton btnSidebar = getButton(32, "icons16/general/sidebar.png", "Sidebar");
+		body2.add(btnSidebar);
 
-		JPanel panel_3 = new JPanel();
-		panel_3.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel_3.setBounds(10, 204, 104, 60);
-		add(panel_3);
-		panel_3.setLayout(null);
+		JPanel body3 = new JPanel(null);
+		body3.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		body3.setBounds(MConstants.PANEL_X_OFFSET, 204, MConstants.PANEL_WIDTH, 60);
+		add(body3);
 
-		JButton btnCloseToTray = new JButton("Run in Tray");
-		btnCloseToTray.setBounds(8, 8, 88, 20);
-		panel_3.add(btnCloseToTray);
+		JButton btnCloseToTray = getButton(8, "icons16/general/server.png", "Run in Tray");
 		btnCloseToTray.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Tray.addTray();
 			}
 		});
-		btnCloseToTray.setMargin(new Insets(2, 4, 2, 4));
-		btnCloseToTray.setEnabled(SystemTray.isSupported());
-		btnCloseToTray.setFont(new Font("Dialog", Font.BOLD, 10));
+		body3.add(btnCloseToTray);
 
-		JButton btnLogOff = new JButton("Log Off");
-		btnLogOff.setIcon(UIUtil.getIcon("icons16/general/door.png"));
-		btnLogOff.setMargin(new Insets(2, 4, 2, 4));
-		btnLogOff.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnLogOff.setBounds(8, 32, 88, 20);
-		panel_3.add(btnLogOff);
+		JButton btnLogOff = getButton(32, "icons16/general/door.png", "Log Off");
+		body3.add(btnLogOff);
 	}
 
 	private void initValues() {

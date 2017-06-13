@@ -17,35 +17,29 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.details;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.Insets;
-
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MConstants;
+import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MDetail;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 import com.subterranean_security.crimson.viewer.ui.screen.netman.NetMan;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.SettingsDialog;
 import com.subterranean_security.crimson.viewer.ui.screen.users.UserMan;
 
-public class ConfigDetail extends JPanel {
+public class ConfigDetail extends MDetail {
 
 	private static final long serialVersionUID = 1L;
 
-	private MPanel parent;
-
 	public ConfigDetail(MPanel mp) {
-		parent = mp;
+		super(mp);
 
 		init();
 		initValues();
@@ -53,37 +47,19 @@ public class ConfigDetail extends JPanel {
 	}
 
 	private void init() {
-		setLayout(null);
-		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+		lbl_header.setText("Config");
+		lbl_header.setIcon(UIUtil.getIcon("icons16/general/cog.png"));
 
-		JPanel panel = new JPanel();
-		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel.setBounds(10, 39, 104, 108);
-		add(panel);
-		panel.setLayout(null);
+		JPanel body = new JPanel(null);
+		body.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		body.setBounds(MConstants.PANEL_X_OFFSET, 39, MConstants.PANEL_WIDTH, 108);
+		add(body);
 
-		JPanel panel_1 = new JPanel();
-		panel_1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		panel_1.setBounds(10, 8, 104, 21);
-		add(panel_1);
-		panel_1.setLayout(new BorderLayout(0, 0));
-
-		JLabel lblInterface = new JLabel("Config");
-		lblInterface.setHorizontalAlignment(SwingConstants.CENTER);
-		lblInterface.setIcon(UIUtil.getIcon("icons16/general/cog.png"));
-		panel_1.add(lblInterface);
-
-		JButton btn_users = new JButton(UIUtil.getIcon("icons16/general/clients.png"));
-		btn_users.setText("Users");
-		btn_users.setFont(new Font("Dialog", Font.BOLD, 10));
-		btn_users.setLocation(8, 56);
-		btn_users.setSize(88, 20);
-		btn_users.setFocusable(false);
-		panel.add(btn_users);
+		JButton btn_users = getButton(56, "icons16/general/clients.png", "Users");
 		btn_users.addActionListener(e -> {
 			if (!ViewerState.isOnline()) {
 				MainFrame.main.np.addNote("error", "Offline mode is enabled!");
-			} else if (ProfileStore.getLocalViewer().getPermissions().getFlag(Perm.server.users.view)) {
+			} else if (ViewerProfileStore.getLocalViewer().getPermissions().getFlag(Perm.server.users.view)) {
 				if (UIStore.userMan == null) {
 					UIStore.userMan = new UserMan();
 					UIStore.userMan.setLocationRelativeTo(null);
@@ -98,14 +74,9 @@ public class ConfigDetail extends JPanel {
 			}
 
 		});
-		btn_users.setMargin(new Insets(2, 4, 2, 4));
+		body.add(btn_users);
 
-		JButton btn_network = new JButton(UIUtil.getIcon("icons16/general/computer.png"));
-		btn_network.setText("Network");
-		btn_network.setFont(new Font("Dialog", Font.BOLD, 10));
-		btn_network.setLocation(8, 32);
-		btn_network.setSize(88, 20);
-		btn_network.setFocusable(false);
+		JButton btn_network = getButton(32, "icons16/general/computer.png", "Network");
 		btn_network.addActionListener(e -> {
 			if (!ViewerState.isOnline()) {
 				MainFrame.main.np.addNote("error", "Offline mode is enabled!");
@@ -120,28 +91,16 @@ public class ConfigDetail extends JPanel {
 			}
 
 		});
-		btn_network.setMargin(new Insets(2, 4, 2, 4));
-		panel.add(btn_network);
+		body.add(btn_network);
 
-		JButton btn_server = new JButton(UIUtil.getIcon("icons16/general/server.png"));
-		btn_server.setFont(new Font("Dialog", Font.BOLD, 10));
-		btn_server.setText("Server");
-		btn_server.setLocation(8, 80);
-		btn_server.setSize(88, 20);
-		btn_server.setFocusable(false);
+		JButton btn_server = getButton(80, "icons16/general/server.png", "Server");
 		btn_server.addActionListener(e -> {
 			MainFrame.main.np.addNote("note", "Coming Soon");
 			// parent.drop();
 		});
-		btn_server.setMargin(new Insets(2, 4, 2, 4));
-		panel.add(btn_server);
+		body.add(btn_server);
 
-		JButton btn_settings = new JButton(UIUtil.getIcon("c-16.png"));
-		btn_settings.setFont(new Font("Dialog", Font.BOLD, 10));
-		btn_settings.setText("Settings");
-		btn_settings.setLocation(8, 8);
-		btn_settings.setSize(88, 20);
-		btn_settings.setFocusable(false);
+		JButton btn_settings = getButton(8, "c-16.png", "Settings");
 		btn_settings.addActionListener(e -> {
 			if (UIStore.settingsDialog == null) {
 				UIStore.settingsDialog = new SettingsDialog();
@@ -153,8 +112,7 @@ public class ConfigDetail extends JPanel {
 			}
 			parent.drop();
 		});
-		btn_settings.setMargin(new Insets(2, 4, 2, 4));
-		panel.add(btn_settings);
+		body.add(btn_settings);
 	}
 
 	private void initValues() {

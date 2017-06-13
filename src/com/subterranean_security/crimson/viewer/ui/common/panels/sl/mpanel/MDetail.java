@@ -15,51 +15,54 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.details;
+package com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel;
+
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.Insets;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MConstants;
-import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MDetail;
-import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MPanel;
 
-public class AboutDetail extends MDetail {
+public abstract class MDetail extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public AboutDetail(MPanel mp) {
-		super(mp);
+	protected MPanel parent;
 
-		init();
-		initValues();
+	protected JLabel lbl_header;
 
+	protected MDetail(MPanel parent) {
+		this.parent = parent;
+
+		setLayout(null);
+		setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
+
+		JPanel header = new JPanel(new BorderLayout(0, 0));
+		header.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		header.setBounds(MConstants.PANEL_X_OFFSET, 8, MConstants.PANEL_WIDTH, 21);
+		add(header);
+
+		lbl_header = new JLabel();
+		lbl_header.setFont(new Font("Dialog", Font.BOLD, 10));
+		lbl_header.setHorizontalAlignment(SwingConstants.CENTER);
+
+		header.add(lbl_header, BorderLayout.CENTER);
 	}
 
-	private void init() {
-		lbl_header.setText("About");
-		lbl_header.setIcon(UIUtil.getIcon("c-16.png"));
-
-		JPanel body = new JPanel(null);
-		body.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		body.setBounds(MConstants.PANEL_X_OFFSET, 39, MConstants.PANEL_WIDTH, 88);
-		add(body);
-
-		JButton btnLogs = getButton(32, "icons16/general/error_log.png", "Logs");
-		btnLogs.addActionListener(e -> {
-			parent.drop();
-		});
-		body.add(btnLogs);
-
-		JButton btnAbout = getButton(8, "c-16.png", "About");
-		btnAbout.addActionListener(e -> {
-		});
-		body.add(btnAbout);
+	protected JButton getButton(int y, String icon, String text) {
+		JButton btn = new JButton(UIUtil.getIcon(icon));
+		btn.setBounds(MConstants.BUTTON_X_OFFSET, y, MConstants.BUTTON_WIDTH, 20);
+		btn.setFont(new Font("Dialog", Font.BOLD, 10));
+		btn.setText(text);
+		btn.setFocusable(false);
+		btn.setMargin(new Insets(2, 4, 2, 4));
+		return btn;
 	}
 
-	private void initValues() {
-
-	}
 }

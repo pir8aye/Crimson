@@ -15,51 +15,14 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.details;
+package com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
+public class MConstants {
 
-import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MConstants;
-import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MDetail;
-import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MPanel;
+	public static final int DRAWER_WIDTH = 130;
+	public static final int PANEL_X_OFFSET = 8;
+	public static final int BUTTON_X_OFFSET = 6;
+	public static final int PANEL_WIDTH = DRAWER_WIDTH - (2 * PANEL_X_OFFSET);
+	public static final int BUTTON_WIDTH = PANEL_WIDTH - (2 * BUTTON_X_OFFSET);
 
-public class AboutDetail extends MDetail {
-
-	private static final long serialVersionUID = 1L;
-
-	public AboutDetail(MPanel mp) {
-		super(mp);
-
-		init();
-		initValues();
-
-	}
-
-	private void init() {
-		lbl_header.setText("About");
-		lbl_header.setIcon(UIUtil.getIcon("c-16.png"));
-
-		JPanel body = new JPanel(null);
-		body.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		body.setBounds(MConstants.PANEL_X_OFFSET, 39, MConstants.PANEL_WIDTH, 88);
-		add(body);
-
-		JButton btnLogs = getButton(32, "icons16/general/error_log.png", "Logs");
-		btnLogs.addActionListener(e -> {
-			parent.drop();
-		});
-		body.add(btnLogs);
-
-		JButton btnAbout = getButton(8, "c-16.png", "About");
-		btnAbout.addActionListener(e -> {
-		});
-		body.add(btnAbout);
-	}
-
-	private void initValues() {
-
-	}
 }

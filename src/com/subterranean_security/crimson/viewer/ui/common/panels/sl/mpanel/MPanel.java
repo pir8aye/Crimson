@@ -50,8 +50,8 @@ public class MPanel extends SlidingPanel {
 		main.setAction(actionUP);
 
 		pos1 = new SLConfig(this).gap(0, 0).row(1f).col(30).col(1f).place(0, 0, bar).place(0, 1, main);
-		pos2 = new SLConfig(this).gap(0, 0).row(1f).col(30).col(130).col(1f).place(0, 0, bar).place(0, 1, detail)
-				.place(0, 2, main);
+		pos2 = new SLConfig(this).gap(0, 0).row(1f).col(30).col(MConstants.DRAWER_WIDTH).col(1f).place(0, 0, bar)
+				.place(0, 1, detail).place(0, 2, main);
 
 		transitionTime = 0.8f;
 
