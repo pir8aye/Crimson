@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
@@ -180,6 +181,10 @@ public final class UIUtil {
 				c.removeMouseWheelListener(l);
 			}
 		}
+	}
+
+	public boolean isColorDark(Color color) {
+		return (1 - (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue()) / 255) > 0.5f;
 	}
 
 }

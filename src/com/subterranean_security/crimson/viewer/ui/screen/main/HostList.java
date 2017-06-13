@@ -23,6 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -45,7 +46,7 @@ public class HostList extends JPanel {
 	public static final AttributeKey[] defaultHeaders = new AttributeKey[] { AKeySimple.IPLOC_COUNTRY,
 			AKeySimple.OS_NAME, AKeySimple.USER_NAME, AKeySimple.NET_HOSTNAME, AKeySimple.OS_LANGUAGE };
 
-	private static JTable table = new JTable();
+	private JTable table = new JTable();
 	private TM tm = new TM();
 	private TR tr = new TR(tm);
 
@@ -101,38 +102,24 @@ public class HostList extends JPanel {
 			}
 		});
 
-		JScrollPane jsp = new JScrollPane(table);
+		add(new JScrollPane(table), BorderLayout.CENTER);
+	}
 
-		add(jsp, BorderLayout.CENTER);
+	public void refreshHeaders() {
+		tm.refreshHeaders();
+		initRowSorter();
 	}
 
 	public void addClient(ClientProfile cp) {
 		tm.add(cp);
 	}
 
-	// TODO only update cell
-	public void updateField(ClientProfile cp, AttributeKey aa) {
-		for (int i = 0; i < tm.getClientList().size(); i++) {
-			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
-				tm.fireTableRowsUpdated(i, i);
-				return;
-			}
-		}
-	}
-
 	public void removeClient(ClientProfile cp) {
-		for (int i = 0; i < tm.getClientList().size(); i++) {
-			if (cp.getCvid() == tm.getClientList().get(i).getCvid()) {
-				tm.getClientList().remove(i);
-				tm.fireTableRowsDeleted(i, i);
-				return;
-			}
-		}
+		tm.remove(cp);
 	}
 
-	public void refreshHeaders() {
-		tm.refreshHeaders();
-		initRowSorter();
+	public void updateField(ClientProfile cp, AttributeKey aa) {
+		tm.updateCell(cp, aa);
 	}
 
 	private void initRowSorter() {
@@ -173,11 +160,11 @@ class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 
-	public AttributeKey[] headers = new AttributeKey[] {};
+	public AttributeKey[] headers;
 
-	private ArrayList<ClientProfile> clients = new ArrayList<ClientProfile>();
+	private List<ClientProfile> clients;
 
-	public ArrayList<ClientProfile> getClientList() {
+	public List<ClientProfile> getClientList() {
 		return clients;
 	}
 
@@ -186,16 +173,35 @@ class TM extends AbstractTableModel {
 		fireTableRowsInserted(clients.size() - 1, clients.size() - 1);
 	}
 
+	public void remove(ClientProfile cp) {
+		int index = clients.indexOf(cp);
+		clients.remove(cp);
+		fireTableRowsDeleted(index, index);
+	}
+
+	public void updateCell(ClientProfile cp, AttributeKey attribute) {
+		int index = clients.indexOf(cp);
+		for (int i = 0; i < headers.length; i++) {
+			if (attribute == headers[i]) {
+				fireTableCellUpdated(index, i);
+				return;
+			}
+		}
+
+	}
+
 	public TM() {
 		refreshHeaders();
+		clients = new ArrayList<ClientProfile>();
 	}
 
 	public void refreshHeaders() {
 		try {
 			headers = (AttributeKey[]) DatabaseStore.getDatabase().getObject("hostlist.headers");
-		} catch (Exception e) {
+		} catch (NoSuchElementException e) {
 			headers = HostList.defaultHeaders;
 		}
+
 		this.fireTableStructureChanged();
 	}
 

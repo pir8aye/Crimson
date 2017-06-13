@@ -38,7 +38,7 @@ import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.util.NetUtil;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
-import com.subterranean_security.crimson.viewer.ui.common.components.ProgressLabel;
+import com.subterranean_security.crimson.viewer.ui.common.components.labels.ProgressLabel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 
 //TODO move colors

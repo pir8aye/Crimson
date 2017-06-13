@@ -41,7 +41,7 @@ import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.net.stream.VInfoSlave;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class MenuControls extends JPanel {
@@ -244,8 +244,8 @@ public class MenuControls extends JPanel {
 	}
 
 	public void refresh() {
-		ServerProfile sp = ProfileStore.getServer();
-		ViewerProfile vp = ProfileStore.getLocalViewer();
+		ServerProfile sp = ViewerProfileStore.getServer();
+		ViewerProfile vp = ViewerProfileStore.getLocalViewer();
 
 		valViewerRamUsage.setText(vp.get(AKeySimple.CLIENT_RAM_USAGE));
 		// valViewerCpuTemp.setText(ProfileStore.getLocalClient().getPrimaryCPU().getAttribute(AKeyCPU.CPU_TEMP).get());

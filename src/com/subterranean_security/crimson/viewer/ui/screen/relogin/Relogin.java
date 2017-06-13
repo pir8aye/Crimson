@@ -36,18 +36,19 @@ import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
+import com.subterranean_security.crimson.core.net.Connector.Config;
+import com.subterranean_security.crimson.core.net.Connector.Config.ConnectionType;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.cv.net.command.CvidCom;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.net.ViewerExecutor;
 import com.subterranean_security.crimson.viewer.net.command.LoginCom;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 
 public class Relogin extends JPanel {
@@ -146,7 +147,7 @@ public class Relogin extends JPanel {
 		gbc_lblUsername.gridy = 1;
 		panel.add(lblUsername, gbc_lblUsername);
 
-		lbl_user = new JLabel(ProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER));
+		lbl_user = new JLabel(ViewerProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER));
 		lbl_user.setEnabled(false);
 		lbl_user.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblAdmin = new GridBagConstraints();
@@ -191,7 +192,7 @@ public class Relogin extends JPanel {
 			Connector connector = new Connector(new ViewerExecutor());
 
 			try {
-				connector.connect(ConnectionType.SOCKET, server, Integer.parseInt(port));
+				connector.connect(Config.ConnectionType.SOCKET, server, Integer.parseInt(port));
 				ConnectionStore.add(connector);
 			} catch (Throwable e) {
 				lbl_status.setBad("Unable to Connect");

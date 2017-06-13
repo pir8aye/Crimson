@@ -30,8 +30,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
-import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.tabs.NTab;
 

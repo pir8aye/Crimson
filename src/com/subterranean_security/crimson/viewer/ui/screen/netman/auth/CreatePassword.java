@@ -31,8 +31,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
+import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 
 public class CreatePassword extends JPanel {

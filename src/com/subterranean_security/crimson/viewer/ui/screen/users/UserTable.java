@@ -17,21 +17,27 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.users;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 
 public class UserTable extends JScrollPane {
 
 	private static final long serialVersionUID = 1L;
+
 	private JTable table = new JTable();
 	private TM tm = new TM();
 
@@ -55,7 +61,7 @@ public class UserTable extends JScrollPane {
 				}
 
 				ViewerProfile selected = tm.getAt(sourceRow);
-				if (ProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER)
+				if (ViewerProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER)
 						.equals(selected.get(AKeySimple.VIEWER_USER))) {
 					parent.btnRemove.setEnabled(false);
 				}
@@ -83,10 +89,38 @@ public class UserTable extends JScrollPane {
 
 }
 
+enum Headers {
+	USERNAME, LAST_LOGIN, IP, LOCATION, PERMISSIONS;
+
+	@Override
+	public String toString() {
+		switch (this) {
+		case IP:
+			return "IP";
+		case LAST_LOGIN:
+			return "Last Login";
+		case LOCATION:
+			return "Location";
+		case PERMISSIONS:
+			return "Permissions";
+		case USERNAME:
+			return "Username";
+		}
+		return super.toString();
+	}
+}
+
 class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private final String[] headers = new String[] { "Username", "Login Time", "Login IP", "Superuser" };
+	private final Headers[] headers = new Headers[] { Headers.USERNAME, Headers.LAST_LOGIN, Headers.IP,
+			Headers.LOCATION, Headers.PERMISSIONS };
+
+	private List<ViewerProfile> users;
+
+	public TM() {
+		users = ViewerProfileStore.getViewers();
+	}
 
 	@Override
 	public int getColumnCount() {
@@ -95,47 +129,83 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ProfileStore.getServer().users.size();
+		return users.size();
 	}
 
 	@Override
 	public String getColumnName(int column) {
-		return headers[column];
+		return headers[column].toString();
 	};
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 
 		switch (headers[columnIndex]) {
-		case "Username": {
-			return ProfileStore.getServer().users.get(rowIndex).get(AKeySimple.VIEWER_USER);
-		}
-		case "Login Time": {
-			if (ProfileStore.getServer().users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_TIME) == null) {
+
+		case LAST_LOGIN: {
+			if (users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_TIME) == null) {
 				return "";
 			}
-			if (ProfileStore.getServer().users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_TIME).equals("0")) {
+			if (users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_TIME).equals("0")) {
 				return "<hidden>";
 			}
-			return ProfileStore.getServer().users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_TIME);
+			return users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_TIME);
 		}
-		case "Login IP": {
-			return ProfileStore.getServer().users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_IP);
-		}
-		case "Superuser": {
-			return ProfileStore.getServer().users.get(rowIndex).getPermissions().getFlag(Perm.Super) ? "yes" : "no";
-		}
+		case USERNAME:
+			return users.get(rowIndex).get(AKeySimple.VIEWER_USER);
+		case IP:
+			return users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_IP);
+		case PERMISSIONS:
+			return users.get(rowIndex).getPermissions().getFlag(Perm.Super) ? "yes" : "no";// TODO
+		case LOCATION:
+			return users.get(rowIndex).getLocationIcon16();
 
 		}
+
 		return null;
 	}
 
 	public ViewerProfile getAt(int row) {
-		return ProfileStore.getServer().users.get(row);
+		return users.get(row);
 	}
 
-	public void removeAt(int row) {
-		ProfileStore.getServer().users.remove(row);
+}
+
+class TR extends DefaultTableCellRenderer {
+
+	private static final long serialVersionUID = 1L;
+
+	private static final Color SUPERUSER_COLOR = new Color(146, 217, 123);
+
+	private TM tm;
+
+	public TR(TM tm) {
+		this.tm = tm;
+	}
+
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+			int row, int column) {
+		System.out.println("Getting render component for: (" + row + ", " + column + ")");
+		setBorder(noFocusBorder);
+
+		// set the background of this cell if this user is a superuser
+		if (tm.getAt(table.convertRowIndexToModel(row)).getPermissions().getFlag(Perm.Super)) {
+			setBackground(SUPERUSER_COLOR);
+		}
+
+		return this;
+	}
+
+	protected void setValue(Object value) {
+		if (value instanceof ImageIcon) {
+			ImageIcon ico = (ImageIcon) value;
+			setIcon(ico);
+			setText(ico.getDescription());
+		} else {
+			setIcon(null);
+			super.setValue(value);
+		}
 	}
 
 }

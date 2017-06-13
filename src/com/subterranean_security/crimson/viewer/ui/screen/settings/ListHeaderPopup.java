@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.settings;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 import javax.swing.JCheckBox;
 import javax.swing.JMenu;
@@ -46,7 +47,7 @@ public class ListHeaderPopup extends JPopupMenu {
 		this.db = db;
 		try {
 			headers = (AttributeKey[]) db.getObject("hostlist.headers");
-		} catch (Exception e) {
+		} catch (NoSuchElementException e) {
 			headers = HostList.defaultHeaders;
 		}
 		init();

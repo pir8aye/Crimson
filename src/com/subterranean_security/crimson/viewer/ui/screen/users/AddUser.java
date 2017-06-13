@@ -39,14 +39,14 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.command.UserCom;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
 
 public class AddUser extends JDialog {
 
@@ -268,14 +268,14 @@ public class AddUser extends JDialog {
 								if (verify()) {
 									sl.setInfo("Adding User...");
 									ViewerPermissions vp = new ViewerPermissions();
-									vp.addFlag(Perm.Super, chckbxSuperuser.isSelected())
-											.addFlag(Perm.server.generator.generate, chckbxGenerator.isSelected())
-											.addFlag(Perm.server.network.create_listener,
+									vp.setFlag(Perm.Super, chckbxSuperuser.isSelected())
+											.setFlag(Perm.server.generator.generate_jar, chckbxGenerator.isSelected())
+											.setFlag(Perm.server.network.create_listener,
 													chckbxListenerCreation.isSelected())
-											.addFlag(Perm.server.power.modify, chckbxServerPower.isSelected())
-											.addFlag(Perm.server.settings.modify, chckbxServerSettings.isSelected())
-											.addFlag(Perm.server.fs.read, chckbxServerFilesystemRead.isSelected())
-											.addFlag(Perm.server.fs.read, chckbxServerFilesystemWrite.isSelected());
+											.setFlag(Perm.server.power.modify, chckbxServerPower.isSelected())
+											.setFlag(Perm.server.settings.modify, chckbxServerSettings.isSelected())
+											.setFlag(Perm.server.fs.read, chckbxServerFilesystemRead.isSelected())
+											.setFlag(Perm.server.fs.read, chckbxServerFilesystemWrite.isSelected());
 									Outcome outcome = UserCom.addUser(textField.getText(),
 											UIUtil.getPassword(passwordField), vp);
 									if (outcome.getResult()) {
@@ -315,7 +315,7 @@ public class AddUser extends JDialog {
 		}
 
 		// check for username conflicts
-		if (ProfileStore.getViewer(textField.getText()) != null) {
+		if (ViewerProfileStore.getViewer(textField.getText()) != null) {
 			sl.setBad("Username taken");
 			return false;
 		}

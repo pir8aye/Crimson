@@ -30,6 +30,7 @@ public final class UINotification {
 
 	static {
 		try {
+			// TODO get from Preferences
 			policy = (NotificationPolicy) DatabaseStore.getDatabase().getObject("policy.notification");
 		} catch (Exception e) {
 

@@ -17,26 +17,32 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.ui.screen.files;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.event.ListDataListener;
 
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.sv.profile.Profile;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
-public class FileComboBoxModel extends AbstractListModel implements ComboBoxModel {
+public class HostBoxModel extends AbstractListModel<Profile> implements ComboBoxModel<Profile> {
 
 	private static final long serialVersionUID = 1L;
 
 	ImageIcon viewer = UIUtil.getIcon("icons16/general/viewer.png");
 	ImageIcon server = UIUtil.getIcon("icons16/general/server.png");
 
+	private List<Profile> profiles;
+
 	private Object selected = null;
 
-	public FileComboBoxModel() {
-		viewer.setDescription("Viewer");
-		server.setDescription("Server");
+	public HostBoxModel() {
+		profiles = new ArrayList<Profile>();
+		profiles.addAll(ViewerProfileStore.getClients());
 	}
 
 	@Override
@@ -45,22 +51,13 @@ public class FileComboBoxModel extends AbstractListModel implements ComboBoxMode
 	}
 
 	@Override
-	public Object getElementAt(int arg0) {
-		if (arg0 == 0) {
-			return viewer;
-		}
-		if (arg0 == 1) {
-			return server;
-		}
-
-		return ProfileStore.clients.get(arg0 - 2).getOsMonitorIcon();
-
+	public Profile getElementAt(int arg0) {
+		return profiles.get(arg0);
 	}
 
 	@Override
 	public int getSize() {
-
-		return 2 + ProfileStore.clients.size();
+		return profiles.size();
 	}
 
 	@Override

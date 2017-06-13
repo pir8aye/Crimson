@@ -28,7 +28,7 @@ import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.universal.util.JarUtil;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.Tray;
@@ -143,10 +143,10 @@ public class MainFrame extends JFrame {
 			}
 
 			protected void done() {
-				if (ProfileStore.getLocalViewer().getLastLoginIp() != null) {
+				if (ViewerProfileStore.getLocalViewer().getLastLoginIp() != null) {
 					MainFrame.main.np.addNote("info",
-							"Last Login at " + ProfileStore.getLocalViewer().getLastLoginTime().toString() + " from "
-									+ ProfileStore.getLocalViewer().getLastLoginIp());
+							"Last Login at " + ViewerProfileStore.getLocalViewer().getLastLoginTime().toString() + " from "
+									+ ViewerProfileStore.getLocalViewer().getLastLoginIp());
 				}
 			};
 

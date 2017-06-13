@@ -41,7 +41,7 @@ import com.subterranean_security.crimson.core.net.stream.StreamStore;
 import com.subterranean_security.crimson.core.net.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.core.proto.Stream.RemoteParam;
 import com.subterranean_security.crimson.cv.ui.remote.ep.Settings;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 
@@ -68,7 +68,7 @@ public class RDPanel extends JPanel {
 		this.fullSettings = fullSettings;
 		this.cvid = cvid;
 
-		settings = new Settings(ProfileStore.getClient(cvid).getGroupList(AttributeKey.Type.DISP), this, fullSettings);
+		settings = new Settings(ViewerProfileStore.getClient(cvid).getGroupList(AttributeKey.Type.DISP), this, fullSettings);
 		init();
 
 	}

@@ -38,6 +38,7 @@ import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.proto.FileManager.FileListlet;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
 import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
+import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.sv.profile.Profile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
@@ -305,7 +306,7 @@ public class Pane extends JPanel {
 				rs = FileManagerCom.fm_file_info(selected.getCvid(), path);
 				break;
 			case VIEWER:
-				rs = LocalFS.getInfo(path);
+				rs = FileUtil.getInfo(path);
 				break;
 
 			}

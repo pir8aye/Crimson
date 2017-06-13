@@ -30,7 +30,7 @@ import javax.swing.event.MenuListener;
 
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -146,7 +146,7 @@ public class MainMenu extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (!ViewerState.isOnline()) {
 					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
-				} else if (ProfileStore.getLocalViewer().getPermissions().getFlag(Perm.server.generator.generate)) {
+				} else if (ViewerProfileStore.getLocalViewer().getPermissions().getFlag(Perm.server.generator.generate_jar)) {
 					if (UIStore.genDialog == null) {
 						UIStore.genDialog = new GenDialog();
 						UIStore.genDialog.setLocationRelativeTo(null);
@@ -195,7 +195,7 @@ public class MainMenu extends JPanel {
 
 				if (!ViewerState.isOnline()) {
 					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
-				} else if (ProfileStore.getLocalViewer().getPermissions().getFlag(Perm.server.users.view)) {
+				} else if (ViewerProfileStore.getLocalViewer().getPermissions().getFlag(Perm.server.users.view)) {
 					if (UIStore.userMan == null) {
 						UIStore.userMan = new UserMan();
 						UIStore.userMan.setLocationRelativeTo(null);

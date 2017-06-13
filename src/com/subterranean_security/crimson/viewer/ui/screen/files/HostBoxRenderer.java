@@ -15,67 +15,45 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.ui.common.components;
+package com.subterranean_security.crimson.viewer.ui.screen.files;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.Component;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 
-public class ProgressLabel extends JPanel {
+import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
+import com.subterranean_security.crimson.sv.profile.Profile;
+
+public class HostBoxRenderer extends JLabel implements ListCellRenderer<Profile> {
 
 	private static final long serialVersionUID = 1L;
-	private JProgressBar progressBar;
-	private JLabel label;
+	private static final AKeySimple attribute = AKeySimple.NET_HOSTNAME;
 
-	public ProgressLabel() {
-		init();
+	public HostBoxRenderer() {
+		super();
+		setOpaque(true);
 	}
 
-	public ProgressLabel(String s) {
-		init();
-		setText(s);
-	}
+	@Override
+	public Component getListCellRendererComponent(JList<? extends Profile> list, Profile value, int index,
+			boolean isSelected, boolean cellHasFocus) {
 
-	public void init() {
+		// this.removeAll();
+		if (isSelected) {
+			setBackground(list.getSelectionBackground());
+			setForeground(list.getSelectionForeground());
+		} else {
+			setBackground(list.getBackground());
+			setForeground(list.getForeground());
+		}
 
-		setLayout(new BorderLayout(0, 0));
+		setIcon(value.getMonitorIcon16());
+		setText(value.get(attribute));
 
-		label = new JLabel();
-		label.setFont(new Font("Dialog", Font.BOLD, 10));
-		add(label, BorderLayout.WEST);
+		return this;
 
-		progressBar = ProgressBarFactory.get();
-		progressBar.setPreferredSize(new Dimension(148, 4));
-		progressBar.setVisible(false);
-		add(progressBar, BorderLayout.SOUTH);
-
-		JPanel panel = new JPanel();
-		add(panel, BorderLayout.CENTER);
-
-	}
-
-	public void setText(String text) {
-		label.setText(text);
-	}
-
-	public void startLoading() {
-		label.setText("loading...");
-		progressBar.setVisible(true);
-		progressBar.setIndeterminate(true);
-	}
-
-	public void stopLoading() {
-		progressBar.setVisible(false);
-		progressBar.setIndeterminate(false);
-	}
-
-	public void setLabelForeground(Color fg) {
-		label.setForeground(fg);
 	}
 
 }

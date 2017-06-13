@@ -46,15 +46,14 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
-import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.net.command.ListenerCom;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
-import com.subterranean_security.crimson.viewer.ui.UIUtil;
+import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 
 public class AddListener extends JPanel {
@@ -70,7 +69,6 @@ public class AddListener extends JPanel {
 	private JComboBox<String> owner;
 	private StatusLabel sl;
 	private JButton okButton;
-	private JTextField textField;
 
 	private EPanel ep;
 	private JPanel panel_1;
@@ -139,22 +137,6 @@ public class AddListener extends JPanel {
 				owner.setBounds(113, 66, 125, 19);
 				panel.add(owner);
 			}
-
-			textField = new JTextField();
-			textField.setBounds(113, 91, 97, 19);
-			panel.add(textField);
-			textField.setColumns(10);
-
-			JLabel lblCertificate = new JLabel("Certificate:");
-			lblCertificate.setHorizontalAlignment(SwingConstants.TRAILING);
-			lblCertificate.setFont(new Font("Dialog", Font.BOLD, 10));
-			lblCertificate.setBounds(8, 95, 97, 13);
-			panel.add(lblCertificate);
-
-			JButton btnNewButton = new JButton(UIUtil.getIcon("icons16/general/folder.png"));
-			btnNewButton.setMargin(new Insets(2, 2, 2, 2));
-			btnNewButton.setBounds(215, 91, 23, 19);
-			panel.add(btnNewButton);
 		}
 		{
 			JPanel panel = new JPanel();
@@ -306,7 +288,7 @@ public class AddListener extends JPanel {
 			return false;
 		}
 
-		for (ListenerConfig lc : ProfileStore.getServer().listeners) {
+		for (ListenerConfig lc : ViewerProfileStore.getServer().listeners) {
 			if (lc.getPort() == Integer.parseInt(fld_port.getText())) {
 				sl.setBad("Port in use");
 				return false;
@@ -338,14 +320,14 @@ public class AddListener extends JPanel {
 
 	public void updateOwners() {
 		String[] o = null;
-		if (ProfileStore.getLocalViewer().getPermissions().getFlag(Perm.Super)) {
-			List<ViewerProfile> viewers = ProfileStore.getViewers();
+		if (ViewerProfileStore.getLocalViewer().getPermissions().getFlag(Perm.Super)) {
+			List<ViewerProfile> viewers = ViewerProfileStore.getViewers();
 			o = new String[viewers.size()];
 			for (int i = 0; i < o.length; i++) {
 				o[i] = viewers.get(i).get(AKeySimple.VIEWER_USER);
 			}
 		} else {
-			o = new String[] { ProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER) };
+			o = new String[] { ViewerProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER) };
 		}
 		owner.setModel(new DefaultComboBoxModel<String>(o));
 	}

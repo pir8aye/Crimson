@@ -15,47 +15,20 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.cv.ui.remote;
+package com.subterranean_security.crimson.viewer.ui.util;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
-import com.subterranean_security.crimson.viewer.ui.UIUtil;
-
-public class RDFrame extends JFrame {
-
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private RDPanel rdp;
-
-	public RDFrame(RDPanel.Type type, int cvid) {
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setMinimumSize(new Dimension(450, 300));
-		setSize(new Dimension(450, 300));
-		setIconImages(UIUtil.getIconList());
-		setTitle("Remote Desktop (" + ViewerProfileStore.getClient(cvid).get(AKeySimple.USER_NAME) + "@"
-				+ ViewerProfileStore.getClient(cvid).get(AKeySimple.NET_EXTERNALIP) + ")");
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
-		setContentPane(contentPane);
-
-		rdp = new RDPanel(type, cvid, true);
-		contentPane.add(rdp, BorderLayout.CENTER);
+public final class IconUtil {
+	public static String getOsIconPath(String os, int size) {
+		return String.format("icons%d/platform/%s.png", size, findOs(os));
 	}
 
-	@Override
-	public void dispose() {
-		if (rdp.isRunning()) {
-			rdp.stop();
-		}
-		super.dispose();
+	public static String getMonitorIconPath(String os, int size) {
+		return String.format("icons%d/platform/monitors/%s.png", size, findOs(os));
 	}
 
+	private static String findOs(String os) {
+		os = os.replaceAll(" ", "_").toLowerCase();
+
+		return os;
+	}
 }

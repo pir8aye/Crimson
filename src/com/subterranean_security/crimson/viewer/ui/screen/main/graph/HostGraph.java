@@ -31,6 +31,9 @@ import java.util.Observer;
 
 import javax.swing.JPanel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxConstants;
 import com.mxgraph.view.mxGraph;
@@ -39,16 +42,21 @@ import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.net.NetworkNode;
 import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta.LinkAdded;
+import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta.LinkRemoved;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.Profile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.util.JarUtil;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.main.ContextMenuFactory;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public class HostGraph extends JPanel implements MouseWheelListener, Observer {
+
+	private static final Logger log = LoggerFactory.getLogger(HostGraph.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -67,10 +75,14 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 
 	public HostGraph() {
 		init();
+		initStyles();
+
 		if (ViewerState.isOnline()) {
 			addServer();
 			addInitialClients();
 		}
+
+		addViewer(ViewerProfileStore.getLocalViewer());
 
 		ConnectionStore.getNetworkTree().addObserver(this);
 
@@ -118,7 +130,7 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 				if (cell != null && cell != serverVertex && vertices.containsKey(cell)) {
 
 					// get profile
-					ClientProfile selected = ProfileStore.getClient(vertices.get(cell));
+					ClientProfile selected = ViewerProfileStore.getClient(vertices.get(cell));
 
 					if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
 
@@ -141,9 +153,16 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 
 	}
 
+	private void initStyles() {
+		mxStylesheet stylesheet = graph.getStylesheet();
+		Hashtable<String, Object> style = new Hashtable<String, Object>();
+		style.put(mxConstants.STYLE_FONTCOLOR, "#774400");
+		stylesheet.putCellStyle("style", style);
+	}
+
 	public void select(ClientProfile cp) {
 		for (Entry<Object, Integer> entry : vertices.entrySet()) {
-			if (entry.getValue() == cp.getCid()) {
+			if (entry.getValue() == cp.getCvid()) {
 				graph.setSelectionCell(entry.getKey());
 				return;
 			}
@@ -151,15 +170,12 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 
 	}
 
+	/**
+	 * Add the server to the graph
+	 */
 	private void addServer() {
-		// insert server
 		try {
 			graph.getModel().beginUpdate();
-
-			mxStylesheet stylesheet = graph.getStylesheet();
-			Hashtable<String, Object> style = new Hashtable<String, Object>();
-			style.put(mxConstants.STYLE_FONTCOLOR, "#774400");
-			stylesheet.putCellStyle("style", style);
 
 			// TODO change behavior if not connected
 			serverVertex = graph.insertVertex(parent, null, "\n\n\nServer", 260, 135, vertexWidth, vertexHeight,
@@ -170,15 +186,29 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 		}
 	}
 
+	/**
+	 * Add a viewer to the graph
+	 * 
+	 * @param vp
+	 */
 	private void addViewer(ViewerProfile vp) {
+		try {
+			graph.getModel().beginUpdate();
 
+			Point point = findSpot();
+
+			serverVertex = graph.insertVertex(parent, null, "\n\n\nViewer", point.x, point.y, vertexWidth, vertexHeight,
+					"shape=image;image=/com/subterranean_security/crimson/viewer/ui/res/image/icons32/general/viewer.png");
+
+		} finally {
+			graph.getModel().endUpdate();
+		}
 	}
 
 	private void addInitialClients() {
-		for (int i = 0; i < ProfileStore.clients.size(); i++) {
-			addClient(ProfileStore.clients.get(i));
+		for (ClientProfile client : ViewerProfileStore.getClients()) {
+			addClient(client);
 		}
-
 	}
 
 	private Point findSpot(int xMin, int yMin, int xMax, int yMax) {
@@ -210,7 +240,7 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 	}
 
 	public void addClient(ClientProfile p) {
-		if (vertices.values().contains(p.getCid())) {
+		if (vertices.values().contains(p.getCvid())) {
 			// this client is already present
 			return;
 		}
@@ -225,21 +255,21 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 			String iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
 					+ p.get(AKeySimple.OS_NAME).replaceAll(" ", "_").toLowerCase() + ".png";
 
-			if (JarUtil.getResourceSize(iconLocation) == 0) {
+			if (!JarUtil.containsResource(iconLocation)) {
 				iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
 						+ p.get(AKeySimple.OS_FAMILY) + ".png";
 			}
 
 			Object v = graph.insertVertex(parent, null, "\n\n\n" + getTextFor(p), point.x, point.y, vertexWidth,
 					vertexHeight, "shape=image;image=" + iconLocation);
-			vertices.put(v, p.getCid());
+			vertices.put(v, p.getCvid());
 
 		} finally {
 			graph.getModel().endUpdate();
 		}
 
 		for (NetworkNode node : ConnectionStore.getNetworkTree().getAdjacent()) {
-			addConnection(p.getCid(), node.getCvid());
+			addConnection(p.getCvid(), node.getCvid());
 		}
 
 	}
@@ -266,14 +296,32 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 		}
 	}
 
-	public void removeClient(ClientProfile p) {
-		if (p == null) {
-			return;
+	public void removeConnection(int peer1, int peer2) {
+		Object o1 = null;
+		Object o2 = null;
+
+		for (Entry<Object, Integer> entry : vertices.entrySet()) {
+			if (o1 != null && o2 != null)
+				break;
+			if (entry.getValue() == peer1)
+				o1 = entry.getKey();
+			else if (entry.getValue() == peer2)
+				o2 = entry.getKey();
 		}
+
+		graph.getModel().beginUpdate();
+		try {
+			graph.removeCells(graph.getEdgesBetween(o1, o2));
+		} finally {
+			graph.getModel().endUpdate();
+		}
+	}
+
+	public void remove(int cvid) {
 		graph.getModel().beginUpdate();
 
 		for (Entry<Object, Integer> entry : vertices.entrySet()) {
-			if (entry.getValue() == p.getCid()) {
+			if (entry.getValue() == cvid) {
 				// found the vertex to remove
 				vertices.remove(entry.getKey());
 
@@ -290,12 +338,6 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 
 	}
 
-	public void mouseWheelMoved(MouseWheelEvent e) {
-
-		int notches = e.getWheelRotation();
-
-	}
-
 	private String getTextFor(ClientProfile cp) {
 		if (textType instanceof AKeySimple) {
 			AKeySimple sa = (AKeySimple) textType;
@@ -309,10 +351,37 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
+		NetworkNode root = (NetworkNode) arg0;
 		EV_NetworkDelta nd = (EV_NetworkDelta) arg1;
-		if (nd.getAdded()) {
-			addConnection(nd.getPeer1(), nd.getPeer2());
+
+		if (nd.getNodeAdded() != null) {
+			Profile profile = ViewerProfileStore.getProfile(nd.getNodeAdded().getCvid());
+			if (profile instanceof ClientProfile) {
+				addClient((ClientProfile) profile);
+			} else if (profile instanceof ViewerProfile) {
+				addViewer((ViewerProfile) profile);
+			}
 		}
+
+		if (nd.getNodeRemoved() != null) {
+			remove(nd.getNodeRemoved().getCvid());
+		}
+
+		if (nd.getLinkAdded() != null) {
+			LinkAdded la = nd.getLinkAdded();
+			addConnection(la.getCvid1(), la.getCvid2());
+		}
+
+		if (nd.getLinkRemoved() != null) {
+			LinkRemoved lr = nd.getLinkRemoved();
+			removeConnection(lr.getCvid1(), lr.getCvid2());
+		}
+
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent arg0) {
+		// TODO Auto-generated method stub
 
 	}
 

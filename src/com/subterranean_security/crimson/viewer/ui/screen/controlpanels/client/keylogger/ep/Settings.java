@@ -36,9 +36,9 @@ import com.subterranean_security.crimson.core.proto.ClientControl.RQ_ChangeSetti
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.ui.StatusLabel;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
+import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
 
 public class Settings extends JPanel {
 
