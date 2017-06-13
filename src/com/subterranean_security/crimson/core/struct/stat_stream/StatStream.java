@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.misc;
+package com.subterranean_security.crimson.core.struct.stat_stream;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,9 +23,7 @@ import java.util.concurrent.Callable;
 
 public class StatStream {
 
-	// parallel
-	private LimitedQueue<Long> points;
-	private LimitedQueue<Long> times;
+	private StatStreamBuffer<StatPoint> buffer;
 
 	private Callable<Long> c;
 	private int period;
@@ -38,12 +36,11 @@ public class StatStream {
 	}
 
 	public StatStream(double conversion, int keep) {
-		points = new LimitedQueue<Long>(keep);
-		times = new LimitedQueue<Long>(keep);
+		buffer = new StatStreamBuffer<>(keep);
 		this.conversion = conversion;
 	}
 
-	private Timer timer = null;
+	private Timer timer;
 
 	public void start() {
 		if (timer == null) {
@@ -53,15 +50,11 @@ public class StatStream {
 				@Override
 				public void run() {
 					try {
-						long d = c.call();
-						times.add(System.currentTimeMillis());
-						points.add(d);
-
+						buffer.add(new StatPoint(System.currentTimeMillis(), c.call()));
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
 				}
 
 			}, 0, period);
@@ -76,22 +69,30 @@ public class StatStream {
 	}
 
 	public double getInstantaneousSpeed() {
-		int s = points.size();
-		if (s < 2) {
+		if (buffer.size() < 2) {
 			return 0;
 		} else {
-			long n = points.get(s - 1) - points.get(s - 2);
-			long d = times.get(s - 1) - times.get(s - 2);
+			StatPoint recent1 = buffer.get(0);
+			StatPoint recent2 = buffer.get(1);
 
-			return (n * conversion / d);
+			return ((recent1.value - recent2.value) * conversion / (recent1.time - recent2.time));
 		}
 	}
 
 	public double addPoint(long l) {
-		times.add(System.currentTimeMillis());
-		points.add(l);
+		buffer.add(new StatPoint(System.currentTimeMillis(), l));
 
 		return getInstantaneousSpeed();
+	}
+
+	private static class StatPoint {
+		private long time;
+		private long value;
+
+		public StatPoint(long time, long value) {
+			this.time = time;
+			this.value = value;
+		}
 	}
 
 }
