@@ -1,8 +1,6 @@
 syntax = "proto2";
 package com.subterranean_security.crimson.core.proto;
 
-import "net/SMSG.proto";
-
 import "net/sequences/Chat.proto";
 import "net/sequences/Login.proto";
 import "net/sequences/Keylogger.proto";
@@ -22,6 +20,8 @@ import "net/sequences/State.proto";
 import "net/sequences/Screenshot.proto";
 import "net/sequences/Torrent.proto";
 import "net/sequences/Network.proto";
+import "net/sequences/Debug.proto";
+import "net/misc/Misc.proto";
 
 message Message {
 	optional int32 id = 2;
@@ -37,6 +37,9 @@ message Message {
 	optional EV_KEvent ev_kevent = 10;
 	optional EV_ChatMessage ev_chat_message = 11;
 	optional EV_NetworkDelta ev_network_delta = 12;
+	
+	// generic response for RS types which contain only a result and a comment
+	optional Outcome rs_outcome = 99;
 	
 	optional RQ_Login rq_login = 100;
 	optional RS_Login rs_login = 101;
@@ -59,9 +62,7 @@ message Message {
 	optional RQ_ChangeClientState rq_change_client_state = 118;
 	optional RS_ChangeClientState rs_change_client_state = 119;
 	optional RQ_AddListener rq_add_listener = 120;
-	optional RS_AddListener rs_add_listener = 121;
 	optional RQ_RemoveListener rq_remove_listener = 122;
-	optional RS_RemoveListener rs_remove_listener = 123;
 	optional RQ_AddUser rq_add_user = 124;
 	optional RS_AddUser rs_add_user = 125;
 	optional RQ_EditUser rq_edit_user = 126;
@@ -103,14 +104,19 @@ message Message {
 	optional RQ_Cvid rq_cvid = 204;
 	optional RS_Cvid rs_cvid = 205;
 	
-	// Service messages
-	optional RQ_Activation rq_activation = 301;
-	optional RS_Activation rs_activation = 302;
-	optional RQ_RetrieveKeys rq_retrieve_keys = 303;
-	optional RS_RetrieveKeys rs_retrieve_keys = 304;
+	optional RQ_ServerInfo rq_server_info = 301;
+	optional RS_ServerInfo rs_server_info = 302;
 	optional RQ_CloudUser rq_cloud_user = 305;
 	optional RS_CloudUser rs_cloud_user = 306;
-	optional RQ_LatestVersion rq_latest_version = 307;
-	optional RS_LatestVersion rs_latest_version = 308;
+	
+	optional RQ_Ping rq_ping = 307;
+	optional RS_Ping rs_ping = 308;
+	
+	// Debug.proto
+	optional EV_DebugLogEvent ev_debug_log_event = 400;
+	optional MI_DebugKill mi_debug_kill = 401;
+	optional RQ_DebugSession rq_debug_session = 402;
+	optional RS_DebugSession rs_debug_session = 403;
+	
 
 }

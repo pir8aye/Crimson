@@ -24,6 +24,27 @@ public final class IDGen {
 	private IDGen() {
 	}
 
+	/**
+	 * Reserved CVIDs
+	 */
+	public final class Reserved {
+
+		/**
+		 * Server CVID
+		 */
+		public static final int SERVER = 0;
+
+		/**
+		 * Viridian CVID
+		 */
+		public static final int VIRIDIAN = 1;
+
+		/**
+		 * Charcoal CVID
+		 */
+		public static final int CHARCOAL = 2;
+	}
+
 	private static int msg = 0;
 
 	/**
@@ -40,9 +61,13 @@ public final class IDGen {
 		return msg;
 	}
 
-	// TODO incremental
+	private static int cvid = 10;
+
+	/**
+	 * @return The next client/viewer ID
+	 */
 	public static int cvid() {
-		return RandomUtil.nextInt();
+		return cvid++;
 	}
 
 	/**
@@ -55,18 +80,37 @@ public final class IDGen {
 		return RandomUtil.randString(6);
 	}
 
+	/**
+	 * @return A random file-manager ID
+	 */
 	public static int fm() {
 		return RandomUtil.nextInt();
 	}
 
+	/**
+	 * @return A random debug ID
+	 */
+	public static int debug() {
+		return RandomUtil.nextInt();
+	}
+
+	/**
+	 * @return A random stream ID
+	 */
 	public static int stream() {
 		return RandomUtil.nextInt();
 	}
 
+	/**
+	 * @return A random listener ID
+	 */
 	public static int listener() {
 		return Math.abs(RandomUtil.nextInt());
 	}
 
+	/**
+	 * @return A random auth ID
+	 */
 	public static int auth() {
 		return Math.abs(RandomUtil.nextInt());
 	}

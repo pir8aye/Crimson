@@ -20,4 +20,8 @@ message ListenerConfig {
 	bool viewer_acceptor = 8;
 	bool datagram_listener = 9;
 	
+	// certificate and private key
+	string cert = 10;
+	string key = 11;
+	
 }

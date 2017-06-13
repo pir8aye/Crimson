@@ -17,18 +17,24 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sv.net;
 
+import static com.subterranean_security.crimson.universal.Flags.LOG_NET_RAW;
+
+import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateException;
+import java.util.Base64;
 
 import javax.net.ssl.SSLException;
 
-import com.subterranean_security.crimson.core.net.BasicExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
+import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.core.proto.MSG;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.universal.Universal;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -49,6 +55,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 public class Listener {
+	private static final Logger log = LoggerFactory.getLogger(Listener.class);
 
 	private ChannelFuture future;
 	private EventLoopGroup bossGroup;
@@ -121,51 +128,70 @@ public class Listener {
 		return bossGroup != null && workerGroup != null;
 	}
 
-}
+	private class ReceiverInitializer extends ChannelInitializer<SocketChannel> {
 
-class ReceiverInitializer extends ChannelInitializer<SocketChannel> {
+		public ReceiverInitializer() {
 
-	private SslContext sslCtx;
-
-	public ReceiverInitializer() {
-		try {
-			SelfSignedCertificate ssc = new SelfSignedCertificate();
-			sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
-		} catch (CertificateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SSLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
-	}
+		private SslContext getSslContext() {
+			if (!config.getCert().isEmpty() && !config.getKey().isEmpty()) {
+				try {
+					return SslContextBuilder
+							.forServer(new ByteArrayInputStream(Base64.getDecoder().decode(config.getCert())),
+									new ByteArrayInputStream(Base64.getDecoder().decode(config.getKey())))
+							.build();
+				} catch (SSLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 
-	@Override
-	public void initChannel(SocketChannel ch) throws Exception {
-		Connector connector = new Connector(BasicExecutor.getInstanceExecutor());
+			// fallback to a self signed certificate
+			log.debug("Using a self-signed certificate");
+			try {
+				SelfSignedCertificate ssc = new SelfSignedCertificate();
+				return SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+			} catch (CertificateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SSLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		// initially assign a random cvid
-		connector.setCvid(IDGen.cvid());
-		ConnectionStore.add(connector);
-
-		ChannelPipeline p = ch.pipeline();
-		if (sslCtx != null) {
-			p.addLast(sslCtx.newHandler(ch.alloc()));
+			log.warn("Failed to get a certificate. SSL will NOT be used for this connection!");
+			return null;
 		}
 
-		if (Universal.debugRawNetwork) {
-			p.addLast(new LoggingHandler(Connector.class));
+		@Override
+		public void initChannel(SocketChannel ch) throws Exception {
+			Connector connector = new Connector(BasicExecutor.getInstanceExecutor());
+
+			// initially assign a random cvid
+			// connector.setCvid(IDGen.cvid());
+			// ConnectionStore.add(connector);
+
+			ChannelPipeline p = ch.pipeline();
+
+			SslContext sslCtx = getSslContext();
+			if (sslCtx != null) {
+				p.addLast(sslCtx.newHandler(ch.alloc()));
+			}
+
+			if (LOG_NET_RAW) {
+				p.addLast(new LoggingHandler(Connector.class));
+			}
+
+			p.addLast(new ProtobufVarint32FrameDecoder());
+			p.addLast(new ProtobufDecoder(MSG.Message.getDefaultInstance()));
+
+			p.addLast(new ProtobufVarint32LengthFieldPrepender());
+			p.addLast(new ProtobufEncoder());
+
+			p.addLast(connector.getHandler());
+
+			connector.setState(ConnectionState.CONNECTED);
 		}
-
-		p.addLast(new ProtobufVarint32FrameDecoder());
-		p.addLast(new ProtobufDecoder(MSG.Message.getDefaultInstance()));
-
-		p.addLast(new ProtobufVarint32LengthFieldPrepender());
-		p.addLast(new ProtobufEncoder());
-
-		p.addLast(connector.getHandler());
-
-		connector.setState(ConnectionState.CONNECTED);
 	}
 }

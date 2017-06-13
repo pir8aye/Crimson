@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer.net.command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.net.MessageFlowException;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.proto.Delta.MI_TriggerProfileDelta;
 import com.subterranean_security.crimson.core.proto.Delta.ProfileTimestamp;
@@ -32,8 +33,8 @@ import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.viewer.store.ProfileStore;
+import com.subterranean_security.crimson.sv.profile.Profile;
+import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public final class LoginCom {
@@ -54,19 +55,18 @@ public final class LoginCom {
 		try {
 
 			Message response = ConnectionStore.waitForResponse(0, id, 5);
-			if (response == null) {
-				return outcome.setComment("Request timeout").build();
-			} else if (response.hasRqLoginChallenge()) {
+			if (response.hasRqLoginChallenge()) {
 				loginResponse = handleChallenge(response, pass);
 			} else if (response.hasRsLogin()) {
 				loginResponse = response.getRsLogin();
+			} else {
+				throw new MessageFlowException(RQ_Login.class, response);
 			}
 
 		} catch (InterruptedException e) {
 			return outcome.build();
 		} catch (Timeout e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return outcome.setComment("Request timeout").build();
 		}
 
 		if (loginResponse != null) {
@@ -92,7 +92,8 @@ public final class LoginCom {
 			MainFrame.main = new MainFrame();
 		}
 
-		ProfileStore.update(rsLogin.getSpd());
+		ViewerProfileStore.update(rsLogin.getSpd());
+		ViewerProfileStore.update(rsLogin.getVpd());
 		triggerProfileDelta();
 
 	}
@@ -122,11 +123,10 @@ public final class LoginCom {
 
 		// report last update timestamps for current clients
 		MI_TriggerProfileDelta.Builder mi = MI_TriggerProfileDelta.newBuilder();
-		for (int i = 0; i < ProfileStore.clients.size(); i++) {
-			ClientProfile cp = ProfileStore.clients.get(i);
-
+		for (Profile cp : ViewerProfileStore.getProfiles()) {
+			System.out.println("Triggering for cvid: " + cp.getCvid());
 			mi.addProfileTimestamp(
-					ProfileTimestamp.newBuilder().setCvid(cp.getCid()).setTimestamp(cp.getLastUpdate().getTime()));
+					ProfileTimestamp.newBuilder().setCvid(cp.getCvid()).setTimestamp(cp.getLastUpdate().getTime()));
 		}
 		ConnectionStore.route(Message.newBuilder().setMiTriggerProfileDelta(mi));
 

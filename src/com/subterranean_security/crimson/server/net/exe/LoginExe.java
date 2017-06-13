@@ -22,24 +22,25 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.cloud.net.exe.CloudLoginExe;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.MessageFuture;
 import com.subterranean_security.crimson.core.proto.Login.RQ_LoginChallenge;
+import com.subterranean_security.crimson.core.proto.Login.RS_CloudUser;
 import com.subterranean_security.crimson.core.proto.Login.RS_Login;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.proto.SMSG.RS_CloudUser;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
-import com.subterranean_security.crimson.server.store.ProfileStore;
+import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.server.store.ServerDatabaseStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.services.Services;
 
 public final class LoginExe {
 	private static final Logger log = LoggerFactory.getLogger(LoginExe.class);
@@ -47,11 +48,10 @@ public final class LoginExe {
 	private LoginExe() {
 	}
 
-	public static Outcome rq_login(Connector receptor, Message m) {
-		long t1 = System.currentTimeMillis();
-		Outcome.Builder outcome = Outcome.newBuilder().setResult(false);
+	public static void rq_login(Connector receptor, Message m) {
+		Outcome.Builder outcome = Outcome.newBuilder().setTime(System.currentTimeMillis());
 
-		log.debug("Processing login request from: " + receptor.getRemoteIP());
+		log.debug("Processing login request from: {} (CVID: {})", receptor.getRemoteIP(), receptor.getCvid());
 		ViewerProfile vp = null;
 		RS_CloudUser cloud = null;
 
@@ -60,53 +60,64 @@ public final class LoginExe {
 
 		// validate username
 		String user = m.getRqLogin().getUsername();
-		if (!ValidationUtil.username(user))
-			return outcome.setResult(false).setComment("The provided username is invalid")
-					.setTime(System.currentTimeMillis() - t1).build();
+		if (!ValidationUtil.username(user)) {
+			log.debug("The username ({}) is invalid", user);
+			passOrFail(receptor, m.getId(), vp, outcome.setResult(false).setComment("Invalid username"));
+			return;
+		}
+		
+		log.debug("1");
 
+		// pass if server is in example mode
 		if (Boolean.parseBoolean(System.getProperty("mode.example", "false"))) {
 			vp = new ViewerProfile(receptor.getCvid());
 			user = "user_" + Math.abs(RandomUtil.nextInt());
-			passLogin(receptor, m.getId(), vp);
 
-			return outcome.setResult(true).setTime(System.currentTimeMillis() - t1).build();
+			passOrFail(receptor, m.getId(), vp, outcome.setResult(true));
+			return;
 		}
+		
+		log.debug("2");
 
 		// find user
-		vp = ProfileStore.getViewer(user);
+		vp = ServerProfileStore.getViewer(user);
+		if (vp == null)
+			log.debug("No ViewerProfile was found in the local database");
+		else
+			log.debug("Found local ViewerProfile for user: {}", user);
 
-		if (vp == null) {
-			if (Boolean.parseBoolean(System.getProperty("mode.cloud", "false"))) {
-				// check if the cloud server has this profile
-				cloud = Services.getCloudUser(user);
-				if (cloud != null) {
-					// create ViewerProfile
-					vp = new ViewerProfile(receptor.getCvid());
-					vp.set(AKeySimple.VIEWER_USER, user);
-					vp.getPermissions().addFlag(Perm.server.generator.generate).addFlag(Perm.server.fs.read);
-					ProfileStore.addViewer(vp);
-				}
+		// check cloud
+		if (vp == null && Boolean.parseBoolean(System.getProperty("mode.cloud", "false"))) {
+			// check if the cloud server has this profile
+			cloud = CloudLoginExe.getCloudUser(user);
+			if (cloud != null) {
+				// create ViewerProfile
+				vp = new ViewerProfile(receptor.getCvid());
+				vp.set(AKeySimple.VIEWER_USER, user);
+				vp.getPermissions().addFlag(Perm.server.generator.generate_jar).addFlag(Perm.server.fs.read);
+				ServerProfileStore.addViewer(vp);
 			}
+
 		}
+		
+		log.debug("3");
 
 		// if profile is still not found
 		if (vp == null) {
-			return outcome.setResult(false).setComment("The provided user could not be found")
-					.setTime(System.currentTimeMillis() - t1).build();
+			log.debug("The user ({}) could not be found", user);
+			passOrFail(receptor, m.getId(), vp, outcome.setResult(false).setComment("User does not exist"));
+			return;
+		} else {
+			vp.setCvid(receptor.getCvid());
 		}
+		
+		log.debug("4");
 
 		Outcome authOutcome = (cloud == null) ? handleAuthentication(receptor, m, user)
 				: handleCloudAuthentication(receptor, m, cloud);
 
-		outcome.setResult(authOutcome.getResult());
+		passOrFail(receptor, m.getId(), vp, outcome.setResult(authOutcome.getResult()));
 
-		if (outcome.getResult()) {
-			passLogin(receptor, m.getId(), vp);
-		} else {
-			failLogin(receptor, m.getId(), vp, outcome.build());
-		}
-
-		return outcome.setTime(System.currentTimeMillis() - t1).build();
 	}
 
 	private static Outcome handleAuthentication(Connector receptor, Message m, String user) {
@@ -152,25 +163,28 @@ public final class LoginExe {
 		return outcome.setTime(System.currentTimeMillis() - t1).build();
 	}
 
-	private static void passLogin(Connector receptor, int id, ViewerProfile vp) {
+	private static void passLogin(Connector receptor, int id, ViewerProfile vp, Outcome outcome) {
+		log.debug("Accepting login: " + vp.get(AKeySimple.VIEWER_USER) + " (" + vp.getCvid() + ")");
+
+		// this connection is now authenticated
+		receptor.setState(ConnectionState.AUTHENTICATED);
+		// ConnectionStore.add(receptor);
+
+		updateViewerProfile(receptor, vp);
+
+		Date lastLogin = vp.getLastLoginTime();
+
 		try {
-			log.debug("Accepting login: " + vp.get(AKeySimple.VIEWER_USER));
-			// this connection is now authenticated
-			receptor.setState(ConnectionState.AUTHENTICATED);
-			ConnectionStore.add(receptor);
-
-			updateViewerProfile(receptor, vp);
-
-			Date lastLogin = vp.getLastLoginTime();
-
 			receptor.write(Message.newBuilder().setId(id)
-					.setRsLogin(RS_Login.newBuilder().setResponse(Outcome.newBuilder().setResult(true))
-							.setSpd(ProfileStore.getServer().getUpdates(lastLogin, vp)))
+					.setRsLogin(RS_Login.newBuilder().setResponse(outcome)
+							.setSpd(ServerProfileStore.getServer().getUpdates(lastLogin, vp))
+							.setVpd(vp.getViewerUpdates(lastLogin)))
 					.build());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 
 	private static void updateViewerProfile(Connector receptor, ViewerProfile vp) {
@@ -178,10 +192,21 @@ public final class LoginExe {
 		vp.set(AKeySimple.VIEWER_LOGIN_TIME, new Date().toString());
 	}
 
-	private static void failLogin(Connector receptor, int id, ViewerProfile vp, Outcome outcome) {
-		log.debug("Rejecting login: " + vp.get(AKeySimple.VIEWER_USER));
+	private static void failLogin(Connector receptor, int id, Outcome outcome) {
+		log.debug("Rejecting login from: {} ", receptor.getRemoteIP());
 		receptor.write(Message.newBuilder().setId(id).setRsLogin(RS_Login.newBuilder().setResponse(outcome)).build());
 		receptor.close();
+	}
+
+	private static void passOrFail(Connector receptor, int id, ViewerProfile vp, Outcome.Builder outcome) {
+		// set time
+		outcome.setTime(System.currentTimeMillis() - outcome.getTime());
+
+		if (outcome.getResult()) {
+			passLogin(receptor, id, vp, outcome.build());
+		} else {
+			failLogin(receptor, id, outcome.build());
+		}
 	}
 
 }

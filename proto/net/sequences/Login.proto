@@ -18,7 +18,40 @@ message RS_LoginChallenge {
 }
 
 message RS_Login {
+	// the result of the login attempt
 	Outcome response = 1;
+	
+	// updates to the server profile since last login
 	EV_ServerProfileDelta spd = 2;
+	
+	// updates to the viewer profile since last login
+	EV_ViewerProfileDelta vpd = 3;
 }
 
+message RQ_CloudUser {
+	string user = 1;
+
+}
+
+message RS_CloudUser {
+	string salt = 1;
+	string password = 2;
+}
+
+//TODO move
+message RQ_ServerInfo {
+	
+}
+
+message RS_ServerInfo {
+	bool maintainance = 1;
+	string version = 2;
+	string banner = 3;
+	string banner_image = 4;
+}
+
+message RQ_Ping {
+}
+
+message RS_Ping{
+}

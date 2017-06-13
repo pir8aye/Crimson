@@ -20,7 +20,8 @@ package com.subterranean_security.crimson.viewer.net.command;
 import java.net.ConnectException;
 
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
+import com.subterranean_security.crimson.core.net.Connector.Config;
+import com.subterranean_security.crimson.core.net.Connector.Config.ConnectionType;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
@@ -66,7 +67,7 @@ public final class NetworkCom {
 		Connector connector = new Connector(new ViewerExecutor());
 
 		try {
-			connector.connect(ConnectionType.DATAGRAM, rq.getHost(), rq.getPort());
+			connector.connect(Config.ConnectionType.DATAGRAM, rq.getHost(), rq.getPort());
 		} catch (ConnectException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

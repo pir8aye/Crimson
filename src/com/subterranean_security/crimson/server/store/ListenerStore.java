@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.proto.Listener.ListenerConfig;
 import com.subterranean_security.crimson.sv.net.Listener;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 /**
  * Manage listeners
@@ -41,6 +42,12 @@ public final class ListenerStore {
 
 	static {
 		// initialize stored list
+		try {
+			saved = (List<ListenerConfig>) DatabaseStore.getDatabase().getCachedCollection("listeners");
+		} catch (Exception e) {
+			log.warn("Failed to load saved listeners");
+			saved = new ArrayList<ListenerConfig>();
+		}
 	}
 
 	/**

@@ -17,7 +17,14 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.net;
 
+import static com.subterranean_security.crimson.universal.Flags.LOG_NET_RAW;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.ConnectException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -25,15 +32,18 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.proto.MSG;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.universal.Universal;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
@@ -47,19 +57,41 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 public class Connector extends Observable {
 
 	private static final Logger log = LoggerFactory.getLogger(Connector.class);
 
+	public static abstract class Config {
+
+		public static enum ConnectionType {
+			SOCKET, DATAGRAM;
+
+			public Class<? extends Channel> getChannel() {
+				switch (this) {
+				case DATAGRAM:
+					return NioDatagramChannel.class;
+				case SOCKET:
+					return NioSocketChannel.class;
+				default:
+					return null;
+				}
+
+			}
+		}
+
+	}
+
 	private int cvid;
 
 	private Universal.Instance instance;
-	private ConnectionType type;
+	private Config.ConnectionType type;
 	private ConnectionState state;
+	private CertificateState certState;
+
 	private EventLoopGroup workerGroup;
 
 	private BasicExecutor executor;
@@ -77,50 +109,68 @@ public class Connector extends Observable {
 	 */
 	private Map<Integer, MessageFuture> responseMap;
 
-	public Connector(BasicExecutor executor, BasicHandler handler) {
+	public Connector(BasicExecutor exe, BasicHandler han, boolean forceCerts) {
 		// initialize state
 		state = ConnectionState.NOT_CONNECTED;
-		workerGroup = new NioEventLoopGroup();
 
 		// initialize message buffers
 		msgQueue = new LinkedBlockingQueue<Message>();
 		responseMap = new HashMap<Integer, MessageFuture>();
 
-		// initialize executor and handler
-		this.executor = executor;
-		this.handler = handler;
+		workerGroup = new NioEventLoopGroup();
 
-		executor.setConnector(this);
+		// initialize handler
+		this.handler = han;
 		handler.setConnector(this);
 
+		// initialize executor
+		this.executor = exe;
+		executor.setConnector(this);
 		executor.start();
 	}
 
 	public Connector(BasicExecutor executor) {
-		this(executor, new BasicHandler());
+		this(executor, true);
 	}
 
-	public void connect(ConnectionType type, String host, int port) throws InterruptedException, ConnectException {
+	public Connector(BasicExecutor executor, boolean forceCerts) {
+		this(executor, new BasicHandler(), forceCerts);
+	}
+
+	private boolean FORCE_CERTIFICATES;
+
+	public boolean isForceCerts() {
+		return FORCE_CERTIFICATES;
+	}
+
+	public void connect(Config.ConnectionType type, String host, int port)
+			throws InterruptedException, ConnectException {
+		connect(type, host, port, true);
+	}
+
+	public void connect(Config.ConnectionType type, String host, int port, boolean forceCerts)
+			throws InterruptedException, ConnectException {
+
 		if (getState() == ConnectionState.NOT_CONNECTED) {
 			this.type = type;
-			Bootstrap b = new Bootstrap();
-			switch (type) {
-			case DATAGRAM:
-				b.channel(NioDatagramChannel.class);
-				break;
-			case SOCKET:
-				b.channel(NioSocketChannel.class);
-				break;
-			default:
-				break;
+			this.FORCE_CERTIFICATES = forceCerts;
+
+			new Bootstrap().channel(type.getChannel()).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)
+					.group(workerGroup).handler(new InitiatorInitializer(host, port, forceCerts)).connect(host, port)
+					.sync();
+
+			// wait for handshake to complete
+			int sleepTime = 0;
+			while (certState == null) {
+				sleepTime += 70;
+				Thread.sleep(70);
+				if (sleepTime > 5000) {
+					log.debug("Timeout while waiting for handshake");
+					setCertState(CertificateState.REFUSED);
+					setState(ConnectionState.NOT_CONNECTED);
+					break;
+				}
 			}
-
-			b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
-			b.group(workerGroup).handler(new InitiatorInitializer(host, port));
-
-			b.connect(host, port).sync();
-
-			setState(ConnectionState.CONNECTED);
 		}
 
 	}
@@ -173,9 +223,13 @@ public class Connector extends Observable {
 		return state;
 	}
 
+	public CertificateState getCertState() {
+		return certState;
+	}
+
 	public void setState(ConnectionState state) {
 		if (this.state != state) {
-			log.debug("Connector state changed: {}->{}", this.state, state);
+			log.debug("[CVID {}] Connector state changed: {}->{}", cvid, this.state, state);
 			this.state = state;
 
 			setChanged();
@@ -183,7 +237,17 @@ public class Connector extends Observable {
 		}
 	}
 
-	public ConnectionType getType() {
+	public void setCertState(CertificateState certState) {
+		if (this.certState != certState) {
+			log.debug("[CVID {}] Certificate state changed: {}->{}", cvid, this.certState, certState);
+			this.certState = certState;
+
+			setChanged();
+			notifyObservers(certState);
+		}
+	}
+
+	public Config.ConnectionType getType() {
 		return type;
 	}
 
@@ -203,40 +267,78 @@ public class Connector extends Observable {
 		this.cvid = cvid;
 	}
 
-	public enum ConnectionType {
-		SOCKET, DATAGRAM;
-	}
-
 	public enum ConnectionState {
 		// TODO remove auth stages
 		NOT_CONNECTED, CONNECTED, AUTHENTICATED, AUTH_STAGE1, AUTH_STAGE2;
 	}
 
+	public enum CertificateState {
+		/**
+		 * The certificate has been validated.
+		 */
+		VALID,
+
+		/**
+		 * The certificate is either revoked, expired, invalid, self-signed, or
+		 * missing. The connector has nevertheless established a connection.
+		 */
+		INVALID,
+
+		/**
+		 * The certificate is INVALID and the connector refused to proceed
+		 * because FORCE_CERTIFICATES was set.
+		 */
+		REFUSED;
+	}
+
+	public X509Certificate getPeerCertificate() throws SSLPeerUnverifiedException {
+		SslHandler sslHandler = (SslHandler) handler.getChannel().pipeline().get("ssl");
+		return (X509Certificate) sslHandler.engine().getSession().getPeerCertificates()[0];
+	}
+
 	class InitiatorInitializer extends ChannelInitializer<SocketChannel> {
 
-		private SslContext sslCtx;
 		private final String host;
 		private final int port;
+		private final boolean forceCerts;
 
-		public InitiatorInitializer(String host, int port) {
-			try {
-				this.sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-			} catch (SSLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		public InitiatorInitializer(String host, int port, boolean forceCerts) {
 			this.host = host;
 			this.port = port;
+			this.forceCerts = forceCerts;
+		}
+
+		private X509Certificate getRoot() throws CertificateException, IOException {
+			try (InputStream in = Connector.class
+					.getResourceAsStream("/com/subterranean_security/crimson/core/net/certs/root.cert")) {
+
+				return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(in);
+			}
 		}
 
 		@Override
 		public void initChannel(SocketChannel ch) {
 			ChannelPipeline p = ch.pipeline();
-			if (sslCtx != null) {
-				p.addLast(sslCtx.newHandler(ch.alloc(), host, port));
+
+			if (forceCerts) {
+				try {
+					p.addLast("ssl", SslContextBuilder.forClient().trustManager(getRoot()).build()
+							.newHandler(ch.alloc(), host, port));
+				} catch (CertificateException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					p.addLast("ssl", SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE)
+							.build().newHandler(ch.alloc(), host, port));
+				} catch (SSLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
-			if (Universal.debugRawNetwork) {
+			if (LOG_NET_RAW) {
 				p.addLast(new LoggingHandler(Connector.class));
 			}
 
