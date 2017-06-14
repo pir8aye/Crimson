@@ -26,7 +26,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.misc.CachedList;
 import com.subterranean_security.crimson.core.platform.Environment;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.platform.info.CPU;
@@ -35,9 +34,9 @@ import com.subterranean_security.crimson.core.platform.info.OS;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Report.MI_Report;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
 import com.subterranean_security.crimson.core.util.DateUtil;
 import com.subterranean_security.crimson.core.util.FileUtil;
-import com.subterranean_security.crimson.universal.TempReservedCvids;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
@@ -46,7 +45,7 @@ import com.subterranean_security.crimson.universal.stores.DatabaseStore;
  * Securely send an error report to Subterranean Security.
  */
 public final class Reporter {
-	private static final Logger log = LoggerFactory.getLogger(ConnectionStore.class);
+	private static final Logger log = LoggerFactory.getLogger(Reporter.class);
 
 	private Reporter() {
 	}
@@ -108,7 +107,7 @@ public final class Reporter {
 
 	public static boolean sendReport(MI_Report report) {
 		if (ConnectionStore.connectViridian()) {
-			ConnectionStore.route(Message.newBuilder().setRid(TempReservedCvids.VIRIDIAN).setMiReport(report));
+			ConnectionStore.route(Message.newBuilder().setRid(com.subterranean_security.crimson.core.util.IDGen.Reserved.VIRIDIAN).setMiReport(report));
 			return true;
 		}
 		return false;
@@ -127,7 +126,7 @@ public final class Reporter {
 
 		// Crimson version
 		try {
-			rb.setCrVersion(Common.version);
+			rb.setCrVersion(Universal.version);
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Crimson version: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
@@ -135,7 +134,7 @@ public final class Reporter {
 
 		// build number
 		try {
-			rb.setCrBuild("" + Common.build);
+			rb.setCrBuild("" + Universal.build);
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Crimson build number: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));

@@ -18,90 +18,137 @@
 package com.subterranean_security.crimson.core.net;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta.LinkAdded;
+import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta.LinkRemoved;
+import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta.NodeAdded;
+import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta.NodeRemoved;
+import com.subterranean_security.crimson.sv.profile.Profile;
 
 public class NetworkNode extends Observable {
+	private static final Logger log = LoggerFactory.getLogger(NetworkNode.class);
+
 	private int cvid;
-	private NetworkNode parent;
-	private List<NetworkNode> children;
+	private List<NetworkNode> adjacent;
 
 	public NetworkNode(int cvid) {
-		children = new ArrayList<NetworkNode>();
+		adjacent = new ArrayList<NetworkNode>();
 		this.cvid = cvid;
 	}
 
 	public NetworkNode(NetworkNode parent, int cvid) {
 		this(cvid);
-		this.parent = parent;
 	}
 
 	public void addNode(NetworkNode node) {
-		children.add(node);
+		adjacent.add(node);
+		node.adjacent.add(this);
 	}
 
-	public NetworkNode getParent() {
-		return parent;
+	public void removeNode(NetworkNode node) {
+		adjacent.remove(node);
+		node.adjacent.remove(this);
 	}
 
+	/**
+	 * @return The cvid associated with this node
+	 */
 	public int getCvid() {
 		return cvid;
 	}
 
-	/**
-	 * Return the cvid of the next hop which leads to the target cvid
-	 * 
-	 * @param target
-	 * @return
-	 */
-	public int getNextHop(int target) {
-
-		return 0;
+	public Profile getProfile() {
+		return null;
 	}
 
 	public List<NetworkNode> getAdjacent() {
-		List<NetworkNode> nodeList = new ArrayList<NetworkNode>();
-		if (parent != null)
-			nodeList.add(parent);
-		nodeList.addAll(children);
-		return nodeList;
+		return adjacent;
 	}
 
-	public NetworkNode findChildNode(int cvid) {
+	public NetworkNode findNode(int cvid) {
+		return findNode(cvid, new LinkedList<>());
+	}
+
+	private NetworkNode findNode(int cvid, LinkedList<NetworkNode> visited) {
 		if (this.cvid == cvid)
 			return this;
 
-		for (NetworkNode node : children) {
-			NetworkNode test = node.findChildNode(cvid);
-			if (test != null)
-				return test;
+		for (NetworkNode node : adjacent) {
+			if (!visited.contains(node)) {
+				visited.add(node);
+				NetworkNode test = node.findNode(cvid);
+				if (test != null)
+					return test;
+			}
+
 		}
 
 		return null;
 	}
 
 	/**
-	 * Update the network tree with the specified delta
+	 * Update the network graph with the specified delta
 	 * 
 	 * @param nd
 	 */
 	public void update(EV_NetworkDelta nd) {
-		NetworkNode peer1 = findChildNode(nd.getPeer1());
-		NetworkNode peer2 = findChildNode(nd.getPeer2());
-
-		if (nd.getAdded()) {
-			if (peer1 != null && peer2 == null) {
-				peer1.addNode(new NetworkNode(nd.getPeer2()));
-			} else if (peer1 == null && peer2 != null) {
-				peer2.addNode(new NetworkNode(nd.getPeer1()));
+		if (nd.getNodeAdded() != null) {
+			NodeAdded na = nd.getNodeAdded();
+			NetworkNode parent = findNode(na.getParent());
+			if (parent != null) {
+				parent.addNode(new NetworkNode(na.getCvid()));
+				setChanged();
+			} else {
+				log.debug("[Node {}] Cannot find parent: {}", cvid, na.getParent());
 			}
-		} else {
-			// TODO
 		}
 
-		setChanged();
+		if (nd.getNodeRemoved() != null) {
+			NodeRemoved nr = nd.getNodeRemoved();
+			NetworkNode removal = findNode(nr.getCvid());
+			if (removal != null) {
+				for (NetworkNode node : removal.getAdjacent()) {
+					node.removeNode(removal);
+					setChanged();
+				}
+			} else {
+				log.debug("[Node {}] Cannot find node to remove: {}", cvid, nr.getCvid());
+			}
+		}
+
+		if (nd.getLinkAdded() != null) {
+			LinkAdded la = nd.getLinkAdded();
+			NetworkNode node1 = findNode(la.getCvid1());
+			NetworkNode node2 = findNode(la.getCvid2());
+
+			if (node1 != null && node2 != null) {
+				node1.addNode(node2);
+				setChanged();
+			} else {
+				log.debug("[Node {}] Cannot link nodes: {} and {}", cvid, la.getCvid1(), la.getCvid2());
+			}
+		}
+
+		if (nd.getLinkRemoved() != null) {
+			LinkRemoved lr = nd.getLinkRemoved();
+			NetworkNode node1 = findNode(lr.getCvid1());
+			NetworkNode node2 = findNode(lr.getCvid2());
+
+			if (node1 != null && node2 != null) {
+				node1.removeNode(node2);
+				setChanged();
+			} else {
+				log.debug("[Node {}] Cannot unlink nodes: {} and {}", cvid, lr.getCvid1(), lr.getCvid2());
+			}
+		}
+
 		notifyObservers(nd);
 	}
 

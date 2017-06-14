@@ -15,48 +15,21 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.store;
+package com.subterranean_security.crimson.core.net.auth;
 
-import java.util.ArrayList;
+public class PasswordAuthGroup extends AuthGroup {
 
-import com.subterranean_security.crimson.core.platform.LocalFS;
+	private static final long serialVersionUID = 1L;
 
-public final class FileManagerStore {
-	private FileManagerStore() {
+	private String password;
+
+	public PasswordAuthGroup(String password) {
+		super();
+		this.password = password;
 	}
 
-	private static ArrayList<LocalFS> lfs = new ArrayList<LocalFS>();
-
-	/**
-	 * Store a new LocalFS in this store
-	 * 
-	 * @param l
-	 * @return FS object ID for convenience
-	 */
-	public static int add(LocalFS l) {
-		lfs.add(l);
-		return l.getId();
+	public String getPassword() {
+		return password;
 	}
 
-	/**
-	 * Get a LocalFS object from store
-	 * 
-	 * @param fmid
-	 * @return LocalFS object with ID fmid or null
-	 */
-	public static LocalFS get(int fmid) {
-		for (LocalFS l : lfs) {
-			if (l.getId() == fmid) {
-				return l;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Clear this store
-	 */
-	public static void clear() {
-		lfs.clear();
-	}
 }

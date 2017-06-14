@@ -15,48 +15,38 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.store;
+package com.subterranean_security.crimson.core.net;
 
-import java.util.ArrayList;
+import com.subterranean_security.crimson.core.proto.MSG.Message;
 
-import com.subterranean_security.crimson.core.platform.LocalFS;
+/**
+ * Thrown when the message flow is interrupted by an unexpected message. For
+ * example, if a call to connector.writeAndGetResponse() returns an
+ * EV_StreamData message when something else was expected, this exception is
+ * thrown.
+ */
+public class MessageFlowException extends RuntimeException {
 
-public final class FileManagerStore {
-	private FileManagerStore() {
-	}
-
-	private static ArrayList<LocalFS> lfs = new ArrayList<LocalFS>();
+	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Store a new LocalFS in this store
+	 * TODO: Get the type of message that was received.
 	 * 
-	 * @param l
-	 * @return FS object ID for convenience
+	 * @param sent
+	 *            The message that was sent to cause the response
+	 * @param received
+	 *            The response
+	 * @param expected
+	 *            The expected response type
 	 */
-	public static int add(LocalFS l) {
-		lfs.add(l);
-		return l.getId();
+	public MessageFlowException(Class<?> sent, Message received, Class<?> expected) {
+		super(String.format("After sending a %s message, a unknown message was received although a %s was expected.",
+				sent.getClass().getSimpleName(), expected.getClass().getSimpleName()));
 	}
 
-	/**
-	 * Get a LocalFS object from store
-	 * 
-	 * @param fmid
-	 * @return LocalFS object with ID fmid or null
-	 */
-	public static LocalFS get(int fmid) {
-		for (LocalFS l : lfs) {
-			if (l.getId() == fmid) {
-				return l;
-			}
-		}
-		return null;
+	public MessageFlowException(Class<?> sent, Message received) {
+		super(String.format("After sending a %s message, a unknown message was received.",
+				sent.getClass().getSimpleName()));
 	}
 
-	/**
-	 * Clear this store
-	 */
-	public static void clear() {
-		lfs.clear();
-	}
 }

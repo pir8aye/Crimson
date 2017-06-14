@@ -26,6 +26,7 @@ import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.util.IDGen.Reserved;
 
 public class SubscriberMaster extends PeriodicStream {
 
@@ -49,7 +50,7 @@ public class SubscriberMaster extends PeriodicStream {
 
 	@Override
 	public void start() {
-		ConnectionStore.route(Message.newBuilder().setSid(param().getVID()).setRid(0)
+		ConnectionStore.route(Message.newBuilder().setSid(param().getVID()).setRid(Reserved.SERVER)
 				.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param())));
 
 	}

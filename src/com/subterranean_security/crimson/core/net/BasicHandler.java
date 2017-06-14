@@ -19,12 +19,14 @@ package com.subterranean_security.crimson.core.net;
 
 import java.net.InetSocketAddress;
 
+import com.subterranean_security.crimson.core.net.Connector.CertificateState;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.ssl.SslHandshakeCompletionEvent;
 
 public class BasicHandler extends SimpleChannelInboundHandler<Message> {
 
@@ -51,10 +53,32 @@ public class BasicHandler extends SimpleChannelInboundHandler<Message> {
 		this.connector = connector;
 	}
 
+	public Channel getChannel() {
+		return channel;
+	}
+
 	@Override
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 		this.channel = ctx.channel();
+		connector.setState(ConnectionState.CONNECTED);
 	};
+
+	@Override
+	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+		super.userEventTriggered(ctx, evt);
+		if (evt instanceof SslHandshakeCompletionEvent) {
+			SslHandshakeCompletionEvent event = (SslHandshakeCompletionEvent) evt;
+			if (event.isSuccess()) {
+				if (connector.isForceCerts()) {
+					connector.setCertState(CertificateState.VALID);
+				} else {
+					connector.setCertState(CertificateState.INVALID);
+				}
+			} else {
+				connector.setCertState(CertificateState.REFUSED);
+			}
+		}
+	}
 
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
@@ -65,7 +89,6 @@ public class BasicHandler extends SimpleChannelInboundHandler<Message> {
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		ctx.close();
-		cause.printStackTrace();
 		connector.setState(ConnectionState.NOT_CONNECTED);
 	}
 

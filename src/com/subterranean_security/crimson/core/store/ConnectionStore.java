@@ -17,6 +17,7 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.store;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,24 +28,27 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.Connector.CertificateState;
+import com.subterranean_security.crimson.core.net.Connector.Config;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
-import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
+import com.subterranean_security.crimson.core.net.MessageFlowException;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
 import com.subterranean_security.crimson.core.net.NetworkNode;
+import com.subterranean_security.crimson.core.net.executor.CharcoalExecutor;
+import com.subterranean_security.crimson.core.net.executor.ViridianExecutor;
+import com.subterranean_security.crimson.core.net.factory.ExecutorFactory;
+import com.subterranean_security.crimson.core.proto.Debug.RQ_DebugSession;
 import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.universal.TempReservedCvids;
-import com.subterranean_security.crimson.core.net.ViridianExecutor;
+import com.subterranean_security.crimson.core.util.IDGen.Reserved;
+import com.subterranean_security.crimson.debug.CharcoalAppender;
+import com.subterranean_security.crimson.universal.Universal;
 
-public final class ConnectionStore {
+public abstract class ConnectionStore {
 	private static final Logger log = LoggerFactory.getLogger(ConnectionStore.class);
-
-	private ConnectionStore() {
-	}
 
 	/**
 	 * Stores direct connections which may exist between a viewer and the server
@@ -53,8 +57,7 @@ public final class ConnectionStore {
 	private static Map<Integer, Connector> directConnections;
 
 	/**
-	 * Network tree which describes the connections between: this viewer, the
-	 * server, clients, and other viewers
+	 * Tree which describes the connections between entities on the network
 	 */
 	private static NetworkNode network;
 
@@ -63,28 +66,39 @@ public final class ConnectionStore {
 	 */
 	private static ConnectionEventListener eventListener;
 
-	public static void initialize(ConnectionEventListener e) {
-		log.debug("Initializing connection storage");
-
-		eventListener = e;
+	static {
 		directConnections = new HashMap<Integer, Connector>();
-		network = new NetworkNode(Common.cvid);
-	}
+		network = new NetworkNode(LcvidStore.cvid);
 
-	public static void changeCvid(int oldCvid, int newCvid) {
-		directConnections.put(newCvid, directConnections.remove(oldCvid));
+		switch (Universal.instance) {
+		case CLIENT:
+			eventListener = new com.subterranean_security.crimson.client.net.ClientConnectionStore.ClientConnectionEventListener();
+			break;
+		case SERVER:
+			eventListener = new com.subterranean_security.crimson.server.net.ServerConnectionStore.ServerConnectionEventListener();
+			break;
+		case VIEWER:
+			eventListener = new com.subterranean_security.crimson.viewer.net.ViewerConnectionStore.ViewerConnectionEventListener();
+			break;
+		default:
+			break;
+
+		}
 	}
 
 	public static void add(Connector c) {
+		log.debug("Adding new Connector: {}", c.getCvid());
 		c.addObserver(eventListener);
 		directConnections.put(c.getCvid(), c);
 	}
 
-	public static void remove(int cvid) {
+	public static Connector remove(int cvid) {
 		if (directConnections.containsKey(cvid)) {
 			Connector removal = directConnections.remove(cvid);
 			removal.close();
+			return removal;
 		}
+		return null;
 	}
 
 	/**
@@ -121,15 +135,19 @@ public final class ConnectionStore {
 	}
 
 	public static ConnectionState getServerConnectionState() {
-		if (ConnectionStore.get(TempReservedCvids.SERVER) != null) {
-			return ConnectionStore.get(TempReservedCvids.SERVER).getState();
+		if (ConnectionStore.get(com.subterranean_security.crimson.core.util.IDGen.Reserved.SERVER) != null) {
+			return ConnectionStore.get(com.subterranean_security.crimson.core.util.IDGen.Reserved.SERVER).getState();
 		}
 		return ConnectionState.NOT_CONNECTED;
 	}
 
 	public static void closeAll() {
-		for (Integer i : directConnections.keySet()) {
-			directConnections.remove(i).close();
+		try {
+			for (Integer i : directConnections.keySet()) {
+				directConnections.get(i).close();
+			}
+		} finally {
+			directConnections.clear();
 		}
 	}
 
@@ -159,8 +177,8 @@ public final class ConnectionStore {
 		if (directConnections.containsKey(m.getRid())) {
 			get(m.getRid()).write(m);
 		} else {
-			if (directConnections.containsKey(TempReservedCvids.SERVER)) {
-				get(TempReservedCvids.SERVER).write(m);
+			if (directConnections.containsKey(Reserved.SERVER)) {
+				get(Reserved.SERVER).write(m);
 			}
 		}
 	}
@@ -182,32 +200,104 @@ public final class ConnectionStore {
 	}
 
 	public interface ConnectionEventListener extends Observer {
+		// empty
+	}
 
+	public static Connector makeConnection(ExecutorFactory exe, String server, int port, boolean forceCertificates) {
+		log.debug("Attempting connection to: {}:{}", server, port);
+
+		Connector connector = new Connector(exe.build());
+		try {
+			connector.connect(Config.ConnectionType.SOCKET, server, port, true);
+		} catch (ConnectException | InterruptedException e) {
+			log.debug("Connection failed: {}", e.getMessage());
+			return null;
+		}
+
+		if (connector.getCertState() == CertificateState.REFUSED) {
+			if (!forceCertificates) {
+				// try insecure
+				connector = new Connector(exe.build(), false);
+				try {
+					connector.connect(Config.ConnectionType.SOCKET, server, port, false);
+				} catch (ConnectException | InterruptedException e) {
+					log.debug("Connection failed: {}", e.getMessage());
+					return null;
+				}
+
+				if (connector.getCertState() == CertificateState.REFUSED) {
+					log.debug("Connection failed: Certificate error");
+					return null;
+				}
+
+			} else {
+				log.debug("Dropping connection with {} because certificate verification failed", server);
+			}
+		}
+
+		return connector;
 	}
 
 	public static boolean connectViridian() {
-		if (directConnections.containsKey(TempReservedCvids.VIRIDIAN)) {
+		if (connectedDirectly(Reserved.VIRIDIAN)) {
 			return true;
 		}
 
-		Connector connector = new Connector(new ViridianExecutor());
-		connector.setCvid(TempReservedCvids.VIRIDIAN);
-		try {
-			connector.connect(ConnectionType.SOCKET, "subterranean-security.pw", 10102);
-		} catch (ConnectException | InterruptedException e) {
-			return false;
+		Connector connector = makeConnection(new ExecutorFactory(ViridianExecutor.class), "subterranean-security.pw",
+				10102, true);
+		if (connector != null) {
+			connector.setCvid(Reserved.VIRIDIAN);
+			add(connector);
+
+			// trigger report buffer flush
+			new Thread(new Runnable() {
+				public void run() {
+					Reporter.flushBuffer();
+				}
+			}).start();
+			return true;
 		}
 
-		add(connector);
+		return false;
+	}
 
-		// trigger report buffer flush
-		new Thread(new Runnable() {
-			public void run() {
-				Reporter.flushBuffer();
+	public static boolean connectCharcoal() {
+		if (connectedDirectly(Reserved.CHARCOAL)) {
+			return true;
+		}
+
+		Connector connector = makeConnection(new ExecutorFactory(CharcoalExecutor.class), "127.0.0.1", 10100, true);
+		if (connector != null) {
+			connector.setCvid(Reserved.CHARCOAL);
+
+			try {
+				Message rs = connector.writeAndGetResponse(Message.newBuilder()
+						.setRqDebugSession(RQ_DebugSession.newBuilder().setInstance(Universal.instance.toString()))
+						.build()).get(2000);
+
+				if (!rs.hasRsDebugSession()) {
+					throw new MessageFlowException(RQ_DebugSession.class, rs);
+				} else if (!rs.getRsDebugSession().getResult()) {
+					log.debug("Charcoal rejected this instance :(");
+					return false;
+				}
+
+			} catch (Timeout | InterruptedException e1) {
+				return false;
 			}
-		}).start();
 
-		return true;
+			add(connector);
+
+			try {
+				CharcoalAppender.setup();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return true;
+		}
+
+		return false;
 	}
 
 }

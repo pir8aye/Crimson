@@ -17,46 +17,63 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.store;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-import com.subterranean_security.crimson.core.platform.LocalFS;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
-public final class FileManagerStore {
-	private FileManagerStore() {
-	}
-
-	private static ArrayList<LocalFS> lfs = new ArrayList<LocalFS>();
-
-	/**
-	 * Store a new LocalFS in this store
-	 * 
-	 * @param l
-	 * @return FS object ID for convenience
-	 */
-	public static int add(LocalFS l) {
-		lfs.add(l);
-		return l.getId();
+/**
+ * Provides easy access to the stored mapping between lcvids (long cvids) and
+ * cvids (Client/Viewer IDs).
+ *
+ */
+public final class LcvidStore {
+	private LcvidStore() {
 	}
 
 	/**
-	 * Get a LocalFS object from store
-	 * 
-	 * @param fmid
-	 * @return LocalFS object with ID fmid or null
+	 * The current lcvid (for viewers and clients only)
 	 */
-	public static LocalFS get(int fmid) {
-		for (LocalFS l : lfs) {
-			if (l.getId() == fmid) {
-				return l;
-			}
+	public static String lcvid;
+
+	/**
+	 * The current cvid (for viewers and clients only)
+	 */
+	public static int cvid;
+
+	/**
+	 * Maps long-cvids to short-cvids. In clients and viewers, short-cvids are
+	 * not stored, so this map acts like a list
+	 */
+	private static Map<String, Integer> lcvidMap;
+
+	static {
+		lcvidMap = ((Map<String, Integer>) DatabaseStore.getDatabase().getObject("lcvid"));
+		if (lcvidMap == null) {
+			DatabaseStore.getDatabase().store("lcvid", new HashMap<String, Integer>());
+			lcvidMap = ((Map<String, Integer>) DatabaseStore.getDatabase().getObject("lcvid"));
 		}
-		return null;
 	}
 
-	/**
-	 * Clear this store
-	 */
-	public static void clear() {
-		lfs.clear();
+	public static void addLcvid(String lcvid) {
+		addLcvid(lcvid, 0);
 	}
+
+	public static void addLcvid(String lcvid, int cvid) {
+		lcvidMap.put(lcvid, cvid);
+	}
+
+	public static Set<String> getLcvidSet() {
+		return lcvidMap.keySet();
+	}
+
+	public static boolean contains(String lcvid) {
+		return lcvidMap.containsKey(lcvid);
+	}
+
+	public static Integer get(String lcvid) {
+		return lcvidMap.get(lcvid);
+	}
+
 }

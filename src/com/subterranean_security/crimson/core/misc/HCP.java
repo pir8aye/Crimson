@@ -20,7 +20,7 @@ package com.subterranean_security.crimson.core.misc;
 import java.io.File;
 import java.io.IOException;
 
-import com.subterranean_security.crimson.core.Common;
+import com.subterranean_security.crimson.core.platform.Environment;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
@@ -79,7 +79,7 @@ public class HCP {
 		File tmp = new File(TempUtil.getDir().getAbsolutePath() + "/hcp.jar");
 		System.out.println("Installing HCP: " + tmp.getAbsolutePath());
 		try {
-			FileUtil.copy(new File(Common.Directories.base.getAbsolutePath() + "/lib/java/c01.jar"), tmp);
+			FileUtil.copy(new File(Environment.base.getAbsolutePath() + "/lib/java/c01.jar"), tmp);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -99,12 +99,14 @@ public class HCP {
 
 	private static void launch(String input) {
 		input = Platform.osFamily.getJavaw() + " -jar -Djava.awt.headless=true \""
-				+ new File(Common.Directories.base.getAbsolutePath() + "/lib/java/c01.jar").getAbsolutePath() + "\" "
-				+ input;
+				+ new File(Environment.base.getAbsolutePath() + "/lib/java/c01.jar").getAbsolutePath() + "\" " + input;
 		System.out.println("HCP INPUT: (" + input + ")");
 		try {
-			Runtime.getRuntime().exec(input);
+			Runtime.getRuntime().exec(input).waitFor();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

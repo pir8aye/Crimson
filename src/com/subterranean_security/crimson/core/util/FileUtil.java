@@ -17,25 +17,33 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.Base64;
+
+import javax.swing.filechooser.FileSystemView;
+
+import org.hyperic.sigar.FileInfo;
+import org.hyperic.sigar.SigarException;
+
+import com.subterranean_security.crimson.core.platform.SigarStore;
+import com.subterranean_security.crimson.core.proto.FileManager.RS_AdvancedFileInfo;
+import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 
 public final class FileUtil {
+	public static FileInfo fileInfo = new FileInfo();
+
 	private FileUtil() {
 	}
 
@@ -47,41 +55,17 @@ public final class FileUtil {
 	 * @throws IOException
 	 */
 	public static void copy(File sourceFile, File destFile) throws IOException {
-		FileInputStream fis = new FileInputStream(sourceFile);
-		copy(fis.getChannel(), destFile);
-		fis.close();
-	}
+		if (sourceFile == null)
+			throw new IllegalArgumentException();
+		if (destFile == null)
+			throw new IllegalArgumentException();
 
-	// TODO test this method
-	public static void copy(InputStream sourceFile, File destFile) throws IOException {
-		copy(((FileInputStream) sourceFile).getChannel(), destFile);
-	}
-
-	// TODO directories!!
-	private static void copy(FileChannel source, File destFile) throws IOException {
-		if (!destFile.exists()) {
-			destFile.createNewFile();
-		}
-
-		FileChannel destination = null;
-
-		try (FileOutputStream fos = new FileOutputStream(destFile)) {
-			destination = fos.getChannel();
-			destination.transferFrom(source, 0, source.size());
-		} finally {
-			if (source != null) {
-				source.close();
-			}
-			if (destination != null) {
-				destination.close();
-			}
-		}
+		Files.copy(sourceFile.toPath(), destFile.toPath());
 	}
 
 	public static String getHash(String filename, String type) {
 		MessageDigest complete = null;
-		try {
-			InputStream fis = new FileInputStream(filename);
+		try (InputStream fis = new FileInputStream(filename)) {
 			byte[] buffer = new byte[1024];
 			complete = MessageDigest.getInstance(type);
 			int numRead;
@@ -91,7 +75,6 @@ public final class FileUtil {
 					complete.update(buffer, 0, numRead);
 				}
 			} while (numRead != -1);
-			fis.close();
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -154,13 +137,24 @@ public final class FileUtil {
 		return (f.delete());
 	}
 
+	/**
+	 * Attempt to overwrite a file. There is no guarantee that bytes will be
+	 * written to their original physical locations, so this method may not be
+	 * effective.
+	 * 
+	 * @param f
+	 * @return
+	 */
 	public static boolean overwrite(File f) {
-		try {
-			RandomAccessFile raf = new RandomAccessFile(f, "w");
-			for (long i = 0; i < raf.length(); i++) {
-				raf.writeByte(0);// TODO random
+		byte[] zeros = new byte[4096];
+
+		try (RandomAccessFile raf = new RandomAccessFile(f, "w")) {
+			for (long i = 0; i < raf.length(); i += zeros.length) {
+				raf.write(zeros);
 			}
-			raf.close();
+			for (long i = 0; i < raf.length() % zeros.length; i++) {
+				raf.writeByte(0);
+			}
 			return true;
 		} catch (FileNotFoundException e) {
 			return false;
@@ -212,78 +206,6 @@ public final class FileUtil {
 		return sb.toString();
 	}
 
-	/**
-	 * Extracts a zip file specified by the zipFilePath to a directory specified
-	 * by destDirectory (will be created if does not exists)
-	 * 
-	 * @param zipFilePath
-	 * @param destDirectory
-	 * @throws IOException
-	 */
-	public static void unzip(String zipFilePath, String destDirectory) throws IOException {
-		File destDir = new File(destDirectory);
-		if (!destDir.exists()) {
-			destDir.mkdir();
-		}
-		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-		ZipEntry entry = zipIn.getNextEntry();
-		// iterates over entries in the zip file
-		while (entry != null) {
-			String filePath = destDirectory + File.separator + entry.getName();
-			if (!entry.isDirectory()) {
-				// if the entry is a file, extracts it
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				byte[] bytesIn = new byte[4096];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1) {
-					bos.write(bytesIn, 0, read);
-				}
-				bos.close();
-			} else {
-				// if the entry is a directory, make the directory
-				File dir = new File(filePath);
-				dir.mkdir();
-			}
-			zipIn.closeEntry();
-			entry = zipIn.getNextEntry();
-		}
-		zipIn.close();
-	}
-
-	/**
-	 * Extracts an entry from a zip file specified by the zipFilePath to a
-	 * directory specified by destDirectory (will be created if does not exists)
-	 * 
-	 * @param zipFilePath
-	 * @param destDirectory
-	 * @throws IOException
-	 */
-	public static void unzipFile(String zipFilePath, String targetEntry, String destDirectory) throws IOException {
-		File destDir = new File(destDirectory);
-		if (!destDir.exists()) {
-			destDir.mkdir();
-		}
-		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-		ZipEntry entry = zipIn.getNextEntry();
-		// iterates over entries in the zip file
-		while (entry != null) {
-			String filePath = destDirectory + File.separator + entry.getName();
-			if (!entry.isDirectory() && entry.getName().equals(targetEntry)) {
-				// if the entry is a file, extracts it
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				byte[] bytesIn = new byte[4096];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1) {
-					bos.write(bytesIn, 0, read);
-				}
-				bos.close();
-			}
-			zipIn.closeEntry();
-			entry = zipIn.getNextEntry();
-		}
-		zipIn.close();
-	}
-
 	public static boolean isValidInstallPath(String s) {
 		File f = new File(s);
 		if (f.exists()) {
@@ -299,25 +221,40 @@ public final class FileUtil {
 		}
 	}
 
-	public static void substitute(File f, String target, String replacement) {
-		try {
-			FileReader fr = new FileReader(f);
-			String s;
-			String totalStr = "";
-			try (BufferedReader br = new BufferedReader(fr)) {
+	public static RS_AdvancedFileInfo getInfo(String path) {
+		if (path == null)
+			throw new IllegalArgumentException();
 
-				while ((s = br.readLine()) != null) {
-					totalStr += s;
-				}
-				totalStr = totalStr.replaceAll(target, replacement);
-				FileWriter fw = new FileWriter(f);
-				fw.write(totalStr);
-				fw.close();
-			}
-		} catch (Exception e) {
+		File f = new File(path);
+
+		RS_AdvancedFileInfo.Builder rs = RS_AdvancedFileInfo.newBuilder();
+		rs.setLocalIcon(Base64.getEncoder()
+				.encodeToString(SerialUtil.serialize(FileSystemView.getFileSystemView().getSystemIcon(f))));
+		rs.setName(f.getName());
+		rs.setPath(f.getParent());
+		rs.setSize(f.length());
+		rs.setMtime(f.lastModified());
+		try {
+			fileInfo.gather(SigarStore.getSigar(), f.getAbsolutePath());
+			rs.setAtime(fileInfo.getAtime());
+			rs.setCtime(fileInfo.getCtime());
+		} catch (SigarException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+		return rs.build();
+	}
+
+	public static Outcome deleteAll(Iterable<String> targets, boolean overwrite) {
+		Outcome.Builder outcome = Outcome.newBuilder().setResult(true);
+		for (String s : targets) {
+			if (!delete(new File(s), overwrite)) {
+				outcome.setResult(false);
+			}
+		}
+
+		return outcome.build();
 	}
 
 }
