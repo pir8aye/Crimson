@@ -18,56 +18,20 @@
 package com.subterranean_security.crimson.server.net.exe;
 
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.proto.CVID.RS_Cvid;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
+import com.subterranean_security.crimson.core.proto.Network.RQ_DirectConnection;
+import com.subterranean_security.crimson.core.proto.Network.RQ_MakeDirectConnection;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.store.LcvidStore;
-import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.server.store.ServerProfileStore;
-import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
-public final class CvidExe {
-	private CvidExe() {
-	}
+public class NetworkExe {
 
-	/**
-	 * Respond to a request for a cvid. If the server is not familiar with one
-	 * of the supplied long-cvids, respond with a new lcvid-cvid pair.
-	 * 
-	 * @param c
-	 * @param m
-	 */
-	public static void rq_cvid(Connector c, Message m) {
-		for (String lcvid : m.getRqCvid().getLcvidList()) {
-			if (LcvidStore.contains(lcvid)) {
-				int cvid = LcvidStore.get(lcvid);
+	public static void rq_direct_connection(Connector connector, Message msg) {
+		RQ_DirectConnection rq = msg.getRqDirectConnection();
+		if (rq.getListenerPort() == 0) {
 
-				c.setCvid(cvid);
-				ConnectionStore.add(c);
-				c.write(Message.newBuilder().setId(m.getId())
-						.setRsCvid(RS_Cvid.newBuilder().setCvid(cvid).setLcvid(lcvid)).build());
-				return;
-			}
-		}
-
-		// create a new cvid and lcvid
-		int cvid = IDGen.cvid();
-		String lcvid = IDGen.lcvid();
-		LcvidStore.addLcvid(lcvid, cvid);
-
-		// create a new profile for this cvid
-		if (m.getRqCvid().getViewer()) {
-			// ViewerProfile vp = new ViewerProfile(cvid);
-			// ProfileStore.addViewer(vp);
 		} else {
-			// ClientProfile cp = new ClientProfile(cvid);
-			// ServerProfileStore.addClient(cp);
+			ConnectionStore.route(Message.newBuilder().setRqMakeDirectConnection(RQ_MakeDirectConnection.newBuilder()
+					.setHost(connector.getRemoteIP()).setPort(rq.getListenerPort())));
 		}
-
-		c.setCvid(cvid);
-		ConnectionStore.add(c);
-		c.write(Message.newBuilder().setId(m.getId()).setRsCvid(RS_Cvid.newBuilder().setCvid(cvid).setLcvid(lcvid))
-				.build());
 	}
 }

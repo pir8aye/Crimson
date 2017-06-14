@@ -36,8 +36,6 @@ import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.server.store.AuthStore;
-import com.subterranean_security.crimson.server.store.ProfileStore;
-import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.Universal;
 
 public final class AuthExe {
@@ -140,18 +138,9 @@ public final class AuthExe {
 		receptor.setState(ConnectionState.AUTHENTICATED);
 		receptor.setInstance(Universal.Instance.CLIENT);
 
-		try {
-			if (ProfileStore.getClient(receptor.getCvid()) == null) {
-				ProfileStore.addClient(new ClientProfile(receptor.getCvid()));
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		// ProfileStore.getClient(receptor.getCvid()).setAuthID(authID);
 
-		ConnectionStore.add(receptor);
+		//ConnectionStore.add(receptor);
 	}
 
 }

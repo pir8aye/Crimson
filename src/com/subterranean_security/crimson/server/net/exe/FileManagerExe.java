@@ -31,7 +31,8 @@ import com.subterranean_security.crimson.core.proto.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.proto.Misc.Outcome;
 import com.subterranean_security.crimson.core.store.FileManagerStore;
-import com.subterranean_security.crimson.server.store.ProfileStore;
+import com.subterranean_security.crimson.core.util.FileUtil;
+import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
@@ -42,7 +43,7 @@ public final class FileManagerExe {
 	}
 
 	public static void rq_file_listing(Connector receptor, Message m) {
-		ViewerProfile vp = ProfileStore.getViewer(receptor.getCvid());
+		ViewerProfile vp = ServerProfileStore.getViewer(receptor.getCvid());
 
 		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
 			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
@@ -76,7 +77,7 @@ public final class FileManagerExe {
 	}
 
 	public static void rq_file_handle(Connector receptor, Message m) {
-		ViewerProfile vp = ProfileStore.getViewer(receptor.getCvid());
+		ViewerProfile vp = ServerProfileStore.getViewer(receptor.getCvid());
 
 		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
 			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
@@ -91,7 +92,7 @@ public final class FileManagerExe {
 	public static void rq_delete(Connector receptor, Message m) {
 
 		// check permissions
-		if (!ProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
+		if (!ServerProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
 			receptor.write(Message.newBuilder().setId(m.getId())
 					.setRsDelete(RS_Delete.newBuilder()
 							.setOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions")))
@@ -101,13 +102,13 @@ public final class FileManagerExe {
 
 		receptor.write(Message.newBuilder().setId(m.getId())
 				.setRsDelete(RS_Delete.newBuilder()
-						.setOutcome(LocalFS.delete(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
+						.setOutcome(FileUtil.deleteAll(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
 				.build());
 	}
 
 	public static void rq_advanced_file_info(Connector receptor, Message m) {
 		receptor.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
-				.setRsAdvancedFileInfo(LocalFS.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
+				.setRsAdvancedFileInfo(FileUtil.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
 	}
 
 }

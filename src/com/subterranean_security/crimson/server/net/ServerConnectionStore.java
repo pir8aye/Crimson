@@ -27,80 +27,139 @@ import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
+import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta;
+import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta.LinkAdded;
+import com.subterranean_security.crimson.core.proto.Delta.EV_NetworkDelta.LinkRemoved;
 import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.store.ConnectionStore.ConnectionEventListener;
-import com.subterranean_security.crimson.server.store.Authentication;
-import com.subterranean_security.crimson.server.store.ProfileStore;
+import com.subterranean_security.crimson.server.store.AuthStore;
+import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
-public final class ServerConnectionStore {
+public final class ServerConnectionStore extends ConnectionStore {
 	private static final Logger log = LoggerFactory.getLogger(ServerConnectionStore.class);
 
 	private ServerConnectionStore() {
 	}
 
-	public static void initialize() {
-		ConnectionStore.initialize(new ServerConnectionEventListener());
-	}
-
-	public static void sendToAll(Universal.Instance i, Message m) {
+	/**
+	 * Broadcast a message
+	 * 
+	 * @param instance
+	 *            Broadcast only to instances of this type
+	 * @param message
+	 *            The message to broadcast
+	 */
+	public static void sendToAll(Universal.Instance instance, Message message) {
 		for (Connector c : ConnectionStore.getValues()) {
-			if (c.getInstance() == i) {
-				c.write(m);
+			if (c.getInstance() == instance) {
+				c.write(message);
 			}
 		}
 	}
 
-	public static void sendToViewersWithAuthorityOverClient(int cid, int perm, Message.Builder m) {
+	/**
+	 * Broadcast a message
+	 * 
+	 * @param message
+	 *            The message to broadcast
+	 */
+	public static void sendToAll(Message message) {
+		for (Connector c : ConnectionStore.getValues())
+			c.write(message);
+	}
+
+	/**
+	 * Broadcast a message to viewers which hold the given permission on the
+	 * client
+	 * 
+	 * @param cid
+	 *            The CID of a specific client
+	 * @param permission
+	 *            The permission that the viewer must have on the client
+	 * @param m
+	 *            The message to send
+	 */
+	public static void sendToViewersWithAuthorityOverClient(int cid, short permission, Message.Builder m) {
+		System.out.println("Sending to viewers with authority over: " + cid);
 		for (Connector c : ConnectionStore.getValues()) {
+
 			if (c.getInstance() == Universal.Instance.VIEWER
-					&& ProfileStore.getViewer(c.getCvid()).getPermissions().getFlag(cid, perm)) {
+					&& ServerProfileStore.getViewer(c.getCvid()).getPermissions().getFlag(cid, permission)) {
 				c.write(m.build());
 			}
 		}
 	}
 
-	private static class ServerConnectionEventListener implements ConnectionEventListener {
+	public static void addLink(int cvid1, int cvid2) {
+		log.debug("Linking: {} and {}", cvid1, cvid2);
+		EV_NetworkDelta.Builder ev = EV_NetworkDelta.newBuilder()
+				.setLinkAdded(LinkAdded.newBuilder().setCvid1(cvid1).setCvid2(cvid2));
+
+		sendToAll(Instance.VIEWER, Message.newBuilder().setEvNetworkDelta(ev).build());
+	}
+
+	public static void removeLink(int cvid1, int cvid2) {
+		log.debug("Delinking: {} and {}", cvid1, cvid2);
+		EV_NetworkDelta.Builder ev = EV_NetworkDelta.newBuilder()
+				.setLinkRemoved(LinkRemoved.newBuilder().setCvid1(cvid1).setCvid2(cvid2));
+
+		sendToAll(Instance.VIEWER, Message.newBuilder().setEvNetworkDelta(ev).build());
+	}
+
+	public static class ServerConnectionEventListener implements ConnectionEventListener {
 
 		@Override
 		public void update(Observable o, Object arg) {
 			Connector connector = (Connector) o;
-			ConnectionState state = (ConnectionState) arg;
+			if (arg instanceof ConnectionState) {
+				if (connector.getInstance() == Instance.CLIENT) {
+					switch ((ConnectionState) arg) {
+					case AUTHENTICATED:
+						clientAuthenticated(connector);
+						addLink(connector.getCvid(), 0);
+						break;
+					case CONNECTED:
+						break;
+					case NOT_CONNECTED:
+						clientNotConnected(connector);
+						removeLink(connector.getCvid(), 0);
+						break;
+					default:
+						break;
 
-			if (connector.getInstance() == Instance.CLIENT) {
-				switch (state) {
-				case AUTHENTICATED:
-					Authentication.refreshVisibilityPermissions(connector.getCvid());
-					ProfileStore.getClient(connector.getCvid()).setOnline(true);
-					// sendToViewersWithAuthorityOverClient(r.getCvid(),
-					// Perm.client.visibility,
-					// Message.newBuilder().setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(r.getCvid())
-					// .putStrAttr(SimpleAttribute.CLIENT_ONLINE.ordinal(),
-					// "1")));
-					break;
-				case NOT_CONNECTED:
-					ProfileStore.getClient(connector.getCvid()).setOnline(false);
-					sendToViewersWithAuthorityOverClient(connector.getCvid(), Perm.client.visibility,
-							Message.newBuilder()
-									.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(connector.getCvid())
-											.addGroup(AttributeGroupContainer.newBuilder().setGroupId("")
-													.setGroupType(AttributeKey.Type.GENERAL.ordinal()).putAttribute(
-															AKeySimple.CLIENT_ONLINE.ordinal(), "0")
-													.build())));
-					break;
-				default:
-					break;
+					}
+
+				} else if (connector.getInstance() == Instance.VIEWER) {
 
 				}
-
-			} else {
-
 			}
 
+		}
+
+		private void clientAuthenticated(Connector connector) {
+			System.out.println("clientAuthenticated");
+			AuthStore.refreshVisibilityPermissions(connector.getCvid());
+			ServerProfileStore.getClient(connector.getCvid()).setOnline(true);
+			sendToViewersWithAuthorityOverClient(connector.getCvid(), Perm.client.visibility,
+					Message.newBuilder()
+							.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(connector.getCvid())
+									.addGroup(AttributeGroupContainer.newBuilder()
+											.setGroupType(AttributeKey.Type.GENERAL.ordinal())
+											.putAttribute(AKeySimple.CLIENT_ONLINE.ordinal(), "1"))));
+		}
+
+		private void clientNotConnected(Connector connector) {
+			ServerProfileStore.getClient(connector.getCvid()).setOnline(false);
+			sendToViewersWithAuthorityOverClient(connector.getCvid(), Perm.client.visibility,
+					Message.newBuilder()
+							.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(connector.getCvid())
+									.addGroup(AttributeGroupContainer.newBuilder().setGroupId("")
+											.setGroupType(AttributeKey.Type.GENERAL.ordinal())
+											.putAttribute(AKeySimple.CLIENT_ONLINE.ordinal(), "0").build())));
 		}
 
 	}
