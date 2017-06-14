@@ -21,10 +21,10 @@ import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 import java.util.Base64;
 
 import com.subterranean_security.crimson.client.modules.Autostart;
@@ -38,26 +38,20 @@ import com.subterranean_security.crimson.universal.util.JarUtil;
 public class Installer {
 
 	public static ClientConfig ic;
-	public static String jarPath;
-	public static String jarDir;
 	private static OSFAMILY os;
 
-	public static void main(String[] args) {
+	//
+	private static File base;
+	private static File client;
 
-		try {
-			jarPath = Client.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-			jarDir = new File(jarPath).getParent();
-		} catch (URISyntaxException e) {
-			System.out.println("Code source error!");
-			System.exit(1);
-		}
+	public static void main(String[] args) {
 
 		if (isInstalled()) {
 			Client.main(args);
 			return;
 		}
 
-		// don't use method in CUtil because it loads Common.java
+		// don't use method in TempUtil because it loads unnecessary code
 		File temp = new File(System.getProperty("java.io.tmpdir") + "/client_install");
 		temp.mkdir();
 
@@ -82,31 +76,36 @@ public class Installer {
 			System.exit(1);
 		}
 
-		String base = null;
 		switch (os) {
 		case SOL:
-			base = ic.getPathSol();
+			client = new File(filterPath(ic.getPathSol()));
 			break;
 		case BSD:
-			base = ic.getPathBsd();
+			client = new File(filterPath(ic.getPathBsd()));
 			break;
 		case LIN:
-			base = ic.getPathLin();
+			client = new File(filterPath(ic.getPathLin()));
 			break;
 		case OSX:
-			base = ic.getPathOsx();
+			client = new File(filterPath(ic.getPathOsx()));
 			break;
 		case WIN:
-			base = ic.getPathWin();
+			client = new File(filterPath(ic.getPathWin()));
 			break;
 		default:
 			break;
 		}
+		base = client.getParentFile();
 
-		if (install(filterPath(base))) {
-			System.out.println("Install Success");
-		} else {
-			System.out.println("Install Failed");
+		try {
+			if (install()) {
+				System.out.println("Install Success");
+			} else {
+				System.out.println("Install Failed");
+			}
+		} catch (IOException e) {
+			System.out.println("Install Failed:");
+			e.printStackTrace();
 		}
 		FileUtil.delete(temp);
 
@@ -133,66 +132,51 @@ public class Installer {
 	}
 
 	public static boolean isInstalled() {
-		if (!new File(jarDir + "/var/client.db").exists()) {
+		if (!new File(Universal.jar.getParent() + "/var/client.db").exists()) {
 			return false;
 		}
 
-		if (!new File(jarDir + "/lib/java/c09.jar").exists()) {
+		if (!new File(Universal.jar.getParent() + "/lib/java/c09.jar").exists()) {
 			return false;
 		}
 
 		return true;
 	}
 
-	public static boolean install(String base) {
+	public static boolean install() throws IOException {
 		System.out.println("Starting installation");
 
-		File baseFile = new File(base);
-		base = baseFile.getAbsolutePath() + File.separator;
-		System.out.println("Installing to: " + base);
+		System.out.println("Installing to: " + base.getAbsolutePath());
 
-		if (!baseFile.exists() && !baseFile.mkdirs()) {
+		if (!base.exists() && !base.mkdirs()) {
 			System.out.println("Failed to create install base");
 			return false;
 		}
 
-		for (File f : baseFile.listFiles()) {
+		for (File f : base.listFiles()) {
 			if (!f.getName().equals("var")) {
 				FileUtil.delete(f);
 			}
 		}
 
-		(new File(base + "var")).mkdirs();
-		(new File(base + "tmp")).mkdirs();
-		(new File(base + "lib")).mkdirs();
+		(new File(base.getAbsolutePath() + "/var")).mkdirs();
+		(new File(base.getAbsolutePath() + "/tmp")).mkdirs();
+		(new File(base.getAbsolutePath() + "/lib")).mkdirs();
 
 		System.out.println("Extracting lib.zip");
 
-		JarUtil.extract("com/subterranean_security/crimson/client/res/bin/lib.zip", base + "lib/lib.zip");
-		try {
-			FileUtil.unzip(base + "lib/lib.zip", base + "lib/");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			return false;
-		}
+		JarUtil.extract("com/subterranean_security/crimson/client/res/bin/lib.zip",
+				base.getAbsolutePath() + "/lib/lib.zip");
+		JarUtil.extract(new FileInputStream(base.getAbsolutePath() + "/lib/lib.zip"), base.getAbsolutePath() + "/lib/");
 
 		System.out.println("Extracting client database");
-		File db = new File(base + "var/client.db");
+		File db = new File(base.getAbsolutePath() + "/var/client.db");
 		if (!db.exists()) {
 			JarUtil.extract("com/subterranean_security/crimson/client/res/bin/client.db", db.getAbsolutePath());
 		}
 
 		System.out.println("Copying client jar");
-		File client = new File(base + "/client.jar");
-		try {
-			FileUtil.copy(new File(jarPath), client);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Failed to copy client jar");
-			return false;
-		}
+		FileUtil.copy(Universal.jar, client);
 
 		if (ic.getAutostart()) {
 			switch (os) {
@@ -211,13 +195,7 @@ public class Installer {
 		}
 
 		if (!DEV_MODE) {
-			try {
-				Runtime.getRuntime().exec(os.getJavaw() + " -jar " + client.getAbsolutePath());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return false;
-			}
+			Runtime.getRuntime().exec(os.getJavaw() + " -jar " + client.getAbsolutePath());
 		}
 
 		return true;

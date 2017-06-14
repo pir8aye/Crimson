@@ -41,11 +41,12 @@ import com.subterranean_security.crimson.client.net.stream.CInfoSlave;
 import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.HCP;
-import com.subterranean_security.crimson.core.net.BasicExecutor;
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.Connector.Config;
+import com.subterranean_security.crimson.core.net.Connector.Config.ConnectionType;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
-import com.subterranean_security.crimson.core.net.Connector.ConnectionType;
 import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.net.stream.Stream;
 import com.subterranean_security.crimson.core.net.stream.StreamStore;
 import com.subterranean_security.crimson.core.net.stream.remote.RemoteSlave;
@@ -158,7 +159,7 @@ public class ClientExecutor extends BasicExecutor {
 		RQ_MakeDirectConnection rq = m.getRqMakeDirectConnection();
 		Connector connector = new Connector(getInstanceExecutor());
 		try {
-			connector.connect(ConnectionType.DATAGRAM, rq.getHost(), rq.getPort());
+			connector.connect(Config.ConnectionType.DATAGRAM, rq.getHost(), rq.getPort());
 		} catch (ConnectException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

