@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+	<!-- Normal output -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%date{yyyy-MM-dd HH:mm:ss}] [%-5level][%logger{0}] %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Colorized output for ANSI terminals -->
+	<appender name="STDOUT_COLOR" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%gray([%date{yyyy-MM-dd
+				HH:mm:ss}])%cyan([%-5level][%logger{0}]) %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Shortened output -->
+	<appender name="STDOUT_SHORT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%-5level][%logger{0}] %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- File output for the Crimson instance -->
+	<appender name="FILEOUT_INSTANCE" class="ch.qos.logback.core.FileAppender">
+		<file>${logging.directory}/${logging.instance}.log
+		</file>
+		<encoder>
+			<pattern>[%date{yyyy-MM-dd HH:mm:ss}] [%level{1}][%logger{0}] %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILEOUT_NETWORK" class="ch.qos.logback.core.FileAppender">
+		<param name="Append" value="false" />
+		<file>${logging.directory}/${logging.instance}_network.log
+		</file>
+		<encoder>
+			<pattern>[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILEOUT_NETTY" class="ch.qos.logback.core.FileAppender">
+		<file>${logging.directory}/netty.log</file>
+		<encoder>
+			<pattern>[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILEOUT_JNATIVEHOOK" class="ch.qos.logback.core.FileAppender">
+		<file>${logging.directory}/jnativehook.log</file>
+		<encoder>
+			<pattern>[%date{yyyy-MM-dd HH:mm:ss}][%level{1}][%logger{0}] %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="com.subterranean_security.cinstaller" level="${logging.level}"
+		additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.crimson.client" level="${logging.level}"
+		additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.crimson.core" level="${logging.level}"
+		additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.crimson.core.net.Connector"
+		level="${crimson.logging.level}" additivity="false">
+		<appender-ref ref="FILEOUT_NETWORK" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.crimson.server" level="${logging.level}"
+		additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.crimson.sv" level="${logging.level}"
+		additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.crimson.cv" level="${logging.level}"
+		additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.crimson.viewer" level="${logging.level}"
+		additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.services" level="${logging.level}"
+		additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.viridian" level="${logging.level}"
+		additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.crimson.core.util.EH"
+		level="${logging.level}" additivity="false">
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.crimson.core.util.EH"
+		level="debug" additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+	</logger>
+
+	<logger name="io.netty" level="error" additivity="false">
+		<appender-ref ref="FILEOUT_NETTY" />
+	</logger>
+
+	<logger name="org.jnativehook" level="error" additivity="false">
+		<appender-ref ref="FILEOUT_JNATIVEHOOK" />
+	</logger>
+
+	<root level="off">
+	</root>
+
+</configuration>
