@@ -1,0 +1,70 @@
+/******************************************************************************
+ *                                                                            *
+ *                    Copyright 2016 Subterranean Security                    *
+ *                                                                            *
+ *  Licensed under the Apache License, Version 2.0 (the "License");           *
+ *  you may not use this file except in compliance with the License.          *
+ *  You may obtain a copy of the License at                                   *
+ *                                                                            *
+ *      http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                            *
+ *  Unless required by applicable law or agreed to in writing, software       *
+ *  distributed under the License is distributed on an "AS IS" BASIS,         *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *  See the License for the specific language governing permissions and       *
+ *  limitations under the License.                                            *
+ *                                                                            *
+ *****************************************************************************/
+syntax = "proto2";
+
+package core.net.sequences;
+
+option java_package = "com.subterranean_security.crimson.proto.core.net.sequences";
+
+import "com/subterranean_security/crimson/core/net/sequences/Delta.proto";
+import "com/subterranean_security/crimson/core/Misc.proto";
+
+message RQ_GroupChallenge {
+	required string group_name = 1;
+	required string magic = 2;
+}
+
+message RS_GroupChallenge {
+	required string result = 1;
+}
+
+message MI_GroupChallengeResult {
+	required bool result = 1;
+	optional EV_ProfileDelta pd = 2;
+}
+
+message MI_AuthRequest {
+	required AuthType type = 1;
+	required int32 cvid = 2;
+	
+	// for group auth only
+	optional string group_name = 3;
+	
+	// for password auth only
+	optional string password = 4;
+	
+	// for no auth only
+	optional EV_ProfileDelta pd = 5;
+}
+
+message RQ_CreateAuthMethod {
+	required AuthMethod auth_method = 1;
+}
+
+message RS_CreateAuthMethod {
+	required Outcome outcome = 1;
+}
+
+message RQ_RemoveAuthMethod {
+	required int32 id = 1;
+}
+
+message RS_RemoveAuthMethod {
+	required bool result = 1;
+	optional string comment = 2;
+}

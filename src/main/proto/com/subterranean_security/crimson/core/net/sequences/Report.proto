@@ -1,0 +1,55 @@
+/******************************************************************************
+ *                                                                            *
+ *                    Copyright 2016 Subterranean Security                    *
+ *                                                                            *
+ *  Licensed under the Apache License, Version 2.0 (the "License");           *
+ *  you may not use this file except in compliance with the License.          *
+ *  You may obtain a copy of the License at                                   *
+ *                                                                            *
+ *      http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                            *
+ *  Unless required by applicable law or agreed to in writing, software       *
+ *  distributed under the License is distributed on an "AS IS" BASIS,         *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *  See the License for the specific language governing permissions and       *
+ *  limitations under the License.                                            *
+ *                                                                            *
+ *****************************************************************************/
+syntax = "proto2";
+
+package core.net.sequences;
+
+option java_package = "com.subterranean_security.crimson.proto.core.net.sequences";
+
+message MI_Report {
+
+	required int64 init_date = 1;
+	
+	optional string cr_instance = 2;
+	optional string cr_hwid = 3;
+	optional string cr_version = 4;
+	optional string cr_build = 5;
+	optional string cr_lang = 6;
+	optional string cr_base_dir = 7;
+	optional string cr_comment = 8;
+	optional string cr_stack_trace = 9;
+	
+	optional string jre_version = 10;
+	optional string jre_vendor = 11;
+	optional string jre_arch = 12;
+	optional string jre_uptime = 13;
+	
+	optional string os_name = 14;
+	optional string os_family = 15;
+	
+	optional string sys_arch = 16;
+	optional string sys_uptime = 17;
+	optional string sys_timezone = 18;
+	optional string sys_lang = 19;
+	optional string sys_cpu_model = 20;
+	optional string sys_charset = 21;
+	
+	optional string log_netty = 22;
+	optional string log_crimson = 23;
+	
+}

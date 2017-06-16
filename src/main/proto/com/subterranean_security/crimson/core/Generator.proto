@@ -1,0 +1,84 @@
+/******************************************************************************
+ *                                                                            *
+ *                    Copyright 2016 Subterranean Security                    *
+ *                                                                            *
+ *  Licensed under the Apache License, Version 2.0 (the "License");           *
+ *  you may not use this file except in compliance with the License.          *
+ *  You may obtain a copy of the License at                                   *
+ *                                                                            *
+ *      http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                            *
+ *  Unless required by applicable law or agreed to in writing, software       *
+ *  distributed under the License is distributed on an "AS IS" BASIS,         *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *  See the License for the specific language governing permissions and       *
+ *  limitations under the License.                                            *
+ *                                                                            *
+ *****************************************************************************/
+syntax = "proto3";
+
+package core;
+
+option java_package = "com.subterranean_security.crimson.proto.core";
+
+import "com/subterranean_security/crimson/core/net/sequences/Keylogger.proto";
+import "com/subterranean_security/crimson/core/Misc.proto";
+
+message GenReport {
+	bool result = 1;
+	int64 gen_date = 2;
+	int32 gen_time = 3;
+	string comment = 4;
+	string hash_md5 = 5;
+	string hash_sha256 = 6;
+	int32 fileSize = 7;
+	string output_type = 8;
+}
+
+message ClientConfig {
+	//general
+	string output_type = 1;
+	int32 build_number = 2;
+	string viewer_user = 18;
+	
+
+	//network
+	repeated NetworkTarget target = 5;
+	int32 reconnect_period = 6;
+	bool force_certificates = 26;
+
+	//execution
+	bool always_imsg = 3;
+	string imsg = 4;
+	int32 delay = 7;
+	bool melt = 8;
+	bool autostart = 9;
+	bool delay_idle = 10;
+	bool error_recovery = 11;
+	string path_win = 12;
+	string path_lin = 13;
+	string path_osx = 14;
+	string path_sol = 15;
+	string path_bsd = 16;
+	
+	
+	// features
+	bool keylogger = 17;
+
+	// authentication
+	AuthType authType = 19;
+	
+	string group_name = 20;
+	string password = 21;
+
+	bool allow_misc_connections = 23;
+	
+	core.net.sequences.Trigger keylogger_flush_method = 24;
+	int32 keylogger_flush_value = 25;
+	
+}
+
+message NetworkTarget {
+	string server = 1;
+	int32 port = 2;
+}

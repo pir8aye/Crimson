@@ -1,6 +1,0 @@
-syntax = "proto2";
-package com.subterranean_security.crimson.core.proto;
-
-message MI_Inject {
-	required string str = 1;
-}

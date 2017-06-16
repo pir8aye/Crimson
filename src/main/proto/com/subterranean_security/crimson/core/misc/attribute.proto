@@ -1,0 +1,25 @@
+syntax = "proto3";
+package com.subterranean_security.crimson.core.proto;
+
+message Attribute {
+	string s_value = 1;
+	int32 i_value = 2;
+	int64 l_value = 3;
+}
+
+message OS {
+	Attribute language = 1;
+	Attribute arch = 2;
+	Attribute family = 3;
+}
+
+message NIC {
+	Attribute name = 1;
+	Attribute ip = 2;
+}
+
+message AttrBundle {
+	OS os = 1;
+	repeated NIC nic = 2;
+
+}
