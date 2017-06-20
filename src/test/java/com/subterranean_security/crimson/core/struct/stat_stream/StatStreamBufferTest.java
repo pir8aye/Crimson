@@ -17,12 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.struct.stat_stream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.subterranean_security.crimson.core.struct.stat_stream.StatStreamBuffer;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 
 public class StatStreamBufferTest {

@@ -9,11 +9,11 @@ import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.subterranean_security.crimson.core.attribute.keys.AKeyCPU;
-import com.subterranean_security.crimson.core.attribute.keys.AKeySimple;
-import com.subterranean_security.crimson.core.proto.Delta.AttributeGroupContainer;
-import com.subterranean_security.crimson.core.proto.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyCPU;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.util.RandomUtil;
+import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
+import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 
 public class ClientProfileTest {
 
