@@ -67,55 +67,19 @@
 		<appender-ref ref="STDOUT_SHORT" />
 	</logger>
 
-	<logger name="com.subterranean_security.crimson.client" level="${logging.level}"
-		additivity="false">
-		<appender-ref ref="FILEOUT_INSTANCE" />
-		<appender-ref ref="STDOUT_SHORT" />
-	</logger>
-
-	<logger name="com.subterranean_security.crimson.core" level="${logging.level}"
-		additivity="false">
-		<appender-ref ref="FILEOUT_INSTANCE" />
-		<appender-ref ref="STDOUT_SHORT" />
-	</logger>
-
-	<logger name="com.subterranean_security.crimson.core.net.Connector"
-		level="${crimson.logging.level}" additivity="false">
-		<appender-ref ref="FILEOUT_NETWORK" />
-		<appender-ref ref="STDOUT_SHORT" />
-	</logger>
-
-	<logger name="com.subterranean_security.crimson.server" level="${logging.level}"
-		additivity="false">
-		<appender-ref ref="FILEOUT_INSTANCE" />
-		<appender-ref ref="STDOUT_SHORT" />
-	</logger>
-
-	<logger name="com.subterranean_security.crimson.sv" level="${logging.level}"
-		additivity="false">
-		<appender-ref ref="FILEOUT_INSTANCE" />
-		<appender-ref ref="STDOUT_SHORT" />
-	</logger>
-
-	<logger name="com.subterranean_security.crimson.cv" level="${logging.level}"
-		additivity="false">
-		<appender-ref ref="FILEOUT_INSTANCE" />
-		<appender-ref ref="STDOUT_SHORT" />
-	</logger>
-
-	<logger name="com.subterranean_security.crimson.viewer" level="${logging.level}"
-		additivity="false">
-		<appender-ref ref="FILEOUT_INSTANCE" />
-		<appender-ref ref="STDOUT_SHORT" />
-	</logger>
-
-	<logger name="com.subterranean_security.services" level="${logging.level}"
-		additivity="false">
+	<logger name="com.subterranean_security.crimson" level="${logging.level}"
+		additivity="true">
 		<appender-ref ref="FILEOUT_INSTANCE" />
 		<appender-ref ref="STDOUT_SHORT" />
 	</logger>
 
 	<logger name="com.subterranean_security.viridian" level="${logging.level}"
+		additivity="false">
+		<appender-ref ref="FILEOUT_INSTANCE" />
+		<appender-ref ref="STDOUT_SHORT" />
+	</logger>
+
+	<logger name="com.subterranean_security.charcoal" level="${logging.level}"
 		additivity="false">
 		<appender-ref ref="FILEOUT_INSTANCE" />
 		<appender-ref ref="STDOUT_SHORT" />
