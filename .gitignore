@@ -1,9 +1,6 @@
 /bin/
-/build/bin
-/build/platform
-/build/build.number
-/build/config/version.properties
-/scripts/
+/lib/
+/uml/
 /.classpath
 /.project
-/proto/net/SMSG.proto
+/deprecated/
