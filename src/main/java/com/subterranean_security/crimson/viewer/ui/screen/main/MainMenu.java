@@ -146,7 +146,8 @@ public class MainMenu extends JPanel {
 			public void mousePressed(MouseEvent e) {
 				if (!ViewerState.isOnline()) {
 					MainFrame.main.np.addNote("error", "Offline mode is enabled!");
-				} else if (ViewerProfileStore.getLocalViewer().getPermissions().getFlag(Perm.server.generator.generate_jar)) {
+				} else if (ViewerProfileStore.getLocalViewer().getPermissions()
+						.getFlag(Perm.server.generator.generate_jar)) {
 					if (UIStore.genDialog == null) {
 						UIStore.genDialog = new GenDialog();
 						UIStore.genDialog.setLocationRelativeTo(null);

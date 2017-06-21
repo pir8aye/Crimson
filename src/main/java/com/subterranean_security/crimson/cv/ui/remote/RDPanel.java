@@ -68,7 +68,8 @@ public class RDPanel extends JPanel {
 		this.fullSettings = fullSettings;
 		this.cvid = cvid;
 
-		settings = new Settings(ViewerProfileStore.getClient(cvid).getGroupList(AttributeKey.Type.DISP), this, fullSettings);
+		settings = new Settings(ViewerProfileStore.getClient(cvid).getGroupList(AttributeKey.Type.DISP), this,
+				fullSettings);
 		init();
 
 	}

@@ -26,9 +26,11 @@ import com.subterranean_security.crimson.client.ShutdownHook;
 import com.subterranean_security.crimson.client.net.command.AuthCom;
 import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.factory.ExecutorFactory;
+import com.subterranean_security.crimson.core.net.thread.ConnectionPeriod;
 import com.subterranean_security.crimson.core.net.thread.ConnectionThread;
+import com.subterranean_security.crimson.core.net.thread.routines.RoundRobin;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.cv.net.command.CvidCom;
 import com.subterranean_security.crimson.proto.core.Generator.NetworkTarget;
@@ -54,6 +56,16 @@ public final class ClientConnectionStore extends ConnectionStore {
 			return;
 		}
 
+		ConnectionThread ct = new ConnectionThread(new RoundRobin(new ExecutorFactory(ClientExecutor.class), targets,
+				new ConnectionPeriod(ConfigStore.getConfig().getReconnectPeriod()), 0,
+				ConfigStore.getConfig().getForceCertificates()));
+		try {
+			ct.connect();
+		} catch (InterruptedException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
 		connecting = true;
 		connectionIterations = 0;
 		try {
@@ -61,13 +73,13 @@ public final class ClientConnectionStore extends ConnectionStore {
 				for (NetworkTarget n : targets) {
 					connectionIterations++;
 
-					Connector connector = ConnectionThread.makeConnection(new ExecutorFactory(ClientExecutor.class), n.getServer(),
-							n.getPort(), ConfigStore.getConfig().getForceCertificates());
+					Connector connector = ConnectionThread.makeConnection(new ExecutorFactory(ClientExecutor.class),
+							n.getServer(), n.getPort(), ConfigStore.getConfig().getForceCertificates());
 
 					if (connector != null) {
 						try {
 							CvidCom.getCvid(connector);
-						} catch (Timeout e1) {
+						} catch (MessageTimeout e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						} catch (InterruptedException e1) {

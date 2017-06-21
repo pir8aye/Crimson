@@ -46,7 +46,7 @@ public class Clipboard implements ClipboardOwner {
 		if (hasTransferableText) {
 			try {
 				result = (String) contents.getTransferData(DataFlavor.stringFlavor);
-				
+
 			} catch (UnsupportedFlavorException | IOException ex) {
 				System.out.println(ex);
 				ex.printStackTrace();

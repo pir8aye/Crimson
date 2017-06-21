@@ -33,8 +33,8 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 
-import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.DirtyBlock;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.EV_StreamData;
@@ -115,7 +115,7 @@ public final class ScreenInterface {
 				}
 
 				// slowest
-				ConnectionStore.route(Message.newBuilder().setSid(LcvidStore.cvid).setRid(rId)
+				NetworkStore.route(Message.newBuilder().setSid(LcvidStore.cvid).setRid(rId)
 						.setEvStreamData(EV_StreamData.newBuilder().setStreamID(streamId).setDirtyBlock(db)));
 
 			}

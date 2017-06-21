@@ -37,7 +37,7 @@ import javax.swing.border.EtchedBorder;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.Config;
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.cv.net.command.CvidCom;
@@ -198,7 +198,7 @@ public class Relogin extends JPanel {
 
 			try {
 				CvidCom.getCvid(connector);
-			} catch (Timeout e1) {
+			} catch (MessageTimeout e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (InterruptedException e1) {

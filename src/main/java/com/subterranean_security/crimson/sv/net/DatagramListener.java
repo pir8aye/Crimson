@@ -88,8 +88,8 @@ public class DatagramListener implements Serializable {
 			Connector connector = new Connector(BasicExecutor.getInstanceExecutor());
 
 			// initially assign a random cvid
-//			connector.setCvid(IDGen.cvid());
-//			ConnectionStore.add(connector);
+			// connector.setCvid(IDGen.cvid());
+			// ConnectionStore.add(connector);
 
 			ChannelPipeline p = ch.pipeline();
 

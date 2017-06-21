@@ -63,7 +63,7 @@ public final class LoginExe {
 			passOrFail(receptor, m.getId(), vp, outcome.setResult(false).setComment("Invalid username"));
 			return;
 		}
-		
+
 		log.debug("1");
 
 		// pass if server is in example mode
@@ -74,7 +74,7 @@ public final class LoginExe {
 			passOrFail(receptor, m.getId(), vp, outcome.setResult(true));
 			return;
 		}
-		
+
 		log.debug("2");
 
 		// find user
@@ -97,7 +97,7 @@ public final class LoginExe {
 			}
 
 		}
-		
+
 		log.debug("3");
 
 		// if profile is still not found
@@ -108,7 +108,7 @@ public final class LoginExe {
 		} else {
 			vp.setCvid(receptor.getCvid());
 		}
-		
+
 		log.debug("4");
 
 		Outcome authOutcome = (cloud == null) ? handleAuthentication(receptor, m, user)

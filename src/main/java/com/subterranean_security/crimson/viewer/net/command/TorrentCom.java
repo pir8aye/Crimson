@@ -22,9 +22,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import com.google.protobuf.ByteString;
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Torrent.RQ_AddTorrent;
@@ -37,10 +39,11 @@ public final class TorrentCom {
 		Outcome.Builder outcome = Outcome.newBuilder();
 
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
-					.setRqAddTorrent(RQ_AddTorrent.newBuilder().setDestintation(destination)
-							.setTorrentFile(ByteString.readFrom(new FileInputStream(torrent)))),
-					5);
+			Message m = NetworkStore.route(
+					Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+							.setRqAddTorrent(RQ_AddTorrent.newBuilder().setDestintation(destination)
+									.setTorrentFile(ByteString.readFrom(new FileInputStream(torrent)))),
+					TimeoutConstants.DEFAULT);
 
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timed out");
@@ -52,7 +55,7 @@ public final class TorrentCom {
 			outcome.setResult(false).setComment("Interrupted");
 		} catch (IOException e1) {
 			outcome.setResult(false).setComment("Torrent file not found");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -100,10 +100,11 @@ public final class FileManagerExe {
 			return;
 		}
 
-		receptor.write(Message.newBuilder().setId(m.getId())
-				.setRsDelete(RS_Delete.newBuilder()
-						.setOutcome(FileUtil.deleteAll(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
-				.build());
+		receptor.write(
+				Message.newBuilder().setId(m.getId())
+						.setRsDelete(RS_Delete.newBuilder().setOutcome(
+								FileUtil.deleteAll(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
+						.build());
 	}
 
 	public static void rq_advanced_file_info(Connector receptor, Message m) {

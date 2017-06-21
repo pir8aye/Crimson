@@ -191,6 +191,6 @@ public class UnitTranslator {
 
 	public static final String[] BYTES = { " B", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB" };
 	public static final String[] BYTES_PER_SECOND = { " B/s", " KB/s", " MB/s", " GB/s", " TB/s", " PB/s", " EB/s",
-	" ZB/s", " YB/s" };
+			" ZB/s", " YB/s" };
 
 }

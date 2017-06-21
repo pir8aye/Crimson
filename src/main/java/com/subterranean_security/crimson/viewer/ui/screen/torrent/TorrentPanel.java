@@ -29,7 +29,7 @@ public class TorrentPanel extends JPanel {
 		setLayout(new BorderLayout());
 		TorrentList list = new TorrentList();
 		add(list, BorderLayout.CENTER);
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		add(menuBar, BorderLayout.NORTH);
 	}

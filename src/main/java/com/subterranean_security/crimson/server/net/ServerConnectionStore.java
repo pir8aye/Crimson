@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkAdded;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkRemoved;
@@ -37,33 +38,6 @@ public final class ServerConnectionStore extends ConnectionStore {
 	}
 
 	/**
-	 * Broadcast a message
-	 * 
-	 * @param instance
-	 *            Broadcast only to instances of this type
-	 * @param message
-	 *            The message to broadcast
-	 */
-	public static void sendToAll(Universal.Instance instance, Message message) {
-		for (Connector c : ConnectionStore.getValues()) {
-			if (c.getInstance() == instance) {
-				c.write(message);
-			}
-		}
-	}
-
-	/**
-	 * Broadcast a message
-	 * 
-	 * @param message
-	 *            The message to broadcast
-	 */
-	public static void sendToAll(Message message) {
-		for (Connector c : ConnectionStore.getValues())
-			c.write(message);
-	}
-
-	/**
 	 * Broadcast a message to viewers which hold the given permission on the
 	 * client
 	 * 
@@ -76,7 +50,7 @@ public final class ServerConnectionStore extends ConnectionStore {
 	 */
 	public static void sendToViewersWithAuthorityOverClient(int cid, short permission, Message.Builder m) {
 		System.out.println("Sending to viewers with authority over: " + cid);
-		for (Connector c : ConnectionStore.getValues()) {
+		for (Connector c : ConnectionStore.getConnections()) {
 
 			if (c.getInstance() == Universal.Instance.VIEWER
 					&& ServerProfileStore.getViewer(c.getCvid()).getPermissions().getFlag(cid, permission)) {
@@ -90,7 +64,7 @@ public final class ServerConnectionStore extends ConnectionStore {
 		EV_NetworkDelta.Builder ev = EV_NetworkDelta.newBuilder()
 				.setLinkAdded(LinkAdded.newBuilder().setCvid1(cvid1).setCvid2(cvid2));
 
-		sendToAll(Instance.VIEWER, Message.newBuilder().setEvNetworkDelta(ev).build());
+		NetworkStore.broadcastTo(Instance.VIEWER, Message.newBuilder().setEvNetworkDelta(ev).build());
 	}
 
 	public static void removeLink(int cvid1, int cvid2) {
@@ -98,7 +72,7 @@ public final class ServerConnectionStore extends ConnectionStore {
 		EV_NetworkDelta.Builder ev = EV_NetworkDelta.newBuilder()
 				.setLinkRemoved(LinkRemoved.newBuilder().setCvid1(cvid1).setCvid2(cvid2));
 
-		sendToAll(Instance.VIEWER, Message.newBuilder().setEvNetworkDelta(ev).build());
+		NetworkStore.broadcastTo(Instance.VIEWER, Message.newBuilder().setEvNetworkDelta(ev).build());
 	}
 
 }

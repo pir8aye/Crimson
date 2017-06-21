@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
 import com.subterranean_security.crimson.core.net.factory.ExecutorFactory;
 import com.subterranean_security.crimson.core.net.thread.ConnectionThread;
@@ -390,7 +390,7 @@ public class ServerSelectionPanel extends JPanel {
 				throw new MessageFlowException(RQ_ServerInfo.class, rs);
 			}
 			serverInfo = rs.getRsServerInfo();
-		} catch (InterruptedException | Timeout e) {
+		} catch (InterruptedException | MessageTimeout e) {
 			connection.close();
 			lbl_status.setBad("Server error");
 			return false;

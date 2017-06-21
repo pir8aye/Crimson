@@ -32,6 +32,7 @@ import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.JAVA;
 import com.subterranean_security.crimson.core.platform.info.OS;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
 import com.subterranean_security.crimson.core.util.DateUtil;
 import com.subterranean_security.crimson.core.util.FileUtil;
@@ -104,7 +105,7 @@ public final class Reporter {
 
 	public static boolean sendReport(MI_Report report) {
 		if (ConnectionStore.connectViridian()) {
-			ConnectionStore.route(Message.newBuilder()
+			NetworkStore.route(Message.newBuilder()
 					.setRid(com.subterranean_security.crimson.core.util.IDGen.Reserved.VIRIDIAN).setMiReport(report));
 			return true;
 		}

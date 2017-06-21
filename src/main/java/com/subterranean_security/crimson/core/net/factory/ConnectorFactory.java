@@ -15,11 +15,8 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.net;
+package com.subterranean_security.crimson.core.net.factory;
 
-import com.subterranean_security.crimson.core.store.ConnectionStore;
+public class ConnectorFactory {
 
-public final class ViewerConnectionStore extends ConnectionStore {
-	private ViewerConnectionStore() {
-	}
 }

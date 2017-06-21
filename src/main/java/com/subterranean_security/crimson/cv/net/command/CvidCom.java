@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.LcvidStore;
@@ -48,10 +48,10 @@ public final class CvidCom {
 	 * generates a new cvid and lcvid for this instance.
 	 * 
 	 * @param c
-	 * @throws Timeout
+	 * @throws MessageTimeout
 	 * @throws InterruptedException
 	 */
-	public static void getCvid(Connector c) throws Timeout, InterruptedException {
+	public static void getCvid(Connector c) throws MessageTimeout, InterruptedException {
 		RQ_Cvid.Builder rq = RQ_Cvid.newBuilder().addAllLcvid(LcvidStore.getLcvidSet())
 				.setViewer(Universal.instance == Instance.VIEWER);
 

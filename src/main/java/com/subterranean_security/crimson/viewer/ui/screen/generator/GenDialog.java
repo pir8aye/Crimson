@@ -94,9 +94,9 @@ public class GenDialog extends JDialog {
 									&& ((String) gp.atab.groupSelectionBox.getSelectedItem()).equals("Create Group")) {
 								if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
 										.addOwner(ViewerProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER))
-										.setId(IDGen.auth()).setCreation(new Date().getTime())
-										.setType(AuthType.GROUP).setName(config.getGroupName())
-										.setGroupSeedPrefix(gp.getGroupPrefix()).build()).getResult()) {
+										.setId(IDGen.auth()).setCreation(new Date().getTime()).setType(AuthType.GROUP)
+										.setName(config.getGroupName()).setGroupSeedPrefix(gp.getGroupPrefix()).build())
+										.getResult()) {
 									UINotification.addConsoleBad("Failed to create authentication group");
 									return;
 								}

@@ -30,6 +30,7 @@ import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
@@ -348,7 +349,7 @@ public class ServerExecutor extends BasicExecutor {
 		ListenerStore.add(m.getRqAddListener().getConfig());
 		Message update = Message.newBuilder().setEvServerProfileDelta(
 				EV_ServerProfileDelta.newBuilder().addListener(m.getRqAddListener().getConfig())).build();
-		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
+		NetworkStore.broadcastTo(Universal.Instance.VIEWER, update);
 
 	}
 
@@ -371,7 +372,7 @@ public class ServerExecutor extends BasicExecutor {
 								.addGroup(ProtoUtil.getNewGeneralGroup()
 										.putAttribute(AKeySimple.VIEWER_USER.getFullID(), m.getRqAddUser().getUser()))))
 				.build();
-		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
+		NetworkStore.broadcastTo(Universal.Instance.VIEWER, update);
 
 	}
 
@@ -410,7 +411,7 @@ public class ServerExecutor extends BasicExecutor {
 
 		Message update = Message.newBuilder().setEvViewerProfileDelta(b).build();
 
-		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER, update);
+		NetworkStore.broadcastTo(Universal.Instance.VIEWER, update);
 
 	}
 
@@ -440,7 +441,7 @@ public class ServerExecutor extends BasicExecutor {
 				.setOutcome(Outcome.newBuilder().setResult(result).setComment(comment))).build());
 
 		// notify viewers
-		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER,
+		NetworkStore.broadcastTo(Universal.Instance.VIEWER,
 				Message.newBuilder()
 						.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder()
 								.setPd(EV_ProfileDelta.newBuilder()

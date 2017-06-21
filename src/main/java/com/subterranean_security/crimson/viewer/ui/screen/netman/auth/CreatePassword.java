@@ -63,7 +63,7 @@ public class CreatePassword extends JPanel {
 		JButton btnCreate = new JButton("Create");
 		btnCreate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 			}
 		});
 		btnCreate.setMargin(new Insets(2, 4, 2, 4));

