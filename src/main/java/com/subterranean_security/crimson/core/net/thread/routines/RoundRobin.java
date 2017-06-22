@@ -64,4 +64,9 @@ public class RoundRobin extends ConnectionRoutine {
 		}
 	}
 
+	@Override
+	public String getName() {
+		return String.format("RoundRobin on %d targets", targets.size());
+	}
+
 }

@@ -34,7 +34,7 @@ public class ConnectionThread extends Thread {
 	private ConnectionRoutine routine;
 
 	public ConnectionThread(ConnectionRoutine routine) {
-		super(routine);
+		super(routine, "[ConnectionThread] " + routine.getName());
 		this.routine = routine;
 	}
 

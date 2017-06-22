@@ -118,10 +118,16 @@ public final class NetworkStore {
 			c.write(message);
 	}
 
+	/**
+	 * @return The number of viewer instances in the network
+	 */
 	public static int countUsers() {
 		return 0;
 	}
 
+	/**
+	 * @return The number of client instances in the network
+	 */
 	public static int countClients() {
 		return 0;
 	}

