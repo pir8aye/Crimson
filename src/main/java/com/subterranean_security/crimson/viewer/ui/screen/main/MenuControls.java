@@ -30,7 +30,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyCPU;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
@@ -275,7 +275,7 @@ public class MenuControls extends JPanel {
 	private InfoMaster im;
 	private InfoSlave is;
 	private static final InfoParam param = ProtoUtil
-			.getInfoParam(AKeyCPU.CPU_TEMP, AKeySimple.CLIENT_RAM_USAGE, AKeySimple.CLIENT_CPU_USAGE).build();
+			.getInfoParam(AK_CPU.CPU_TEMP, AKeySimple.CLIENT_RAM_USAGE, AKeySimple.CLIENT_CPU_USAGE).build();
 
 	public void startStreams() {
 

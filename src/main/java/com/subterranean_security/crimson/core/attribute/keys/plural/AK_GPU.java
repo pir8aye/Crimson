@@ -24,12 +24,12 @@ import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
-public enum AKeyCPU implements PluralKey {
-	CPU_VENDOR, CPU_MODEL, CPU_CORES, CPU_CACHE, CPU_TEMP, CPU_TOTAL_USAGE, CPU_FREQUENCY, CPU_FREQUENCY_MAX;
+public enum AK_GPU implements PluralKey {
+	GPU_VENDOR, GPU_MODEL, GPU_RAM, GPU_TEMP;
 
 	@Override
 	public int getGroupType() {
-		return AttributeKey.Type.CPU.ordinal();
+		return AttributeKey.Type.GPU.ordinal();
 	}
 
 	@Override
@@ -47,4 +47,8 @@ public enum AKeyCPU implements PluralKey {
 		return true;
 	}
 
+	@Override
+	public boolean isHeaderable() {
+		return true;
+	}
 }

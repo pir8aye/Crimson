@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyCPU;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.util.FileUtil;
@@ -166,7 +166,7 @@ public final class CPU {
 
 	}
 
-	public static String get(AKeyCPU key, int i) {
+	public static String get(AK_CPU key, int i) {
 		switch (key) {
 		case CPU_CACHE:
 			return getCache(i);
@@ -197,11 +197,11 @@ public final class CPU {
 			AttributeGroupContainer.Builder container = AttributeGroupContainer.newBuilder()
 					.setGroupType(AttributeKey.Type.CPU.ordinal()).setGroupId(computeGID(i));
 
-			container.putAttribute(AKeyCPU.CPU_CORES.ordinal(), getCores(i));
-			container.putAttribute(AKeyCPU.CPU_MODEL.ordinal(), getModel(i));
-			container.putAttribute(AKeyCPU.CPU_VENDOR.ordinal(), getVendor(i));
-			container.putAttribute(AKeyCPU.CPU_CACHE.ordinal(), getCache(i));
-			container.putAttribute(AKeyCPU.CPU_FREQUENCY_MAX.ordinal(), getMaxFrequency(i));
+			container.putAttribute(AK_CPU.CPU_CORES.ordinal(), getCores(i));
+			container.putAttribute(AK_CPU.CPU_MODEL.ordinal(), getModel(i));
+			container.putAttribute(AK_CPU.CPU_VENDOR.ordinal(), getVendor(i));
+			container.putAttribute(AK_CPU.CPU_CACHE.ordinal(), getCache(i));
+			container.putAttribute(AK_CPU.CPU_FREQUENCY_MAX.ordinal(), getMaxFrequency(i));
 
 			a.add(container.build());
 		}

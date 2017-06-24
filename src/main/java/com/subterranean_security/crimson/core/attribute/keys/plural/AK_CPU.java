@@ -24,12 +24,12 @@ import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
-public enum AKeyTORRENT implements PluralKey {
-	TORRENT_NAME, TORRENT_SIZE;
+public enum AK_CPU implements PluralKey {
+	CPU_VENDOR, CPU_MODEL, CPU_CORES, CPU_CACHE, CPU_TEMP, CPU_TOTAL_USAGE, CPU_FREQUENCY, CPU_FREQUENCY_MAX;
 
 	@Override
 	public int getGroupType() {
-		return AttributeKey.Type.TORRENT.ordinal();
+		return AttributeKey.Type.CPU.ordinal();
 	}
 
 	@Override
@@ -47,8 +47,4 @@ public enum AKeyTORRENT implements PluralKey {
 		return true;
 	}
 
-	@Override
-	public boolean isHeaderable() {
-		return true;
-	}
 }

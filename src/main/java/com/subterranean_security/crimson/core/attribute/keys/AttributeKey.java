@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyCPU;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyDISP;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyGPU;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyNIC;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyTORRENT;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_DISP;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_GPU;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_NIC;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_TORRENT;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
@@ -46,13 +46,13 @@ public interface AttributeKey {
 			Map<Integer, AttributeKey> list = new HashMap<Integer, AttributeKey>();
 			for (AttributeKey key : AKeySimple.values())
 				list.put(key.getFullID(), key);
-			for (AttributeKey key : AKeyCPU.values())
+			for (AttributeKey key : AK_CPU.values())
 				list.put(key.getFullID(), key);
-			for (AttributeKey key : AKeyGPU.values())
+			for (AttributeKey key : AK_GPU.values())
 				list.put(key.getFullID(), key);
-			for (AttributeKey key : AKeyNIC.values())
+			for (AttributeKey key : AK_NIC.values())
 				list.put(key.getFullID(), key);
-			for (AttributeKey key : AKeyTORRENT.values())
+			for (AttributeKey key : AK_TORRENT.values())
 				list.put(key.getFullID(), key);
 			return list;
 		}
@@ -104,11 +104,11 @@ public interface AttributeKey {
 
 	public static List<AttributeKey> getAllGroupKeys() {
 		ArrayList<AttributeKey> list = new ArrayList<AttributeKey>();
-		list.addAll(Arrays.asList(AKeyCPU.values()));
-		list.addAll(Arrays.asList(AKeyGPU.values()));
-		list.addAll(Arrays.asList(AKeyDISP.values()));
-		list.addAll(Arrays.asList(AKeyNIC.values()));
-		list.addAll(Arrays.asList(AKeyTORRENT.values()));
+		list.addAll(Arrays.asList(AK_CPU.values()));
+		list.addAll(Arrays.asList(AK_GPU.values()));
+		list.addAll(Arrays.asList(AK_DISP.values()));
+		list.addAll(Arrays.asList(AK_NIC.values()));
+		list.addAll(Arrays.asList(AK_TORRENT.values()));
 		return list;
 	}
 

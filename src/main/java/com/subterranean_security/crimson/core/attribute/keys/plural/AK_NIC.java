@@ -24,12 +24,12 @@ import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
-public enum AKeyDISP implements PluralKey {
-	DISP_ID, DISP_TYPE, DISP_WIDTH, DISP_HEIGHT, DISP_MEMORY, DISP_REFRESH_RATE, DISP_BIT_DEPTH;
+public enum AK_NIC implements PluralKey {
+	NIC_NAME, NIC_DESC, NIC_IP, NIC_MAC, NIC_MASK, NIC_RX_SPEED, NIC_TX_SPEED, NIC_RX_BYTES, NIC_TX_BYTES, NIC_RX_PACKETS, NIC_TX_PACKETS;
 
 	@Override
 	public int getGroupType() {
-		return AttributeKey.Type.DISP.ordinal();
+		return AttributeKey.Type.NIC.ordinal();
 	}
 
 	@Override

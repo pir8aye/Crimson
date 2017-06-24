@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyCPU;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyNIC;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_NIC;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.CPU;
 import com.subterranean_security.crimson.core.platform.info.CRIMSON;
@@ -78,14 +78,14 @@ public abstract class InfoSlave extends PeriodicStream {
 		initializeContainers();
 
 		for (AttributeKey key : keys) {
-			if (key instanceof AKeyCPU) {
+			if (key instanceof AK_CPU) {
 				initializeCPU();
 				break;
 			}
 		}
 
 		for (AttributeKey key : keys) {
-			if (key instanceof AKeyNIC) {
+			if (key instanceof AK_NIC) {
 				initializeNIC();
 				break;
 			}
@@ -154,11 +154,11 @@ public abstract class InfoSlave extends PeriodicStream {
 
 		lastNicContainer.setGroupId(nicID);
 
-		if (keys.contains(AKeyNIC.NIC_RX_BYTES) || keys.contains(AKeyNIC.NIC_RX_SPEED)) {
+		if (keys.contains(AK_NIC.NIC_RX_BYTES) || keys.contains(AK_NIC.NIC_RX_SPEED)) {
 			rxSpeed = new StatStream(1000, 60);
 		}
 
-		if (keys.contains(AKeyNIC.NIC_TX_BYTES) || keys.contains(AKeyNIC.NIC_TX_SPEED)) {
+		if (keys.contains(AK_NIC.NIC_TX_BYTES) || keys.contains(AK_NIC.NIC_TX_SPEED)) {
 			txSpeed = new StatStream(1000, 60);
 		}
 	}
@@ -173,34 +173,34 @@ public abstract class InfoSlave extends PeriodicStream {
 		// purge last attribute groups
 		pd.clearGroup();
 
-		if (keys.contains(AKeyNIC.NIC_RX_BYTES)) {
+		if (keys.contains(AK_NIC.NIC_RX_BYTES)) {
 			long l = NIC.getRxBytes(whichNIC);
 			rxSpeed.addPoint(l);
 
-			poll(lastNicContainer, AKeyNIC.NIC_RX_BYTES, UnitTranslator.translateNicOutput(l));
+			poll(lastNicContainer, AK_NIC.NIC_RX_BYTES, UnitTranslator.translateNicOutput(l));
 		}
 
-		if (keys.contains(AKeyNIC.NIC_TX_BYTES)) {
+		if (keys.contains(AK_NIC.NIC_TX_BYTES)) {
 			long l = NIC.getTxBytes(whichNIC);
 			txSpeed.addPoint(l);
 
-			poll(lastNicContainer, AKeyNIC.NIC_TX_BYTES, UnitTranslator.translateNicOutput(l));
+			poll(lastNicContainer, AK_NIC.NIC_TX_BYTES, UnitTranslator.translateNicOutput(l));
 		}
 
-		if (keys.contains(AKeyNIC.NIC_RX_SPEED))
-			poll(lastNicContainer, AKeyNIC.NIC_RX_SPEED, UnitTranslator.nicSpeed(keys.contains(AKeyNIC.NIC_RX_BYTES)
+		if (keys.contains(AK_NIC.NIC_RX_SPEED))
+			poll(lastNicContainer, AK_NIC.NIC_RX_SPEED, UnitTranslator.nicSpeed(keys.contains(AK_NIC.NIC_RX_BYTES)
 					? rxSpeed.getInstantaneousSpeed() : rxSpeed.addPoint(NIC.getRxBytes(whichNIC))));
-		if (keys.contains(AKeyNIC.NIC_TX_SPEED))
-			poll(lastNicContainer, AKeyNIC.NIC_TX_SPEED, UnitTranslator.nicSpeed(keys.contains(AKeyNIC.NIC_TX_BYTES)
+		if (keys.contains(AK_NIC.NIC_TX_SPEED))
+			poll(lastNicContainer, AK_NIC.NIC_TX_SPEED, UnitTranslator.nicSpeed(keys.contains(AK_NIC.NIC_TX_BYTES)
 					? txSpeed.getInstantaneousSpeed() : txSpeed.addPoint(NIC.getTxBytes(whichNIC))));
-		if (keys.contains(AKeyNIC.NIC_RX_PACKETS))
-			poll(lastNicContainer, AKeyNIC.NIC_RX_PACKETS, "" + NIC.getRxPackets(whichNIC));
-		if (keys.contains(AKeyNIC.NIC_TX_PACKETS))
-			poll(lastNicContainer, AKeyNIC.NIC_TX_PACKETS, "" + NIC.getTxPackets(whichNIC));
-		if (keys.contains(AKeyCPU.CPU_TOTAL_USAGE))
-			poll(lastCpuContainer, AKeyCPU.CPU_TOTAL_USAGE, CPU.getTotalUsage(whichCPU));
-		if (keys.contains(AKeyCPU.CPU_TEMP))
-			poll(lastCpuContainer, AKeyCPU.CPU_TEMP, CPU.getTemp());
+		if (keys.contains(AK_NIC.NIC_RX_PACKETS))
+			poll(lastNicContainer, AK_NIC.NIC_RX_PACKETS, "" + NIC.getRxPackets(whichNIC));
+		if (keys.contains(AK_NIC.NIC_TX_PACKETS))
+			poll(lastNicContainer, AK_NIC.NIC_TX_PACKETS, "" + NIC.getTxPackets(whichNIC));
+		if (keys.contains(AK_CPU.CPU_TOTAL_USAGE))
+			poll(lastCpuContainer, AK_CPU.CPU_TOTAL_USAGE, CPU.getTotalUsage(whichCPU));
+		if (keys.contains(AK_CPU.CPU_TEMP))
+			poll(lastCpuContainer, AK_CPU.CPU_TEMP, CPU.getTemp());
 		if (keys.contains(AKeySimple.OS_ACTIVE_WINDOW))
 			poll(lastGeneralContainer, AKeySimple.OS_ACTIVE_WINDOW, Native.getActiveWindow());
 		if (keys.contains(AKeySimple.CLIENT_STATUS))

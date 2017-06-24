@@ -24,12 +24,12 @@ import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
-public enum AKeyGPU implements PluralKey {
-	GPU_VENDOR, GPU_MODEL, GPU_RAM, GPU_TEMP;
+public enum AK_DISP implements PluralKey {
+	DISP_ID, DISP_TYPE, DISP_WIDTH, DISP_HEIGHT, DISP_MEMORY, DISP_REFRESH_RATE, DISP_BIT_DEPTH;
 
 	@Override
 	public int getGroupType() {
-		return AttributeKey.Type.GPU.ordinal();
+		return AttributeKey.Type.DISP.ordinal();
 	}
 
 	@Override

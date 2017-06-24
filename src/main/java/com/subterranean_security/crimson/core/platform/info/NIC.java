@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyNIC;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_NIC;
 import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
 
@@ -155,10 +155,10 @@ public class NIC {
 			AttributeGroupContainer.Builder container = AttributeGroupContainer.newBuilder()
 					.setGroupType(AttributeKey.Type.NIC.ordinal()).setGroupId(computeGID(i));
 
-			container.putAttribute(AKeyNIC.NIC_IP.ordinal(), getIP(i));
-			container.putAttribute(AKeyNIC.NIC_MAC.ordinal(), getMAC(i));
-			container.putAttribute(AKeyNIC.NIC_MASK.ordinal(), getNetmask(i));
-			container.putAttribute(AKeyNIC.NIC_DESC.ordinal(), getDescription(i));
+			container.putAttribute(AK_NIC.NIC_IP.ordinal(), getIP(i));
+			container.putAttribute(AK_NIC.NIC_MAC.ordinal(), getMAC(i));
+			container.putAttribute(AK_NIC.NIC_MASK.ordinal(), getNetmask(i));
+			container.putAttribute(AK_NIC.NIC_DESC.ordinal(), getDescription(i));
 
 			a.add(container.build());
 
@@ -166,7 +166,7 @@ public class NIC {
 		return a;
 	}
 
-	public static String get(AKeyNIC key, int whichNIC) {
+	public static String get(AK_NIC key, int whichNIC) {
 		// TODO Auto-generated method stub
 		return null;
 	}

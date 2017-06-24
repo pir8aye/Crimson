@@ -23,7 +23,7 @@ import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyDISP;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_DISP;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
 
@@ -94,13 +94,13 @@ public final class DISP {
 			AttributeGroupContainer.Builder container = AttributeGroupContainer.newBuilder()
 					.setGroupType(AttributeKey.Type.DISP.ordinal()).setGroupId(computeGID(i));
 
-			container.putAttribute(AKeyDISP.DISP_ID.ordinal(), getID(i));
-			container.putAttribute(AKeyDISP.DISP_TYPE.ordinal(), getType(i));
-			container.putAttribute(AKeyDISP.DISP_WIDTH.ordinal(), getWidth(i));
-			container.putAttribute(AKeyDISP.DISP_HEIGHT.ordinal(), getHeight(i));
-			container.putAttribute(AKeyDISP.DISP_BIT_DEPTH.ordinal(), getBitDepth(i));
-			container.putAttribute(AKeyDISP.DISP_MEMORY.ordinal(), getMemory(i));
-			container.putAttribute(AKeyDISP.DISP_REFRESH_RATE.ordinal(), getRefreshRate(i));
+			container.putAttribute(AK_DISP.DISP_ID.ordinal(), getID(i));
+			container.putAttribute(AK_DISP.DISP_TYPE.ordinal(), getType(i));
+			container.putAttribute(AK_DISP.DISP_WIDTH.ordinal(), getWidth(i));
+			container.putAttribute(AK_DISP.DISP_HEIGHT.ordinal(), getHeight(i));
+			container.putAttribute(AK_DISP.DISP_BIT_DEPTH.ordinal(), getBitDepth(i));
+			container.putAttribute(AK_DISP.DISP_MEMORY.ordinal(), getMemory(i));
+			container.putAttribute(AK_DISP.DISP_REFRESH_RATE.ordinal(), getRefreshRate(i));
 
 			a.add(container.build());
 

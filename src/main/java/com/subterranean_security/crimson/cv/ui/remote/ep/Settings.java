@@ -29,7 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
 import com.subterranean_security.crimson.core.attribute.AttributeGroup;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyDISP;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_DISP;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.RemoteParam.RMethod;
@@ -84,8 +84,8 @@ public class Settings extends JPanel {
 	private void loadSettings() {
 		displayStrings = new String[displays.size()];
 		for (int i = 0; i < displays.size(); i++) {
-			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " (" + displays.get(i).get(AKeyDISP.DISP_WIDTH)
-					+ " x " + displays.get(i).get(AKeyDISP.DISP_HEIGHT) + ")";
+			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " (" + displays.get(i).get(AK_DISP.DISP_WIDTH)
+					+ " x " + displays.get(i).get(AK_DISP.DISP_HEIGHT) + ")";
 		}
 
 		if (parent.stream != null) {
@@ -115,7 +115,7 @@ public class Settings extends JPanel {
 	}
 
 	public String getMonitor() {
-		return getDisplay().get(AKeyDISP.DISP_ID);
+		return getDisplay().get(AK_DISP.DISP_ID);
 	}
 
 	public AttributeGroup getDisplay() {

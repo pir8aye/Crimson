@@ -41,7 +41,7 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.attribute.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyCPU;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.util.ProtoUtil;
@@ -190,7 +190,7 @@ public class Processor extends TracedPanel implements DModule {
 			}
 
 			// usage
-			String usage = getPrimaryCPU().get(AKeyCPU.CPU_TOTAL_USAGE);
+			String usage = getPrimaryCPU().get(AK_CPU.CPU_TOTAL_USAGE);
 			double u;
 			if (usage != null) {
 				u = Double.parseDouble(usage);
@@ -207,7 +207,7 @@ public class Processor extends TracedPanel implements DModule {
 
 			// set dynamic attributes
 			// temperature
-			String temp = getPrimaryCPU().get(AKeyCPU.CPU_TEMP);
+			String temp = getPrimaryCPU().get(AK_CPU.CPU_TEMP);
 			if (temp != null) {
 				statConsoleTemp.setText(temp);
 			}
@@ -241,13 +241,13 @@ public class Processor extends TracedPanel implements DModule {
 
 		// set static attributes
 		try {
-			System.out.println("cpu model: " + getPrimaryCPU().get(AKeyCPU.CPU_MODEL));
+			System.out.println("cpu model: " + getPrimaryCPU().get(AK_CPU.CPU_MODEL));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		statConsoleModel.setText(getPrimaryCPU().get(AKeyCPU.CPU_MODEL));
-		statConsoleFreq.setText(getPrimaryCPU().get(AKeyCPU.CPU_FREQUENCY_MAX));
+		statConsoleModel.setText(getPrimaryCPU().get(AK_CPU.CPU_MODEL));
+		statConsoleFreq.setText(getPrimaryCPU().get(AK_CPU.CPU_FREQUENCY_MAX));
 
 	}
 
@@ -283,7 +283,7 @@ public class Processor extends TracedPanel implements DModule {
 		this.showing = showing;
 		if (showing) {
 
-			im = new InfoMaster(ProtoUtil.getInfoParam(AKeyCPU.CPU_TOTAL_USAGE, AKeyCPU.CPU_TEMP).build(),
+			im = new InfoMaster(ProtoUtil.getInfoParam(AK_CPU.CPU_TOTAL_USAGE, AK_CPU.CPU_TEMP).build(),
 					profile.getCvid(), (int) updatePeriod);
 			StreamStore.addStream(im);
 

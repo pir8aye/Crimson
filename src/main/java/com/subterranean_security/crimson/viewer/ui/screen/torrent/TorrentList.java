@@ -31,7 +31,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
 import com.subterranean_security.crimson.core.attribute.AttributeGroup;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AKeyTORRENT;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_TORRENT;
 
 public class TorrentList extends JPanel {
 
@@ -137,11 +137,11 @@ class TR extends DefaultTableCellRenderer {
 		switch (tm.headers[table.convertColumnIndexToModel(viewColumn)]) {
 		case NAME: {
 			setHorizontalAlignment(SwingConstants.LEFT);
-			return file.getAttribute(AKeyTORRENT.TORRENT_NAME).get();
+			return file.getAttribute(AK_TORRENT.TORRENT_NAME).get();
 		}
 		case SIZE: {
 			setHorizontalAlignment(viewColumn == 0 ? SwingConstants.LEFT : SwingConstants.RIGHT);
-			return file.getAttribute(AKeyTORRENT.TORRENT_SIZE).get();
+			return file.getAttribute(AK_TORRENT.TORRENT_SIZE).get();
 		}
 		}
 		return null;
