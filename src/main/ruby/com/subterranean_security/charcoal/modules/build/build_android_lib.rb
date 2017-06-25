@@ -23,26 +23,36 @@ puts "Preparing to build Crimson Android library\n"
 
 t1 = Time.now
 
-ant_cmd = "ant -silent -buildfile #{build_dir}/build.xml -propertyfile #{build_dir}/config/version.properties -propertyfile #{build_dir}/config/build.properties -propertyfile #{build_dir}/build.number"
+project_dir = ARGV[0]
+build_dir = "#{project_dir}/build"
+output_dir = ARGV[1]
+
+ant_cmd = "ant -silent -buildfile #{build_dir}/build.xml -propertyfile #{build_dir}/build.number"
 
 puts 'Cleaning environment'
 unless run_cmd "#{ant_cmd} clean"
-  return
+  exit 1
 end
 
 puts 'Compiling protocol buffers'
 unless run_cmd "#{ant_cmd} compile.proto"
-  return
+  exit 1
 end
 
 puts 'Compiling project'
-unless run_cmd "#{ant_cmd} compile.java"
-  return
+unless run_cmd "#{ant_cmd} compile.android-library"
+  exit 1
+end
+
+puts 'Copying resource tree'
+unless run_cmd "#{ant_cmd} copy.resources"
+  exit 1
 end
 
 puts 'Building Android library'
 unless run_cmd "#{ant_cmd} jar.android-library"
-  return
+  exit 1
 end
 
-puts("\n#{GREEN}Built successfully in: %.1f seconds#{RESET}" % (Time.now - t1))
+puts "\n#{GREEN}Build completed in: %.1f seconds#{RESET}" % (Time.now - t1)
+exit 0

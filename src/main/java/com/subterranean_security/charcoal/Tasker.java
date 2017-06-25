@@ -43,8 +43,20 @@ public final class Tasker {
 				case "BUILD_CRIMSON":
 				case "BUILD_VIRIDIAN":
 				case "BUILD_CLOUD":
+					BuildConfig bc = (BuildConfig) config;
+
+					Tasker.run(new ProcessBuilder().command("ruby",
+							Main.script_dir.getAbsolutePath() + "/build/" + bc.getTarget().toLowerCase() + ".rb",
+							bc.getProject_dir(), Main.build_output.getAbsolutePath()));
+					break;
 				case "BUILD_CHARCOAL":
-					build();
+					BuildConfig bc_charcoal = (BuildConfig) config;
+
+					Tasker.run(new ProcessBuilder().command("ruby",
+							Main.script_dir.getAbsolutePath() + "/build/" + bc_charcoal.getTarget().toLowerCase()
+									+ ".rb",
+							bc_charcoal.getProject_dir(), Main.build_output.getAbsolutePath(),
+							Main.charcoal_dir.getAbsolutePath()));
 					break;
 				case "DEPLOY_SVC":
 					deploy_svc();
@@ -64,14 +76,6 @@ public final class Tasker {
 		});
 		task.setName(config.getName());
 		task.start();
-	}
-
-	private static void build() {
-		BuildConfig bc = (BuildConfig) config;
-
-		run(new ProcessBuilder().command("ruby",
-				Main.script_dir.getAbsolutePath() + "/build/" + bc.getTarget().toLowerCase() + ".rb",
-				bc.getProject_dir(), Main.build_output.getAbsolutePath()));
 	}
 
 	private static void deploy_svc() {

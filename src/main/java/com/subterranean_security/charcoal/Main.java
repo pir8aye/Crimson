@@ -19,8 +19,7 @@ import com.subterranean_security.charcoal.config.DeployConfig;
 import com.subterranean_security.charcoal.ui.MainFrame;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.proto.core.net.sequences.Listener.ListenerConfig;
-import com.subterranean_security.crimson.server.ShutdownHook;
-import com.subterranean_security.crimson.server.store.ListenerStore;
+import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.universal.Universal;
 
 public class Main {
@@ -29,6 +28,7 @@ public class Main {
 
 	public static final File build_output = new File(System.getProperty("user.home") + "/.charcoal_output");
 	public static final File script_dir = new File(Universal.jar.getParent() + "/modules");
+	public static final File charcoal_dir = new File(Universal.jar.getParent());
 
 	public static void main(String[] argv) {
 		LogUtil.configure();
@@ -53,10 +53,9 @@ public class Main {
 			}
 		});
 
-		// start listeners
-		ListenerStore.load();
-		ListenerStore.add(ListenerConfig.newBuilder().setPort(10100).setId(0).setOwner("").build());
-		ListenerStore.startAll();
+		// start listener
+		Listener listener = new Listener(ListenerConfig.newBuilder().setPort(10100).setId(0).setOwner("").build());
+		listener.start();
 
 		// start interface
 		EventQueue.invokeLater(() -> {

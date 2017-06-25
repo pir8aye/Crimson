@@ -6,6 +6,7 @@
 		<format property="build.time" pattern="MM-dd-yyyy HH:mm:ss" locale="en,US" />
 	</tstamp>
 
+	<!-- Clean the working directories -->
 	<target name="clean">
 		<delete dir="${dir.bin.java}" />
 		<mkdir dir="${dir.bin.java}" />
@@ -14,6 +15,7 @@
 		<mkdir dir="${dir.output}" />
 	</target>
 
+	<!-- Compile and package the protocol buffer library -->
 	<target name="compile.proto">
 		<description>Compile protocol buffers</description>
 		<apply executable="protoc" failonerror="true">
@@ -48,8 +50,8 @@
 		</jar>
 	</target>
 
-	<target name="compile.java">
-		<description>Compile source</description>
+	<!-- Compile Crimson -->
+	<target name="compile.crimson">
 		<path id="class.path">
 			<fileset dir="${dir.lib.java}/java">
 				<include name="**/*.jar" />
@@ -58,16 +60,48 @@
 
 		<javac includeantruntime="false" srcdir="${dir.src.java}" destdir="${dir.bin.java}" debug="true">
 			<classpath refid="class.path" />
+
+			<include name="**/com/subterranean_security/cinstaller/**" />
+			<include name="**/com/subterranean_security/crimson/**" />
+
 		</javac>
 
-		<!-- Copy resources -->
-		<copy todir="${dir.bin.java}" includeEmptyDirs="true">
-			<fileset dir="${dir.res.java}">
-			</fileset>
-		</copy>
+	</target>
 
-		<!-- Move logback.xml to root -->
-		<move file="${dir.bin.java}/com/subterranean_security/crimson/universal/res/logback.xml" todir="${dir.bin.java}" />
+	<!-- Compile Charcoal -->
+	<target name="compile.charcoal">
+		<path id="class.path">
+			<fileset dir="${dir.lib.java}/java">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+
+		<javac includeantruntime="false" srcdir="${dir.src.java}" destdir="${dir.bin.java}" debug="true">
+			<classpath refid="class.path" />
+
+			<include name="**/com/subterranean_security/charcoal/**" />
+			<include name="**/com/subterranean_security/crimson/universal/**" />
+			<include name="**/com/subterranean_security/crimson/core/**" />
+			<include name="**/com/subterranean_security/crimson/sv/**" />
+
+		</javac>
+
+	</target>
+
+	<!-- Compile Android library -->
+	<target name="compile.android-library">
+		<path id="class.path">
+			<fileset dir="${dir.lib.java}/java">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+
+		<javac includeantruntime="false" destdir="${dir.bin.java}" debug="true">
+			<classpath refid="class.path" />
+			<src path="${dir.src.java}" />
+			<include name="com/subterranean_security/crimson/**" />
+		</javac>
+
 	</target>
 
 	<target name="jni">
@@ -80,8 +114,8 @@
 		<exec executable="${script.dir}/jni-osx.sh" />
 	</target>
 
+	<!-- Build the Android support library -->
 	<target name="jar.android-library">
-		<description>Build Android support jar</description>
 		<jar destfile="${dir.android_project}/app/libs/core-android.jar">
 			<fileset dir="${dir.bin.java}">
 				<!-- viewer -->
@@ -119,8 +153,20 @@
 		</jar>
 	</target>
 
+	<!-- Copy resource tree to bin directory -->
+	<target name="copy.resources">
+		<!-- Copy resources -->
+		<copy todir="${dir.bin.java}" includeEmptyDirs="true">
+			<fileset dir="${dir.res.java}">
+			</fileset>
+		</copy>
+
+		<!-- Move logback.xml to root -->
+		<move file="${dir.bin.java}/com/subterranean_security/crimson/universal/res/logback.xml" todir="${dir.bin.java}" />
+	</target>
+
+	<!-- Build the core library -->
 	<target name="jar.core">
-		<description>Build core jar</description>
 		<jar destfile="${dir.lib.java}/java/c00.jar">
 			<fileset dir="${dir.bin.java}">
 				<include name="**/com/subterranean_security/crimson/core/**" />
@@ -134,8 +180,8 @@
 		</jar>
 	</target>
 
+	<!-- Build the HCP library -->
 	<target name="jar.hcp">
-		<description>Build hcp jar</description>
 		<jar destfile="${dir.lib.java}/java/c01.jar">
 			<fileset dir="${dir.bin.java}">
 				<include name="**/com/subterranean_security/crimson/hcp/**" />
@@ -150,8 +196,8 @@
 		</jar>
 	</target>
 
+	<!-- Build the server/client library -->
 	<target name="jar.sc">
-		<description>Build sc jar</description>
 		<jar destfile="${dir.lib.java}/java/c02.jar">
 			<fileset dir="${dir.bin.java}">
 				<include name="**/com/subterranean_security/crimson/sc/**" />
@@ -163,8 +209,8 @@
 		</jar>
 	</target>
 
+	<!-- Build the server/viewer library -->
 	<target name="jar.sv">
-		<description>Build sv jar</description>
 		<jar destfile="${dir.lib.java}/java/c03.jar">
 			<fileset dir="${dir.bin.java}">
 				<include name="**/com/subterranean_security/crimson/sv/**" />
@@ -176,8 +222,8 @@
 		</jar>
 	</target>
 
+	<!-- Build the client/viewer library -->
 	<target name="jar.cv">
-		<description>Build cv jar</description>
 		<jar destfile="${dir.lib.java}/java/c04.jar">
 			<fileset dir="${dir.bin.java}">
 				<include name="**/com/subterranean_security/crimson/cv/**" />
@@ -189,9 +235,8 @@
 		</jar>
 	</target>
 
+	<!-- Build the client -->
 	<target name="jar.client">
-		<description>Build client</description>
-
 		<jar destfile="${dir.server_resources}/client.jar">
 			<fileset dir="${dir.bin.java}">
 				<include name="**/logback.xml" />
@@ -210,9 +255,8 @@
 		</jar>
 	</target>
 
+	<!-- Build the server -->
 	<target name="jar.server">
-		<description>Build server</description>
-
 		<jar destfile="${dir.installer_resources}/Crimson-Server.jar">
 			<fileset dir="${dir.bin.java}">
 				<include name="**/logback.xml" />
@@ -233,9 +277,8 @@
 		</jar>
 	</target>
 
+	<!-- Build the viewer -->
 	<target name="jar.viewer">
-		<description>Build viewer</description>
-
 		<!-- Calculate file sizes -->
 		<length file="${dir.lib.java}/java/c19.jar" property="jnativehook.size" />
 		<length property="jni-win.size" mode="all">
@@ -284,9 +327,8 @@
 		</jar>
 	</target>
 
+	<!-- Build the installer -->
 	<target name="jar.cinstaller">
-		<description>Build installer</description>
-
 		<zip destfile="${dir.installer_resources}/lib.zip" basedir="${dir.lib.java}" />
 
 		<jar destfile="${dir.output}/CInstaller.jar">
@@ -314,9 +356,8 @@
 		<buildnumber file="build.number" />
 	</target>
 
+	<!-- Build Charcoal -->
 	<target name="jar.charcoal">
-		<description>Build server</description>
-
 		<jar destfile="${dir.output}/Charcoal.jar">
 			<fileset dir="${dir.bin.java}">
 				<include name="**/logback.xml" />
