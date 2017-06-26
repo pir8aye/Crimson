@@ -20,15 +20,22 @@ package com.subterranean_security.crimson.core.store;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.NetworkNode;
-import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.IDGen.Reserved;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message.Builder;
 import com.subterranean_security.crimson.server.store.ServerProfileStore;
+import com.subterranean_security.crimson.sv.profile.Profile;
+import com.subterranean_security.crimson.sv.profile.set.ProfileSet;
+import com.subterranean_security.crimson.sv.profile.set.ProfileSetFactory;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.universal.Universal.Instance;
 
+/**
+ * A static store for managing network connections, which may or may not be
+ * directly connected and therefore present in the {@code ConnectionStore}.
+ * 
+ * @author cilki
+ * @since 5.0.0
+ */
 public final class NetworkStore {
 	private NetworkStore() {
 	}
@@ -106,7 +113,36 @@ public final class NetworkStore {
 	}
 
 	/**
-	 * Broadcast a message
+	 * Broadcast a message to each member of a {@code ProfileSet}. If a profile
+	 * in the set is not currently connected, it will be skipped.
+	 * 
+	 * @param message
+	 *            The message to broadcast
+	 * @param profiles
+	 *            The profiles to receive the {@code message}
+	 */
+	public static void broadcastTo(Message message, ProfileSet profiles) {
+		for (Profile p : profiles) {
+			if (ConnectionStore.connectedDirectly(p.getCvid())) {
+				ConnectionStore.get(p.getCvid()).write(message);
+			}
+		}
+	}
+
+	/**
+	 * Alias for {@code broadcastTo(Message, ProfileSet)}
+	 * 
+	 * @param message
+	 *            The message to broadcast
+	 * @param profileSetFactory
+	 *            The profile set factory which will be built
+	 */
+	public static void broadcastTo(Message message, ProfileSetFactory profileSetFactory) {
+		broadcastTo(message, profileSetFactory.build());
+	}
+
+	/**
+	 * Broadcast a message to every connected instance
 	 * 
 	 * @param message
 	 *            The message to broadcast

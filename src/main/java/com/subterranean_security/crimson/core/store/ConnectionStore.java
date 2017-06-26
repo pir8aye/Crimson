@@ -44,8 +44,19 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Debug.RQ_Debug
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.universal.Universal;
 
-public abstract class ConnectionStore {
+/**
+ * A static store for managing direct connections and connection attempt
+ * threads.
+ * 
+ * @author cilki
+ * @see NetworkStore
+ * @since 5.0.0
+ */
+public final class ConnectionStore {
 	public static final Logger log = LoggerFactory.getLogger(ConnectionStore.class);
+
+	private ConnectionStore() {
+	}
 
 	/**
 	 * Stores direct connections which may exist between any pair of instances
