@@ -78,7 +78,7 @@ public class AttributeGroup implements Serializable {
 
 	public Attribute getAttribute(AttributeKey key) {
 		if (!hasAttribute(key))
-			addAttribute(key, key.getNewAttribute());
+			addAttribute(key, key.fabricate());
 
 		return attributes.get(key);
 	}
@@ -114,7 +114,7 @@ public class AttributeGroup implements Serializable {
 		for (Integer keyID : attr.keySet()) {
 			AttributeKey key = AttributeKey.getKey(keyID);
 			if (!hasAttribute(key)) {
-				addAttribute(key, key.getNewAttribute());
+				addAttribute(key, key.fabricate());
 			}
 			getAttribute(key).set(attr.get(keyID));
 		}

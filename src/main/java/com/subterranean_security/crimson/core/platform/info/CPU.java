@@ -168,21 +168,21 @@ public final class CPU {
 
 	public static String get(AK_CPU key, int i) {
 		switch (key) {
-		case CPU_CACHE:
+		case CACHE:
 			return getCache(i);
-		case CPU_CORES:
+		case CORES:
 			return getCores(i);
-		case CPU_FREQUENCY:
+		case FREQUENCY:
 			return null;
-		case CPU_FREQUENCY_MAX:
+		case FREQUENCY_MAX:
 			return getMaxFrequency(i);
-		case CPU_MODEL:
+		case MODEL:
 			return getModel(i);
-		case CPU_TEMP:
+		case TEMP:
 			return getTemp();
-		case CPU_TOTAL_USAGE:
+		case TOTAL_USAGE:
 			return getTotalUsage(i);
-		case CPU_VENDOR:
+		case VENDOR:
 			return getVendor(i);
 		default:
 			break;
@@ -197,11 +197,11 @@ public final class CPU {
 			AttributeGroupContainer.Builder container = AttributeGroupContainer.newBuilder()
 					.setGroupType(AttributeKey.Type.CPU.ordinal()).setGroupId(computeGID(i));
 
-			container.putAttribute(AK_CPU.CPU_CORES.ordinal(), getCores(i));
-			container.putAttribute(AK_CPU.CPU_MODEL.ordinal(), getModel(i));
-			container.putAttribute(AK_CPU.CPU_VENDOR.ordinal(), getVendor(i));
-			container.putAttribute(AK_CPU.CPU_CACHE.ordinal(), getCache(i));
-			container.putAttribute(AK_CPU.CPU_FREQUENCY_MAX.ordinal(), getMaxFrequency(i));
+			container.putAttribute(AK_CPU.CORES.ordinal(), getCores(i));
+			container.putAttribute(AK_CPU.MODEL.ordinal(), getModel(i));
+			container.putAttribute(AK_CPU.VENDOR.ordinal(), getVendor(i));
+			container.putAttribute(AK_CPU.CACHE.ordinal(), getCache(i));
+			container.putAttribute(AK_CPU.FREQUENCY_MAX.ordinal(), getMaxFrequency(i));
 
 			a.add(container.build());
 		}

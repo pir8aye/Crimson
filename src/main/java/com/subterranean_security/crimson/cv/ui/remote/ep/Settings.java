@@ -84,8 +84,8 @@ public class Settings extends JPanel {
 	private void loadSettings() {
 		displayStrings = new String[displays.size()];
 		for (int i = 0; i < displays.size(); i++) {
-			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " (" + displays.get(i).get(AK_DISP.DISP_WIDTH)
-					+ " x " + displays.get(i).get(AK_DISP.DISP_HEIGHT) + ")";
+			displayStrings[i] = (full ? "Monitor " : "M") + (i + 1) + " (" + displays.get(i).get(AK_DISP.WIDTH)
+					+ " x " + displays.get(i).get(AK_DISP.HEIGHT) + ")";
 		}
 
 		if (parent.stream != null) {
@@ -115,7 +115,7 @@ public class Settings extends JPanel {
 	}
 
 	public String getMonitor() {
-		return getDisplay().get(AK_DISP.DISP_ID);
+		return getDisplay().get(AK_DISP.ID);
 	}
 
 	public AttributeGroup getDisplay() {

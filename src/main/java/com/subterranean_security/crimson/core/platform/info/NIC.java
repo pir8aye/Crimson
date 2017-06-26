@@ -155,10 +155,10 @@ public class NIC {
 			AttributeGroupContainer.Builder container = AttributeGroupContainer.newBuilder()
 					.setGroupType(AttributeKey.Type.NIC.ordinal()).setGroupId(computeGID(i));
 
-			container.putAttribute(AK_NIC.NIC_IP.ordinal(), getIP(i));
-			container.putAttribute(AK_NIC.NIC_MAC.ordinal(), getMAC(i));
-			container.putAttribute(AK_NIC.NIC_MASK.ordinal(), getNetmask(i));
-			container.putAttribute(AK_NIC.NIC_DESC.ordinal(), getDescription(i));
+			container.putAttribute(AK_NIC.IPV4.ordinal(), getIP(i));
+			container.putAttribute(AK_NIC.MAC.ordinal(), getMAC(i));
+			container.putAttribute(AK_NIC.NETMASK.ordinal(), getNetmask(i));
+			container.putAttribute(AK_NIC.DESC.ordinal(), getDescription(i));
 
 			a.add(container.build());
 

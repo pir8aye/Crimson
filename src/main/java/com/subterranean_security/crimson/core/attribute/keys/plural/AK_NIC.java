@@ -19,26 +19,18 @@ package com.subterranean_security.crimson.core.attribute.keys.plural;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
-import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
+/**
+ * NIC attribute keys
+ */
 public enum AK_NIC implements PluralKey {
-	NIC_NAME, NIC_DESC, NIC_IP, NIC_MAC, NIC_MASK, NIC_RX_SPEED, NIC_TX_SPEED, NIC_RX_BYTES, NIC_TX_BYTES, NIC_RX_PACKETS, NIC_TX_PACKETS;
+	DESC, IPV4, MAC, NAME, NETMASK, RX_BYTES, RX_PACKETS, RX_SPEED, TX_BYTES, TX_PACKETS, TX_SPEED;
 
 	@Override
-	public int getGroupType() {
-		return AttributeKey.Type.NIC.ordinal();
-	}
-
-	@Override
-	public int getOrdinal() {
-		return this.ordinal();
-	}
-
-	@Override
-	public Attribute getNewAttribute() {
+	public Attribute fabricate() {
 		return new UntrackedAttribute();
 	}
 
@@ -50,5 +42,22 @@ public enum AK_NIC implements PluralKey {
 	@Override
 	public boolean isHeaderable() {
 		return true;
+	}
+
+	@Override
+	public String toSuperString() {
+		return super.toString();
+	}
+
+	@Override
+	public int getConstID() {
+		return this.ordinal();
+	}
+
+	private static final int TYPE_ID = 2;
+
+	@Override
+	public int getTypeID() {
+		return TYPE_ID;
 	}
 }

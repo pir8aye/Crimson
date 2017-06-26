@@ -189,8 +189,8 @@ public class NetInterfaces extends TracedPanel implements DModule {
 				rx.addPoint(time - 1, Double.NaN);
 			}
 
-			String txs = getPrimaryNIC().get(AK_NIC.NIC_TX_SPEED);
-			String rxs = getPrimaryNIC().get(AK_NIC.NIC_RX_SPEED);
+			String txs = getPrimaryNIC().get(AK_NIC.TX_SPEED);
+			String rxs = getPrimaryNIC().get(AK_NIC.RX_SPEED);
 			double t;
 			double r;
 			if (txs != null && rxs != null) {
@@ -242,13 +242,13 @@ public class NetInterfaces extends TracedPanel implements DModule {
 		nicList = profile.getGroupList(AttributeKey.Type.NIC);
 
 		// set static attributes
-		statConsoleMAC.setText(getPrimaryNIC().get(AK_NIC.NIC_MAC));
-		statConsoleIP.setText(getPrimaryNIC().get(AK_NIC.NIC_IP));
-		statConsoleNetmask.setText(getPrimaryNIC().get(AK_NIC.NIC_MASK));
+		statConsoleMAC.setText(getPrimaryNIC().get(AK_NIC.MAC));
+		statConsoleIP.setText(getPrimaryNIC().get(AK_NIC.IPV4));
+		statConsoleNetmask.setText(getPrimaryNIC().get(AK_NIC.NETMASK));
 
 		// set title
 		mainPanel.setBorder(
-				new TitledBorder(new LineBorder(new Color(184, 207, 229)), getPrimaryNIC().get(AK_NIC.NIC_DESC),
+				new TitledBorder(new LineBorder(new Color(184, 207, 229)), getPrimaryNIC().get(AK_NIC.DESC),
 						TitledBorder.CENTER, TitledBorder.TOP, null, new Color(51, 51, 51)));
 	}
 
@@ -284,7 +284,7 @@ public class NetInterfaces extends TracedPanel implements DModule {
 	public void setShowing(boolean showing) {
 		this.showing = showing;
 		if (showing) {
-			im = new InfoMaster(ProtoUtil.getInfoParam(AK_NIC.NIC_RX_SPEED, AK_NIC.NIC_TX_SPEED).build(),
+			im = new InfoMaster(ProtoUtil.getInfoParam(AK_NIC.RX_SPEED, AK_NIC.TX_SPEED).build(),
 					profile.getCvid(), (int) updatePeriod);
 			StreamStore.addStream(im);
 

@@ -283,8 +283,8 @@ public class RDPanel extends JPanel {
 					stop();
 				} else {
 					running = true;
-					rdArea.setMonitorSize(Integer.parseInt(settings.getDisplay().get(AK_DISP.DISP_WIDTH)),
-							Integer.parseInt(settings.getDisplay().get(AK_DISP.DISP_HEIGHT)));
+					rdArea.setMonitorSize(Integer.parseInt(settings.getDisplay().get(AK_DISP.WIDTH)),
+							Integer.parseInt(settings.getDisplay().get(AK_DISP.HEIGHT)));
 
 					btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
 					btnToggle.setToolTipText("Stop");

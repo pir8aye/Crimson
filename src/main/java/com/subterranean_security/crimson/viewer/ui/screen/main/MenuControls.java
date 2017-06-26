@@ -275,7 +275,7 @@ public class MenuControls extends JPanel {
 	private InfoMaster im;
 	private InfoSlave is;
 	private static final InfoParam param = ProtoUtil
-			.getInfoParam(AK_CPU.CPU_TEMP, AKeySimple.CLIENT_RAM_USAGE, AKeySimple.CLIENT_CPU_USAGE).build();
+			.getInfoParam(AK_CPU.TEMP, AKeySimple.CLIENT_RAM_USAGE, AKeySimple.CLIENT_CPU_USAGE).build();
 
 	public void startStreams() {
 

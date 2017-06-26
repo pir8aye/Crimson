@@ -94,13 +94,13 @@ public final class DISP {
 			AttributeGroupContainer.Builder container = AttributeGroupContainer.newBuilder()
 					.setGroupType(AttributeKey.Type.DISP.ordinal()).setGroupId(computeGID(i));
 
-			container.putAttribute(AK_DISP.DISP_ID.ordinal(), getID(i));
-			container.putAttribute(AK_DISP.DISP_TYPE.ordinal(), getType(i));
-			container.putAttribute(AK_DISP.DISP_WIDTH.ordinal(), getWidth(i));
-			container.putAttribute(AK_DISP.DISP_HEIGHT.ordinal(), getHeight(i));
-			container.putAttribute(AK_DISP.DISP_BIT_DEPTH.ordinal(), getBitDepth(i));
-			container.putAttribute(AK_DISP.DISP_MEMORY.ordinal(), getMemory(i));
-			container.putAttribute(AK_DISP.DISP_REFRESH_RATE.ordinal(), getRefreshRate(i));
+			container.putAttribute(AK_DISP.ID.ordinal(), getID(i));
+			container.putAttribute(AK_DISP.TYPE.ordinal(), getType(i));
+			container.putAttribute(AK_DISP.WIDTH.ordinal(), getWidth(i));
+			container.putAttribute(AK_DISP.HEIGHT.ordinal(), getHeight(i));
+			container.putAttribute(AK_DISP.BIT_DEPTH.ordinal(), getBitDepth(i));
+			container.putAttribute(AK_DISP.MEMORY.ordinal(), getMemory(i));
+			container.putAttribute(AK_DISP.REFRESH_RATE.ordinal(), getRefreshRate(i));
 
 			a.add(container.build());
 

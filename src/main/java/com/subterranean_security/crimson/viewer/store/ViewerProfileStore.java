@@ -20,7 +20,7 @@ package com.subterranean_security.crimson.viewer.store;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedMap;
@@ -82,7 +82,7 @@ public final class ViewerProfileStore extends ProfileStore {
 		@Override
 		public void clientOnline(ClientProfile cp) {
 			if (UINotification.getPolicy().getOnOldClientConnect()) {
-				UINotification.addConsoleInfo("Connection established: " + cp.get(AKeySimple.NET_EXTERNALIP));
+				UINotification.addConsoleInfo("Connection established: " + cp.get(AK_NET.EXTERNAL_IPV4));
 			}
 			clientNowOnline(cp);
 		}
@@ -96,8 +96,8 @@ public final class ViewerProfileStore extends ProfileStore {
 		@Override
 		public void clientOnlineFirstTime(ClientProfile cp) {
 			if (UINotification.getPolicy().getOnNewClientConnect()) {
-				UINotification.addConsoleInfo(
-						"Connection established: " + cp.get(AKeySimple.NET_EXTERNALIP) + " (new client)");
+				UINotification
+						.addConsoleInfo("Connection established: " + cp.get(AK_NET.EXTERNAL_IPV4) + " (new client)");
 			}
 			clientNowOnline(cp);
 		}
@@ -111,7 +111,7 @@ public final class ViewerProfileStore extends ProfileStore {
 		@Override
 		public void clientOffline(ClientProfile cp) {
 			if (UINotification.getPolicy().getOnClientDisconnect()) {
-				UINotification.addConsoleInfo("Connection closed: " + cp.get(AKeySimple.NET_EXTERNALIP));
+				UINotification.addConsoleInfo("Connection closed: " + cp.get(AK_NET.EXTERNAL_IPV4));
 			}
 			clientNowOffline(cp);
 		}
@@ -143,8 +143,7 @@ public final class ViewerProfileStore extends ProfileStore {
 
 				// avoid double notifications
 				if (!UINotification.getPolicy().getOnClientDisconnect()) {
-					UINotification
-							.addConsoleInfo("The client (" + cp.get(AKeySimple.NET_EXTERNALIP) + ") has disconnected");
+					UINotification.addConsoleInfo("The client (" + cp.get(AK_NET.EXTERNAL_IPV4) + ") has disconnected");
 				}
 			}
 

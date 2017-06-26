@@ -37,6 +37,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.stream.StreamStore;
@@ -93,7 +94,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 	public void init() {
 
-		setTitle("Client Control Panel (" + profile.get(AKeySimple.NET_HOSTNAME) + ")");
+		setTitle("Client Control Panel (" + profile.get(AK_NET.HOSTNAME) + ")");
 		setIconImages(UIUtil.getAppIcons());
 		setResizable(true);
 		setMinimumSize(UICommon.dim_control_panel);
@@ -117,7 +118,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 		panel.add(Box.createHorizontalStrut(50), BorderLayout.SOUTH);
 		tree.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 
-		tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode(profile.get(AKeySimple.NET_HOSTNAME)) {
+		tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode(profile.get(AK_NET.HOSTNAME)) {
 
 			private static final long serialVersionUID = 1L;
 
@@ -213,7 +214,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 	@Override
 	public void clientOffline() {
-		setTitle("Control Panel: " + profile.get(AKeySimple.NET_HOSTNAME) + " (client offline)");
+		setTitle("Control Panel: " + profile.get(AK_NET.HOSTNAME) + " (client offline)");
 		console.addLine("The client has disconnected!", LineType.ORANGE);
 		for (CPPanel panel : panels.values()) {
 			panel.clientOffline();
@@ -222,7 +223,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 	@Override
 	public void serverOffline() {
-		setTitle("Control Panel: " + profile.get(AKeySimple.NET_HOSTNAME) + " (server offline)");
+		setTitle("Control Panel: " + profile.get(AK_NET.HOSTNAME) + " (server offline)");
 		for (CPPanel panel : panels.values()) {
 			panel.serverOffline();
 		}
@@ -230,7 +231,7 @@ public class ClientCPFrame extends JFrame implements CPPanel {
 
 	@Override
 	public void clientOnline() {
-		setTitle("Control Panel: " + profile.get(AKeySimple.NET_HOSTNAME));
+		setTitle("Control Panel: " + profile.get(AK_NET.HOSTNAME));
 		console.addLine("The client has reconnected!", LineType.GREEN);
 		for (CPPanel panel : panels.values()) {
 			panel.clientOnline();

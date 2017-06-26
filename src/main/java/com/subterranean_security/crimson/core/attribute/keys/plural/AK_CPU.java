@@ -19,32 +19,65 @@ package com.subterranean_security.crimson.core.attribute.keys.plural;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
-import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
+/**
+ * CPU attribute keys
+ */
 public enum AK_CPU implements PluralKey {
-	CPU_VENDOR, CPU_MODEL, CPU_CORES, CPU_CACHE, CPU_TEMP, CPU_TOTAL_USAGE, CPU_FREQUENCY, CPU_FREQUENCY_MAX;
+	CACHE, CORES, FREQUENCY, FREQUENCY_MAX, MODEL, TEMP, TOTAL_USAGE, VENDOR;
 
 	@Override
-	public int getGroupType() {
-		return AttributeKey.Type.CPU.ordinal();
-	}
-
-	@Override
-	public int getOrdinal() {
-		return this.ordinal();
-	}
-
-	@Override
-	public Attribute getNewAttribute() {
+	public Attribute fabricate() {
 		return new UntrackedAttribute();
 	}
 
 	@Override
 	public boolean isCompatible(OSFAMILY os, Instance instance) {
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		switch (this) {
+		case CACHE:
+			return "CPU Cache Size";
+		case CORES:
+			return "CPU Cores";
+		case FREQUENCY:
+			return "CPU Frequency";
+		case FREQUENCY_MAX:
+			return "CPU Frequency Limit";
+		case MODEL:
+			return "CPU Model";
+		case TEMP:
+			return "CPU Temperature";
+		case TOTAL_USAGE:
+			return "CPU Usage";
+		case VENDOR:
+			return "CPU Vendor";
+		default:
+			return super.toString();
+		}
+	}
+
+	@Override
+	public String toSuperString() {
+		return super.toString();
+	}
+
+	@Override
+	public int getConstID() {
+		return this.ordinal();
+	}
+
+	private static final int TYPE_ID = 1;
+
+	@Override
+	public int getTypeID() {
+		return TYPE_ID;
 	}
 
 }

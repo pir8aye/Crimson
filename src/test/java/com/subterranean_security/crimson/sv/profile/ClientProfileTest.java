@@ -104,13 +104,13 @@ public class ClientProfileTest {
 				.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.CLIENT_CID.getFullID(), "25")
 						.putAttribute(AKeySimple.CLIENT_STATUS.getFullID(), "idle"))
 				.addGroup(AttributeGroupContainer.newBuilder().setGroupId("cpu1").setGroupType(1)
-						.putAttribute(AK_CPU.CPU_MODEL.getFullID(), "test cpu 1.0"))
+						.putAttribute(AK_CPU.MODEL.getFullID(), "test cpu 1.0"))
 				.build();
 		profile.amalgamate(pd);
 
 		assertEquals(profile.get(AKeySimple.CLIENT_CID), "25");
 		assertEquals(profile.get(AKeySimple.CLIENT_STATUS), "idle");
-		assertEquals(profile.getGroup(AK_CPU.CPU_MODEL, "cpu1").get(AK_CPU.CPU_MODEL), "test cpu 1.0");
+		assertEquals(profile.getGroup(AK_CPU.MODEL, "cpu1").get(AK_CPU.MODEL), "test cpu 1.0");
 
 		pd = EV_ProfileDelta.newBuilder().addGroup(
 				AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.CLIENT_STATUS.getFullID(), "active"))

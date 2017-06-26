@@ -23,13 +23,14 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.sv.profile.Profile;
 
 public class HostBoxRenderer extends JLabel implements ListCellRenderer<Profile> {
 
 	private static final long serialVersionUID = 1L;
-	private static final AKeySimple attribute = AKeySimple.NET_HOSTNAME;
+	private static final SingularKey attribute = AK_NET.HOSTNAME;
 
 	public HostBoxRenderer() {
 		super();

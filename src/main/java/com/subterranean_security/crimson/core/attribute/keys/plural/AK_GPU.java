@@ -19,26 +19,18 @@ package com.subterranean_security.crimson.core.attribute.keys.plural;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
-import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
+/**
+ * GPU attribute keys
+ */
 public enum AK_GPU implements PluralKey {
-	GPU_VENDOR, GPU_MODEL, GPU_RAM, GPU_TEMP;
+	MODEL, RAM, TEMP, VENDOR;
 
 	@Override
-	public int getGroupType() {
-		return AttributeKey.Type.GPU.ordinal();
-	}
-
-	@Override
-	public int getOrdinal() {
-		return this.ordinal();
-	}
-
-	@Override
-	public Attribute getNewAttribute() {
+	public Attribute fabricate() {
 		return new UntrackedAttribute();
 	}
 
@@ -50,5 +42,22 @@ public enum AK_GPU implements PluralKey {
 	@Override
 	public boolean isHeaderable() {
 		return true;
+	}
+
+	@Override
+	public String toSuperString() {
+		return super.toString();
+	}
+
+	@Override
+	public int getConstID() {
+		return this.ordinal();
+	}
+
+	private static final int TYPE_ID = 3;
+
+	@Override
+	public int getTypeID() {
+		return TYPE_ID;
 	}
 }

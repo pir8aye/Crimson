@@ -137,11 +137,11 @@ class TR extends DefaultTableCellRenderer {
 		switch (tm.headers[table.convertColumnIndexToModel(viewColumn)]) {
 		case NAME: {
 			setHorizontalAlignment(SwingConstants.LEFT);
-			return file.getAttribute(AK_TORRENT.TORRENT_NAME).get();
+			return file.getAttribute(AK_TORRENT.NAME).get();
 		}
 		case SIZE: {
 			setHorizontalAlignment(viewColumn == 0 ? SwingConstants.LEFT : SwingConstants.RIGHT);
-			return file.getAttribute(AK_TORRENT.TORRENT_SIZE).get();
+			return file.getAttribute(AK_TORRENT.SIZE).get();
 		}
 		}
 		return null;
