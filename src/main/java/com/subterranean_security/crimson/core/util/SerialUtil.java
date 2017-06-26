@@ -28,7 +28,16 @@ import java.io.Serializable;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
+/**
+ * Object serialization utilities.
+ * 
+ * @author cilki
+ * @since 1.0.0
+ */
 public final class SerialUtil {
+
+	private SerialUtil() {
+	}
 
 	public static final boolean compress = false;
 

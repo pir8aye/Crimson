@@ -50,6 +50,13 @@ import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 import aurelienribon.slidinglayout.SLAnimator;
 import aurelienribon.tweenengine.Tween;
 
+/**
+ * The entry point for Viewer instances. This class is responsible for
+ * initializing the new instance and launching the GUI.
+ * 
+ * @author cilki
+ * @since 1.0.0
+ */
 public final class Viewer {
 
 	/**
@@ -57,6 +64,9 @@ public final class Viewer {
 	 */
 	private static final class Log {
 		public static final Logger log = LoggerFactory.getLogger(Viewer.class);
+	}
+
+	private Viewer() {
 	}
 
 	public static void main(String[] argv) {

@@ -52,6 +52,12 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
+/**
+ * A TCP listener which binds to a port and handles new connections.
+ * 
+ * @author cilki
+ * @since 1.0.0
+ */
 public class Listener {
 	private static final Logger log = LoggerFactory.getLogger(Listener.class);
 

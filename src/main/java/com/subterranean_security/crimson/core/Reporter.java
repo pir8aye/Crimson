@@ -43,6 +43,9 @@ import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 /**
  * Securely send an error report to Subterranean Security.
+ * 
+ * @author cilki
+ * @since 3.0.0
  */
 public final class Reporter {
 	private static final Logger log = LoggerFactory.getLogger(Reporter.class);

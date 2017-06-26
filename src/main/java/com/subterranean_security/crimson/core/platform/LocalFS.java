@@ -32,6 +32,8 @@ import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.Fi
 /**
  * This class provides a convenient handle on the local filesystem.
  * 
+ * @author cilki
+ * @since 1.0.0
  * @test: LocalFSTest
  */
 public class LocalFS {

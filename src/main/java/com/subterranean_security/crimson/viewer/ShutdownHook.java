@@ -26,7 +26,10 @@ import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.viewer.store.LocalServerStore;
 
 /**
- * Terminate the viewer instance
+ * Terminate the viewer instance.
+ * 
+ * @author cilki
+ * @since 1.0.0
  */
 public final class ShutdownHook extends Thread {
 

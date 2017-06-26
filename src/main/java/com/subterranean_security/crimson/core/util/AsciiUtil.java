@@ -18,7 +18,10 @@
 package com.subterranean_security.crimson.core.util;
 
 /**
- * ASCII art utilities
+ * ASCII art utilities.
+ * 
+ * @author cilki
+ * @since 5.0.0
  */
 public final class AsciiUtil {
 	private AsciiUtil() {

@@ -43,13 +43,23 @@ import com.subterranean_security.crimson.universal.Universal.Instance;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 
-public class Client {
+/**
+ * The entry point for Client instances. This class is responsible for
+ * initializing the new instance.
+ * 
+ * @author cilki
+ * @since 1.0.0
+ */
+public final class Client {
 
 	/**
 	 * Nested class to prevent Logger from getting default configuration
 	 */
 	private static final class Log {
 		public static final Logger log = LoggerFactory.getLogger(Client.class);
+	}
+
+	private Client() {
 	}
 
 	public static void main(String[] args) {

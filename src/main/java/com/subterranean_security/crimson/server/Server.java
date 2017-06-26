@@ -48,7 +48,11 @@ import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 
 /**
- * Entry point for a server instance.
+ * The entry point for Server instances. This class is responsible for
+ * initializing the new instance.
+ * 
+ * @author cilki
+ * @since 1.0.0
  */
 public final class Server {
 
@@ -57,6 +61,9 @@ public final class Server {
 	 */
 	private static final class Log {
 		public static final Logger log = LoggerFactory.getLogger(Server.class);
+	}
+
+	private Server() {
 	}
 
 	public static void main(String[] argv) {

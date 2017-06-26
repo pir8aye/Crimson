@@ -27,7 +27,10 @@ import java.security.cert.X509Certificate;
 import java.util.Base64;
 
 /**
- * Certificate utilities
+ * Certificate utilities.
+ * 
+ * @author cilki
+ * @since 5.0.0
  */
 public final class CertUtil {
 	private CertUtil() {

@@ -25,7 +25,10 @@ import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 
 /**
- * Terminate the server instance
+ * Terminate the server instance.
+ * 
+ * @author cilki
+ * @since 1.0.0
  */
 public final class ShutdownHook extends Thread {
 
