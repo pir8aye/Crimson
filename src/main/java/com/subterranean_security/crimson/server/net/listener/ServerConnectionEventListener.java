@@ -24,6 +24,7 @@ import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.listener.ConnectionEventListener;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
@@ -69,7 +70,7 @@ public class ServerConnectionEventListener extends ConnectionEventListener {
 		System.out.println("clientAuthenticated");
 		AuthStore.refreshVisibilityPermissions(connector.getCvid());
 		ServerProfileStore.getClient(connector.getCvid()).setOnline(true);
-		ServerConnectionStore.sendToViewersWithAuthorityOverClient(connector.getCvid(), Perm.client.visibility,
+		NetworkStore.sendToViewersWithAuthorityOverClient(connector.getCvid(), Perm.client.visibility,
 				Message.newBuilder()
 						.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(connector.getCvid())
 								.addGroup(AttributeGroupContainer.newBuilder()
@@ -79,7 +80,7 @@ public class ServerConnectionEventListener extends ConnectionEventListener {
 
 	private void clientNotConnected(Connector connector) {
 		ServerProfileStore.getClient(connector.getCvid()).setOnline(false);
-		ServerConnectionStore.sendToViewersWithAuthorityOverClient(connector.getCvid(), Perm.client.visibility,
+		NetworkStore.sendToViewersWithAuthorityOverClient(connector.getCvid(), Perm.client.visibility,
 				Message.newBuilder()
 						.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(connector.getCvid())
 								.addGroup(AttributeGroupContainer.newBuilder().setGroupId("")

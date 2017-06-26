@@ -25,6 +25,7 @@ import com.subterranean_security.crimson.core.util.IDGen.Reserved;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message.Builder;
+import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
@@ -130,6 +131,27 @@ public final class NetworkStore {
 	 */
 	public static int countClients() {
 		return 0;
+	}
+
+	/**
+	 * Broadcast a message to viewers which hold the given permission on the
+	 * given client
+	 * 
+	 * @param cid
+	 *            The CID of a specific client
+	 * @param permission
+	 *            The permission that the viewer must have on the client
+	 * @param m
+	 *            The message to send
+	 */
+	public static void sendToViewersWithAuthorityOverClient(int cid, short permission, Message.Builder m) {
+		for (Connector c : ConnectionStore.getConnections()) {
+
+			if (c.getInstance() == Universal.Instance.VIEWER
+					&& ServerProfileStore.getViewer(c.getCvid()).getPermissions().getFlag(cid, permission)) {
+				c.write(m.build());
+			}
+		}
 	}
 
 }

@@ -20,43 +20,18 @@ package com.subterranean_security.crimson.server.net;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkAdded;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkRemoved;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-import com.subterranean_security.crimson.server.store.ServerProfileStore;
-import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
 public final class ServerConnectionStore extends ConnectionStore {
 	private static final Logger log = LoggerFactory.getLogger(ServerConnectionStore.class);
 
 	private ServerConnectionStore() {
-	}
-
-	/**
-	 * Broadcast a message to viewers which hold the given permission on the
-	 * client
-	 * 
-	 * @param cid
-	 *            The CID of a specific client
-	 * @param permission
-	 *            The permission that the viewer must have on the client
-	 * @param m
-	 *            The message to send
-	 */
-	public static void sendToViewersWithAuthorityOverClient(int cid, short permission, Message.Builder m) {
-		System.out.println("Sending to viewers with authority over: " + cid);
-		for (Connector c : ConnectionStore.getConnections()) {
-
-			if (c.getInstance() == Universal.Instance.VIEWER
-					&& ServerProfileStore.getViewer(c.getCvid()).getPermissions().getFlag(cid, permission)) {
-				c.write(m.build());
-			}
-		}
 	}
 
 	public static void addLink(int cvid1, int cvid2) {
