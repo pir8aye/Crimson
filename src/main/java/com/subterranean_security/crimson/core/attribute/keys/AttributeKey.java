@@ -37,6 +37,9 @@ import com.subterranean_security.crimson.universal.Universal.Instance;
  * trivially for SingularKeys (because their group IDs are 0). PluralKeys
  * require an external group ID for conversion. Concrete implementations of this
  * interface conform to a naming standard (AK_*) for identifiability.
+ * 
+ * @author cilki
+ * @since 4.0.0
  */
 public interface AttributeKey {
 
@@ -59,6 +62,7 @@ public interface AttributeKey {
 		return new UntrackedAttribute();
 	}
 
+	// TODO improve
 	public static List<AttributeKey> getAllGroupKeys() {
 		ArrayList<AttributeKey> list = new ArrayList<AttributeKey>();
 		list.addAll(Arrays.asList(AK_CPU.values()));
@@ -68,6 +72,22 @@ public interface AttributeKey {
 		list.addAll(Arrays.asList(AK_TORRENT.values()));
 		return list;
 	}
+
+	// TODO RENAME
+	default public int getFullID() {
+		return (getGroupID() << (GROUP_ID_SPACE + TYPE_ID_SPACE)) + (getTypeID() << TYPE_ID_SPACE) + getConstID();
+	}
+
+	/**
+	 * The group ID is the least specific of the three "attribute IDs". It
+	 * identifies the group of which this key is a member. The maximum value of
+	 * a group ID is 2^GROUP_ID_SPACE.
+	 * 
+	 * @return The group ID for this key
+	 */
+	public int getGroupID();
+
+	public static final int GROUP_ID_SPACE = 20;
 
 	/**
 	 * The type ID is second to most specific of the three "attribute IDs". It

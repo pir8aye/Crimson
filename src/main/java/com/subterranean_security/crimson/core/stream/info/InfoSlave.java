@@ -19,46 +19,51 @@ package com.subterranean_security.crimson.core.stream.info;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
+import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_NIC;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.CPU;
-import com.subterranean_security.crimson.core.platform.info.CRIMSON;
 import com.subterranean_security.crimson.core.platform.info.NIC;
-import com.subterranean_security.crimson.core.platform.info.RAM;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.struct.stat_stream.StatStream;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.InfoParam;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.Param;
-import com.subterranean_security.crimson.server.store.ListenerStore;
 
 public abstract class InfoSlave extends PeriodicStream {
 
 	/**
-	 * The last profile delta. Subsequent updates use this as a base.
+	 * The profile delta used to remember attributes' last value. This delta is
+	 * not actually sent.
 	 */
 	private EV_ProfileDelta.Builder pd;
-	private AttributeGroupContainer.Builder lastGeneralContainer;
 
-	private AttributeGroupContainer.Builder lastCpuContainer;
-	private int whichCPU = 0;
+	/**
+	 * The profile delta which is actually sent to the endpoint.
+	 */
+	private EV_ProfileDelta.Builder newPD;
 
 	private StatStream rxSpeed;
-
 	private StatStream txSpeed;
-	private AttributeGroupContainer.Builder lastNicContainer;
-	private int whichNIC = 0;
 
-	private List<AttributeKey> keys;
+	/**
+	 * The {@code SingularKey}s that this {@code InfoSlave} will be updating.
+	 */
+	private List<SingularKey> singularKeys;
+
+	/**
+	 * The {@code PluralKey}s that this {@code InfoSlave} will be updating.
+	 */
+	private Map<PluralKey, List<Integer>> pluralKeys;
 
 	public InfoSlave(Param param, int endpoint) {
 		super(param, endpoint);
@@ -74,8 +79,6 @@ public abstract class InfoSlave extends PeriodicStream {
 		initKeys(param().getInfoParam().getKeyList());
 
 		pd = EV_ProfileDelta.newBuilder().setCvid(LcvidStore.cvid);
-
-		initializeContainers();
 
 		for (AttributeKey key : keys) {
 			if (key instanceof AK_CPU) {
@@ -103,13 +106,6 @@ public abstract class InfoSlave extends PeriodicStream {
 
 	public InfoSlave(InfoParam ip) {
 		this(Param.newBuilder().setInfoParam(ip).setStreamID(IDGen.stream()).setVID(LcvidStore.cvid).build());
-	}
-
-	private void initializeContainers() {
-		lastCpuContainer = AttributeGroupContainer.newBuilder().setGroupType(AttributeKey.Type.CPU.ordinal());
-		lastNicContainer = AttributeGroupContainer.newBuilder().setGroupType(AttributeKey.Type.NIC.ordinal());
-		lastGeneralContainer = AttributeGroupContainer.newBuilder().setGroupType(AttributeKey.Type.GENERAL.ordinal())
-				.setGroupId("");
 	}
 
 	private void initializeCPU() {
@@ -170,6 +166,27 @@ public abstract class InfoSlave extends PeriodicStream {
 
 	protected EV_ProfileDelta gather() {
 
+		// move
+		for (AttributeKey key : keys) {
+			if (key instanceof SingularKey) {
+
+			} else if (key instanceof PluralKey) {
+
+			} else {
+				throw new UnsupportedOperationException("Unsupported AttributeKey: " + key.getClass().getName());
+			}
+		}
+
+		for (PluralKey key : pluralKeys.keySet()) {
+			for (Integer groupID : pluralKeys.get(key)) {
+				Object value = key.query(groupID);
+			}
+		}
+
+		for (SingularKey key : singularKeys) {
+			Object value = key.query();
+		}
+
 		// purge last attribute groups
 		pd.clearGroup();
 
@@ -201,29 +218,20 @@ public abstract class InfoSlave extends PeriodicStream {
 			poll(lastCpuContainer, AK_CPU.TOTAL_USAGE, CPU.getTotalUsage(whichCPU));
 		if (keys.contains(AK_CPU.TEMP))
 			poll(lastCpuContainer, AK_CPU.TEMP, CPU.getTemp());
-		if (keys.contains(AKeySimple.OS_ACTIVE_WINDOW))
-			poll(lastGeneralContainer, AKeySimple.OS_ACTIVE_WINDOW, Native.getActiveWindow());
-		if (keys.contains(AKeySimple.CLIENT_STATUS))
-			poll(lastGeneralContainer, AKeySimple.CLIENT_STATUS, CRIMSON.getStatus());
-		if (keys.contains(AKeySimple.RAM_USAGE))
-			poll(lastGeneralContainer, AKeySimple.RAM_USAGE, RAM.getUsage());
-		if (keys.contains(AKeySimple.CLIENT_RAM_USAGE))
-			poll(lastGeneralContainer, AKeySimple.CLIENT_RAM_USAGE, RAM.getClientUsage());
-		if (keys.contains(AKeySimple.CLIENT_CPU_USAGE))
-			poll(lastGeneralContainer, AKeySimple.CLIENT_CPU_USAGE, CPU.getClientUsage());
-		if (keys.contains(AKeySimple.SERVER_ACTIVE_LISTENERS))
-			poll(lastGeneralContainer, AKeySimple.SERVER_ACTIVE_LISTENERS, "" + ListenerStore.getActive());
-		if (keys.contains(AKeySimple.SERVER_INACTIVE_LISTENERS))
-			poll(lastGeneralContainer, AKeySimple.SERVER_INACTIVE_LISTENERS, "" + ListenerStore.getInactive());
-
-		if (lastGeneralContainer.getAttributeCount() > 0)
-			pd.addGroup(lastGeneralContainer);
-		if (lastCpuContainer.getAttributeCount() > 0)
-			pd.addGroup(lastCpuContainer);
-		if (lastNicContainer.getAttributeCount() > 0)
-			pd.addGroup(lastNicContainer);
 
 		return pd.build();
+	}
+
+	private void update(SingularKey key, Object value) {
+		if (value instanceof String) {
+
+		} else if (value instanceof Integer) {
+
+		} else if (value instanceof Long) {
+
+		} else if (value instanceof Boolean) {
+
+		}
 	}
 
 	private void poll(AttributeGroupContainer.Builder container, AttributeKey key, String value) {

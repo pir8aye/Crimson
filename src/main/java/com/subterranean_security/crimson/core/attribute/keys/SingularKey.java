@@ -59,4 +59,10 @@ public interface SingularKey extends AttributeKey {
 	}
 
 	public Object query();
+
+	@Override
+	default int getGroupID() {
+		// singular keys are always in group 0
+		return 0;
+	}
 }

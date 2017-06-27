@@ -33,22 +33,25 @@ message ProfileTimestamp {
 	int64 timestamp = 2;
 }
 
-message AttributeGroupContainer {
-	int32 group_type = 1; // CPU, GPU, GENERAL...
-	string group_id = 2;
-	map<int32, string> attribute = 3;
-}
-
 message EV_ProfileDelta {
 
 	int32 cvid = 1;
 	int64 departure_time = 2;
 	
-	// Groups
-	repeated AttributeGroupContainer group = 10;
+	// String attributes
+	map<int32, string> str_attr = 3;
+	
+	// int attributes
+	map<int32, int32> int_attr = 4;
+	
+	// long attributes
+	map<int32, int64> long_attr = 5;
+	
+	// boolean attributes
+	map<int32, bool> boolean_attr = 6;
 	
 	// Nonstring attributes
-	bool fig = 5;
+	bool fig = 10;
 	
 }
 

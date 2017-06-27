@@ -15,14 +15,18 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.attribute.keys;
+package com.subterranean_security.crimson.core.misc;
 
 /**
  * @author cilki
  * @since 5.0.0
  */
-public interface PluralKey extends AttributeKey {
+public abstract class Updatable {
+	protected long timestamp;
 
-	public Object query(int id);
+	protected void updated() {
+		timestamp = System.currentTimeMillis();
+	}
 
+	public abstract Object getUpdates(long time);
 }
