@@ -17,6 +17,46 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.attribute.keys;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_CLIENT;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_JVM;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_KEYLOGGER;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_LIN;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_LOC;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_META;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_MOBO;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OSX;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_RAM;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_SERVER;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_USER;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_WIN;
+
+/**
+ * @author cilki
+ * @since 5.0.0
+ */
 public interface SingularKey extends AttributeKey {
 
+	@SuppressWarnings("unchecked")
+	public static final Class<SingularKey>[] keyTypes = new Class[] { AK_CLIENT.class, AK_JVM.class, AK_KEYLOGGER.class,
+			AK_LIN.class, AK_LOC.class, AK_META.class, AK_MOBO.class, AK_NET.class, AK_OS.class, AK_OSX.class,
+			AK_RAM.class, AK_SERVER.class, AK_USER.class, AK_VIEWER.class, AK_WIN.class };
+
+	public static List<SingularKey> keys = getAllKeys();
+
+	public static List<SingularKey> getAllKeys() {
+		List<SingularKey> l = new LinkedList<>();
+		for (Class<SingularKey> k : keyTypes) {
+			l.addAll(Arrays.asList(k.getEnumConstants()));
+		}
+		return l;
+	}
+
+	public Object query();
 }

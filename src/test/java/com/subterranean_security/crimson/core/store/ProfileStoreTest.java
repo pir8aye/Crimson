@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedMap;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -87,7 +87,7 @@ public class ProfileStoreTest {
 	@Test
 	public void testGetViewerString() {
 		ViewerProfile vp = getRandomViewer();
-		vp.setAttr(AKeySimple.VIEWER_USER.ordinal(), "admin");
+		vp.setAttr(AK_VIEWER.USER.ordinal(), "admin");
 		ProfileStore.addViewer(vp);
 		assertEquals(vp, ProfileStore.getViewer("admin"));
 	}

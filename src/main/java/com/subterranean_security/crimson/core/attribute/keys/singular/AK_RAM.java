@@ -1,9 +1,13 @@
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.platform.info.RAM;
 
 /**
  * RAM attribute keys
+ * 
+ * @author cilki
+ * @since 4.0.0
  */
 public enum AK_RAM implements SingularKey {
 	FREQUENCY, SIZE, TEMP, USAGE;
@@ -24,6 +28,23 @@ public enum AK_RAM implements SingularKey {
 	}
 
 	@Override
+	public Object query() {
+		switch (this) {
+		case FREQUENCY:
+			return RAM.getFrequency();
+		case SIZE:
+			return RAM.getSize();
+		case TEMP:
+			return RAM.getTemperature();
+		case USAGE:
+			return RAM.getUsage();
+		default:
+			throw new UnsupportedOperationException("Cannot query: " + this);
+
+		}
+	}
+
+	@Override
 	public String toSuperString() {
 		return super.toString();
 	}
@@ -39,4 +60,5 @@ public enum AK_RAM implements SingularKey {
 	public int getTypeID() {
 		return TYPE_ID;
 	}
+
 }

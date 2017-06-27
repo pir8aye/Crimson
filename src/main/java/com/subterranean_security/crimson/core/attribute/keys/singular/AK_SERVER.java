@@ -6,6 +6,9 @@ import com.subterranean_security.crimson.universal.Universal.Instance;
 
 /**
  * Server attribute keys
+ * 
+ * @author cilki
+ * @since 4.0.0
  */
 public enum AK_SERVER implements SingularKey {
 	ACTIVE_LISTENERS, CONNECTED_CLIENTS, CONNECTED_VIEWERS, INACTIVE_LISTENERS, TOTAL_CLIENTS, TOTAL_VIEWERS;
@@ -62,5 +65,27 @@ public enum AK_SERVER implements SingularKey {
 	@Override
 	public int getTypeID() {
 		return TYPE_ID;
+	}
+
+	@Override
+	public Object query() {
+		switch (this) {
+		case ACTIVE_LISTENERS:
+			break;
+		case CONNECTED_CLIENTS:
+			break;
+		case CONNECTED_VIEWERS:
+			break;
+		case INACTIVE_LISTENERS:
+			break;
+		case TOTAL_CLIENTS:
+			break;
+		case TOTAL_VIEWERS:
+			break;
+		default:
+			throw new UnsupportedOperationException("Cannot query: " + this);
+
+		}
+		return null;
 	}
 }

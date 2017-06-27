@@ -1,26 +1,22 @@
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.platform.info.WIN;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
 /**
  * Windows attribute keys
+ * 
+ * @author cilki
+ * @since 4.0.0
  */
 public enum AK_WIN implements SingularKey {
 	IE_VERSION, INSTALL_DATE, POWERSHELL_VERSION, SERIAL;
 
 	@Override
 	public boolean isCompatible(OSFAMILY os, Instance instance) {
-		switch (this) {
-		case IE_VERSION:
-		case INSTALL_DATE:
-		case POWERSHELL_VERSION:
-		case SERIAL:
-			return os == OSFAMILY.WIN;
-		default:
-			return SingularKey.super.isHeaderable();
-		}
+		return os == OSFAMILY.WIN;
 	}
 
 	@Override
@@ -39,6 +35,22 @@ public enum AK_WIN implements SingularKey {
 	}
 
 	@Override
+	public Object query() {
+		switch (this) {
+		case IE_VERSION:
+			return WIN.getIEVersion();
+		case INSTALL_DATE:
+			return WIN.getInstallTime();
+		case POWERSHELL_VERSION:
+			return WIN.getPowerShellVersion();
+		case SERIAL:
+			return WIN.getSerial();
+		default:
+			throw new UnsupportedOperationException("Cannot query: " + this);
+		}
+	}
+
+	@Override
 	public String toSuperString() {
 		return super.toString();
 	}
@@ -54,4 +66,5 @@ public enum AK_WIN implements SingularKey {
 	public int getTypeID() {
 		return TYPE_ID;
 	}
+
 }

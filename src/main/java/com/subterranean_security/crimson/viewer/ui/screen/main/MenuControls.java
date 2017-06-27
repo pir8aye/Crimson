@@ -31,7 +31,10 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_CLIENT;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_SERVER;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
@@ -247,18 +250,18 @@ public class MenuControls extends JPanel {
 		ServerProfile sp = ViewerProfileStore.getServer();
 		ViewerProfile vp = ViewerProfileStore.getLocalViewer();
 
-		valViewerRamUsage.setText(vp.get(AKeySimple.CLIENT_RAM_USAGE));
+		valViewerRamUsage.setText(vp.get(AK_CLIENT.RAM_USAGE));
 		// valViewerCpuTemp.setText(ProfileStore.getLocalClient().getPrimaryCPU().getAttribute(AKeyCPU.CPU_TEMP).get());
-		valViewerCpuUsage.setText(vp.get(AKeySimple.CLIENT_CPU_USAGE) + " %");
-		valServerRamUsage.setText(ViewerState.isOnline() ? sp.get(AKeySimple.CLIENT_RAM_USAGE) : "");
+		valViewerCpuUsage.setText(vp.get(AK_CLIENT.CPU_USAGE) + " %");
+		valServerRamUsage.setText(ViewerState.isOnline() ? sp.get(AK_CLIENT.RAM_USAGE) : "");
 		// valServerCpuTemp.setText(ViewerState.isOnline() ?
 		// ProfileStore.getServer().getCpuTemp() : "");
-		valServerCpuUsage.setText(ViewerState.isOnline() ? sp.get(AKeySimple.CLIENT_CPU_USAGE) + " %" : "");
-		valClients.setText(ViewerState.isOnline() ? "" + sp.get(AKeySimple.SERVER_CONNECTED_CLIENTS) : "");
-		valUsers.setText(ViewerState.isOnline() ? "" + sp.get(AKeySimple.SERVER_CONNECTED_VIEWERS) : "");
-		val_local_ip.setText(vp.get(AKeySimple.VIEWER_LOGIN_IP));
-		val_server_ip.setText(ViewerState.isOnline() ? sp.get(AKeySimple.NET_EXTERNALIP) : "");
-		valUsername.setText(vp.get(AKeySimple.VIEWER_USER));
+		valServerCpuUsage.setText(ViewerState.isOnline() ? sp.get(AK_CLIENT.CPU_USAGE) + " %" : "");
+		valClients.setText(ViewerState.isOnline() ? "" + sp.get(AK_SERVER.CONNECTED_CLIENTS) : "");
+		valUsers.setText(ViewerState.isOnline() ? "" + sp.get(AK_SERVER.CONNECTED_VIEWERS) : "");
+		val_local_ip.setText(vp.get(AK_VIEWER.LOGIN_IP));
+		val_server_ip.setText(ViewerState.isOnline() ? sp.get(AK_NET.EXTERNAL_IPV4) : "");
+		valUsername.setText(vp.get(AK_VIEWER.USER));
 
 		if (!ViewerState.isOnline()) {
 			valStatus.setText("Offline");
@@ -274,8 +277,8 @@ public class MenuControls extends JPanel {
 
 	private InfoMaster im;
 	private InfoSlave is;
-	private static final InfoParam param = ProtoUtil
-			.getInfoParam(AK_CPU.TEMP, AKeySimple.CLIENT_RAM_USAGE, AKeySimple.CLIENT_CPU_USAGE).build();
+	private static final InfoParam param = ProtoUtil.getInfoParam(AK_CPU.TEMP, AK_CLIENT.RAM_USAGE, AK_CLIENT.CPU_USAGE)
+			.build();
 
 	public void startStreams() {
 

@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.cloud.net.exe.CloudLoginExe;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.MessageFuture;
@@ -187,8 +186,8 @@ public final class LoginExe {
 	}
 
 	private static void updateViewerProfile(Connector receptor, ViewerProfile vp) {
-		vp.set(AKeySimple.VIEWER_LOGIN_IP, receptor.getRemoteIP());
-		vp.set(AKeySimple.VIEWER_LOGIN_TIME, new Date().toString());
+		vp.set(AK_VIEWER.LOGIN_IP, receptor.getRemoteIP());
+		vp.set(AK_VIEWER.LOGIN_TIME, new Date().toString());
 	}
 
 	private static void failLogin(Connector receptor, int id, Outcome outcome) {

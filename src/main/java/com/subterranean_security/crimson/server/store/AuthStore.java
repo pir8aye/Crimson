@@ -25,7 +25,7 @@ import javax.security.auth.DestroyFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.auth.AuthGroup;
@@ -161,8 +161,8 @@ public class AuthStore {
 		} else {
 			for (Integer i : ServerProfileStore.getViewerKeyset()) {
 				ViewerProfile vp = ServerProfileStore.getViewer(i);
-				if (clientAuth.getOwnerList().contains(vp.get(AKeySimple.VIEWER_USER))
-						|| clientAuth.getMemberList().contains(vp.get(AKeySimple.VIEWER_USER))) {
+				if (clientAuth.getOwnerList().contains(vp.get(AK_VIEWER.USER))
+						|| clientAuth.getMemberList().contains(vp.get(AK_VIEWER.USER))) {
 					// this viewer has authority over this client
 					log.debug("Adding visibility flag to viewer {} for client {}", vp.getCvid(), cid);
 					vp.getPermissions().addFlag(cid, Perm.client.visibility);

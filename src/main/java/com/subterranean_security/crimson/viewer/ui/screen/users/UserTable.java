@@ -29,7 +29,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
@@ -61,8 +61,7 @@ public class UserTable extends JScrollPane {
 				}
 
 				ViewerProfile selected = tm.getAt(sourceRow);
-				if (ViewerProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER)
-						.equals(selected.get(AKeySimple.VIEWER_USER))) {
+				if (ViewerProfileStore.getLocalViewer().get(AK_VIEWER.USER).equals(selected.get(AK_VIEWER.USER))) {
 					parent.btnRemove.setEnabled(false);
 				}
 
@@ -143,18 +142,18 @@ class TM extends AbstractTableModel {
 		switch (headers[columnIndex]) {
 
 		case LAST_LOGIN: {
-			if (users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_TIME) == null) {
+			if (users.get(rowIndex).get(AK_VIEWER.LOGIN_TIME) == null) {
 				return "";
 			}
-			if (users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_TIME).equals("0")) {
+			if (users.get(rowIndex).get(AK_VIEWER.LOGIN_TIME).equals("0")) {
 				return "<hidden>";
 			}
-			return users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_TIME);
+			return users.get(rowIndex).get(AK_VIEWER.LOGIN_TIME);
 		}
 		case USERNAME:
-			return users.get(rowIndex).get(AKeySimple.VIEWER_USER);
+			return users.get(rowIndex).get(AK_VIEWER.USER);
 		case IP:
-			return users.get(rowIndex).get(AKeySimple.VIEWER_LOGIN_IP);
+			return users.get(rowIndex).get(AK_VIEWER.LOGIN_IP);
 		case PERMISSIONS:
 			return users.get(rowIndex).getPermissions().getFlag(Perm.Super) ? "yes" : "no";// TODO
 		case LOCATION:

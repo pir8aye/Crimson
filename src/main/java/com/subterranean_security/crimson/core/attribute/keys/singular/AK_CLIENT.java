@@ -1,9 +1,17 @@
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.platform.info.CPU;
+import com.subterranean_security.crimson.core.platform.info.CRIMSON;
+import com.subterranean_security.crimson.core.platform.info.RAM;
+import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.universal.Universal;
 
 /**
  * Client attribute keys
+ * 
+ * @author cilki
+ * @since 4.0.0
  */
 public enum AK_CLIENT implements SingularKey {
 	BASE_PATH, CID, CPU_USAGE, INSTALL_DATE, ONLINE, RAM_USAGE, STATUS, VERSION;
@@ -33,6 +41,30 @@ public enum AK_CLIENT implements SingularKey {
 	}
 
 	@Override
+	public Object query() {
+		switch (this) {
+		case BASE_PATH:
+			return CRIMSON.getBasePath();
+		case CID:
+			return LcvidStore.cvid;
+		case CPU_USAGE:
+			return CPU.getClientUsage();
+		case INSTALL_DATE:
+			return CRIMSON.getInstallDate();
+		case ONLINE:
+			return true;
+		case RAM_USAGE:
+			return RAM.getClientUsage();
+		case STATUS:
+			return CRIMSON.getStatus();
+		case VERSION:
+			return Universal.version;
+		default:
+			throw new UnsupportedOperationException("Cannot query: " + this);
+		}
+	}
+
+	@Override
 	public String toSuperString() {
 		return super.toString();
 	}
@@ -48,4 +80,5 @@ public enum AK_CLIENT implements SingularKey {
 	public int getTypeID() {
 		return TYPE_ID;
 	}
+
 }

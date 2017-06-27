@@ -1,9 +1,13 @@
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.platform.info.JAVA;
 
 /**
  * Java attribute keys
+ * 
+ * @author cilki
+ * @since 4.0.0
  */
 public enum AK_JVM implements SingularKey {
 	ARCH, PATH, START_TIME, VENDOR, VERSION;
@@ -26,6 +30,24 @@ public enum AK_JVM implements SingularKey {
 	}
 
 	@Override
+	public Object query() {
+		switch (this) {
+		case ARCH:
+			return JAVA.getArch();
+		case PATH:
+			return JAVA.getHome();
+		case START_TIME:
+			return JAVA.getStartTime();
+		case VENDOR:
+			return JAVA.getVendor();
+		case VERSION:
+			return JAVA.getVersion();
+		default:
+			throw new UnsupportedOperationException("Cannot query: " + this);
+		}
+	}
+
+	@Override
 	public String toSuperString() {
 		return super.toString();
 	}
@@ -41,4 +63,5 @@ public enum AK_JVM implements SingularKey {
 	public int getTypeID() {
 		return TYPE_ID;
 	}
+
 }

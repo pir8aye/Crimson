@@ -6,6 +6,9 @@ import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 
 /**
  * Viewer attribute keys
+ * 
+ * @author cilki
+ * @since 4.0.0
  */
 public enum AK_VIEWER implements SingularKey {
 	LOGIN_IP, LOGIN_TIME, USER;
@@ -44,5 +47,20 @@ public enum AK_VIEWER implements SingularKey {
 	@Override
 	public int getTypeID() {
 		return TYPE_ID;
+	}
+
+	@Override
+	public Object query() {
+		switch (this) {
+		case LOGIN_IP:
+			break;
+		case LOGIN_TIME:
+			break;
+		case USER:
+			break;
+		default:
+			throw new UnsupportedOperationException("Cannot query: " + this);
+		}
+		return null;
 	}
 }

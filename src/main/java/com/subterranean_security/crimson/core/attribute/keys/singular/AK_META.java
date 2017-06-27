@@ -3,32 +3,20 @@ package com.subterranean_security.crimson.core.attribute.keys.singular;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 
 /**
- * OS X attribute keys
+ * Meta attribute keys
  * 
  * @author cilki
- * @since 5.0.0
+ * @since 4.0.0
  */
-public enum AK_OSX implements SingularKey {
-	;
-
-	@Override
-	public String toString() {
-		switch (this) {
-		}
-		return super.toString();
-	}
+public enum AK_META implements SingularKey {
+	FIRST_CONTACT;
 
 	@Override
 	public String toSuperString() {
 		return super.toString();
 	}
 
-	@Override
-	public int getConstID() {
-		return this.ordinal();
-	}
-
-	private static final int TYPE_ID = 58;
+	private static final int TYPE_ID = 55;
 
 	@Override
 	public int getTypeID() {
@@ -36,8 +24,12 @@ public enum AK_OSX implements SingularKey {
 	}
 
 	@Override
+	public int getConstID() {
+		return this.ordinal();
+	}
+
+	@Override
 	public Object query() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

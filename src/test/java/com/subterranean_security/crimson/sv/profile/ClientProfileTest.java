@@ -9,7 +9,11 @@ import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_CLIENT;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_WIN;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
@@ -19,32 +23,32 @@ public class ClientProfileTest {
 
 	private int cvid;
 	private ClientProfile profile;
-	private HashMap<AKeySimple, String> simple;
+	private HashMap<SingularKey, String> simple;
 
 	@Before
 	public void setUp() throws Exception {
 		// generate a random profile
 		cvid = RandomUtil.nextInt();
 		profile = new ClientProfile(cvid);
-		simple = new HashMap<AKeySimple, String>();
+		simple = new HashMap<SingularKey, String>();
 
 	}
 
 	private void addRandom() {
 		// add some simple attributes
-		for (int i = 0; i < RandomUtil.rand(10, 100); i++) {
-			AKeySimple key = AKeySimple.values()[RandomUtil.rand(0, AKeySimple.values().length)];
-			switch (key) {
-			case VIEWER_LOGIN_IP:
-			case VIEWER_LOGIN_TIME:
-			case VIEWER_USER:
-				break;
-			default:
-				String value = RandomUtil.randString(10);
-				simple.put(key, value);
-				profile.set(key, value);
-			}
+		for (int i = 0; i < RandomUtil.rand(10, 50); i++) {
+			SingularKey key = AK_OS.values()[RandomUtil.rand(0, AK_OS.values().length)];
+			String value = RandomUtil.randString(10);
+			simple.put(key, value);
+			profile.set(key, value);
 		}
+		for (int i = 0; i < RandomUtil.rand(10, 50); i++) {
+			SingularKey key = AK_WIN.values()[RandomUtil.rand(0, AK_WIN.values().length)];
+			String value = RandomUtil.randString(10);
+			simple.put(key, value);
+			profile.set(key, value);
+		}
+
 	}
 
 	@Test
@@ -80,11 +84,11 @@ public class ClientProfileTest {
 	public void testSet() {
 		addRandom();
 		for (int i = 0; i < RandomUtil.rand(10, 100); i++) {
-			profile.set(AKeySimple.CLIENT_STATUS, RandomUtil.randString(10));
+			profile.set(AK_CLIENT.STATUS, RandomUtil.randString(10));
 		}
 		String expected = RandomUtil.randString(10);
-		profile.set(AKeySimple.CLIENT_STATUS, expected);
-		assertEquals(expected, profile.get(AKeySimple.CLIENT_STATUS));
+		profile.set(AK_CLIENT.STATUS, expected);
+		assertEquals(expected, profile.get(AK_CLIENT.STATUS));
 	}
 
 	@Test
@@ -108,8 +112,8 @@ public class ClientProfileTest {
 				.build();
 		profile.amalgamate(pd);
 
-		assertEquals(profile.get(AKeySimple.CLIENT_CID), "25");
-		assertEquals(profile.get(AKeySimple.CLIENT_STATUS), "idle");
+		assertEquals(profile.get(AK_CLIENT.CID), "25");
+		assertEquals(profile.get(AK_CLIENT.STATUS), "idle");
 		assertEquals(profile.getGroup(AK_CPU.MODEL, "cpu1").get(AK_CPU.MODEL), "test cpu 1.0");
 
 		pd = EV_ProfileDelta.newBuilder().addGroup(
@@ -118,7 +122,7 @@ public class ClientProfileTest {
 
 		profile.amalgamate(pd);
 
-		assertEquals(profile.get(AKeySimple.CLIENT_STATUS), "active");
+		assertEquals(profile.get(AK_CLIENT.STATUS), "active");
 	}
 
 	@Test

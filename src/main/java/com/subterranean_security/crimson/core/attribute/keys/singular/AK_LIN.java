@@ -1,11 +1,15 @@
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.platform.info.LIN;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
 /**
  * Linux attribute keys
+ * 
+ * @author cilki
+ * @since 4.0.0
  */
 public enum AK_LIN implements SingularKey {
 	DISTRO, KERNEL_VERSION, PACKAGES, SHELL, TERMINAL, WM;
@@ -27,6 +31,26 @@ public enum AK_LIN implements SingularKey {
 			return "Terminal";
 		}
 		return super.toString();
+	}
+
+	@Override
+	public Object query() {
+		switch (this) {
+		case DISTRO:
+			return LIN.getDistro();
+		case KERNEL_VERSION:
+			return LIN.getKernel();
+		case PACKAGES:
+			return LIN.getPackages();
+		case SHELL:
+			return LIN.getShell();
+		case TERMINAL:
+			return LIN.getTerminal();
+		case WM:
+			return LIN.getWM();
+		default:
+			throw new UnsupportedOperationException("Cannot query: " + this);
+		}
 	}
 
 	@Override
