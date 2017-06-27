@@ -34,7 +34,7 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.Config;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
@@ -144,7 +144,7 @@ public class Relogin extends JPanel {
 		gbc_lblUsername.gridy = 1;
 		panel.add(lblUsername, gbc_lblUsername);
 
-		lbl_user = new JLabel(ViewerProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER));
+		lbl_user = new JLabel(ViewerProfileStore.getLocalViewer().get(AK_VIEWER.USER));
 		lbl_user.setEnabled(false);
 		lbl_user.setFont(new Font("Dialog", Font.BOLD, 10));
 		GridBagConstraints gbc_lblAdmin = new GridBagConstraints();

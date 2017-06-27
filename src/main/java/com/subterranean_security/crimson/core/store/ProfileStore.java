@@ -22,7 +22,7 @@ import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedMap;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ServerProfileDelta;
@@ -158,7 +158,7 @@ public abstract class ProfileStore {
 	public static ViewerProfile getViewer(String user) {
 		for (Integer i : viewerProfiles.keySet()) {
 			ViewerProfile vp = viewerProfiles.get(i);
-			if (user.equals(vp.get(AKeySimple.VIEWER_USER))) {
+			if (user.equals(vp.get(AK_VIEWER.USER))) {
 				return vp;
 			}
 		}

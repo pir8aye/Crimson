@@ -7,7 +7,7 @@ import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 /**
  * Viewer attribute keys
  */
-public enum AK_Viewer implements SingularKey {
+public enum AK_VIEWER implements SingularKey {
 	LOGIN_IP, LOGIN_TIME, USER;
 
 	@Override

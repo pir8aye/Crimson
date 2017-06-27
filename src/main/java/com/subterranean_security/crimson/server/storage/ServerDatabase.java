@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.storage.BasicDatabase;
 import com.subterranean_security.crimson.core.storage.ServerStorageFacility;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
@@ -162,7 +162,7 @@ public class ServerDatabase extends BasicDatabase implements ServerStorageFacili
 
 		// create ViewerProfile
 		ViewerProfile vp = new ViewerProfile();
-		vp.set(AKeySimple.VIEWER_USER, user);
+		vp.set(AK_VIEWER.USER, user);
 		vp.setPermissions(permissions);
 
 		try {

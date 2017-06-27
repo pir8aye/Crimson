@@ -31,6 +31,10 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.Trig
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public class ClientProfile extends Profile implements CVProfile {
 
 	private static final long serialVersionUID = 1L;

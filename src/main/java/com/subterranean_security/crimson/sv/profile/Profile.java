@@ -31,6 +31,10 @@ import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_LOC;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
@@ -38,6 +42,13 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_Profi
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.util.IconUtil;
 
+/**
+ * A {@code Profile} is a generic container for the attributes of some distinct
+ * entity.
+ * 
+ * @author cilki
+ * @since 4.0.0
+ */
 public abstract class Profile extends Observable implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -86,11 +97,11 @@ public abstract class Profile extends Observable implements Serializable {
 	 * @param attribute
 	 * @return
 	 */
-	public String get(AKeySimple attribute) {
+	public String get(SingularKey attribute) {
 		return getAttribute(attribute).get();
 	}
 
-	public void set(AKeySimple key, String value) {
+	public void set(SingularKey key, String value) {
 		getAttribute(key).set(value);
 
 		setChanged();
@@ -107,7 +118,7 @@ public abstract class Profile extends Observable implements Serializable {
 	 * @param key
 	 * @return
 	 */
-	public Attribute getAttribute(AKeySimple key) {
+	public Attribute getAttribute(SingularKey key) {
 		return getAttribute(key, "");
 	}
 
@@ -196,8 +207,8 @@ public abstract class Profile extends Observable implements Serializable {
 	public ImageIcon getOsIcon16() {
 		if (osIcon16 == null) {
 			// load icon or fallback
-			osIcon16 = UIUtil.getIconOrFallback(IconUtil.getOsIconPath(get(AKeySimple.OS_NAME), 16),
-					"icons16/platform/" + get(AKeySimple.OS_FAMILY).toLowerCase() + ".png");
+			osIcon16 = UIUtil.getIconOrFallback(IconUtil.getOsIconPath(get(AK_OS.NAME), 16),
+					"icons16/platform/" + get(AK_OS.FAMILY).toLowerCase() + ".png");
 		}
 		return osIcon16;
 	}
@@ -210,8 +221,8 @@ public abstract class Profile extends Observable implements Serializable {
 	public ImageIcon getMonitorIcon16() {
 		if (monitorIcon16 == null) {
 			// load icon or fallback
-			monitorIcon16 = UIUtil.getIconOrFallback(IconUtil.getMonitorIconPath(get(AKeySimple.OS_NAME), 16),
-					"icons16/platform/monitors/" + get(AKeySimple.OS_FAMILY).toLowerCase() + ".png");
+			monitorIcon16 = UIUtil.getIconOrFallback(IconUtil.getMonitorIconPath(get(AK_OS.NAME), 16),
+					"icons16/platform/monitors/" + get(AK_OS.FAMILY).toLowerCase() + ".png");
 		}
 		return monitorIcon16;
 	}
@@ -224,8 +235,8 @@ public abstract class Profile extends Observable implements Serializable {
 	public ImageIcon getMonitorIcon32() {
 		if (monitorIcon32 == null) {
 			// load icon or fallback
-			monitorIcon32 = UIUtil.getIconOrFallback(IconUtil.getMonitorIconPath(get(AKeySimple.OS_NAME), 32),
-					"icons32/platform/monitors/" + get(AKeySimple.OS_FAMILY).toLowerCase() + ".png");
+			monitorIcon32 = UIUtil.getIconOrFallback(IconUtil.getMonitorIconPath(get(AK_OS.NAME), 32),
+					"icons32/platform/monitors/" + get(AK_OS.FAMILY).toLowerCase() + ".png");
 		}
 		return monitorIcon32;
 
@@ -237,19 +248,19 @@ public abstract class Profile extends Observable implements Serializable {
 	 * @return A 16px location icon
 	 */
 	public ImageIcon getLocationIcon16() {
-		if (locationIcon16 == null && get(AKeySimple.NET_EXTERNALIP) != null) {
+		if (locationIcon16 == null && get(AK_NET.EXTERNAL_IPV4) != null) {
 
-			if (ValidationUtil.privateIP(get(AKeySimple.NET_EXTERNALIP))) {
+			if (ValidationUtil.privateIP(get(AK_NET.EXTERNAL_IPV4))) {
 				locationIcon16 = UIUtil.getIcon("icons16/general/localhost.png");
 				locationIcon16.setDescription("Private IP");
 			} else {
 				try {
 					locationIcon16 = UIUtil
-							.getIcon("icons16/flags/" + get(AKeySimple.IPLOC_COUNTRYCODE).toLowerCase() + ".png");
-					locationIcon16.setDescription(get(AKeySimple.IPLOC_COUNTRY));
+							.getIcon("icons16/flags/" + get(AK_LOC.IPLOC_COUNTRYCODE).toLowerCase() + ".png");
+					locationIcon16.setDescription(get(AK_LOC.IPLOC_COUNTRY));
 				} catch (NullPointerException e) {
 					Reporter.report(Reporter.newReport()
-							.setCrComment("No location icon found: " + get(AKeySimple.IPLOC_COUNTRYCODE).toLowerCase())
+							.setCrComment("No location icon found: " + get(AK_LOC.IPLOC_COUNTRYCODE).toLowerCase())
 							.build());
 
 					// fall back to default

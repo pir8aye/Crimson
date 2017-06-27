@@ -27,7 +27,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_SERVER;
 import com.subterranean_security.crimson.core.platform.info.NET;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.util.IDGen.Reserved;
@@ -141,8 +141,8 @@ public class StatsPanel extends JPanel {
 		label_5.setText(ConnectionStore.get(Reserved.SERVER).getRemoteIP());
 		label_3.setText(NET.getDefaultInternalIP());
 		label_1.setText("" + ViewerProfileStore.getServer().listeners.size());
-		lblNewLabel.setText("" + ViewerProfileStore.getServer().get(AKeySimple.SERVER_CONNECTED_CLIENTS));
-		lblVal.setText("" + ViewerProfileStore.getServer().get(AKeySimple.SERVER_CONNECTED_VIEWERS));
+		lblNewLabel.setText("" + ViewerProfileStore.getServer().get(AK_SERVER.CONNECTED_CLIENTS));
+		lblVal.setText("" + ViewerProfileStore.getServer().get(AK_SERVER.CONNECTED_VIEWERS));
 		new SwingWorker<String, String>() {
 
 			@Override

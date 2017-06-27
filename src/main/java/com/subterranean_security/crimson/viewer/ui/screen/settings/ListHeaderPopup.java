@@ -27,12 +27,26 @@ import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_CLIENT;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_JVM;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_LIN;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_LOC;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_RAM;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_USER;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_WIN;
 import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.screen.main.HostList;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
+/**
+ * A dynamic checkbox which can alter the headers in the host table.
+ * 
+ * @author cilki
+ * @since 4.0.0
+ */
 public class ListHeaderPopup extends JPopupMenu {
 
 	private static final long serialVersionUID = 1L;
@@ -104,19 +118,8 @@ public class ListHeaderPopup extends JPopupMenu {
 		client.setIcon(UIUtil.getIcon("icons16/general/users_3.png"));
 		add(client);
 
-		for (AKeySimple sa : AKeySimple.values()) {
-			if (sa.toSuperString().startsWith("CLIENT")) {
-				JCheckBox jcb = new JCheckBox(sa.toString());
-				jcb.addActionListener((ActionEvent e) -> {
-					if (jcb.isSelected())
-						addHeader(sa);
-					else
-						removeHeader(sa);
-				});
-				jcb.setSelected(checkHeader(sa));
-				jcb.setFont(boxFont);
-				client.add(jcb);
-			}
+		for (AK_CLIENT sa : AK_CLIENT.values()) {
+			client.add(fabricateCheckbox(sa));
 		}
 
 		// User category
@@ -124,19 +127,8 @@ public class ListHeaderPopup extends JPopupMenu {
 		user.setIcon(UIUtil.getIcon("icons16/general/user.png"));
 		add(user);
 
-		for (AKeySimple sa : AKeySimple.values()) {
-			if (sa.toSuperString().startsWith("USER")) {
-				JCheckBox jcb = new JCheckBox(sa.toString());
-				jcb.addActionListener((ActionEvent e) -> {
-					if (jcb.isSelected())
-						addHeader(sa);
-					else
-						removeHeader(sa);
-				});
-				jcb.setSelected(checkHeader(sa));
-				jcb.setFont(boxFont);
-				user.add(jcb);
-			}
+		for (AK_USER sa : AK_USER.values()) {
+			user.add(fabricateCheckbox(sa));
 		}
 
 		// Java category
@@ -144,19 +136,8 @@ public class ListHeaderPopup extends JPopupMenu {
 		java.setIcon(UIUtil.getIcon("icons16/general/java.png"));
 		add(java);
 
-		for (AKeySimple sa : AKeySimple.values()) {
-			if (sa.toSuperString().startsWith("JAVA")) {
-				JCheckBox jcb = new JCheckBox(sa.toString());
-				jcb.addActionListener((ActionEvent e) -> {
-					if (jcb.isSelected())
-						addHeader(sa);
-					else
-						removeHeader(sa);
-				});
-				jcb.setSelected(checkHeader(sa));
-				jcb.setFont(boxFont);
-				java.add(jcb);
-			}
+		for (AK_JVM sa : AK_JVM.values()) {
+			java.add(fabricateCheckbox(sa));
 		}
 
 		// RAM category
@@ -164,19 +145,8 @@ public class ListHeaderPopup extends JPopupMenu {
 		ram.setIcon(UIUtil.getIcon("icons16/general/ram.png"));
 		add(ram);
 
-		for (AKeySimple sa : AKeySimple.values()) {
-			if (sa.toSuperString().startsWith("RAM")) {
-				JCheckBox jcb = new JCheckBox(sa.toString());
-				jcb.addActionListener((ActionEvent e) -> {
-					if (jcb.isSelected())
-						addHeader(sa);
-					else
-						removeHeader(sa);
-				});
-				jcb.setSelected(checkHeader(sa));
-				jcb.setFont(boxFont);
-				ram.add(jcb);
-			}
+		for (AK_RAM sa : AK_RAM.values()) {
+			ram.add(fabricateCheckbox(sa));
 		}
 
 		// Network category
@@ -184,19 +154,8 @@ public class ListHeaderPopup extends JPopupMenu {
 		network.setIcon(UIUtil.getIcon("icons16/general/network_ethernet.png"));
 		add(network);
 
-		for (AKeySimple sa : AKeySimple.values()) {
-			if (sa.toSuperString().startsWith("NET")) {
-				JCheckBox jcb = new JCheckBox(sa.toString());
-				jcb.addActionListener((ActionEvent e) -> {
-					if (jcb.isSelected())
-						addHeader(sa);
-					else
-						removeHeader(sa);
-				});
-				jcb.setSelected(checkHeader(sa));
-				jcb.setFont(boxFont);
-				network.add(jcb);
-			}
+		for (AK_NET sa : AK_NET.values()) {
+			network.add(fabricateCheckbox(sa));
 		}
 
 		// Network category
@@ -204,19 +163,8 @@ public class ListHeaderPopup extends JPopupMenu {
 		iploc.setIcon(UIUtil.getIcon("icons16/general/ip.png"));
 		add(iploc);
 
-		for (AKeySimple sa : AKeySimple.values()) {
-			if (sa.toSuperString().startsWith("IPLOC")) {
-				JCheckBox jcb = new JCheckBox(sa.toString());
-				jcb.addActionListener((ActionEvent e) -> {
-					if (jcb.isSelected())
-						addHeader(sa);
-					else
-						removeHeader(sa);
-				});
-				jcb.setSelected(checkHeader(sa));
-				jcb.setFont(boxFont);
-				iploc.add(jcb);
-			}
+		for (AK_LOC sa : AK_LOC.values()) {
+			iploc.add(fabricateCheckbox(sa));
 		}
 
 		// OS category
@@ -224,19 +172,8 @@ public class ListHeaderPopup extends JPopupMenu {
 		os.setIcon(UIUtil.getIcon("icons16/general/users_3.png"));
 		add(os);
 
-		for (AKeySimple sa : AKeySimple.values()) {
-			if (sa.toSuperString().startsWith("OS")) {
-				JCheckBox jcb = new JCheckBox(sa.toString());
-				jcb.addActionListener((ActionEvent e) -> {
-					if (jcb.isSelected())
-						addHeader(sa);
-					else
-						removeHeader(sa);
-				});
-				jcb.setSelected(checkHeader(sa));
-				jcb.setFont(boxFont);
-				os.add(jcb);
-			}
+		for (AK_OS sa : AK_OS.values()) {
+			os.add(fabricateCheckbox(sa));
 		}
 
 		// Linux category
@@ -244,19 +181,8 @@ public class ListHeaderPopup extends JPopupMenu {
 		linux.setIcon(UIUtil.getIcon("icons16/platform/linux.png"));
 		add(linux);
 
-		for (AKeySimple sa : AKeySimple.values()) {
-			if (sa.toSuperString().startsWith("LINUX")) {
-				JCheckBox jcb = new JCheckBox(sa.toString());
-				jcb.addActionListener((ActionEvent e) -> {
-					if (jcb.isSelected())
-						addHeader(sa);
-					else
-						removeHeader(sa);
-				});
-				jcb.setSelected(checkHeader(sa));
-				jcb.setFont(boxFont);
-				linux.add(jcb);
-			}
+		for (AK_LIN sa : AK_LIN.values()) {
+			linux.add(fabricateCheckbox(sa));
 		}
 
 		// Windows category
@@ -264,20 +190,23 @@ public class ListHeaderPopup extends JPopupMenu {
 		win.setIcon(UIUtil.getIcon("icons16/platform/windows_7.png"));
 		add(win);
 
-		for (AKeySimple sa : AKeySimple.values()) {
-			if (sa.toSuperString().startsWith("WIN")) {
-				JCheckBox jcb = new JCheckBox(sa.toString());
-				jcb.addActionListener((ActionEvent e) -> {
-					if (jcb.isSelected())
-						addHeader(sa);
-					else
-						removeHeader(sa);
-				});
-				jcb.setSelected(checkHeader(sa));
-				jcb.setFont(boxFont);
-				win.add(jcb);
-			}
+		for (AK_WIN sa : AK_WIN.values()) {
+			win.add(fabricateCheckbox(sa));
 		}
+	}
+
+	private JCheckBox fabricateCheckbox(AttributeKey key) {
+		JCheckBox jcb = new JCheckBox(key.toString());
+		jcb.addActionListener((ActionEvent e) -> {
+			if (jcb.isSelected())
+				addHeader(key);
+			else
+				removeHeader(key);
+		});
+		jcb.setSelected(checkHeader(key));
+		jcb.setFont(boxFont);
+
+		return jcb;
 	}
 
 }

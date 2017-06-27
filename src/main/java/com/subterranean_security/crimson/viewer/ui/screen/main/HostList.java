@@ -34,6 +34,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_LOC;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_USER;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
@@ -43,8 +47,8 @@ public class HostList extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final AttributeKey[] defaultHeaders = new AttributeKey[] { AKeySimple.IPLOC_COUNTRY,
-			AKeySimple.OS_NAME, AKeySimple.USER_NAME, AKeySimple.NET_HOSTNAME, AKeySimple.OS_LANGUAGE };
+	public static final AttributeKey[] defaultHeaders = new AttributeKey[] { AK_LOC.IPLOC_COUNTRY, AK_OS.NAME,
+			AK_USER.NAME, AK_NET.HOSTNAME, AK_OS.LANGUAGE };
 
 	private JTable table = new JTable();
 	private TM tm = new TM();
@@ -128,7 +132,7 @@ public class HostList extends JPanel {
 
 		for (int i = 0; i < tm.headers.length; i++) {
 			AttributeKey aa = tm.headers[i];
-			if (aa instanceof AKeySimple) {
+			if (aa instanceof SingularKey) {
 				AKeySimple sa = (AKeySimple) aa;
 				switch (sa) {
 				case CLIENT_CID:

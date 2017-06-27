@@ -32,6 +32,10 @@ import com.subterranean_security.crimson.server.store.ListenerStore;
 import com.subterranean_security.crimson.sv.net.Listener;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public class ServerProfile extends Profile implements SVProfile {
 
 	private static final long serialVersionUID = 1L;

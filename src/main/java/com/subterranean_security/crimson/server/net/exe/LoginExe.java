@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.cloud.net.exe.CloudLoginExe;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
@@ -91,7 +92,7 @@ public final class LoginExe {
 			if (cloud != null) {
 				// create ViewerProfile
 				vp = new ViewerProfile(receptor.getCvid());
-				vp.set(AKeySimple.VIEWER_USER, user);
+				vp.set(AK_VIEWER.USER, user);
 				vp.getPermissions().addFlag(Perm.server.generator.generate_jar).addFlag(Perm.server.fs.read);
 				ServerProfileStore.addViewer(vp);
 			}
@@ -162,7 +163,7 @@ public final class LoginExe {
 	}
 
 	private static void passLogin(Connector receptor, int id, ViewerProfile vp, Outcome outcome) {
-		log.debug("Accepting login: " + vp.get(AKeySimple.VIEWER_USER) + " (" + vp.getCvid() + ")");
+		log.debug("Accepting login: " + vp.get(AK_VIEWER.USER) + " (" + vp.getCvid() + ")");
 
 		// this connection is now authenticated
 		receptor.setState(ConnectionState.AUTHENTICATED);

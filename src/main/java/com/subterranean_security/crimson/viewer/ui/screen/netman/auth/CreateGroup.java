@@ -43,7 +43,7 @@ import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
@@ -119,7 +119,7 @@ public class CreateGroup extends JPanel {
 						timer.cancel();
 						Outcome outcome = ViewerCommands.createAuthMethod(
 								AuthMethod.newBuilder().setId(IDGen.auth()).setCreation(new Date().getTime())
-										.addOwner(ViewerProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER))
+										.addOwner(ViewerProfileStore.getLocalViewer().get(AK_VIEWER.USER))
 										.setType(AuthType.GROUP).setName(textField.getText())
 										.setGroupSeedPrefix(key_prefix.getText() + RandomUtil.randString(32)).build());
 						if (outcome.getResult()) {

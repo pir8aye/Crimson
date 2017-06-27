@@ -39,7 +39,9 @@ import com.mxgraph.util.mxConstants;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxStylesheet;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
 import com.subterranean_security.crimson.core.net.NetworkNode;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
@@ -60,7 +62,7 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 
 	private static final long serialVersionUID = 1L;
 
-	private AttributeKey textType = AKeySimple.NET_HOSTNAME;
+	private AttributeKey textType = AK_NET.HOSTNAME;
 
 	private final int vertexWidth = 80;
 	private final int vertexHeight = 30;
@@ -253,11 +255,11 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 		try {
 			// TODO move to util
 			String iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
-					+ p.get(AKeySimple.OS_NAME).replaceAll(" ", "_").toLowerCase() + ".png";
+					+ p.get(AK_OS.NAME).replaceAll(" ", "_").toLowerCase() + ".png";
 
 			if (!JarUtil.containsResource(iconLocation)) {
 				iconLocation = "/com/subterranean_security/crimson/viewer/ui/res/image/icons32/platform/viewer-"
-						+ p.get(AKeySimple.OS_FAMILY) + ".png";
+						+ p.get(AK_OS.FAMILY) + ".png";
 			}
 
 			Object v = graph.insertVertex(parent, null, "\n\n\n" + getTextFor(p), point.x, point.y, vertexWidth,
@@ -339,9 +341,9 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 	}
 
 	private String getTextFor(ClientProfile cp) {
-		if (textType instanceof AKeySimple) {
-			AKeySimple sa = (AKeySimple) textType;
-			return cp.get(sa);
+		if (textType instanceof SingularKey) {
+			SingularKey sk = (SingularKey) textType;
+			return cp.get(sk);
 		} else {
 			// TODO complex attribute
 			return "";

@@ -41,6 +41,9 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_CLIENT;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
@@ -127,8 +130,8 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 		statConsoleLocation = clientStatusConsole.addRow("Location");
 		statConsoleLastContact = clientStatusConsole.addRow("Last Contact");
 
-		statConsoleInstallDate.setText(profile.get(AKeySimple.CLIENT_INSTALL_DATE));
-		statConsoleLocation.setText(profile.get(AKeySimple.CLIENT_BASE_PATH));
+		statConsoleInstallDate.setText(profile.get(AK_CLIENT.INSTALL_DATE));
+		statConsoleLocation.setText(profile.get(AK_CLIENT.BASE_PATH));
 
 		JProgressBar barUpdate = ProgressBarFactory.get();
 		barUpdate.setPreferredSize(new Dimension(100, 4));
@@ -221,8 +224,7 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 				barUpdate.setIndeterminate(true);
 				stopStreaming();
 				statConsoleStatus.setText("UPDATING...");
-				console.addLine(
-						"Updating client (" + profile.get(AKeySimple.CLIENT_VERSION) + " -> " + Universal.version + ")",
+				console.addLine("Updating client (" + profile.get(AK_CLIENT.VERSION) + " -> " + Universal.version + ")",
 						LineType.BLUE);
 
 				new SwingWorker<Outcome, Void>() {
@@ -302,7 +304,7 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 							setControlsEnabled(true);
 							return;
 						}
-						console.addLine("Sending uninstall signal to client: " + profile.get(AKeySimple.NET_HOSTNAME));
+						console.addLine("Sending uninstall signal to client: " + profile.get(AK_NET.HOSTNAME));
 
 						new SwingWorker<Outcome, Void>() {
 
@@ -384,15 +386,15 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 
 	private void initValues() {
 		refreshDates();
-		statConsoleStatus.setText(profile.get(AKeySimple.CLIENT_STATUS));
+		statConsoleStatus.setText(profile.get(AK_CLIENT.STATUS));
 	}
 
 	private static DateFormat uptimeFormat = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy");
 
 	public void refreshDates() {
 		try {
-			statConsoleUptime.setText(
-					DateUtil.timeBetween(new Date(), uptimeFormat.parse(profile.get(AKeySimple.OS_START_TIME))));
+			statConsoleUptime
+					.setText(DateUtil.timeBetween(new Date(), uptimeFormat.parse(profile.get(AK_OS.START_TIME))));
 		} catch (ParseException e) {
 			statConsoleUptime.setText("N/A");
 		}
@@ -488,8 +490,8 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		if (arg1.equals(AKeySimple.CLIENT_STATUS)) {
-			statConsoleStatus.setText(profile.get(AKeySimple.CLIENT_STATUS));
+		if (arg1.equals(AK_CLIENT.STATUS)) {
+			statConsoleStatus.setText(profile.get(AK_CLIENT.STATUS));
 		}
 
 	}

@@ -44,7 +44,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.proto.core.net.sequences.Listener.ListenerConfig;
@@ -322,10 +322,10 @@ public class AddListener extends JPanel {
 			List<ViewerProfile> viewers = ViewerProfileStore.getViewers();
 			o = new String[viewers.size()];
 			for (int i = 0; i < o.length; i++) {
-				o[i] = viewers.get(i).get(AKeySimple.VIEWER_USER);
+				o[i] = viewers.get(i).get(AK_VIEWER.USER);
 			}
 		} else {
-			o = new String[] { ViewerProfileStore.getLocalViewer().get(AKeySimple.VIEWER_USER) };
+			o = new String[] { ViewerProfileStore.getLocalViewer().get(AK_VIEWER.USER) };
 		}
 		owner.setModel(new DefaultComboBoxModel<String>(o));
 	}
