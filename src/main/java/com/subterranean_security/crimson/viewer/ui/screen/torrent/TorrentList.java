@@ -30,7 +30,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
 
-import com.subterranean_security.crimson.core.attribute.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_TORRENT;
 
 public class TorrentList extends JPanel {

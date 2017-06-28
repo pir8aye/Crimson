@@ -15,13 +15,14 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.attribute;
+package com.subterranean_security.crimson.core.attribute.group;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
 

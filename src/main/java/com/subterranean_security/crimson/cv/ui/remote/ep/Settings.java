@@ -28,7 +28,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
-import com.subterranean_security.crimson.core.attribute.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_DISP;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.cv.ui.remote.RDPanel;

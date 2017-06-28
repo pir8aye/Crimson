@@ -17,45 +17,70 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.attribute;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
-public class TrackedAttribute extends Attribute {
+/**
+ * A {@code TrackedAttribute} stores the timestamped history of its value.
+ * 
+ * @author cilki
+ * @since 4.0.0
+ */
+public class TrackedAttribute<E> extends Attribute<E> {
 
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<String> values = new ArrayList<String>();
-	private ArrayList<Date> timestamps = new ArrayList<Date>();
+	/**
+	 * The {@code Attribute} history
+	 */
+	private List<UntrackedAttribute<E>> values;
+
+	public TrackedAttribute() {
+		values = new LinkedList<>();
+	}
 
 	@Override
-	public void set(String s) {
-		set(s, new Date());
+	public void set(E value) {
+		set(value, System.currentTimeMillis());
 	}
 
-	public void set(String s, Date d) {
-		timestamps.add(d);
-		values.add(s);
-		super.set(s);
+	@Override
+	public void set(E value, long time) {
+		values.add(new UntrackedAttribute<E>(current, timestamp));
+		super.set(value, time);
 	}
 
+	/**
+	 * @return The number of entries in the attribute history
+	 */
 	public int size() {
 		return values.size();
 	}
 
-	public String getValue(int i) {
-		try {
-			return values.get(i);
-		} catch (IndexOutOfBoundsException e) {
-			return null;
-		}
+	/**
+	 * @param index
+	 * @return
+	 */
+	public E getValue(int index) {
+		if (index >= size())
+			throw new IndexOutOfBoundsException();
+
+		return values.get(index).get();
 	}
 
-	public Date getTime(int i) {
-		try {
-			return timestamps.get(i);
-		} catch (IndexOutOfBoundsException e) {
-			return null;
-		}
+	/**
+	 * 
+	 * 
+	 * @param index
+	 *            The index into the history where 0 is the most recent,
+	 *            non-current entry
+	 * @return The specific timestamp in the history
+	 */
+	public long getTime(int index) {
+		if (index >= size())
+			throw new IndexOutOfBoundsException();
+
+		return values.get(index).getTimestamp();
 	}
 
 }

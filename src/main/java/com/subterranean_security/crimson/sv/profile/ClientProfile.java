@@ -24,6 +24,8 @@ import javax.swing.ImageIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_META;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.State;
@@ -169,10 +171,6 @@ public class ClientProfile extends Profile implements CVProfile {
 
 	}
 
-	public boolean getOnline() {
-		return get(AKeySimple.CLIENT_ONLINE).equals("1");
-	}
-
 	public static class CidComparator implements Comparator<ClientProfile> {
 		@Override
 		public int compare(ClientProfile o1, ClientProfile o2) {
@@ -180,19 +178,23 @@ public class ClientProfile extends Profile implements CVProfile {
 		}
 	}
 
-	public static class SimpleAttributeComparator implements Comparator<ClientProfile> {
-		private AKeySimple sa;
+	/**
+	 * @author cilki
+	 * @since 4.0.0
+	 */
+	public static class SingularAttributeComparator implements Comparator<ClientProfile> {
+		private SingularKey key;
 
-		public SimpleAttributeComparator(AKeySimple sa) {
-			this.sa = sa;
+		public SingularAttributeComparator(SingularKey sk) {
+			this.key = sk;
 		}
 
 		@Override
 		public int compare(ClientProfile o1, ClientProfile o2) {
-			if (o1.get(sa) == null) {
-				return (o2.get(sa) == null) ? 0 : 1;
+			if (o1.get(key) == null) {
+				return (o2.get(key) == null) ? 0 : 1;
 			}
-			return o1.get(sa).compareTo(o2.get(sa));
+			return o1.get(key).compareTo(o2.get(key));
 		}
 	}
 

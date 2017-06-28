@@ -29,10 +29,11 @@ import javax.swing.ImageIcon;
 
 import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.attribute.Attribute;
-import com.subterranean_security.crimson.core.attribute.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_LOC;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_META;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
@@ -92,16 +93,46 @@ public abstract class Profile extends Observable implements Serializable {
 	}
 
 	/**
-	 * Get the value of the specified attribute for the singular group
+	 * Get the value of the specified singular String {@code Attribute}
 	 * 
-	 * @param attribute
+	 * @param key
 	 * @return
 	 */
-	public String get(SingularKey attribute) {
-		return getAttribute(attribute).get();
+	public String get(SingularKey key) {
+		return (String) getAttribute(key).get();
 	}
 
-	public void set(SingularKey key, String value) {
+	/**
+	 * Get the value of the specified singular boolean {@code Attribute}
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public boolean getBool(SingularKey key) {
+		return (boolean) getAttribute(key).get();
+	}
+
+	/**
+	 * Get the value of the specified singular int {@code Attribute}
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public int getInt(SingularKey key) {
+		return (int) getAttribute(key).get();
+	}
+
+	/**
+	 * Get the value of the specified singular long {@code Attribute}
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public long getLong(SingularKey key) {
+		return (long) getAttribute(key).get();
+	}
+
+	public void set(SingularKey key, Object value) {
 		getAttribute(key).set(value);
 
 		setChanged();
@@ -118,7 +149,7 @@ public abstract class Profile extends Observable implements Serializable {
 	 * @param key
 	 * @return
 	 */
-	public Attribute getAttribute(SingularKey key) {
+	public Attribute<Object> getAttribute(SingularKey key) {
 		return getAttribute(key, "");
 	}
 
@@ -187,16 +218,22 @@ public abstract class Profile extends Observable implements Serializable {
 		return lastUpdate;
 	}
 
-	protected int cvid;
-
+	/**
+	 * @return The instance's CVID
+	 */
 	public int getCvid() {
-		return cvid;
+		return getInt(AK_META.CVID);
 	}
 
 	public void setCvid(int cvid) {
-		this.cvid = cvid;
-		set(AKeySimple.CLIENT_CID, "" + cvid);
-		System.out.println("Profile assigned new CVID: " + cvid);
+		set(AK_META.CVID, cvid);
+	}
+
+	/**
+	 * @return True if the instance is connected to the server (online)
+	 */
+	public boolean getOnline() {
+		return getBool(AK_META.ONLINE);
 	}
 
 	protected transient ImageIcon osIcon16;

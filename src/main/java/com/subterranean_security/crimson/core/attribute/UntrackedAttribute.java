@@ -17,8 +17,24 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.attribute;
 
-public class UntrackedAttribute extends Attribute {
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
+public class UntrackedAttribute<E> extends Attribute<E> {
 
 	private static final long serialVersionUID = 1L;
+
+	public UntrackedAttribute() {
+
+	}
+
+	public UntrackedAttribute(E value) {
+		set(value);
+	}
+
+	public UntrackedAttribute(E value, long time) {
+		set(value, time);
+	}
 
 }

@@ -138,7 +138,7 @@ public class HostList extends JPanel {
 				case CLIENT_CID:
 					sorter.setComparator(i, new ClientProfile.CidComparator());
 				default:
-					sorter.setComparator(i, new ClientProfile.SimpleAttributeComparator(sa));
+					sorter.setComparator(i, new ClientProfile.SingularAttributeComparator(sa));
 				}
 			} else {
 				// TODO complex attribute

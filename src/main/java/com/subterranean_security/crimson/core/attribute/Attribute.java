@@ -18,31 +18,63 @@
 package com.subterranean_security.crimson.core.attribute;
 
 import java.io.Serializable;
-import java.util.Date;
 
-public abstract class Attribute implements Serializable {
+/**
+ * An {@code Attribute} is the primary constituent of a {@code Profile}. It
+ * contains a datum such as CPU speed, Java version, Username, etc...
+ * 
+ * @author cilki
+ * @since 4.0.0
+ */
+public abstract class Attribute<E> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	protected String current;
-	private Date timestamp = new Date(0);
+	protected E current;
+	protected long timestamp;
 
-	public String get() {
+	/**
+	 * @return The current value of this {@code Attribute}
+	 */
+	public E get() {
 		return current;
 	}
 
-	public Date getTimestamp() {
+	/**
+	 * @return The timestamp of the current value
+	 */
+	public long getTimestamp() {
 		return timestamp;
 	}
 
-	public void set(String s) {
-		current = s;
-		timestamp = new Date();
+	/**
+	 * Set the current value of this {@code Attribute}.
+	 * {@code System.currentTimeMillis()} will be used as the timestamp.
+	 * 
+	 * @param value
+	 */
+	public void set(E value) {
+		set(value, System.currentTimeMillis());
+	}
+
+	/**
+	 * Set the current value of this {@code Attribute}.
+	 * 
+	 * @param value
+	 * @param time
+	 */
+	public void set(E value, long time) {
+		current = value;
+		timestamp = time;
+	}
+
+	public int toInt() {
+		return (int) current;
 	}
 
 	@Override
 	public String toString() {
-		return current;
+		return (String) current;
 	}
 
 }
