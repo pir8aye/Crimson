@@ -19,8 +19,8 @@ package com.subterranean_security.crimson.core.stream.subscriber;
 
 import java.util.Random;
 
-import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.util.IDGen.Reserved;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
@@ -50,7 +50,7 @@ public class SubscriberMaster extends PeriodicStream {
 
 	@Override
 	public void start() {
-		ConnectionStore.route(Message.newBuilder().setSid(param().getVID()).setRid(Reserved.SERVER)
+		NetworkStore.route(Message.newBuilder().setSid(param().getVID()).setRid(Reserved.SERVER)
 				.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param())));
 
 	}

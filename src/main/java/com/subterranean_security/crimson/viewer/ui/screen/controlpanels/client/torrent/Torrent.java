@@ -29,7 +29,7 @@ public class Torrent extends JPanel implements CPPanel {
 
 	public Torrent() {
 		setLayout(new BorderLayout(0, 0));
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		add(menuBar, BorderLayout.NORTH);
 	}

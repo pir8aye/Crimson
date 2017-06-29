@@ -28,8 +28,8 @@ import java.util.Observer;
 import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.IDGen.Reserved;
 import com.subterranean_security.crimson.debug.CharcoalAppender;
 import com.subterranean_security.crimson.proto.core.net.sequences.Debug.EV_DebugLogEvent;
@@ -75,7 +75,7 @@ public abstract class ConnectionEventListener implements Observer {
 		charcoalUpdater = new Thread(() -> {
 			try (BufferedReader br = new BufferedReader(new InputStreamReader(CharcoalAppender.in))) {
 				while (!Thread.interrupted()) {
-					ConnectionStore.route(Message.newBuilder().setSid(LcvidStore.cvid).setRid(Reserved.CHARCOAL)
+					NetworkStore.route(Message.newBuilder().setSid(LcvidStore.cvid).setRid(Reserved.CHARCOAL)
 							.setEvDebugLogEvent(EV_DebugLogEvent.newBuilder().setLine(br.readLine())));
 				}
 			} catch (IOException e) {

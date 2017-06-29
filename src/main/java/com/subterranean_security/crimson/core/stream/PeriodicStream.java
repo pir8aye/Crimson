@@ -20,7 +20,7 @@ package com.subterranean_security.crimson.core.stream;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.MI_StreamStart;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.MI_StreamStop;
@@ -54,7 +54,7 @@ public abstract class PeriodicStream extends Stream {
 	public void start() {
 		running = true;
 		if (Universal.instance == Universal.Instance.VIEWER) {
-			ConnectionStore.route(Message.newBuilder().setSid(param().getVID()).setRid(param().getCID())
+			NetworkStore.route(Message.newBuilder().setSid(param().getVID()).setRid(param().getCID())
 					.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param())));
 		}
 
@@ -64,7 +64,7 @@ public abstract class PeriodicStream extends Stream {
 		running = false;
 		timer.cancel();
 		if (Universal.instance == Universal.Instance.VIEWER) {
-			ConnectionStore.route(Message.newBuilder().setSid(param().getVID()).setRid(param().getCID())
+			NetworkStore.route(Message.newBuilder().setSid(param().getVID()).setRid(param().getCID())
 					.setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param().getStreamID())));
 		}
 	}

@@ -19,29 +19,53 @@ package com.subterranean_security.crimson.core.net;
 
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 
+/**
+ * A MessageFuture is given to a thread waiting for a message (most likely a
+ * response of some sort). If the desired message arrives before the thread
+ * times out, the MessageFuture gives the waiting thread access to the message.
+ */
 public class MessageFuture {
 
-	public Message message;
+	/**
+	 * The target message, if it arrives
+	 */
+	private Message message;
 
 	public void setMessage(Message m) {
-		if (m != null) {
-			this.message = m;
-			synchronized (this) {
-				notifyAll();
-			}
+		if (m == null)
+			throw new IllegalArgumentException();
+
+		this.message = m;
+		synchronized (this) {
+			notifyAll();
 		}
+
 	}
 
-	public Message get(long timeout) throws Timeout, InterruptedException {
+	/**
+	 * Returns the target message if it arrives.
+	 * 
+	 * @param timeout
+	 *            The amount of time to wait for the message in milliseconds
+	 * @return
+	 * @throws MessageTimeout
+	 *             If the message does not arrive in time
+	 * @throws InterruptedException
+	 */
+	public Message get(long timeout) throws MessageTimeout, InterruptedException {
 		synchronized (this) {
 			wait(timeout);
 		}
 
 		if (message == null)
-			throw new Timeout();
+			throw new MessageTimeout();
 		return message;
 	}
 
-	public class Timeout extends Exception {
+	/**
+	 * Indicates that a thread has timed out while waiting for a message
+	 */
+	public static class MessageTimeout extends Exception {
+		private static final long serialVersionUID = 1L;
 	}
 }

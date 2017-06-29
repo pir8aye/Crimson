@@ -34,7 +34,7 @@ public class ColorPane extends JTextPane {
 
 	public ColorPane() {
 		super();
-		//setEditable(false);
+		// setEditable(false);
 	}
 
 	public void append(Color c, String s) {

@@ -14,17 +14,18 @@ public class DetailPanel extends JPanel {
 
 	public DetailPanel() {
 		setLayout(new BorderLayout(0, 0));
-		
+
 		JPanel panel = new JPanel();
 		add(panel, BorderLayout.CENTER);
 		panel.setLayout(new CardLayout(0, 0));
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		add(menuBar, BorderLayout.NORTH);
-		
+
 		JComboBox comboBox = new JComboBox();
 		comboBox.setEnabled(false);
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Disabled", "Profiles", "Database", "Network", "Connections"}));
+		comboBox.setModel(new DefaultComboBoxModel(
+				new String[] { "Disabled", "Profiles", "Database", "Network", "Connections" }));
 		menuBar.add(comboBox);
 
 	}

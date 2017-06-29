@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,44 +15,8 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.client.modules;
+package com.subterranean_security.crimson.core.net.factory;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-
-public class Clipboard implements ClipboardOwner {
-
-	java.awt.datatransfer.Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-	@Override
-	public void lostOwnership(java.awt.datatransfer.Clipboard aClipboard, Transferable aContents) {
-
-	}
-
-	public void setString(String s) {
-		clipboard.setContents(new StringSelection(s), this);
-	}
-
-	public String getClipboardContents() {
-		String result = "";
-
-		Transferable contents = clipboard.getContents(null);
-		boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-		if (hasTransferableText) {
-			try {
-				result = (String) contents.getTransferData(DataFlavor.stringFlavor);
-
-			} catch (UnsupportedFlavorException | IOException ex) {
-				System.out.println(ex);
-				ex.printStackTrace();
-			}
-		}
-		return result;
-	}
+public class ConnectorFactory {
 
 }

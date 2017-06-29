@@ -19,8 +19,8 @@ package com.subterranean_security.crimson.core.stream.remote;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.stream.PeriodicStream;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.cv.ui.remote.RDArea;
@@ -40,7 +40,7 @@ public class RemoteMaster extends PeriodicStream {
 
 			while (!Thread.interrupted()) {
 				try {
-					ConnectionStore.route(Message.newBuilder().setRid(cid)
+					NetworkStore.route(Message.newBuilder().setRid(cid)
 							.setEvStreamData(
 									EV_StreamData.newBuilder().setStreamID(getStreamID()).setEventData(queue.take()))
 							.build());

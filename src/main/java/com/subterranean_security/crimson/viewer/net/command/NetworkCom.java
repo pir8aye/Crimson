@@ -21,7 +21,7 @@ import java.net.ConnectException;
 
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.Config;
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
@@ -51,7 +51,7 @@ public final class NetworkCom {
 				// request has been granted
 				makeDirectConnection(cid, rs.getRsDirectConnection().getRequest());
 			}
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {

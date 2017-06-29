@@ -20,9 +20,10 @@ package com.subterranean_security.crimson.viewer.net.command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
@@ -49,12 +50,12 @@ public final class LoginCom {
 
 		int id = IDGen.msg();
 
-		ConnectionStore.route(Message.newBuilder().setId(id).setRqLogin(RQ_Login.newBuilder().setUsername(user)));
+		NetworkStore.route(Message.newBuilder().setId(id).setRqLogin(RQ_Login.newBuilder().setUsername(user)));
 
 		RS_Login loginResponse = null;
 		try {
 
-			Message response = ConnectionStore.waitForResponse(0, id, 5);
+			Message response = NetworkStore.getResponse(0, id, TimeoutConstants.DEFAULT);
 			if (response.getRqLoginChallenge() != null) {
 				loginResponse = handleChallenge(response, pass);
 			} else if (response.getRsLogin() != null) {
@@ -65,7 +66,7 @@ public final class LoginCom {
 
 		} catch (InterruptedException e) {
 			return outcome.build();
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			return outcome.setComment("Request timeout").build();
 		}
 
@@ -102,16 +103,16 @@ public final class LoginCom {
 		RQ_LoginChallenge challenge = m.getRqLoginChallenge();
 		String result = challenge.getCloud() ? CryptoUtil.hashOpencartPassword(pass, challenge.getSalt())
 				: CryptoUtil.hashCrimsonPassword(pass, challenge.getSalt());
-		ConnectionStore.route(Message.newBuilder().setId(m.getId())
+		NetworkStore.route(Message.newBuilder().setId(m.getId())
 				.setRsLoginChallenge(RS_LoginChallenge.newBuilder().setResult(result)).build());
 
 		try {
-			Message response = ConnectionStore.waitForResponse(0, m.getId(), 5);
+			Message response = NetworkStore.getResponse(0, m.getId(), TimeoutConstants.DEFAULT);
 
 			return (response != null && response.getRsLogin() != null) ? response.getRsLogin() : null;
 		} catch (InterruptedException e) {
 			return null;
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
@@ -128,7 +129,7 @@ public final class LoginCom {
 			mi.addProfileTimestamp(
 					ProfileTimestamp.newBuilder().setCvid(cp.getCvid()).setTimestamp(cp.getLastUpdate().getTime()));
 		}
-		ConnectionStore.route(Message.newBuilder().setMiTriggerProfileDelta(mi));
+		NetworkStore.route(Message.newBuilder().setMiTriggerProfileDelta(mi));
 
 	}
 

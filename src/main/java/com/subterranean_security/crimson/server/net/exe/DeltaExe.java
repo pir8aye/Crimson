@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.LocationUtil;
 import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
@@ -35,7 +36,6 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Delta.Attribut
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-import com.subterranean_security.crimson.server.net.ServerConnectionStore;
 import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -57,7 +57,7 @@ public final class DeltaExe {
 		}
 
 		ServerProfileStore.getClient(r.getCvid()).amalgamate(pd);
-		ServerConnectionStore.sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
+		NetworkStore.sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
 				Message.newBuilder().setEvProfileDelta(pd));
 	}
 

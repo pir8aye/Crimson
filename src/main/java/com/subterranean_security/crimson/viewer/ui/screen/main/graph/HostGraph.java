@@ -41,7 +41,7 @@ import com.mxgraph.view.mxStylesheet;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.net.NetworkNode;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkAdded;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkRemoved;
@@ -84,7 +84,7 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 
 		addViewer(ViewerProfileStore.getLocalViewer());
 
-		ConnectionStore.getNetworkTree().addObserver(this);
+		NetworkStore.getNetworkTree().addObserver(this);
 
 	}
 
@@ -268,7 +268,7 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 			graph.getModel().endUpdate();
 		}
 
-		for (NetworkNode node : ConnectionStore.getNetworkTree().getAdjacent()) {
+		for (NetworkNode node : NetworkStore.getNetworkTree().getAdjacent()) {
 			addConnection(p.getCvid(), node.getCvid());
 		}
 

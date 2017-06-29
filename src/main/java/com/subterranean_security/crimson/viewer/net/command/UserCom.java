@@ -17,9 +17,11 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net.command;
 
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Users.RQ_AddUser;
@@ -38,7 +40,8 @@ public final class UserCom {
 				.addAllPermissions(vp.getFlags());
 
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRqAddUser(add), 2);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRqAddUser(add),
+					TimeoutConstants.DEFAULT);
 			if (m.getRsAddUser() == null)
 				throw new MessageFlowException(RQ_AddUser.class, m);
 
@@ -48,7 +51,7 @@ public final class UserCom {
 
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			outcome.setResult(false).setComment("Request timeout");
 		}
 
@@ -68,7 +71,8 @@ public final class UserCom {
 		}
 
 		try {
-			Message m = ConnectionStore.routeAndWait(Message.newBuilder().setRqEditUser(rqeu.setUser(rqau)), 2);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRqEditUser(rqeu.setUser(rqau)),
+					TimeoutConstants.DEFAULT);
 			if (m.getRsEditUser() == null)
 				throw new MessageFlowException(RQ_EditUser.class, m);
 
@@ -78,7 +82,7 @@ public final class UserCom {
 
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			outcome.setResult(false).setComment("Request timeout");
 		}
 

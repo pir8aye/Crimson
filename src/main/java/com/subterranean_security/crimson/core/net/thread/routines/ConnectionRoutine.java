@@ -87,4 +87,9 @@ public abstract class ConnectionRoutine implements Runnable {
 	public Connector getResult() {
 		return result;
 	}
+
+	/**
+	 * @return A thread name for profiling purposes
+	 */
+	public abstract String getName();
 }

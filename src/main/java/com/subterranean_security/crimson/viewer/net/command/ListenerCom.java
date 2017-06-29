@@ -17,8 +17,10 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net.command;
 
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
+import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.Listener.ListenerConfig;
 import com.subterranean_security.crimson.proto.core.net.sequences.Listener.RQ_AddListener;
@@ -40,8 +42,9 @@ public final class ListenerCom {
 		Outcome.Builder outcome = Outcome.newBuilder().setResult(false);
 
 		try {
-			Message m = ConnectionStore
-					.routeAndWait(Message.newBuilder().setRqAddListener(RQ_AddListener.newBuilder().setConfig(lf)), 3);
+			Message m = NetworkStore.route(
+					Message.newBuilder().setId(IDGen.msg()).setRqAddListener(RQ_AddListener.newBuilder().setConfig(lf)),
+					TimeoutConstants.DEFAULT);
 			if (m.getRsOutcome() != null) {
 				outcome.setResult(m.getRsOutcome().getResult());
 				if (!m.getRsOutcome().getComment().isEmpty())
@@ -50,7 +53,7 @@ public final class ListenerCom {
 			}
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			outcome.setResult(false).setComment("Request Timeout");
 		}
 
@@ -67,8 +70,8 @@ public final class ListenerCom {
 		long t1 = System.currentTimeMillis();
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = ConnectionStore.routeAndWait(
-					Message.newBuilder().setRqRemoveListener(RQ_RemoveListener.newBuilder().setId(id)), 3);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg())
+					.setRqRemoveListener(RQ_RemoveListener.newBuilder().setId(id)), TimeoutConstants.DEFAULT);
 			if (m.getRsOutcome() != null) {
 				outcome.setResult(m.getRsOutcome().getResult());
 				if (!m.getRsOutcome().getComment().isEmpty())
@@ -77,7 +80,7 @@ public final class ListenerCom {
 			}
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (Timeout e) {
+		} catch (MessageTimeout e) {
 			outcome.setResult(false).setComment("Request Timeout");
 		}
 

@@ -17,60 +17,60 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.store;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
-import com.subterranean_security.crimson.core.net.MessageFuture.Timeout;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
-import com.subterranean_security.crimson.core.net.NetworkNode;
 import com.subterranean_security.crimson.core.net.executor.CharcoalExecutor;
 import com.subterranean_security.crimson.core.net.executor.ViridianExecutor;
 import com.subterranean_security.crimson.core.net.factory.ExecutorFactory;
 import com.subterranean_security.crimson.core.net.listener.ConnectionEventListener;
+import com.subterranean_security.crimson.core.net.thread.ConnectionPeriod;
 import com.subterranean_security.crimson.core.net.thread.ConnectionThread;
-import com.subterranean_security.crimson.core.util.IDGen;
+import com.subterranean_security.crimson.core.net.thread.routines.RoundRobin;
 import com.subterranean_security.crimson.core.util.IDGen.Reserved;
-import com.subterranean_security.crimson.debug.CharcoalAppender;
+import com.subterranean_security.crimson.proto.core.Generator.NetworkTarget;
 import com.subterranean_security.crimson.proto.core.net.sequences.Debug.RQ_DebugSession;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.universal.Universal;
 
-public abstract class ConnectionStore {
+/**
+ * A static store for managing direct connections and connection attempt
+ * threads.
+ * 
+ * @author cilki
+ * @see NetworkStore
+ * @since 5.0.0
+ */
+public final class ConnectionStore {
 	public static final Logger log = LoggerFactory.getLogger(ConnectionStore.class);
 
-	/**
-	 * Stores direct connections which may exist between a viewer and the server
-	 * or between a viewer and a client
-	 */
-	private static Map<Integer, Connector> directConnections;
+	private ConnectionStore() {
+	}
 
 	/**
-	 * Tree which describes the connections between entities on the network
+	 * Stores direct connections which may exist between any pair of instances
 	 */
-	private static NetworkNode network;
+	private static Map<Integer, Connector> directConnections;
 
 	/**
 	 * Observer which is notified of connection events
 	 */
 	private static ConnectionEventListener eventListener;
 
-	private static int users;
-
-	private static int clients;
-
 	static {
 		directConnections = new HashMap<Integer, Connector>();
-		network = new NetworkNode(LcvidStore.cvid);
+		threads = new ArrayList<>(6);
 
 		switch (Universal.instance) {
 		case CLIENT:
@@ -104,7 +104,8 @@ public abstract class ConnectionStore {
 	}
 
 	/**
-	 * Tests for a direct connection
+	 * Tests for a direct connection between the running instance and another
+	 * instance
 	 * 
 	 * @param cvid
 	 * @return True if there exists a direct connection to the specified cvid
@@ -113,19 +114,11 @@ public abstract class ConnectionStore {
 		return directConnections.containsKey(cvid);
 	}
 
-	public static int countUsers() {
-		return users;
-	}
-
-	public static int countClients() {
-		return clients;
-	}
-
 	public static Set<Integer> getKeySet() {
 		return directConnections.keySet();
 	}
 
-	public static Collection<Connector> getValues() {
+	public static Collection<Connector> getConnections() {
 		return directConnections.values();
 	}
 
@@ -141,7 +134,11 @@ public abstract class ConnectionStore {
 	}
 
 	public static void closeAll() {
+		if (directConnections == null)
+			throw new IllegalStateException();
+
 		try {
+			// terminate running connections
 			for (Integer i : directConnections.keySet()) {
 				directConnections.get(i).close();
 			}
@@ -152,52 +149,6 @@ public abstract class ConnectionStore {
 
 	public static int getSize() {
 		return directConnections.size();
-	}
-
-	public static NetworkNode getNetworkTree() {
-		return network;
-	}
-
-	/**
-	 * Update the network tree with the specified delta
-	 * 
-	 * @param nd
-	 */
-	public static void updateNetwork(EV_NetworkDelta nd) {
-		network.update(nd);
-	}
-
-	/**
-	 * Transmit a message into the network
-	 * 
-	 * @param m
-	 */
-	public static void route(Message m) {
-		if (directConnections.containsKey(m.getRid())) {
-			get(m.getRid()).write(m);
-		} else {
-			if (directConnections.containsKey(Reserved.SERVER)) {
-				get(Reserved.SERVER).write(m);
-			}
-		}
-	}
-
-	public static void route(Message.Builder m) {
-		route(m.build());
-	}
-
-	public static Message waitForResponse(int cvid, int id, int timeout) throws InterruptedException, Timeout {
-		return get(cvid).getResponse(id).get(timeout * 1000);
-	}
-
-	public static Message routeAndWait(Message.Builder m, int timeout) throws InterruptedException, Timeout {
-		// TODO!!!
-		// Fix when m.getId() was explicitly set to 0
-		if (m.getId() == 0) {
-			m.setId(IDGen.msg());
-		}
-		route(m);
-		return waitForResponse(m.getRid(), m.getId(), timeout * 1000);
 	}
 
 	public static boolean connectViridian() {
@@ -239,7 +190,7 @@ public abstract class ConnectionStore {
 					return false;
 				}
 
-			} catch (Timeout | InterruptedException e1) {
+			} catch (MessageTimeout | InterruptedException e1) {
 				return false;
 			}
 
@@ -249,6 +200,39 @@ public abstract class ConnectionStore {
 		}
 
 		return false;
+	}
+
+	/**
+	 * A list of threads currently attempting connections
+	 */
+	private static List<ConnectionThread> threads;
+
+	/**
+	 * Terminate all running connection attempts
+	 */
+	public static void cancelAttempts() {
+		if (threads == null)
+			throw new IllegalStateException();
+
+		try {
+			// terminate connection attempts
+			for (ConnectionThread ct : threads)
+				ct.interrupt();
+		} finally {
+			threads.clear();
+		}
+	}
+
+	public static Connector connect(ExecutorFactory executor, List<NetworkTarget> targets, ConnectionPeriod period,
+			int maximumIterations, boolean forceCerts) throws InterruptedException {
+		ConnectionThread ct = new ConnectionThread(
+				new RoundRobin(executor, targets, period, maximumIterations, forceCerts));
+		threads.add(ct);
+		try {
+			return ct.connect();
+		} finally {
+			threads.remove(ct);
+		}
 	}
 
 }

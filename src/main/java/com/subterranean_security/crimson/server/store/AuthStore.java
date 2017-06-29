@@ -32,6 +32,7 @@ import com.subterranean_security.crimson.core.net.auth.AuthGroup;
 import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.core.net.auth.PasswordAuthGroup;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
@@ -40,7 +41,6 @@ import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ServerProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-import com.subterranean_security.crimson.server.net.ServerConnectionStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
@@ -101,7 +101,7 @@ public class AuthStore {
 		methods.add(am);
 
 		// update viewers
-		ServerConnectionStore.sendToAll(Universal.Instance.VIEWER, Message.newBuilder()
+		NetworkStore.broadcastTo(Universal.Instance.VIEWER, Message.newBuilder()
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addAuthMethod(am)).build());
 		return outcome.setResult(true).build();
 	}
