@@ -18,15 +18,15 @@
 package com.subterranean_security.crimson.core.attribute.group;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
+import com.subterranean_security.crimson.core.misc.Updatable;
+import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
 
-public class AttributeGroup implements Serializable {
+public class AttributeGroup extends Updatable implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,23 +38,11 @@ public class AttributeGroup implements Serializable {
 	/**
 	 * Maps AttributeKeys to Attributes
 	 */
-	private Map<AttributeKey, Attribute> attributes;
+	private Map<AttributeKey, Attribute<Object>> attributes;
 
-	private int groupType;
-	private String groupID;
+	public AttributeGroup() {
 
-	public AttributeGroup(int groupType, String groupID) {
-		this.groupType = groupType;
-		this.groupID = groupID;
-
-		attributes = new HashMap<AttributeKey, Attribute>();
-	}
-
-	public AttributeGroup(int groupType, String groupID, int suggestedSize) {
-		this.groupType = groupType;
-		this.groupID = groupID;
-
-		attributes = new HashMap<AttributeKey, Attribute>(suggestedSize + 1, 1.0f);
+		attributes = new HashMap<AttributeKey, Attribute<Object>>();
 	}
 
 	public boolean isModern() {
@@ -69,71 +57,52 @@ public class AttributeGroup implements Serializable {
 		return attributes.containsKey(key);
 	}
 
-	public String get(AttributeKey key) {
-		return getAttribute(key).get();
+	public String getStr(AttributeKey key) {
+		return (String) getAttribute(key).get();
 	}
 
-	public void set(AttributeKey key, String value) {
+	public int getInt(AttributeKey key) {
+		return (int) getAttribute(key).get();
+	}
+
+	public void set(AttributeKey key, Object value) {
 		getAttribute(key).set(value);
 	}
 
-	public Attribute getAttribute(AttributeKey key) {
+	public Attribute<Object> getAttribute(AttributeKey key) {
 		if (!hasAttribute(key))
 			addAttribute(key, key.fabricate());
 
 		return attributes.get(key);
 	}
 
-	public void addAttribute(AttributeKey key, Attribute attribute) {
+	public void addAttribute(AttributeKey key, Attribute<Object> attribute) {
 		attributes.put(key, attribute);
-	}
-
-	/**
-	 * Gets the updated attributes by checking the timestamp of every present
-	 * attribute. This method could be improved by using a parallel SortedSet
-	 * sorted by timestamps, but this method is also called rarely.
-	 * 
-	 * @param start
-	 * @return
-	 */
-	public AttributeGroupContainer getUpdated(Date start) {
-		AttributeGroupContainer.Builder container = AttributeGroupContainer.newBuilder().setGroupType(groupType)
-				.setGroupId(groupID);
-
-		for (AttributeKey key : attributes.keySet()) {
-			Attribute a = attributes.get(key);
-			if (a.getTimestamp().after(start)) {
-				container.putAttribute(key.getFullID(), a.get());
-			}
-		}
-		return container.build();
-	}
-
-	public void absorb(AttributeGroupContainer container) {
-		setModern(true);
-		Map<Integer, String> attr = container.getAttributeMap();
-		for (Integer keyID : attr.keySet()) {
-			AttributeKey key = AttributeKey.getKey(keyID);
-			if (!hasAttribute(key)) {
-				addAttribute(key, key.fabricate());
-			}
-			getAttribute(key).set(attr.get(keyID));
-		}
-
-	}
-
-	/**
-	 * Get the underlying storage container for this AttributeGroup
-	 * 
-	 * @return
-	 */
-	public Map<AttributeKey, Attribute> getAttributeMap() {
-		return null;
 	}
 
 	@Override
 	public String toString() {
 		return attributes.toString();
+	}
+
+	@Override
+	// Could be improved by sorting
+	public Object getUpdates(long time) {
+		PDFactory pd = new PDFactory();
+
+		for (AttributeKey key : attributes.keySet()) {
+			Attribute<Object> a = attributes.get(key);
+			if (a.getTimestamp() > time) {
+				pd.add(key, a.get());
+			}
+		}
+		return pd;
+	}
+
+	@Override
+	public void merge(Object updates) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

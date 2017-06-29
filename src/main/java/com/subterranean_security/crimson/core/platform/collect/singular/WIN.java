@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2017 Subterranean Security                    *
+ *                    Copyright 2016 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,8 +15,34 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.sv.profile;
+package com.subterranean_security.crimson.core.platform.collect.singular;
 
-public interface CVProfile {
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
+public final class WIN {
+	private WIN() {
+	}
+
+	public static String getIEVersion() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	public static String getInstallTime() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	public static String getPowerShellVersion() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	public static String getSerial() {
+		// TODO Auto-generated method stub
+		return "";
+	}
 
 }

@@ -15,9 +15,31 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.sv.profile.set.filter;
 
-public interface Parent {
-	public void initialize();
+import com.subterranean_security.crimson.sv.profile.Profile;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+
+/**
+ * @author cilki
+ * @since 5.0.0
+ */
+public class PermissionFilter implements ProfileFilter {
+
+	private int cid;
+	private short permission;
+
+	public PermissionFilter(int cid, short permission) {
+		this.cid = cid;
+		this.permission = permission;
+	}
+
+	@Override
+	public boolean check(Profile profile) {
+		if (profile instanceof ViewerProfile) {
+			return ((ViewerProfile) profile).getPermissions().getFlag(cid, permission);
+		}
+		return false;
+	}
 
 }

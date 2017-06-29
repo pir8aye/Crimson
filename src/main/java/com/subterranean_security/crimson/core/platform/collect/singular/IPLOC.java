@@ -15,20 +15,39 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.platform.collect.singular;
 
-public final class MOBO {
-	private MOBO() {
+public final class IPLOC {
+	private IPLOC() {
 	}
 
-	public static String getManufacturer() {
+	public static String getCity() {
 		// TODO Auto-generated method stub
-		return "";
+		return null;
 	}
 
-	public static String getModel() {
+	public static String getCountry() {
 		// TODO Auto-generated method stub
-		return "";
+		return null;
 	}
 
+	public static String getCountryCode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static String getLatitude() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static String getLongitude() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static String getRegion() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

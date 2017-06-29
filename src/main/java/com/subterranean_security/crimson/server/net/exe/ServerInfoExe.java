@@ -20,23 +20,28 @@ package com.subterranean_security.crimson.server.net.exe;
 import java.util.NoSuchElementException;
 
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.proto.core.net.sequences.Login.RS_ServerInfo;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
-public final class ServerInfoExe {
+public final class ServerInfoExe extends Exelet {
 
-	private static RS_ServerInfo.Builder rs_server_info;
+	public ServerInfoExe(Connector connector) {
+		super(connector);
+	}
 
-	public static void rq_server_info(Connector connector) {
+	private RS_ServerInfo.Builder rs_server_info;
+
+	public void rq_server_info(Connector connector) {
 		if (rs_server_info == null)
 			refreshServerInfo();
 
 		connector.write(Message.newBuilder().setRsServerInfo(rs_server_info).build());
 	}
 
-	public static void refreshServerInfo() {
+	public void refreshServerInfo() {
 		rs_server_info = RS_ServerInfo.newBuilder().setVersion(Universal.version);
 
 		try {

@@ -43,6 +43,8 @@ import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -226,8 +228,8 @@ public class CreateGroup extends JPanel {
 			sl.setBad("Invalid group name");
 			return false;
 		}
-		for (AuthMethod am : ViewerProfileStore.getServer().authMethods) {
-			if (am.getName().equals(textField.getText())) {
+		for (AttributeGroup authMethod : ViewerProfileStore.getServer().getAuthMethods()) {
+			if (authMethod.getStr(AK_AUTH.NAME).equals(textField.getText())) {
 				sl.setBad("Group name in use");
 				return false;
 			}

@@ -27,8 +27,12 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_Netwo
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.Param;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public abstract class Stream implements Observer {
-	private Param param;
+	protected Param param;
 	private int endpointCvid;
 
 	public Stream(Param param, int endpointCvid) {
@@ -44,6 +48,9 @@ public abstract class Stream implements Observer {
 		return param;
 	}
 
+	/**
+	 * @return The ID of this stream
+	 */
 	public int getStreamID() {
 		return param.getStreamID();
 	}

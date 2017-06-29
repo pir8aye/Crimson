@@ -20,13 +20,14 @@ package com.subterranean_security.crimson.viewer.net.command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
+import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.MI_TriggerProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.proto.core.net.sequences.Login.RQ_Login;
@@ -93,10 +94,9 @@ public final class LoginCom {
 			MainFrame.main = new MainFrame();
 		}
 
-		ViewerProfileStore.update(rsLogin.getSpd());
-		ViewerProfileStore.update(rsLogin.getVpd());
-		triggerProfileDelta();
-
+		for (EV_ProfileDelta pd : rsLogin.getUpdateList()) {
+			ViewerProfileStore.update(pd);
+		}
 	}
 
 	private static RS_Login handleChallenge(Message m, String pass) {
@@ -126,8 +126,7 @@ public final class LoginCom {
 		MI_TriggerProfileDelta.Builder mi = MI_TriggerProfileDelta.newBuilder();
 		for (Profile cp : ViewerProfileStore.getProfiles()) {
 			System.out.println("Triggering for cvid: " + cp.getCvid());
-			mi.addProfileTimestamp(
-					ProfileTimestamp.newBuilder().setCvid(cp.getCvid()).setTimestamp(cp.getLastUpdate().getTime()));
+			mi.addProfileTimestamp(ProfileTimestamp.newBuilder().setCvid(cp.getCvid()).setTimestamp(cp.getTimestamp()));
 		}
 		NetworkStore.route(Message.newBuilder().setMiTriggerProfileDelta(mi));
 

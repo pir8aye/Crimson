@@ -1,8 +1,9 @@
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.platform.info.OS;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS;
 
 /**
  * Operating System attribute keys
@@ -71,11 +72,9 @@ public enum AK_OS implements SingularKey {
 		return this.ordinal();
 	}
 
-	private static final int TYPE_ID = 5;
-
 	@Override
 	public int getTypeID() {
-		return TYPE_ID;
+		return TypeIndex.OS.ordinal();
 	}
 
 }

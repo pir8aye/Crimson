@@ -63,8 +63,14 @@ public final class ViewerProfileStore extends ProfileStore {
 					.getCachedCollection(lcvid + ".clients");
 		}
 
-		// server profile is recreated and not saved
-		serverProfile = new ServerProfile();
+		try {
+			serverProfiles = (CachedMap<Integer, ServerProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection(lcvid + ".servers");
+		} catch (NoSuchElementException e) {
+			DatabaseStore.getDatabase().store(lcvid + ".servers", new CachedMap<Integer, ServerProfile>());
+			serverProfiles = (CachedMap<Integer, ServerProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection(lcvid + ".servers");
+		}
 
 	}
 

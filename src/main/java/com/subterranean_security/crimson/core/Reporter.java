@@ -28,9 +28,8 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.platform.Environment;
 import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.platform.info.CPU;
-import com.subterranean_security.crimson.core.platform.info.JAVA;
-import com.subterranean_security.crimson.core.platform.info.OS;
+import com.subterranean_security.crimson.core.platform.collect.singular.JVM;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
@@ -152,7 +151,7 @@ public final class Reporter {
 
 		// Java version
 		try {
-			rb.setJreVersion(JAVA.getVersion());
+			rb.setJreVersion(JVM.getVersion());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Java version: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
@@ -160,7 +159,7 @@ public final class Reporter {
 
 		// Java vendor
 		try {
-			rb.setJreVendor(JAVA.getVendor());
+			rb.setJreVendor(JVM.getVendor());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query Java vendor: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
@@ -224,7 +223,7 @@ public final class Reporter {
 
 		// CPU model
 		try {
-			rb.setSysCpuModel(CPU.getPrimaryModel());
+			// rb.setSysCpuModel(CPU.getPrimaryModel());
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query CPU model: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));

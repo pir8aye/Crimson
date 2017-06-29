@@ -19,11 +19,9 @@ package com.subterranean_security.crimson.sv.profile;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
+import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
 
@@ -31,15 +29,17 @@ import com.subterranean_security.crimson.core.Reporter;
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_LOC;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_META;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.misc.Updatable;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
+import com.subterranean_security.crimson.universal.Universal.Instance;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.util.IconUtil;
 
@@ -50,172 +50,129 @@ import com.subterranean_security.crimson.viewer.ui.util.IconUtil;
  * @author cilki
  * @since 4.0.0
  */
-public abstract class Profile extends Observable implements Serializable {
+public abstract class Profile extends Updatable implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Map<String, AttributeGroup>[] groups;
+	private Map<Integer, AttributeGroup> groups;
 
 	public Profile() {
+		updated();
+
 		// initialize attribute groups
-		AttributeKey.Type[] types = AttributeKey.Type.values();
-		groups = new HashMap[types.length];
+		groups = new TreeMap<>();
 
-		for (int i = 0; i < types.length; i++) {
-			groups[i] = new HashMap<String, AttributeGroup>();
-		}
-	}
-
-	public Map<String, AttributeGroup> getGroups(AttributeKey key) {
-		return getGroups(key.getGroupType());
-	}
-
-	public Map<String, AttributeGroup> getGroups(int type) {
-		return groups[type];
-	}
-
-	public List<AttributeGroup> getGroupList(AttributeKey.Type type) {
-		return getGroupList(type.ordinal());
-	}
-
-	public List<AttributeGroup> getGroupList(int type) {
-		ArrayList<AttributeGroup> list = new ArrayList<AttributeGroup>();
-		list.addAll(groups[type].values());
-		return list;
-	}
-
-	public AttributeGroup getGroup(AttributeKey key, String groupId) {
-		return getGroup(key.getGroupType(), groupId);
-	}
-
-	public AttributeGroup getGroup(int type, String groupId) {
-		return groups[type].get(groupId);
 	}
 
 	/**
-	 * Get the value of the specified singular String {@code Attribute}
+	 * Get every group of {@code type}
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public List<AttributeGroup> getGroupsOfType(TypeIndex type) {
+		List<AttributeGroup> list = new ArrayList<AttributeGroup>();
+		for (int gtid : groups.keySet()) {
+			if ((gtid & ((int) Math.pow(2, AttributeKey.TYPE_ID_SPACE) - 1)) == type.ordinal()) {
+				list.add(groups.get(gtid));
+			}
+		}
+		return list;
+	}
+
+	public Object getObject(AttributeKey key) {
+		return getAttribute(key).get();
+	}
+
+	/**
+	 * Get the value of the specified String {@code Attribute}
 	 * 
 	 * @param key
 	 * @return
 	 */
-	public String get(SingularKey key) {
+	public String get(AttributeKey key) {
 		return (String) getAttribute(key).get();
 	}
 
 	/**
-	 * Get the value of the specified singular boolean {@code Attribute}
+	 * Get the value of the specified boolean {@code Attribute}
 	 * 
 	 * @param key
 	 * @return
 	 */
-	public boolean getBool(SingularKey key) {
+	public boolean getBool(AttributeKey key) {
 		return (boolean) getAttribute(key).get();
 	}
 
 	/**
-	 * Get the value of the specified singular int {@code Attribute}
+	 * Get the value of the specified int {@code Attribute}
 	 * 
 	 * @param key
 	 * @return
 	 */
-	public int getInt(SingularKey key) {
+	public int getInt(AttributeKey key) {
 		return (int) getAttribute(key).get();
 	}
 
 	/**
-	 * Get the value of the specified singular long {@code Attribute}
+	 * Get the value of the specified long {@code Attribute}
 	 * 
 	 * @param key
 	 * @return
 	 */
-	public long getLong(SingularKey key) {
+	public long getLong(AttributeKey key) {
 		return (long) getAttribute(key).get();
 	}
 
-	public void set(SingularKey key, Object value) {
+	public void set(AttributeKey key, Object value) {
 		getAttribute(key).set(value);
 
 		setChanged();
 		notifyObservers(key);
 	}
 
-	public void setAttr(int key, String value) {
-
-	}
-
 	/**
-	 * Get the specified attribute from the singular group
+	 * Get an {@code Attribute} according to its Group/Type ID
 	 * 
-	 * @param key
+	 * @param GTID
 	 * @return
 	 */
-	public Attribute<Object> getAttribute(SingularKey key) {
-		return getAttribute(key, "");
-	}
+	public Attribute<Object> getAttribute(AttributeKey key) {
+		int gtid = key.getGTID();
 
-	/**
-	 * Get the specified attribute from the specified group
-	 * 
-	 * @param key
-	 * @param groupID
-	 * @return
-	 */
-	public Attribute getAttribute(AttributeKey key, String groupID) {
-		Map<String, AttributeGroup> map = groups[key.getGroupType()];
-		if (!map.containsKey(groupID)) {
-			map.put(groupID, new AttributeGroup(key.getGroupType(), groupID));
+		if (!groups.containsKey(gtid)) {
+			groups.put(gtid, new AttributeGroup());
 		}
-		return map.get(groupID).getAttribute(key);
+		return groups.get(gtid).getAttribute(key);
 	}
 
-	public void amalgamate(EV_ProfileDelta c) {
+	public void merge(EV_ProfileDelta pd) {
+		if (pd.getBooleanAttrCount() > 0)
+			merge(pd.getBooleanAttrMap());
+		if (pd.getStrAttrCount() > 0)
+			merge(pd.getStrAttrMap());
+		if (pd.getIntAttrCount() > 0)
+			merge(pd.getIntAttrMap());
+		if (pd.getLongAttrCount() > 0)
+			merge(pd.getLongAttrMap());
+	}
 
-		// If FIG, then set all groups to old
-		// if (c.hasFig() && c.getFig()) {
-		// for (HashMap<String, AttributeGroup> g : groups) {
-		// for (AttributeGroup ag : g.values()) {
-		// ag.setModern(false);
-		// }
-		// }
-		// }
+	private void merge(Map<Integer, ?> map) {
+		for (int wireID : map.keySet()) {
+			set(AttributeKey.convert(wireID), map.get(wireID));
+		}
+	}
 
-		for (AttributeGroupContainer container : c.getGroupList()) {
-			Map<String, AttributeGroup> groupMap = groups[container.getGroupType()];
-			if (!groupMap.containsKey(container.getGroupId())) {
-				groupMap.put(container.getGroupId(),
-						new AttributeGroup(container.getGroupType(), container.getGroupId()));
-			}
+	@Override
+	public EV_ProfileDelta getUpdates(long start) {
+		PDFactory pd = new PDFactory(getCvid());
 
-			groupMap.get(container.getGroupId()).absorb(container);
+		for (AttributeGroup group : groups.values()) {
 
 		}
 
-	}
+		return pd.buildPd();
 
-	public EV_ProfileDelta getUpdates(Date start) {
-		if (start == null)
-			start = new Date(0);
-
-		EV_ProfileDelta.Builder pd = EV_ProfileDelta.newBuilder().setCvid(cvid);
-
-		// Attribute Groups
-		for (Map<String, AttributeGroup> map : groups) {
-			for (AttributeGroup group : map.values()) {
-				AttributeGroupContainer container = group.getUpdated(start);
-				if (container.getAttributeCount() > 0) {
-					pd.addGroup(container);
-				}
-			}
-		}
-
-		return pd.build();
-
-	}
-
-	protected Date lastUpdate = new Date();
-
-	public Date getLastUpdate() {
-		return lastUpdate;
 	}
 
 	/**
@@ -229,12 +186,22 @@ public abstract class Profile extends Observable implements Serializable {
 		set(AK_META.CVID, cvid);
 	}
 
+	public void setOnline(boolean online) {
+		set(AK_META.ONLINE, online);
+	}
+
 	/**
 	 * @return True if the instance is connected to the server (online)
 	 */
-	public boolean getOnline() {
+	public boolean isOnline() {
 		return getBool(AK_META.ONLINE);
 	}
+
+	public OSFAMILY getOSFamily() {
+		return OSFAMILY.valueOf(get(AK_OS.FAMILY).toUpperCase());
+	}
+
+	public abstract Instance getInstance();
 
 	protected transient ImageIcon osIcon16;
 

@@ -20,61 +20,59 @@ package com.subterranean_security.crimson.sv.profile;
 import java.util.Date;
 
 import com.subterranean_security.crimson.core.attribute.TrackedAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
+import com.subterranean_security.crimson.universal.Universal.Instance;
 
-public class ViewerProfile extends Profile implements CVProfile, SVProfile {
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
+public class ViewerProfile extends Profile {
 
 	private static final long serialVersionUID = 1L;
 
-	private ViewerPermissions permissions;
-
 	public ViewerProfile(int cvid) {
 		this();
-		this.cvid = cvid;
+		setCvid(cvid);
 	}
 
 	public ViewerProfile() {
 		super();
-		this.permissions = new ViewerPermissions();
 	}
 
 	public ViewerPermissions getPermissions() {
-		return permissions;
+		return (ViewerPermissions) getObject(AK_VIEWER.PERMISSIONS);
 	}
 
-	public void setPermissions(ViewerPermissions p) {
-		this.permissions = p;
+	public void setPermissions(ViewerPermissions permissions) {
+		set(AK_VIEWER.PERMISSIONS, permissions);
 	}
 
 	public String getLastLoginIp() {
-		TrackedAttribute tr = (TrackedAttribute) getAttribute(AKeySimple.VIEWER_LOGIN_IP);
+		TrackedAttribute<String> tr = (TrackedAttribute) getAttribute(AK_VIEWER.LOGIN_IP);
 		if (tr.size() < 2) {
 			return null;
 		}
 		return tr.getValue(tr.size() - 1);
 	}
 
-	public Date getLastLoginTime() {
-		TrackedAttribute tr = (TrackedAttribute) getAttribute(AKeySimple.VIEWER_LOGIN_TIME);
+	public long getLastLoginTime() {
+		TrackedAttribute<String> tr = (TrackedAttribute) getAttribute(AK_VIEWER.LOGIN_TIME);
 		if (tr.size() < 2) {
-			return null;
+			return 0;
 		}
 		return tr.getTime(tr.size() - 1);
 	}
 
-	public void amalgamate(EV_ViewerProfileDelta c) {
-		super.amalgamate(c.getPd());
-
-		if (c.getViewerPermissionsCount() != 0) {
-			// append new permissions, overwriting if necessary
-			permissions.add(c.getViewerPermissionsList());
-		}
-
+	@Override
+	public void merge(Object updates) {
+		merge((EV_ViewerProfileDelta) updates);
 	}
 
 	public EV_ViewerProfileDelta gatherForServer(ViewerPermissions p) {
@@ -82,17 +80,17 @@ public class ViewerProfile extends Profile implements CVProfile, SVProfile {
 				.addAllViewerPermissions(getPermissions().getFlags());
 
 		AttributeGroupContainer.Builder general = AttributeGroupContainer.newBuilder()
-				.putAttribute(AKeySimple.VIEWER_USER.getFullID(), get(AKeySimple.VIEWER_USER))
-				.putAttribute(AKeySimple.VIEWER_LOGIN_IP.getFullID(),
-						p == null || p.getFlag(Perm.Super) ? get(AKeySimple.VIEWER_LOGIN_IP) : "<hidden>")
-				.putAttribute(AKeySimple.VIEWER_LOGIN_TIME.getFullID(),
-						p == null || p.getFlag(Perm.Super) ? get(AKeySimple.VIEWER_LOGIN_IP) : "0");
+				.putAttribute(AKeySimple.VIEWER_USER.getWireID(), getStr(AKeySimple.VIEWER_USER))
+				.putAttribute(AKeySimple.VIEWER_LOGIN_IP.getWireID(),
+						p == null || p.getFlag(Perm.Super) ? getStr(AKeySimple.VIEWER_LOGIN_IP) : "<hidden>")
+				.putAttribute(AKeySimple.VIEWER_LOGIN_TIME.getWireID(),
+						p == null || p.getFlag(Perm.Super) ? getStr(AKeySimple.VIEWER_LOGIN_IP) : "0");
 
 		return vpd.setPd(EV_ProfileDelta.newBuilder().addGroup(general)).build();
 	}
 
-	public EV_ViewerProfileDelta getViewerUpdates(Date start) {
-		return EV_ViewerProfileDelta.newBuilder().setPd(getUpdates(start)).build();
+	@Override
+	public Instance getInstance() {
+		return Instance.VIEWER;
 	}
-
 }

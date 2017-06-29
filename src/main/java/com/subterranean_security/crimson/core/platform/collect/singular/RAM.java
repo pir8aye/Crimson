@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.platform.collect.singular;
 
 import org.hyperic.sigar.Mem;
 import org.hyperic.sigar.SigarException;
@@ -25,6 +25,10 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.util.UnitTranslator;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public final class RAM {
 	private static final Logger log = LoggerFactory.getLogger(RAM.class);
 

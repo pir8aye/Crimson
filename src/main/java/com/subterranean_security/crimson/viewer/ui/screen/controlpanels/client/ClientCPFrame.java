@@ -38,7 +38,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
-import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.subscriber.SubscriberMaster;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.SubscriberParam;

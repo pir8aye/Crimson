@@ -35,7 +35,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_DISP;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
@@ -68,7 +68,7 @@ public class RDPanel extends JPanel {
 		this.fullSettings = fullSettings;
 		this.cvid = cvid;
 
-		settings = new Settings(ViewerProfileStore.getClient(cvid).getGroupList(AttributeKey.Type.DISP), this,
+		settings = new Settings(ViewerProfileStore.getClient(cvid).getGroupsOfType(TypeIndex.DISP), this,
 				fullSettings);
 		init();
 
@@ -283,8 +283,8 @@ public class RDPanel extends JPanel {
 					stop();
 				} else {
 					running = true;
-					rdArea.setMonitorSize(Integer.parseInt(settings.getDisplay().get(AK_DISP.WIDTH)),
-							Integer.parseInt(settings.getDisplay().get(AK_DISP.HEIGHT)));
+					rdArea.setMonitorSize(Integer.parseInt(settings.getDisplay().getStr(AK_DISP.WIDTH)),
+							Integer.parseInt(settings.getDisplay().getStr(AK_DISP.HEIGHT)));
 
 					btnToggle.setIcon(UIUtil.getIcon("icons16/general/map_delete.png"));
 					btnToggle.setToolTipText("Stop");

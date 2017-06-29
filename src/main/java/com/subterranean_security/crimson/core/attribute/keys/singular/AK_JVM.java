@@ -1,7 +1,8 @@
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
-import com.subterranean_security.crimson.core.platform.info.JAVA;
+import com.subterranean_security.crimson.core.platform.collect.singular.JVM;
 
 /**
  * Java attribute keys
@@ -33,15 +34,15 @@ public enum AK_JVM implements SingularKey {
 	public Object query() {
 		switch (this) {
 		case ARCH:
-			return JAVA.getArch();
+			return JVM.getArch();
 		case PATH:
-			return JAVA.getHome();
+			return JVM.getHome();
 		case START_TIME:
-			return JAVA.getStartTime();
+			return JVM.getStartTime();
 		case VENDOR:
-			return JAVA.getVendor();
+			return JVM.getVendor();
 		case VERSION:
-			return JAVA.getVersion();
+			return JVM.getVersion();
 		default:
 			throw new UnsupportedOperationException("Cannot query: " + this);
 		}
@@ -57,11 +58,9 @@ public enum AK_JVM implements SingularKey {
 		return this.ordinal();
 	}
 
-	private static final int TYPE_ID = 63;
-
 	@Override
 	public int getTypeID() {
-		return TYPE_ID;
+		return TypeIndex.JVM.ordinal();
 	}
 
 }

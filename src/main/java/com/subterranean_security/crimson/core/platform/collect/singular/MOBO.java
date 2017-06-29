@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2017 Subterranean Security                    *
+ *                    Copyright 2016 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,8 +15,24 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.sv.profile;
+package com.subterranean_security.crimson.core.platform.collect.singular;
 
-public interface SVProfile {
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
+public final class MOBO {
+	private MOBO() {
+	}
+
+	public static String getManufacturer() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	public static String getModel() {
+		// TODO Auto-generated method stub
+		return "";
+	}
 
 }

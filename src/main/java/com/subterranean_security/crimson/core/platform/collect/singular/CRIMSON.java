@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.platform.collect.singular;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -31,6 +31,10 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public class CRIMSON {
 	private static final Logger log = LoggerFactory.getLogger(CRIMSON.class);
 
@@ -140,6 +144,11 @@ public class CRIMSON {
 		} catch (Exception e) {
 			return "N/A";
 		}
+	}
+
+	public static String getClientUsage() {
+		refreshProcessCpu();
+		return String.format("%5.2f", getProcessCpu().getPercent() * 100);
 	}
 
 }

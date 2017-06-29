@@ -2,8 +2,9 @@ package com.subterranean_security.crimson.core.attribute.keys.singular;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.TrackedAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
-import com.subterranean_security.crimson.core.platform.info.NET;
+import com.subterranean_security.crimson.core.platform.collect.singular.NET;
 
 /**
  * Network attribute keys
@@ -76,11 +77,9 @@ public enum AK_NET implements SingularKey {
 		return this.ordinal();
 	}
 
-	private static final int TYPE_ID = 59;
-
 	@Override
 	public int getTypeID() {
-		return TYPE_ID;
+		return TypeIndex.NET.ordinal();
 	}
 
 }

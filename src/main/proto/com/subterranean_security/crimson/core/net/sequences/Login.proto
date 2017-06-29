@@ -41,11 +41,8 @@ message RS_Login {
 	// the result of the login attempt
 	Outcome response = 1;
 	
-	// updates to the server profile since last login
-	EV_ServerProfileDelta spd = 2;
-	
-	// updates to the viewer profile since last login
-	EV_ViewerProfileDelta vpd = 3;
+	// updates for the ServerProfile, ViewerProfile, and optionally any ClientProfiles
+	repeated EV_ProfileDelta update = 2;
 }
 
 message RQ_CloudUser {

@@ -17,12 +17,20 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.attribute.keys;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_DISP;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_GPU;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_NIC;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_TORRENT;
+
 /**
  * @author cilki
  * @since 5.0.0
  */
 public interface PluralKey extends AttributeKey {
-
-	public Object query(int id);
 
 }

@@ -19,6 +19,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.main;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -141,7 +142,8 @@ public class MainFrame extends JFrame {
 			protected void done() {
 				if (ViewerProfileStore.getLocalViewer().getLastLoginIp() != null) {
 					MainFrame.main.np.addNote("info",
-							"Last Login at " + ViewerProfileStore.getLocalViewer().getLastLoginTime().toString()
+							"Last Login at "
+									+ new Date(ViewerProfileStore.getLocalViewer().getLastLoginTime()).toString()
 									+ " from " + ViewerProfileStore.getLocalViewer().getLastLoginIp());
 				}
 			};

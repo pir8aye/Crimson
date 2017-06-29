@@ -18,68 +18,70 @@
 package com.subterranean_security.crimson.server.net.exe;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_LOC;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.LocationUtil;
-import com.subterranean_security.crimson.core.util.ProtoUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.set.ProfileSetFactory;
+import com.subterranean_security.crimson.universal.Universal.Instance;
 
-public final class DeltaExe {
+public final class DeltaExe extends Exelet {
+
 	private static final Logger log = LoggerFactory.getLogger(DeltaExe.class);
 
-	private DeltaExe() {
+	public DeltaExe(Connector connector) {
+		super(connector);
 	}
 
 	public static void ev_profileDelta(Connector r, EV_ProfileDelta pd) {
-		if (pd.getFig()) {
-			pd = EV_ProfileDelta.newBuilder(pd).addGroup(resolveLocation(r, pd)).build();
-		}
+		// TODO resolve location somewhere else!
+		// pd = EV_ProfileDelta.newBuilder(pd).mergeFrom(resolveLocation(r,
+		// pd)).build();
 
 		if (pd.getCvid() != r.getCvid()) {
 			log.warn("CVID from ProfileDelta ({}) differs from connector CVID ({})", pd.getCvid(), r.getCvid());
 			pd = EV_ProfileDelta.newBuilder(pd).setCvid(r.getCvid()).build();
 		}
 
-		ServerProfileStore.getClient(r.getCvid()).amalgamate(pd);
-		NetworkStore.sendToViewersWithAuthorityOverClient(r.getCvid(), Perm.client.visibility,
-				Message.newBuilder().setEvProfileDelta(pd));
+		ServerProfileStore.getClient(r.getCvid()).merge(pd);
+		NetworkStore.broadcastTo(Message.newBuilder().setEvProfileDelta(pd).build(),
+				new ProfileSetFactory().addFilter(Instance.VIEWER).addFilter(r.getCvid(), Perm.client.visibility));
 	}
 
-	private static AttributeGroupContainer resolveLocation(Connector receptor, EV_ProfileDelta pd) {
-		AttributeGroupContainer general = ProtoUtil.getGeneralGroup(pd);
-		AttributeGroupContainer.Builder update = AttributeGroupContainer.newBuilder(general).clearAttribute();
+	private static EV_ProfileDelta resolveLocation(Connector receptor, EV_ProfileDelta pd) {
+		EV_ProfileDelta.Builder update = EV_ProfileDelta.newBuilder();
 
 		String ip = null;
-		if (!general.containsAttribute(AKeySimple.NET_EXTERNALIP.getFullID())) {
+		if (!pd.containsStrAttr(AK_NET.EXTERNAL_IPV4.getGTID())) {
 			// amend IP
 			ip = receptor.getRemoteIP();
-			update.putAttribute(AKeySimple.NET_EXTERNALIP.getFullID(), ip);
+			update.putStrAttr(AK_NET.EXTERNAL_IPV4.getGTID(), ip);
 		} else {
-			ip = general.getAttributeOrDefault(AKeySimple.NET_EXTERNALIP.getFullID(), "");
+			ip = pd.getStrAttrOrDefault(AK_NET.EXTERNAL_IPV4.getGTID(), "");
 		}
 
 		if (!ValidationUtil.privateIP(ip)) {
 			try {
-				HashMap<String, String> location = LocationUtil.resolve(ip);
-				update.putAttribute(AKeySimple.IPLOC_COUNTRYCODE.getFullID(), location.get("countrycode"));
-				update.putAttribute(AKeySimple.IPLOC_COUNTRY.getFullID(), location.get("countryname"));
-
+				Map<AK_LOC, String> location = LocationUtil.resolve(ip);
+				for (AK_LOC key : location.keySet()) {
+					update.putStrAttr(key.getGTID(), location.get(key));
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -98,14 +100,14 @@ public final class DeltaExe {
 			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
 				if (pt.getCvid() == cp.getCvid()) {
 					log.debug("Updating client in viewer");
-					r.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(pt.getTimestamp()))).build());
+					r.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(pt.getTimestamp())).build());
 					flag = false;
 					continue;
 				}
 			}
 			if (flag) {
 				log.debug("Sending new client to viewer");
-				r.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(new Date(0))).build());
+				r.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(0)).build());
 			}
 
 		}

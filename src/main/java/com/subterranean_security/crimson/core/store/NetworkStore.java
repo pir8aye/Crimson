@@ -23,7 +23,6 @@ import com.subterranean_security.crimson.core.net.NetworkNode;
 import com.subterranean_security.crimson.core.util.IDGen.Reserved;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.profile.Profile;
 import com.subterranean_security.crimson.sv.profile.set.ProfileSet;
 import com.subterranean_security.crimson.sv.profile.set.ProfileSetFactory;
@@ -113,13 +112,13 @@ public final class NetworkStore {
 	}
 
 	/**
-	 * Broadcast a message to each member of a {@code ProfileSet}. If a profile
-	 * in the set is not currently connected, it will be skipped.
+	 * Broadcast a message to every member of a {@code ProfileSet}. If a profile in
+	 * the set is not currently connected, it will be skipped.
 	 * 
 	 * @param message
 	 *            The message to broadcast
 	 * @param profiles
-	 *            The profiles to receive the {@code message}
+	 *            The profiles to receive {@code message}
 	 */
 	public static void broadcastTo(Message message, ProfileSet profiles) {
 		for (Profile p : profiles) {
@@ -167,27 +166,6 @@ public final class NetworkStore {
 	 */
 	public static int countClients() {
 		return 0;
-	}
-
-	/**
-	 * Broadcast a message to viewers which hold the given permission on the
-	 * given client
-	 * 
-	 * @param cid
-	 *            The CID of a specific client
-	 * @param permission
-	 *            The permission that the viewer must have on the client
-	 * @param m
-	 *            The message to send
-	 */
-	public static void sendToViewersWithAuthorityOverClient(int cid, short permission, Message.Builder m) {
-		for (Connector c : ConnectionStore.getConnections()) {
-
-			if (c.getInstance() == Universal.Instance.VIEWER
-					&& ServerProfileStore.getViewer(c.getCvid()).getPermissions().getFlag(cid, permission)) {
-				c.write(m.build());
-			}
-		}
 	}
 
 }

@@ -31,7 +31,7 @@ public class VInfoSlave extends InfoSlave {
 	@Override
 	public void send() {
 
-		ViewerProfileStore.getLocalViewer().amalgamate(gather());
+		ViewerProfileStore.getLocalViewer().merge(gather());
 		MenuControls.mc.refresh();
 	}
 

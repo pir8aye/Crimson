@@ -27,6 +27,7 @@ import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.MessageFuture;
+import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
@@ -40,10 +41,12 @@ import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
 
-public final class LoginExe {
+public final class LoginExe extends Exelet {
+
 	private static final Logger log = LoggerFactory.getLogger(LoginExe.class);
 
-	private LoginExe() {
+	public LoginExe(Connector connector) {
+		super(connector);
 	}
 
 	public static void rq_login(Connector receptor, Message m) {
@@ -64,8 +67,6 @@ public final class LoginExe {
 			return;
 		}
 
-		log.debug("1");
-
 		// pass if server is in example mode
 		if (Boolean.parseBoolean(System.getProperty("mode.example", "false"))) {
 			vp = new ViewerProfile(receptor.getCvid());
@@ -74,8 +75,6 @@ public final class LoginExe {
 			passOrFail(receptor, m.getId(), vp, outcome.setResult(true));
 			return;
 		}
-
-		log.debug("2");
 
 		// find user
 		vp = ServerProfileStore.getViewer(user);
@@ -98,8 +97,6 @@ public final class LoginExe {
 
 		}
 
-		log.debug("3");
-
 		// if profile is still not found
 		if (vp == null) {
 			log.debug("The user ({}) could not be found", user);
@@ -108,8 +105,6 @@ public final class LoginExe {
 		} else {
 			vp.setCvid(receptor.getCvid());
 		}
-
-		log.debug("4");
 
 		Outcome authOutcome = (cloud == null) ? handleAuthentication(receptor, m, user)
 				: handleCloudAuthentication(receptor, m, cloud);
@@ -170,7 +165,7 @@ public final class LoginExe {
 
 		updateViewerProfile(receptor, vp);
 
-		Date lastLogin = vp.getLastLoginTime();
+		long lastLogin = vp.getLastLoginTime();
 
 		try {
 			receptor.write(Message.newBuilder().setId(id)

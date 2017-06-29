@@ -17,16 +17,43 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.misc;
 
+import java.util.Observable;
+
 /**
+ * An {@code Updatable} object provides a consistent API for merging and
+ * extracting updates.
+ * 
  * @author cilki
  * @since 5.0.0
  */
-public abstract class Updatable {
+public abstract class Updatable extends Observable {
 	protected long timestamp;
 
 	protected void updated() {
 		timestamp = System.currentTimeMillis();
 	}
 
+	/**
+	 * Merge updates into this {@code Updatable}.
+	 * 
+	 * @param updates
+	 */
+	public abstract void merge(Object updates);
+
+	/**
+	 * @param time
+	 * @return Every update since {@code time}
+	 */
 	public abstract Object getUpdates(long time);
+
+	/**
+	 * @return Every update since the object's creation
+	 */
+	public Object getUpdates() {
+		return getUpdates(0);
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
 }

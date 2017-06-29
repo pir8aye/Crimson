@@ -2,8 +2,9 @@ package com.subterranean_security.crimson.core.attribute.keys.singular;
 
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.store.ConfigStore;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
-import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.State;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
@@ -72,11 +73,9 @@ public enum AK_KEYLOGGER implements SingularKey {
 		return this.ordinal();
 	}
 
-	private static final int TYPE_ID = 7;
-
 	@Override
 	public int getTypeID() {
-		return TYPE_ID;
+		return TypeIndex.KEYLOGGER.ordinal();
 	}
 
 }

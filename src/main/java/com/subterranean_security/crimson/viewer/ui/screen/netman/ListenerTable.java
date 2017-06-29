@@ -19,12 +19,16 @@ package com.subterranean_security.crimson.viewer.ui.screen.netman;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.subterranean_security.crimson.proto.core.net.sequences.Listener.ListenerConfig;
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_LISTENER;
 import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 
 public class ListenerTable extends JScrollPane {
@@ -56,7 +60,6 @@ public class ListenerTable extends JScrollPane {
 				}
 
 				if (e.getButton() == MouseEvent.BUTTON3) {
-					ListenerConfig selected = tm.getAt(sourceRow);
 					// right click
 
 				}
@@ -68,7 +71,7 @@ public class ListenerTable extends JScrollPane {
 		tm.fireTableDataChanged();
 	}
 
-	public ListenerConfig getSelected() {
+	public AttributeGroup getSelected() {
 		return tm.getAt(table.getSelectedRow());
 	}
 
@@ -77,7 +80,13 @@ public class ListenerTable extends JScrollPane {
 class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private final String[] headers = new String[] { "ID", "Name", "Port", "UPnP", "Owner" };
+	private final AttributeKey[] headers = new AttributeKey[] { AK_LISTENER.ID, AK_LISTENER.NAME, AK_LISTENER.PORT,
+			AK_LISTENER.UPNP, AK_LISTENER.OWNER };
+	private List<AttributeGroup> listeners;
+
+	public TM() {
+		listeners = ViewerProfileStore.getServer().getGroupsOfType(TypeIndex.LISTENER);
+	}
 
 	@Override
 	public int getColumnCount() {
@@ -86,44 +95,21 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerProfileStore.getServer().listeners.size();
+		return listeners.size();
 	}
 
 	@Override
 	public String getColumnName(int column) {
-		return headers[column];
+		return headers[column].toString();
 	};
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-
-		switch (headers[columnIndex]) {
-		case "ID": {
-			return ViewerProfileStore.getServer().listeners.get(rowIndex).getId();
-		}
-		case "Name": {
-			return ViewerProfileStore.getServer().listeners.get(rowIndex).getName();
-		}
-		case "Port": {
-			return ViewerProfileStore.getServer().listeners.get(rowIndex).getPort();
-		}
-		case "UPnP": {
-			return ViewerProfileStore.getServer().listeners.get(rowIndex).getUpnp() ? "yes" : "no";
-		}
-		case "Owner": {
-			return ViewerProfileStore.getServer().listeners.get(rowIndex).getOwner();
-		}
-
-		}
-		return null;
+		return listeners.get(rowIndex).getAttribute(headers[columnIndex]).get();
 	}
 
-	public ListenerConfig getAt(int row) {
-		return ViewerProfileStore.getServer().listeners.get(row);
-	}
-
-	public void removeAt(int row) {
-		ViewerProfileStore.getServer().listeners.remove(row);
+	public AttributeGroup getAt(int row) {
+		return listeners.get(row);
 	}
 
 }

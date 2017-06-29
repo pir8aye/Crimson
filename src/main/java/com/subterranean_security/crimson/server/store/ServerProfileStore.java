@@ -55,36 +55,6 @@ public class ServerProfileStore extends ProfileStore {
 
 	}
 
-	public static List<ViewerProfile> getViewersWithAuthorityOverClient(int cid) {
-		List<ViewerProfile> vps = new ArrayList<ViewerProfile>();
-		try {
-			for (int vid : viewerProfiles.keySet()) {
-				// TODO filter
-				vps.add(viewerProfiles.get(vid));
-
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return vps;
-	}
-
-	public static List<ClientProfile> getClientsUnderAuthorityOfViewer(int vid) {
-		List<ClientProfile> cps = new ArrayList<ClientProfile>();
-		try {
-			for (int cid : clientProfiles.keySet()) {
-				// TODO filter
-				cps.add(clientProfiles.get(cid));
-
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return cps;
-	}
-
 	public static Set<Integer> getViewerKeyset() {
 		return viewerProfiles.keySet();
 	}

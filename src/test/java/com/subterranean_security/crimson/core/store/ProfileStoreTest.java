@@ -87,7 +87,7 @@ public class ProfileStoreTest {
 	@Test
 	public void testGetViewerString() {
 		ViewerProfile vp = getRandomViewer();
-		vp.setAttr(AK_VIEWER.USER.ordinal(), "admin");
+		vp.set(AK_VIEWER.USER, "admin");
 		ProfileStore.addViewer(vp);
 		assertEquals(vp, ProfileStore.getViewer("admin"));
 	}

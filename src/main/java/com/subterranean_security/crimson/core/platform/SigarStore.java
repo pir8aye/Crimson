@@ -23,12 +23,12 @@ import org.hyperic.sigar.Sigar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.platform.info.CPU;
-import com.subterranean_security.crimson.core.platform.info.CRIMSON;
-import com.subterranean_security.crimson.core.platform.info.NET;
-import com.subterranean_security.crimson.core.platform.info.NIC;
-import com.subterranean_security.crimson.core.platform.info.OS;
-import com.subterranean_security.crimson.core.platform.info.RAM;
+import com.subterranean_security.crimson.core.platform.collect.plural.CPU;
+import com.subterranean_security.crimson.core.platform.collect.plural.NIC;
+import com.subterranean_security.crimson.core.platform.collect.singular.CRIMSON;
+import com.subterranean_security.crimson.core.platform.collect.singular.NET;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS;
+import com.subterranean_security.crimson.core.platform.collect.singular.RAM;
 
 public final class SigarStore {
 	private static final Logger log = LoggerFactory.getLogger(SigarStore.class);

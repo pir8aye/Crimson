@@ -31,6 +31,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -53,9 +54,11 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
 import com.subterranean_security.crimson.proto.core.Misc.AuthType;
 import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
@@ -267,18 +270,15 @@ public class ATab extends JPanel {
 	}
 
 	private void loadGroups() {
-		ArrayList<AuthMethod> groups = new ArrayList<AuthMethod>();
-		for (AuthMethod am : ViewerProfileStore.getServer().authMethods) {
-			if (am.getType() == AuthType.GROUP) {
-				groups.add(am);
+		List<String> groups = new ArrayList<>();
+		groups.add("Create Group");
+		for (AttributeGroup auth : ViewerProfileStore.getServer().getGroupsOfType(TypeIndex.AUTH)) {
+			if (AuthType.GROUP.toString().equals(auth.getStr(AK_AUTH.TYPE))) {
+				groups.add(auth.getStr(AK_AUTH.NAME));
 			}
 		}
-		String[] g = new String[groups.size() + 1];
-		g[g.length - 1] = "Create Group";
-		for (int i = 0; i < g.length - 1; i++) {
-			g[i] = groups.get(i).getName();
-		}
-		groupSelectionBox.setModel(new DefaultComboBoxModel<String>(g));
+
+		groupSelectionBox.setModel(new DefaultComboBoxModel<String>((String[]) groups.toArray()));
 		refreshGroupSelection();
 	}
 

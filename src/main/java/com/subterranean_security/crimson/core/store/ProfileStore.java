@@ -23,15 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
+import com.subterranean_security.crimson.core.misc.CVID;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedMap;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ServerProfileDelta;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.Profile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public abstract class ProfileStore {
 
 	/**
@@ -57,7 +60,11 @@ public abstract class ProfileStore {
 	 * Maps CVIDs to ViewerProfiles
 	 */
 	protected static CachedMap<Integer, ViewerProfile> viewerProfiles;
-	protected static ServerProfile serverProfile;
+
+	/**
+	 * Maps CVIDs to ServerProfiles
+	 */
+	protected static CachedMap<Integer, ServerProfile> serverProfiles;
 
 	public static void initialize(CachedMap<Integer, ClientProfile> clientMap,
 			CachedMap<Integer, ViewerProfile> viewerMap, ServerProfile serverProf) {
@@ -117,13 +124,16 @@ public abstract class ProfileStore {
 	 * @return The requested Profile
 	 */
 	public static Profile getProfile(int cvid) {
-		Profile get = getViewer(cvid);
-		if (get != null)
-			return get;
-		get = getClient(cvid);
-		if (get != null)
-			return get;
-		return null;
+		switch (CVID.extractIID(cvid)) {
+		case CLIENT:
+			return getClient(cvid);
+		case SERVER:
+			return getServer(cvid);
+		case VIEWER:
+			return getViewer(cvid);
+		default:
+			return null;
+		}
 	}
 
 	/**
@@ -146,6 +156,17 @@ public abstract class ProfileStore {
 	 */
 	public static ViewerProfile getViewer(int vid) {
 		return viewerProfiles.get(vid);
+	}
+
+	/**
+	 * Retrieve a server from the store
+	 * 
+	 * @param sid
+	 *            The server ID of the requested profile
+	 * @return The requested ServerProfile
+	 */
+	public static ServerProfile getServer(int sid) {
+		return serverProfiles.get(sid);
 	}
 
 	/**
@@ -228,23 +249,7 @@ public abstract class ProfileStore {
 		return all;
 	}
 
-	public static void update(EV_ServerProfileDelta change) {
-		serverProfile.amalgamate(change);
-	}
-
-	public static void update(EV_ViewerProfileDelta change) {
-		ViewerProfile vp = getViewer(change.getPd().getCvid());
-		if (vp != null) {
-			vp.amalgamate(change);
-		} else {
-			vp = new ViewerProfile(change.getPd().getCvid());
-			vp.amalgamate(change);
-
-			addViewer(vp);
-		}
-
-	}
-
+	// TODO server and viewer too
 	public static void update(EV_ProfileDelta change) {
 		boolean onlineChanged = false;
 		boolean firstConnection = false;
@@ -252,24 +257,24 @@ public abstract class ProfileStore {
 		ClientProfile cp = getClient(change.getCvid());
 		if (cp != null) {
 
-			boolean online = cp.getOnline();
-			cp.amalgamate(change);
-			onlineChanged = online != cp.getOnline();
+			boolean online = cp.isOnline();
+			cp.merge(change);
+			onlineChanged = online != cp.isOnline();
 
 		} else {
 			firstConnection = true;
 
 			// add new profile
 			cp = new ClientProfile(change.getCvid());
-			cp.amalgamate(change);
+			cp.merge(change);
 
-			onlineChanged = cp.getOnline();
+			onlineChanged = cp.isOnline();
 			addClient(cp);
 
 		}
 
 		if (onlineChanged) {
-			if (cp.getOnline()) {
+			if (cp.isOnline()) {
 				if (firstConnection) {
 					listener.clientOnlineFirstTime(cp);
 				} else {
@@ -280,6 +285,10 @@ public abstract class ProfileStore {
 			}
 		}
 
+	}
+
+	public static Profile getLocalProfile() {
+		return getProfile(LcvidStore.cvid);
 	}
 
 	public interface ProfileListener {

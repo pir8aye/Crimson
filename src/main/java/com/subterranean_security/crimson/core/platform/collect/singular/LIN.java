@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.platform.collect.singular;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +25,10 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.util.FileUtil;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public final class LIN {
 	private LIN() {
 	}

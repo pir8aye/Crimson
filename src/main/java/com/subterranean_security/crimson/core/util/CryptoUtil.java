@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
@@ -224,13 +225,10 @@ public final class CryptoUtil {
 		return null;
 	}
 
-	public static Outcome exportGroup(AuthMethod am, File output) {
+	public static Outcome exportGroup(AttributeGroup am, File output) {
 
-		try {
-			PrintWriter pw = new PrintWriter(output);
-			pw.println(Base64.getEncoder().encodeToString(am.toByteArray()));
-
-			pw.close();
+		try (PrintWriter pw = new PrintWriter(output)) {
+			pw.println(Base64.getEncoder().encodeToString(SerialUtil.serialize(am)));
 		} catch (FileNotFoundException e) {
 			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
 		}
@@ -240,7 +238,7 @@ public final class CryptoUtil {
 	public static AuthMethod importGroup(File input) {
 
 		try (BufferedReader br = new BufferedReader(new FileReader(input))) {
-
+			// TODO AttributeGroup not AuthMethod!
 			return AuthMethod.parseFrom(Base64.getDecoder().decode(br.readLine()));
 
 		} catch (FileNotFoundException e) {

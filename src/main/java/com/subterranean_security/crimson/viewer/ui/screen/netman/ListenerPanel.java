@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_LISTENER;
 import com.subterranean_security.crimson.viewer.net.command.ListenerCom;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -74,7 +75,7 @@ public class ListenerPanel extends JPanel {
 		btnRemove.setMargin(new Insets(2, 2, 2, 2));
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new Thread(() -> ListenerCom.removeListener(lt.getSelected().getId())).start();
+				new Thread(() -> ListenerCom.removeListener(lt.getSelected().getInt(AK_LISTENER.ID))).start();
 			}
 		});
 		menuBar.add(btnRemove);

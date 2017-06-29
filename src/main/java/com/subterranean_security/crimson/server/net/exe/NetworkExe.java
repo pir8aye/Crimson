@@ -18,12 +18,17 @@
 package com.subterranean_security.crimson.server.net.exe;
 
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Network.RQ_DirectConnection;
 import com.subterranean_security.crimson.proto.core.net.sequences.Network.RQ_MakeDirectConnection;
 
-public class NetworkExe {
+public class NetworkExe extends Exelet {
+
+	public NetworkExe(Connector connector) {
+		super(connector);
+	}
 
 	public static void rq_direct_connection(Connector connector, Message msg) {
 		RQ_DirectConnection rq = msg.getRqDirectConnection();

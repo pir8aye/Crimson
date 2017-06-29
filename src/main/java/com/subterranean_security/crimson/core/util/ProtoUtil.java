@@ -18,40 +18,65 @@
 package com.subterranean_security.crimson.core.util;
 
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ServerProfileDelta;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ViewerProfileDelta;
+import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.InfoParam;
 
 public final class ProtoUtil {
 	public static InfoParam.Builder getInfoParam(AttributeKey... keys) {
 		InfoParam.Builder param = InfoParam.newBuilder();
 		for (AttributeKey key : keys) {
-			param.addKey(key.getFullID());
+			param.addKey(key.getWireID());
 		}
 		return param;
 	}
 
-	public static AttributeGroupContainer.Builder getNewGeneralGroup() {
-		return AttributeGroupContainer.newBuilder().setGroupType(AttributeKey.Type.GENERAL.ordinal());
-	}
+	/**
+	 * This factory makes creating an EV_ProfileDelta easier.
+	 * 
+	 * @author cilki
+	 * @since 5.0.0
+	 */
+	public static class PDFactory {
+		private EV_ProfileDelta.Builder pd;
 
-	public static AttributeGroupContainer getGeneralGroup(EV_ProfileDelta pd) {
-		for (AttributeGroupContainer container : pd.getGroupList()) {
-			if (container.getGroupType() == AttributeKey.Type.GENERAL.ordinal()) {
-				return container;
-			}
+		public PDFactory() {
+			pd = EV_ProfileDelta.newBuilder();
 		}
-		return null;
-	}
 
-	public static AttributeGroupContainer getGeneralGroup(EV_ServerProfileDelta pd) {
-		return getGeneralGroup(pd.getPd());
-	}
+		public PDFactory(int cvid) {
+			this();
+			setCvid(cvid);
+		}
 
-	public static AttributeGroupContainer getGeneralGroup(EV_ViewerProfileDelta pd) {
-		return getGeneralGroup(pd.getPd());
+		public PDFactory setCvid(int cvid) {
+			pd.setCvid(cvid);
+			return this;
+		}
+
+		public PDFactory add(AttributeKey key, Object value) {
+			if (value instanceof Integer) {
+				pd.putIntAttr(key.getWireID(), (int) value);
+			} else if (value instanceof String) {
+				pd.putStrAttr(key.getWireID(), (String) value);
+			} else if (value instanceof Long) {
+				pd.putLongAttr(key.getWireID(), (Long) value);
+			} else if (value instanceof Boolean) {
+				pd.putBooleanAttr(key.getWireID(), (Boolean) value);
+			} else {
+				throw new IllegalArgumentException("Invalid value: " + value.getClass().getName());
+			}
+
+			return this;
+		}
+
+		public Message buildMsg() {
+			return Message.newBuilder().setEvProfileDelta(pd).build();
+		}
+
+		public EV_ProfileDelta buildPd() {
+			return pd.build();
+		}
 	}
 
 }

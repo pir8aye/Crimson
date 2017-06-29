@@ -15,30 +15,53 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.platform.collect.singular;
 
-public final class WIN {
-	private WIN() {
+import com.subterranean_security.crimson.core.platform.Platform.ARCH;
+import com.subterranean_security.crimson.universal.Universal;
+
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
+public final class JVM {
+
+	private JVM() {
 	}
 
-	public static String getIEVersion() {
-		// TODO Auto-generated method stub
-		return "";
+	public static String getVersion() {
+		return System.getProperty("java.version");
 	}
 
-	public static String getInstallTime() {
-		// TODO Auto-generated method stub
-		return "";
+	public static String getVendor() {
+		return System.getProperty("java.vendor");
 	}
 
-	public static String getPowerShellVersion() {
-		// TODO Auto-generated method stub
-		return "";
+	public static String getHome() {
+		return System.getProperty("java.home");
 	}
 
-	public static String getSerial() {
-		// TODO Auto-generated method stub
-		return "";
+	public static String getStartTime() {
+		return Universal.start.toString();
+	}
+
+	public static String getArch() {
+		return System.getProperty("os.arch");
+	}
+
+	public static ARCH getARCH() {
+		String arch = getArch().toLowerCase();
+
+		if (arch.equals("sparc")) {
+			return ARCH.SPARC;
+		} else if (arch.equals("x86") || arch.equals("i386") || arch.equals("i486") || arch.equals("i586")
+				|| arch.equals("i686")) {
+			return ARCH.X86;
+		} else if (arch.equals("x86_64") || arch.equals("amd64") || arch.equals("k8")) {
+			return ARCH.X64;
+		} else {
+			return ARCH.UNSUPPORTED;
+		}
 	}
 
 }

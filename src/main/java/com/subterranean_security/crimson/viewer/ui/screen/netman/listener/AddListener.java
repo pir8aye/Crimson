@@ -44,6 +44,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_LISTENER;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
@@ -286,8 +289,8 @@ public class AddListener extends JPanel {
 			return false;
 		}
 
-		for (ListenerConfig lc : ViewerProfileStore.getServer().listeners) {
-			if (lc.getPort() == Integer.parseInt(fld_port.getText())) {
+		for (AttributeGroup listener : ViewerProfileStore.getServer().getGroupsOfType(TypeIndex.LISTENER)) {
+			if (listener.getInt(AK_LISTENER.PORT) == Integer.parseInt(fld_port.getText())) {
 				sl.setBad("Port in use");
 				return false;
 			}

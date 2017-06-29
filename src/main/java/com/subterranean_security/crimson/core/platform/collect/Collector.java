@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,39 +15,16 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.platform.collect;
 
-public final class IPLOC {
-	private IPLOC() {
-	}
+/**
+ * A {@code Collector} gathers information about a particular entity. It could
+ * be a CPU, NIC, Display, User, OS, etc.
+ * 
+ * @author cilki
+ * @since 4.0.0
+ */
+public abstract class Collector {
+	//public abstract void initialize();
 
-	public static String getCity() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getCountry() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getCountryCode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getLatitude() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getLongitude() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static String getRegion() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

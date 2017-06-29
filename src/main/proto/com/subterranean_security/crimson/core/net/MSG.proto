@@ -54,8 +54,6 @@ message Message {
 		EV_StreamData 			ev_stream_data 				= 5;
 		EV_EndpointClosed 		ev_endpoint_closed 			= 6;
 		EV_ProfileDelta 		ev_profile_delta 			= 7;
-		EV_ServerProfileDelta 	ev_server_profile_delta 	= 8;
-		EV_ViewerProfileDelta 	ev_viewer_profile_delta 	= 9;
 		EV_KEvent 				ev_kevent 					= 10;
 		EV_ChatMessage 			ev_chat_message 			= 11;
 		EV_NetworkDelta 		ev_network_delta 			= 12;

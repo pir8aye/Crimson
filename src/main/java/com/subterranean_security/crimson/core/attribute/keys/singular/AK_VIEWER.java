@@ -2,6 +2,7 @@ package com.subterranean_security.crimson.core.attribute.keys.singular;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.TrackedAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 
 /**
@@ -11,7 +12,7 @@ import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
  * @since 4.0.0
  */
 public enum AK_VIEWER implements SingularKey {
-	LOGIN_IP, LOGIN_TIME, USER;
+	LOGIN_IP, LOGIN_TIME, USER, PERMISSIONS;
 
 	@Override
 	public Attribute fabricate() {
@@ -42,11 +43,9 @@ public enum AK_VIEWER implements SingularKey {
 		return this.ordinal();
 	}
 
-	private static final int TYPE_ID = 57;
-
 	@Override
 	public int getTypeID() {
-		return TYPE_ID;
+		return TypeIndex.VIEWER.ordinal();
 	}
 
 	@Override

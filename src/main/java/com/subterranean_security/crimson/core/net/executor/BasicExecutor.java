@@ -17,23 +17,33 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.net.executor;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.factory.ExecutorFactory;
 import com.subterranean_security.crimson.universal.Universal;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public abstract class BasicExecutor {
 
 	protected Thread dispatchThread;
 	protected ExecutorService pool;
 
+	// TODO move to abstract type for Exe's
 	protected Connector connector;
+
+	private List<ExeI> executors;
 
 	public BasicExecutor() {
 		pool = Executors.newCachedThreadPool();
+
 	}
 
 	public void stop() {

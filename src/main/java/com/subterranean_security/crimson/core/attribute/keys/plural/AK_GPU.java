@@ -19,15 +19,18 @@ package com.subterranean_security.crimson.core.attribute.keys.plural;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
-import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.platform.collect.plural.GPU;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.store.CollectorStore;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
 /**
  * GPU attribute keys
  */
 public enum AK_GPU implements PluralKey {
-	MODEL, RAM, TEMP, VENDOR;
+	MODEL, RAM, RAM_TYPE, TEMP, VENDOR;
 
 	@Override
 	public Attribute fabricate() {
@@ -54,10 +57,34 @@ public enum AK_GPU implements PluralKey {
 		return this.ordinal();
 	}
 
-	private static final int TYPE_ID = 3;
-
 	@Override
 	public int getTypeID() {
-		return TYPE_ID;
+		return TypeIndex.GPU.ordinal();
+	}
+
+	@Override
+	public int getGroupID() {
+		return groupID;
+	}
+
+	@Override
+	public void setGroupID(int groupID) {
+		this.groupID = groupID;
+	}
+
+	private int groupID;
+
+	@Override
+	public Object query() {
+		if (groupID == 0)
+			throw new IllegalStateException(
+					"Failed to query attribute because groupID cannot be 0 for plural attributes");
+
+		GPU collector = (GPU) CollectorStore.getCollector(getGTID());
+
+		if (collector == null)
+			throw new IllegalStateException(
+					"Failed to query attribute because GTID (" + getGTID() + ") does not exist");
+		return null;
 	}
 }

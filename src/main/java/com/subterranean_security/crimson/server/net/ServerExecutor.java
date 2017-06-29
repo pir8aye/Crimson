@@ -25,25 +25,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_SERVER;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
-import com.subterranean_security.crimson.core.stream.StreamStore;
-import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
-import com.subterranean_security.crimson.core.util.ProtoUtil;
+import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
 import com.subterranean_security.crimson.proto.core.Generator.GenReport;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_GroupChallenge;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_CreateAuthMethod;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_GroupChallenge;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_RemoveAuthMethod;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ServerProfileDelta;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ViewerProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Generator.RS_Generate;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.RQ_KeyUpdate;
@@ -55,28 +50,23 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Login.RS_Ping;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.State.RS_ChangeServerState;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.EV_EndpointClosed;
-import com.subterranean_security.crimson.proto.core.net.sequences.Stream.Param;
-import com.subterranean_security.crimson.proto.core.net.sequences.Users.RQ_AddUser;
-import com.subterranean_security.crimson.proto.core.net.sequences.Users.RS_AddUser;
-import com.subterranean_security.crimson.proto.core.net.sequences.Users.RS_EditUser;
 import com.subterranean_security.crimson.sc.Logsystem;
 import com.subterranean_security.crimson.server.Generator;
 import com.subterranean_security.crimson.server.net.exe.AuthExe;
 import com.subterranean_security.crimson.server.net.exe.CvidExe;
 import com.subterranean_security.crimson.server.net.exe.DeltaExe;
 import com.subterranean_security.crimson.server.net.exe.FileManagerExe;
+import com.subterranean_security.crimson.server.net.exe.ListenerExe;
 import com.subterranean_security.crimson.server.net.exe.LoginExe;
 import com.subterranean_security.crimson.server.net.exe.NetworkExe;
 import com.subterranean_security.crimson.server.net.exe.ServerInfoExe;
-import com.subterranean_security.crimson.server.net.stream.SInfoSlave;
+import com.subterranean_security.crimson.server.net.exe.StreamExe;
+import com.subterranean_security.crimson.server.net.exe.UserExe;
 import com.subterranean_security.crimson.server.store.AuthStore;
 import com.subterranean_security.crimson.server.store.ListenerStore;
-import com.subterranean_security.crimson.server.store.ServerDatabaseStore;
 import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
-import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
 
 import io.netty.util.ReferenceCountUtil;
@@ -126,19 +116,19 @@ public class ServerExecutor extends BasicExecutor {
 							AuthExe.mi_challenge_result(connector, m);
 							break;
 						case MI_STREAM_START:
-							mi_stream_start(m);
+							StreamExe.mi_stream_start(m);
 							break;
 						case MI_STREAM_STOP:
-							mi_stream_stop(m);
+							StreamExe.mi_stream_stop(m);
 							break;
 						case MI_TRIGGER_PROFILE_DELTA:
 							DeltaExe.mi_trigger_profile_delta(connector, m);
 							break;
 						case RQ_ADD_LISTENER:
-							rq_add_listener(m);
+							ListenerExe.rq_add_listener(connector, m);
 							break;
 						case RQ_ADD_USER:
-							rq_add_user(m);
+							UserExe.rq_add_user(connector, m);
 							break;
 						case RQ_ADVANCED_FILE_INFO:
 							FileManagerExe.rq_advanced_file_info(connector, m);
@@ -156,7 +146,7 @@ public class ServerExecutor extends BasicExecutor {
 							NetworkExe.rq_direct_connection(connector, m);
 							break;
 						case RQ_EDIT_USER:
-							rq_edit_user(m);
+							UserExe.rq_edit_user(connector, m);
 							break;
 						case RQ_FILE_HANDLE:
 							FileManagerExe.rq_file_handle(connector, m);
@@ -186,7 +176,7 @@ public class ServerExecutor extends BasicExecutor {
 							rq_remove_auth_method(m);
 							break;
 						case RQ_REMOVE_LISTENER:
-							rq_remove_listener(m);
+							ListenerExe.rq_remove_listener(m);
 							break;
 						case RQ_SERVER_INFO:
 							ServerInfoExe.rq_server_info(connector);
@@ -230,22 +220,6 @@ public class ServerExecutor extends BasicExecutor {
 			e.printStackTrace();
 		}
 
-	}
-
-	private void mi_stream_start(Message m) {
-
-		Param p = m.getMiStreamStart().getParam();
-		if (p.hasInfoParam()) {
-			StreamStore.addStream(new SInfoSlave(p));
-		}
-		if (p.hasSubscriberParam()) {
-			StreamStore.addStream(new SubscriberSlave(p));
-		}
-
-	}
-
-	private void mi_stream_stop(Message m) {
-		StreamStore.removeStreamBySID(m.getMiStreamStop().getStreamID());
 	}
 
 	private void rq_key_update(Message m) {
@@ -334,87 +308,6 @@ public class ServerExecutor extends BasicExecutor {
 
 	}
 
-	private void rq_add_listener(Message m) {
-		// check permissions
-		if (!ServerProfileStore.getViewer(connector.getCvid()).getPermissions()
-				.getFlag(Perm.server.network.create_listener)) {
-			connector.write(Message.newBuilder().setId(m.getId())
-					.setRsOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions"))
-					.build());
-			return;
-		}
-
-		connector.write(
-				Message.newBuilder().setId(m.getId()).setRsOutcome(Outcome.newBuilder().setResult(true)).build());
-		ListenerStore.add(m.getRqAddListener().getConfig());
-		Message update = Message.newBuilder().setEvServerProfileDelta(
-				EV_ServerProfileDelta.newBuilder().addListener(m.getRqAddListener().getConfig())).build();
-		NetworkStore.broadcastTo(Universal.Instance.VIEWER, update);
-
-	}
-
-	private void rq_remove_listener(Message m) {
-
-	}
-
-	private void rq_add_user(Message m) {
-		// TODO check permissions
-		connector.write(
-				Message.newBuilder().setId(m.getId()).setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
-
-		ServerDatabaseStore.getDatabase().addLocalUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
-				new ViewerPermissions(m.getRqAddUser().getPermissionsList()));
-
-		Message update = Message.newBuilder()
-				.setEvViewerProfileDelta(EV_ViewerProfileDelta.newBuilder()
-						.addAllViewerPermissions(m.getRqAddUser().getPermissionsList())
-						.setPd(EV_ProfileDelta.newBuilder()
-								.addGroup(ProtoUtil.getNewGeneralGroup()
-										.putAttribute(AKeySimple.VIEWER_USER.getFullID(), m.getRqAddUser().getUser()))))
-				.build();
-		NetworkStore.broadcastTo(Universal.Instance.VIEWER, update);
-
-	}
-
-	private void rq_edit_user(Message m) {
-		// TODO check permissions
-		connector.write(
-				Message.newBuilder().setId(m.getId()).setRsEditUser(RS_EditUser.newBuilder().setResult(true)).build());
-
-		RQ_AddUser rqad = m.getRqEditUser().getUser();
-
-		ViewerProfile vp = null;
-
-		try {
-			vp = ServerProfileStore.getViewer(rqad.getUser());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		EV_ViewerProfileDelta.Builder b = EV_ViewerProfileDelta.newBuilder()
-				.setPd(EV_ProfileDelta.newBuilder().addGroup(ProtoUtil.getNewGeneralGroup()
-						.putAttribute(AKeySimple.VIEWER_USER.getFullID(), rqad.getUser())))
-				.addAllViewerPermissions(m.getRqAddUser().getPermissionsList());
-
-		if (rqad.getPermissionsCount() != 0) {
-			vp.getPermissions().add(rqad.getPermissionsList());
-			b.addAllViewerPermissions(rqad.getPermissionsList());
-		}
-
-		if (rqad.hasPassword() && ServerDatabaseStore.getDatabase().validLogin(rqad.getUser(),
-				CryptoUtil.hashCrimsonPassword(m.getRqEditUser().getOldPassword(),
-						ServerDatabaseStore.getDatabase().getSalt(rqad.getUser())))) {
-			ServerDatabaseStore.getDatabase().changePassword(rqad.getUser(), rqad.getPassword());
-
-		}
-
-		Message update = Message.newBuilder().setEvViewerProfileDelta(b).build();
-
-		NetworkStore.broadcastTo(Universal.Instance.VIEWER, update);
-
-	}
-
 	private void rq_change_server_state(Message m) {
 		// TODO check permissions
 		String comment = "";
@@ -440,17 +333,10 @@ public class ServerExecutor extends BasicExecutor {
 		connector.write(Message.newBuilder().setId(m.getId()).setRsChangeServerState(RS_ChangeServerState.newBuilder()
 				.setOutcome(Outcome.newBuilder().setResult(result).setComment(comment))).build());
 
-		// notify viewers
+		// apprise viewers
 		NetworkStore.broadcastTo(Universal.Instance.VIEWER,
-				Message.newBuilder()
-						.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder()
-								.setPd(EV_ProfileDelta.newBuilder()
-										.addGroup(ProtoUtil.getNewGeneralGroup()
-												.putAttribute(AKeySimple.SERVER_ACTIVE_LISTENERS.getFullID(),
-														"" + ListenerStore.getActive())
-												.putAttribute(AKeySimple.SERVER_INACTIVE_LISTENERS.getFullID(),
-														"" + ListenerStore.getInactive()))))
-						.build());
+				new PDFactory(connector.getCvid()).add(AK_SERVER.ACTIVE_LISTENERS, ListenerStore.getActive())
+						.add(AK_SERVER.INACTIVE_LISTENERS, ListenerStore.getInactive()).buildMsg());
 	}
 
 	private void rq_change_client_state(Message m) {

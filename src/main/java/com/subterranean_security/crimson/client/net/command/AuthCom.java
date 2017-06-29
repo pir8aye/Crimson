@@ -23,7 +23,6 @@ import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -48,7 +47,6 @@ public final class AuthCom {
 				group.destroy();
 			} catch (DestroyFailedException e) {
 			}
-			c.setState(ConnectionState.AUTH_STAGE1);
 			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());
 			break;
 		case NO_AUTH:
@@ -58,7 +56,6 @@ public final class AuthCom {
 		case PASSWORD:
 			auth.setPassword(ConfigStore.getConfig().getPassword());
 
-			c.setState(ConnectionState.AUTH_STAGE1);
 			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());
 			break;
 		default:

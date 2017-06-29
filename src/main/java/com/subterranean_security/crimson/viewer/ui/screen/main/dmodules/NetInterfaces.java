@@ -40,6 +40,7 @@ import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_NIC;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
@@ -189,8 +190,8 @@ public class NetInterfaces extends TracedPanel implements DModule {
 				rx.addPoint(time - 1, Double.NaN);
 			}
 
-			String txs = getPrimaryNIC().get(AK_NIC.TX_SPEED);
-			String rxs = getPrimaryNIC().get(AK_NIC.RX_SPEED);
+			String txs = getPrimaryNIC().getStr(AK_NIC.TX_SPEED);
+			String rxs = getPrimaryNIC().getStr(AK_NIC.RX_SPEED);
 			double t;
 			double r;
 			if (txs != null && rxs != null) {
@@ -239,16 +240,16 @@ public class NetInterfaces extends TracedPanel implements DModule {
 		}
 
 		profile = p;
-		nicList = profile.getGroupList(AttributeKey.Type.NIC);
+		nicList = profile.getGroupsOfType(TypeIndex.NIC);
 
 		// set static attributes
-		statConsoleMAC.setText(getPrimaryNIC().get(AK_NIC.MAC));
-		statConsoleIP.setText(getPrimaryNIC().get(AK_NIC.IPV4));
-		statConsoleNetmask.setText(getPrimaryNIC().get(AK_NIC.NETMASK));
+		statConsoleMAC.setText(getPrimaryNIC().getStr(AK_NIC.MAC));
+		statConsoleIP.setText(getPrimaryNIC().getStr(AK_NIC.IPV4));
+		statConsoleNetmask.setText(getPrimaryNIC().getStr(AK_NIC.NETMASK));
 
 		// set title
 		mainPanel.setBorder(
-				new TitledBorder(new LineBorder(new Color(184, 207, 229)), getPrimaryNIC().get(AK_NIC.DESC),
+				new TitledBorder(new LineBorder(new Color(184, 207, 229)), getPrimaryNIC().getStr(AK_NIC.DESC),
 						TitledBorder.CENTER, TitledBorder.TOP, null, new Color(51, 51, 51)));
 	}
 
@@ -284,8 +285,8 @@ public class NetInterfaces extends TracedPanel implements DModule {
 	public void setShowing(boolean showing) {
 		this.showing = showing;
 		if (showing) {
-			im = new InfoMaster(ProtoUtil.getInfoParam(AK_NIC.RX_SPEED, AK_NIC.TX_SPEED).build(),
-					profile.getCvid(), (int) updatePeriod);
+			im = new InfoMaster(ProtoUtil.getInfoParam(AK_NIC.RX_SPEED, AK_NIC.TX_SPEED).build(), profile.getCvid(),
+					(int) updatePeriod);
 			StreamStore.addStream(im);
 
 			// launch timeout

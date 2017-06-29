@@ -22,21 +22,20 @@ import java.util.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_META;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.listener.ConnectionEventListener;
 import com.subterranean_security.crimson.core.store.NetworkStore;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
+import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkAdded;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkRemoved;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.server.store.AuthStore;
 import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
+import com.subterranean_security.crimson.sv.profile.set.ProfileSetFactory;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
 public class ServerConnectionEventListener extends ConnectionEventListener {
@@ -74,26 +73,18 @@ public class ServerConnectionEventListener extends ConnectionEventListener {
 	}
 
 	private void clientAuthenticated(Connector connector) {
-		System.out.println("clientAuthenticated");
 		AuthStore.refreshVisibilityPermissions(connector.getCvid());
 		ServerProfileStore.getClient(connector.getCvid()).setOnline(true);
-		NetworkStore.sendToViewersWithAuthorityOverClient(connector.getCvid(), Perm.client.visibility,
-				Message.newBuilder()
-						.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(connector.getCvid())
-								.addGroup(AttributeGroupContainer.newBuilder()
-										.setGroupType(AttributeKey.Type.GENERAL.ordinal()).putAttribute(
-												AKeySimple.CLIENT_ONLINE.ordinal(), "1"))));
+		NetworkStore.broadcastTo(new PDFactory(connector.getCvid()).add(AK_META.ONLINE, true).buildMsg(),
+				new ProfileSetFactory().addFilter(Instance.VIEWER).addFilter(connector.getCvid(),
+						Perm.client.visibility));
 	}
 
 	private void clientNotConnected(Connector connector) {
 		ServerProfileStore.getClient(connector.getCvid()).setOnline(false);
-		NetworkStore.sendToViewersWithAuthorityOverClient(connector.getCvid(), Perm.client.visibility,
-				Message.newBuilder()
-						.setEvProfileDelta(EV_ProfileDelta.newBuilder().setCvid(connector.getCvid())
-								.addGroup(AttributeGroupContainer.newBuilder().setGroupId("")
-										.setGroupType(AttributeKey.Type.GENERAL.ordinal()).putAttribute(
-												AKeySimple.CLIENT_ONLINE.ordinal(), "0")
-										.build())));
+		NetworkStore.broadcastTo(new PDFactory(connector.getCvid()).add(AK_META.ONLINE, false).buildMsg(),
+				new ProfileSetFactory().addFilter(Instance.VIEWER).addFilter(connector.getCvid(),
+						Perm.client.visibility));
 	}
 
 	public static void addLink(int cvid1, int cvid2) {

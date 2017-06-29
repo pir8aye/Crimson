@@ -1,7 +1,8 @@
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
-import com.subterranean_security.crimson.core.platform.info.RAM;
+import com.subterranean_security.crimson.core.platform.collect.singular.RAM;
 
 /**
  * RAM attribute keys
@@ -54,11 +55,9 @@ public enum AK_RAM implements SingularKey {
 		return this.ordinal();
 	}
 
-	private static final int TYPE_ID = 0;
-
 	@Override
 	public int getTypeID() {
-		return TYPE_ID;
+		return TypeIndex.RAM.ordinal();
 	}
 
 }

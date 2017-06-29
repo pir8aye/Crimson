@@ -21,6 +21,12 @@ import java.util.HashSet;
 
 import com.subterranean_security.crimson.sv.profile.Profile;
 
+/**
+ * A {@code ProfileSet} holds {@code Profile}s in an unordered {@code Set}.
+ * 
+ * @author cilki
+ * @since 5.0.0
+ */
 public class ProfileSet extends HashSet<Profile> {
 
 	private static final long serialVersionUID = 1L;

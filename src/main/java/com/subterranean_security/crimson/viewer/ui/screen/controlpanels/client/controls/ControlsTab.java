@@ -42,9 +42,9 @@ import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_CLIENT;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_META;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.util.DateUtil;
@@ -224,7 +224,7 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 				barUpdate.setIndeterminate(true);
 				stopStreaming();
 				statConsoleStatus.setText("UPDATING...");
-				console.addLine("Updating client (" + profile.get(AK_CLIENT.VERSION) + " -> " + Universal.version + ")",
+				console.addLine("Updating client (" + profile.get(AK_META.VERSION) + " -> " + Universal.version + ")",
 						LineType.BLUE);
 
 				new SwingWorker<Outcome, Void>() {
@@ -399,7 +399,7 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 			statConsoleUptime.setText("N/A");
 		}
 
-		statConsoleLastContact.setText(DateUtil.timeBetween(new Date(), profile.getLastUpdate()));
+		statConsoleLastContact.setText(DateUtil.timeBetween(System.currentTimeMillis(), profile.getTimestamp()));
 	}
 
 	private Confirmation c;
@@ -446,8 +446,8 @@ public class ControlsTab extends JPanel implements CPPanel, Observer {
 
 	public void startStreaming() {
 		if (im == null) {
-			im = new InfoMaster(InfoParam.newBuilder().addKey(AKeySimple.CLIENT_STATUS.getFullID()).build(),
-					profile.getCvid(), 1000);
+			im = new InfoMaster(InfoParam.newBuilder().addKey(AK_CLIENT.STATUS.getWireID()).build(), profile.getCvid(),
+					1000);
 			StreamStore.addStream(im);
 		}
 	}

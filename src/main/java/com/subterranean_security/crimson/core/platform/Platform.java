@@ -18,18 +18,13 @@
 
 package com.subterranean_security.crimson.core.platform;
 
-import java.awt.GraphicsEnvironment;
-
 import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
-import com.subterranean_security.crimson.core.platform.info.CPU;
-import com.subterranean_security.crimson.core.platform.info.DISP;
-import com.subterranean_security.crimson.core.platform.info.JAVA;
-import com.subterranean_security.crimson.core.platform.info.NIC;
-import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.platform.collect.singular.JVM;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.store.LcvidStore;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
+import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.universal.Universal;
 
@@ -38,7 +33,7 @@ public final class Platform {
 	private Platform() {
 	}
 
-	public static final ARCH javaArch = JAVA.getARCH();
+	public static final ARCH javaArch = JVM.getARCH();
 	public static final OSFAMILY osFamily = OSFAMILY.get();
 
 	public enum ARCH {
@@ -49,46 +44,27 @@ public final class Platform {
 		}
 	}
 
-	/**
-	 * First Info Gather
-	 */
 	public static EV_ProfileDelta fig() {
+		PDFactory pd = new PDFactory(LcvidStore.cvid);
 
-		EV_ProfileDelta.Builder info = EV_ProfileDelta.newBuilder();
+		for (SingularKey key : SingularKey.keys) {
 
-		try {
-			info.setCvid(LcvidStore.cvid);
-		} catch (Exception e1) {
-			// TODO handle
-			info.setCvid(0);
-		}
-
-		info.setFig(true);
-
-		AttributeGroupContainer.Builder general = AttributeGroupContainer.newBuilder();
-		for (SingularKey sa : SingularKey.keys) {
-
-			if (!sa.isCompatible(osFamily, Universal.instance)) {
+			if (!key.isCompatible(osFamily, Universal.instance)) {
 				continue;
 			}
-			if (sa == AK_NET.EXTERNAL_IPV4 && !ConfigStore.getConfig().getAllowMiscConnections()) {
+			if (key == AK_NET.EXTERNAL_IPV4 && !ConfigStore.getConfig().getAllowMiscConnections()) {
 				continue;
 			}
-			String value = queryAttribute(sa);
+			Object value = key.query();
 			if (value != null) {
-				general.putAttribute(sa.ordinal(), value);
+				pd.add(key, value);
 			}
 
 		}
-		info.addGroup(general.build());
-		info.addAllGroup(CPU.getAttributes());
-		info.addAllGroup(NIC.getAttributes());
 
-		if (!GraphicsEnvironment.isHeadless()) {
-			info.addAllGroup(DISP.getAttributes());
-		}
+		// TODO PLURAL ATTRIBUTES
 
-		return info.build();
+		return pd.buildPd();
 	}
 
 }

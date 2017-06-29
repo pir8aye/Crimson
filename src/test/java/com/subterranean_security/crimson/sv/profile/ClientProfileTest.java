@@ -12,6 +12,7 @@ import org.junit.Test;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_CLIENT;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_META;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_WIN;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
@@ -102,34 +103,34 @@ public class ClientProfileTest {
 	}
 
 	@Test
-	public void testAmalgamate() {
+	public void testMerge() {
 
 		EV_ProfileDelta pd = EV_ProfileDelta.newBuilder()
-				.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.CLIENT_CID.getFullID(), "25")
-						.putAttribute(AKeySimple.CLIENT_STATUS.getFullID(), "idle"))
+				.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.CLIENT_CID.getWireID(), "25")
+						.putAttribute(AKeySimple.CLIENT_STATUS.getWireID(), "idle"))
 				.addGroup(AttributeGroupContainer.newBuilder().setGroupId("cpu1").setGroupType(1)
-						.putAttribute(AK_CPU.MODEL.getFullID(), "test cpu 1.0"))
+						.putAttribute(AK_CPU.MODEL.getWireID(), "test cpu 1.0"))
 				.build();
-		profile.amalgamate(pd);
+		profile.merge(pd);
 
-		assertEquals(profile.get(AK_CLIENT.CID), "25");
+		assertEquals(profile.get(AK_META.CVID), 25);
 		assertEquals(profile.get(AK_CLIENT.STATUS), "idle");
-		assertEquals(profile.getGroup(AK_CPU.MODEL, "cpu1").get(AK_CPU.MODEL), "test cpu 1.0");
+		assertEquals(profile.getGroup(AK_CPU.MODEL, "cpu1").getStr(AK_CPU.MODEL), "test cpu 1.0");
 
 		pd = EV_ProfileDelta.newBuilder().addGroup(
-				AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.CLIENT_STATUS.getFullID(), "active"))
+				AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.CLIENT_STATUS.getWireID(), "active"))
 				.build();
 
-		profile.amalgamate(pd);
+		profile.merge(pd);
 
 		assertEquals(profile.get(AK_CLIENT.STATUS), "active");
 	}
 
 	@Test
 	public void testGetUpdates() {
-		profile.amalgamate(EV_ProfileDelta.newBuilder()
-				.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.CLIENT_CID.getFullID(), "35")
-						.putAttribute(AKeySimple.CLIENT_STATUS.getFullID(), "idle"))
+		profile.merge(EV_ProfileDelta.newBuilder()
+				.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.CLIENT_CID.getWireID(), "35")
+						.putAttribute(AKeySimple.CLIENT_STATUS.getWireID(), "idle"))
 				.build());
 
 		try {
@@ -148,16 +149,16 @@ public class ClientProfileTest {
 			e.printStackTrace();
 		}
 
-		profile.amalgamate(EV_ProfileDelta.newBuilder()
-				.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.CLIENT_CID.getFullID(), "45"))
-				.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.OS_ACTIVE_WINDOW.getFullID(),
+		profile.merge(EV_ProfileDelta.newBuilder()
+				.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.CLIENT_CID.getWireID(), "45"))
+				.addGroup(AttributeGroupContainer.newBuilder().putAttribute(AKeySimple.OS_ACTIVE_WINDOW.getWireID(),
 						"test"))
 				.build());
 
 		EV_ProfileDelta pd = profile.getUpdates(date);
 		assertEquals(pd.getGroup(0).getAttributeCount(), 2);
-		assertEquals(pd.getGroup(0).getAttributeOrDefault(AKeySimple.CLIENT_CID.getFullID(), ""), "45");
-		assertEquals(pd.getGroup(0).getAttributeOrDefault(AKeySimple.OS_ACTIVE_WINDOW.getFullID(), ""), "test");
+		assertEquals(pd.getGroup(0).getAttributeOrDefault(AKeySimple.CLIENT_CID.getWireID(), ""), "45");
+		assertEquals(pd.getGroup(0).getAttributeOrDefault(AKeySimple.OS_ACTIVE_WINDOW.getWireID(), ""), "test");
 	}
 
 	@Test

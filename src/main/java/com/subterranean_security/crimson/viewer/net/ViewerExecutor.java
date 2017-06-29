@@ -63,18 +63,12 @@ public class ViewerExecutor extends BasicExecutor {
 					case EV_PROFILE_DELTA:
 						ViewerProfileStore.update(m.getEvProfileDelta());
 						break;
-					case EV_SERVER_PROFILE_DELTA:
-						ViewerProfileStore.update(m.getEvServerProfileDelta());
-						break;
 					case EV_STREAM_DATA:
 						System.out.println("Got stream data");
 						Stream s = StreamStore.getStream(m.getEvStreamData().getStreamID());
 						if (s != null) {
 							s.received(m);
 						}
-						break;
-					case EV_VIEWER_PROFILE_DELTA:
-						ViewerProfileStore.update(m.getEvViewerProfileDelta());
 						break;
 					default:
 						connector.addNewResponse(m);

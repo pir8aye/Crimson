@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,23 +15,14 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.sv.profile.set.filter;
 
-public final class USER {
+import com.subterranean_security.crimson.sv.profile.Profile;
 
-	private USER() {
-	}
-
-	public static String getName() {
-		return System.getProperty("user.name");
-	}
-
-	public static String getHome() {
-		return System.getProperty("user.home");
-	}
-
-	public static String getStatus() {
-		// TODO Auto-generated method stub
-		return "";
-	}
+/**
+ * @author cilki
+ * @since 5.0.0
+ */
+public interface ProfileFilter {
+	public boolean check(Profile profile);
 }

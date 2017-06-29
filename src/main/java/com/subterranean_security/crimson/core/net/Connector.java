@@ -104,9 +104,9 @@ public class Connector extends Observable {
 	public BlockingQueue<Message> msgQueue;
 
 	/**
-	 * When a response message is desired, a MessageFuture is placed into this
-	 * map. If the BasicExecutor cannot execute a message and a corresponding
-	 * entry in this map exists, the MessageFuture is removed and notified.
+	 * When a response message is desired, a MessageFuture is placed into this map.
+	 * If the BasicExecutor cannot execute a message and a corresponding entry in
+	 * this map exists, the MessageFuture is removed and notified.
 	 */
 	private Map<Integer, MessageFuture> responseMap;
 
@@ -269,8 +269,7 @@ public class Connector extends Observable {
 	}
 
 	public enum ConnectionState {
-		// TODO remove auth stages
-		NOT_CONNECTED, CONNECTED, AUTHENTICATED, AUTH_STAGE1, AUTH_STAGE2;
+		NOT_CONNECTED, CONNECTED, AUTHENTICATED;
 	}
 
 	public enum CertificateState {
@@ -280,14 +279,14 @@ public class Connector extends Observable {
 		VALID,
 
 		/**
-		 * The certificate is either revoked, expired, invalid, self-signed, or
-		 * missing. The connector has nevertheless established a connection.
+		 * The certificate is either revoked, expired, invalid, self-signed, or missing.
+		 * The connector has nevertheless established a connection.
 		 */
 		INVALID,
 
 		/**
-		 * The certificate is INVALID and the connector refused to proceed
-		 * because FORCE_CERTIFICATES was set.
+		 * The certificate is INVALID and the connector refused to proceed because
+		 * FORCE_CERTIFICATES was set.
 		 */
 		REFUSED;
 	}

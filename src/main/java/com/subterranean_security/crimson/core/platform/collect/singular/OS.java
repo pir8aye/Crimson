@@ -15,10 +15,9 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.platform.collect.singular;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import org.hyperic.sigar.OperatingSystem;
@@ -32,6 +31,10 @@ import com.subterranean_security.crimson.core.platform.Platform.ARCH;
 import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.util.Native;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public final class OS {
 	private static final Logger log = LoggerFactory.getLogger(OS.class);
 
@@ -77,14 +80,20 @@ public final class OS {
 		return uptime;
 	}
 
-	/*
-	 * Information retrieval
+	/**
+	 * Get the system language
+	 * 
+	 * @return A {@code String} representing the system language
 	 */
-
 	public static String getLanguage() {
 		return new Locale(System.getProperty("user.language")).getDisplayName();
 	}
 
+	/**
+	 * Get the system timezone
+	 * 
+	 * @return A {@code String} representing the system timezone
+	 */
 	public static String getTimezone() {
 		return Calendar.getInstance().getTimeZone().getDisplayName();
 	}
@@ -97,6 +106,9 @@ public final class OS {
 		return Native.getActiveWindow();
 	}
 
+	/**
+	 * @return A {@code String} representing the system's endianness
+	 */
 	public static String getEndian() {
 		return os.getCpuEndian();
 	}
@@ -106,8 +118,8 @@ public final class OS {
 		return "";
 	}
 
-	public static String getStartTime() {
-		return new Date(System.currentTimeMillis() - (long) (uptime.getUptime() * 1000)).toString();
+	public static long getStartTime() {
+		return System.currentTimeMillis() - (long) (uptime.getUptime() * 1000);
 	}
 
 	public static String getName() {

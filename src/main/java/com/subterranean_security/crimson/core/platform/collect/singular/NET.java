@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.platform.collect.singular;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +31,10 @@ import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.platform.SigarStore;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public final class NET {
 	private static final Logger log = LoggerFactory.getLogger(NET.class);
 

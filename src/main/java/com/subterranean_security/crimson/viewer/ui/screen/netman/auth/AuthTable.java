@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.viewer.ui.screen.netman.auth;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -27,6 +28,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
 import com.subterranean_security.crimson.proto.core.Misc.AuthType;
 import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
@@ -66,12 +71,12 @@ public class AuthTable extends JScrollPane {
 					source.changeSelection(sourceRow, 0, false, false);
 				}
 
-				AuthMethod am = getSelected();
+				AttributeGroup am = getSelected();
 
 				if (e.getButton() == MouseEvent.BUTTON3) {
 					// right click
 					popup = new JPopupMenu();
-					if (am.getType() == AuthType.GROUP) {
+					if (AuthType.GROUP.toString().equals(am.getStr(AK_AUTH.TYPE))) {
 						export = new JMenuItem("Export Group");
 						export.setIcon(UIUtil.getIcon("icons16/general/group_export.png"));
 
@@ -83,7 +88,7 @@ public class AuthTable extends JScrollPane {
 					}
 					popup.show(table, e.getX(), e.getY());
 				} else {
-					if (am.getType() == AuthType.GROUP) {
+					if (AuthType.GROUP.toString().equals(am.getStr(AK_AUTH.TYPE))) {
 						parent.btnExport.setEnabled(true);
 
 						parent.resetEPanels();
@@ -103,7 +108,7 @@ public class AuthTable extends JScrollPane {
 		tm.fireTableDataChanged();
 	}
 
-	public AuthMethod getSelected() {
+	public AttributeGroup getSelected() {
 		return tm.getAt(table.getSelectedRow());
 	}
 
@@ -112,7 +117,14 @@ public class AuthTable extends JScrollPane {
 class TM extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private final String[] headers = new String[] { "ID", "Authentication Type", "Name", "Creation Date" };
+	private final AttributeKey[] headers = new AttributeKey[] { AK_AUTH.ID, AK_AUTH.TYPE, AK_AUTH.NAME,
+			AK_AUTH.CREATION_DATE };
+
+	private List<AttributeGroup> authList;
+
+	public TM() {
+		authList = ViewerProfileStore.getServer().getGroupsOfType(TypeIndex.AUTH);
+	}
 
 	@Override
 	public int getColumnCount() {
@@ -121,37 +133,21 @@ class TM extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return ViewerProfileStore.getServer().authMethods.size();
+		return authList.size();
 	}
 
 	@Override
 	public String getColumnName(int column) {
-		return headers[column];
+		return headers[column].toString();
 	};
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-
-		switch (headers[columnIndex]) {
-		case "ID":
-			return ViewerProfileStore.getServer().authMethods.get(rowIndex).getId();
-		case "Authentication Type":
-			return ViewerProfileStore.getServer().authMethods.get(rowIndex).getType();
-		case "Name":
-			return ViewerProfileStore.getServer().authMethods.get(rowIndex).getName();
-		case "Creation Date":
-			return new Date(ViewerProfileStore.getServer().authMethods.get(rowIndex).getCreation()).toString();
-
-		}
-		return null;
+		return authList.get(rowIndex).getAttribute(headers[columnIndex]).get();
 	}
 
-	public AuthMethod getAt(int row) {
-		return ViewerProfileStore.getServer().authMethods.get(row);
-	}
-
-	public void removeAt(int row) {
-		ViewerProfileStore.getServer().authMethods.remove(row);
+	public AttributeGroup getAt(int row) {
+		return authList.get(row);
 	}
 
 }

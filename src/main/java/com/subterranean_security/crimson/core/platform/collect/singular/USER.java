@@ -15,49 +15,27 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.platform.collect.singular;
 
-import com.subterranean_security.crimson.core.platform.Platform.ARCH;
-import com.subterranean_security.crimson.universal.Universal;
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
+public final class USER {
 
-public final class JAVA {
-
-	private JAVA() {
+	private USER() {
 	}
 
-	public static String getVersion() {
-		return System.getProperty("java.version");
-	}
-
-	public static String getVendor() {
-		return System.getProperty("java.vendor");
+	public static String getName() {
+		return System.getProperty("user.name");
 	}
 
 	public static String getHome() {
-		return System.getProperty("java.home");
+		return System.getProperty("user.home");
 	}
 
-	public static String getStartTime() {
-		return Universal.start.toString();
+	public static String getStatus() {
+		// TODO Auto-generated method stub
+		return "";
 	}
-
-	public static String getArch() {
-		return System.getProperty("os.arch");
-	}
-
-	public static ARCH getARCH() {
-		String arch = getArch().toLowerCase();
-
-		if (arch.equals("sparc")) {
-			return ARCH.SPARC;
-		} else if (arch.equals("x86") || arch.equals("i386") || arch.equals("i486") || arch.equals("i586")
-				|| arch.equals("i686")) {
-			return ARCH.X86;
-		} else if (arch.equals("x86_64") || arch.equals("amd64") || arch.equals("k8")) {
-			return ARCH.X64;
-		} else {
-			return ARCH.UNSUPPORTED;
-		}
-	}
-
 }

@@ -1,5 +1,6 @@
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
 
 /**
@@ -28,11 +29,9 @@ public enum AK_OSX implements SingularKey {
 		return this.ordinal();
 	}
 
-	private static final int TYPE_ID = 58;
-
 	@Override
 	public int getTypeID() {
-		return TYPE_ID;
+		return TypeIndex.OSX.ordinal();
 	}
 
 	@Override

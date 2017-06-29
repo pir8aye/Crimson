@@ -15,9 +15,16 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.platform.info;
+package com.subterranean_security.crimson.core.platform.collect.plural;
 
-public final class GPU {
-	private GPU() {
+import com.subterranean_security.crimson.core.platform.collect.Collector;
+
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
+public final class GPU extends Collector {
+	public GPU() {
 	}
+
 }

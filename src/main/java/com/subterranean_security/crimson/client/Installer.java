@@ -29,7 +29,7 @@ import java.util.Base64;
 
 import com.subterranean_security.crimson.client.modules.Autostart;
 import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
 import com.subterranean_security.crimson.universal.Universal;

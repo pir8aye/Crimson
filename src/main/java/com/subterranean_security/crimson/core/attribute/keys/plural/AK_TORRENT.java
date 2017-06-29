@@ -19,8 +19,9 @@ package com.subterranean_security.crimson.core.attribute.keys.plural;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
-import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
 /**
@@ -54,10 +55,26 @@ public enum AK_TORRENT implements PluralKey {
 		return this.ordinal();
 	}
 
-	private static final int TYPE_ID = 7;
-
 	@Override
 	public int getTypeID() {
-		return TYPE_ID;
+		return TypeIndex.TORRENT.ordinal();
+	}
+
+	@Override
+	public int getGroupID() {
+		return groupID;
+	}
+
+	@Override
+	public void setGroupID(int groupID) {
+		this.groupID = groupID;
+	}
+
+	private int groupID;
+
+	@Override
+	public Object query() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

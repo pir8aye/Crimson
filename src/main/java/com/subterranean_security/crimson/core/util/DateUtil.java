@@ -42,6 +42,10 @@ public final class DateUtil {
 		return (int) (now.getTime() - Universal.start.getTime()) / 1000;
 	}
 
+	public static String timeBetween(Date d1, Date d2) {
+		return timeBetween(d1.getTime(), d2.getTime());
+	}
+
 	/**
 	 * Return the time between two dates (in any order) as a nicely formatted
 	 * string
@@ -50,8 +54,8 @@ public final class DateUtil {
 	 * @param d2
 	 * @return
 	 */
-	public static String timeBetween(Date d1, Date d2) {
-		long seconds = Math.abs(d1.getTime() - d2.getTime()) / 1000;
+	public static String timeBetween(long d1, long d2) {
+		long seconds = Math.abs(d1 - d2) / 1000;
 
 		int years = (int) (seconds / SECONDS_IN_YEAR);
 		seconds -= years * SECONDS_IN_YEAR;

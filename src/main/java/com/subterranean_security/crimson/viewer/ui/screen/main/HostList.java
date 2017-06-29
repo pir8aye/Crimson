@@ -35,11 +35,13 @@ import javax.swing.table.TableRowSorter;
 
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_LOC;
+import com.subterranean_security.crimson.core.attribute.keys.singular.AK_META;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_USER;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.comparator.CvidComparator;
+import com.subterranean_security.crimson.sv.profile.comparator.SingularAttributeComparator;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 import com.subterranean_security.crimson.viewer.ui.screen.settings.ListHeaderPopup;
 
@@ -131,18 +133,19 @@ public class HostList extends JPanel {
 		sorter.toggleSortOrder(0);
 
 		for (int i = 0; i < tm.headers.length; i++) {
-			AttributeKey aa = tm.headers[i];
-			if (aa instanceof SingularKey) {
-				AKeySimple sa = (AKeySimple) aa;
-				switch (sa) {
-				case CLIENT_CID:
-					sorter.setComparator(i, new ClientProfile.CidComparator());
-				default:
-					sorter.setComparator(i, new ClientProfile.SingularAttributeComparator(sa));
-				}
-			} else {
-				// TODO complex attribute
+			AttributeKey key = tm.headers[i];
+
+			// special cases
+			if (key.equals(AK_META.CVID)) {
+				sorter.setComparator(i, new CvidComparator());
+				continue;
 			}
+
+			if (String.class.equals(key.getJavaType())) {
+				sorter.setComparator(i, new SingularAttributeComparator(key));
+				continue;
+			}
+
 		}
 
 		table.setRowSorter(sorter);
@@ -265,21 +268,15 @@ class TR extends DefaultTableCellRenderer {
 	private Object setupCell(JTable table, ClientProfile profile, int viewColumn) {
 		setBorder(noFocusBorder);
 
-		AttributeKey aa = tm.headers[table.convertColumnIndexToModel(viewColumn)];
-		if (aa instanceof AKeySimple) {
-			AKeySimple sa = (AKeySimple) aa;
-			switch (sa) {
-			case IPLOC_COUNTRY:
-				return profile.getLocationIcon();
-			case OS_NAME:
-				return profile.getOsNameIcon();
-			default:
-				return profile.get(sa);
-			}
+		AttributeKey key = tm.headers[table.convertColumnIndexToModel(viewColumn)];
+		if (AK_OS.NAME.equals(key)) {
+			return profile.getOsIcon16();
+		} else if (AK_LOC.IPLOC_COUNTRY.equals(key)) {
+			return profile.getLocationIcon16();
 		} else {
-			// TODO complex attribute
-			return null;
+			return profile.get(key);
 		}
+
 	}
 
 	protected void setValue(Object value) {

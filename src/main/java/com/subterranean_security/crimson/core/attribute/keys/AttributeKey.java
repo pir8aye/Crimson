@@ -17,31 +17,36 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.attribute.keys;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AK_DISP;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AK_GPU;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AK_NIC;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AK_TORRENT;
-import com.subterranean_security.crimson.core.platform.info.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
 /**
  * An AttributeKey uniquely identifies a specific attribute. AttributeKeys can
- * be converted to and from encoded ints for use one the wire. This can be done
+ * be converted to and from encoded ints for use on the wire. This can be done
  * trivially for SingularKeys (because their group IDs are 0). PluralKeys
  * require an external group ID for conversion. Concrete implementations of this
  * interface conform to a naming standard (AK_*) for identifiability.
+ * 
+ * {@code
+ * +---------+--------+---------+<br>
+ * | GroupID | TypeID | ConstID |<br>
+ * +---------+--------+---------+<br>
+ * |           WireID           |<br>
+ * +---------+--------+---------+<br>
+ * |       GTID       |    0    |<br>
+ * +---------+--------+---------+<br>
+ * |    0    |       TCID       |<br>
+ * +---------+--------+---------+<br>
+ * }
  * 
  * @author cilki
  * @since 4.0.0
  */
 public interface AttributeKey {
+
+	public Object query();
 
 	/**
 	 * @return A nicely formatted name for this key
@@ -58,30 +63,24 @@ public interface AttributeKey {
 	 * 
 	 * @return A brand new attribute
 	 */
-	default public Attribute fabricate() {
-		return new UntrackedAttribute();
+	default public Attribute<Object> fabricate() {
+		return new UntrackedAttribute<Object>();
 	}
 
-	// TODO improve
-	public static List<AttributeKey> getAllGroupKeys() {
-		ArrayList<AttributeKey> list = new ArrayList<AttributeKey>();
-		list.addAll(Arrays.asList(AK_CPU.values()));
-		list.addAll(Arrays.asList(AK_GPU.values()));
-		list.addAll(Arrays.asList(AK_DISP.values()));
-		list.addAll(Arrays.asList(AK_NIC.values()));
-		list.addAll(Arrays.asList(AK_TORRENT.values()));
-		return list;
-	}
-
-	// TODO RENAME
-	default public int getFullID() {
+	default public int getWireID() {
 		return (getGroupID() << (GROUP_ID_SPACE + TYPE_ID_SPACE)) + (getTypeID() << TYPE_ID_SPACE) + getConstID();
 	}
 
+	default public int getGTID() {
+		return (getGroupID() << GROUP_ID_SPACE) + getTypeID();
+	}
+
+	public void setGroupID(int groupID);
+
 	/**
 	 * The group ID is the least specific of the three "attribute IDs". It
-	 * identifies the group of which this key is a member. The maximum value of
-	 * a group ID is 2^GROUP_ID_SPACE.
+	 * identifies the group of which this key is a member. The maximum value of a
+	 * group ID is 2^GROUP_ID_SPACE.
 	 * 
 	 * @return The group ID for this key
 	 */
@@ -91,8 +90,8 @@ public interface AttributeKey {
 
 	/**
 	 * The type ID is second to most specific of the three "attribute IDs". It
-	 * identifies each concrete AttributeKey (enums prefixed with AK_). The
-	 * maximum value of a type ID is 2^TYPE_ID_SPACE.
+	 * identifies each concrete AttributeKey (enums prefixed with AK_). The maximum
+	 * value of a type ID is 2^TYPE_ID_SPACE.
 	 * 
 	 * @return The type ID for this key
 	 */
@@ -111,9 +110,14 @@ public interface AttributeKey {
 
 	public static final int CONST_ID_SPACE = 6;
 
+	default public Class<?> getJavaType() {
+		// most attributes are Strings
+		return String.class;
+	}
+
 	/**
-	 * A compatible attribute key is defined for a particular OS and Instance.
-	 * Keys are compatible by default.
+	 * A compatible attribute key is defined for a particular OS and Instance. Keys
+	 * are compatible by default.
 	 * 
 	 * @param os
 	 * @param instance
@@ -134,15 +138,55 @@ public interface AttributeKey {
 	}
 
 	/**
-	 * Plural attribute keys are used by multiple attribute groups rather than
-	 * just one. For example, an instance may have more than one NIC. The
-	 * attribute keys corresponding to properties of the NIC (like IP or MAC)
-	 * would be plural attributes. Attributes like OS name must be singluar.
+	 * Plural attribute keys are used by multiple attribute groups rather than just
+	 * one. For example, an instance may have more than one NIC. The attribute keys
+	 * corresponding to properties of the NIC (like IP or MAC) would be plural
+	 * attributes. Attributes like OS name must be singluar.
 	 * 
 	 * @return True if plural, false if singluar
 	 */
 	default public boolean isPlural() {
 		return this instanceof PluralKey;
+	}
+
+	public static AttributeKey convert(int wireID) {
+		AttributeKey key = (AttributeKey) TypeIndex.getType(extractTypeID(wireID))
+				.getEnumConstants()[extractConstID(wireID)];
+		key.setGroupID(extractGroupID(wireID));
+
+		return key;
+	}
+
+	/**
+	 * @param wireID
+	 * @return The ConstID encoded in the WireID
+	 */
+	public static int extractConstID(int wireID) {
+		return wireID & ((int) Math.pow(2, CONST_ID_SPACE) - 1);
+	}
+
+	/**
+	 * @param wireID
+	 * @return The TypeID encoded in the WireID
+	 */
+	public static int extractTypeID(int wireID) {
+		return wireID & (((int) Math.pow(2, TYPE_ID_SPACE) - 1) << CONST_ID_SPACE);
+	}
+
+	/**
+	 * @param wireID
+	 * @return The GroupID encoded in the WireID
+	 */
+	public static int extractGroupID(int wireID) {
+		return wireID >> (TYPE_ID_SPACE + CONST_ID_SPACE);
+	}
+
+	/**
+	 * @param wireID
+	 * @return The GTID encoded in the WireID
+	 */
+	public static int extractGroupTypeID(int wireID) {
+		return wireID >> CONST_ID_SPACE;
 	}
 
 }

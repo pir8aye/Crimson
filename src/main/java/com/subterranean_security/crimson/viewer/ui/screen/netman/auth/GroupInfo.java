@@ -20,20 +20,23 @@ package com.subterranean_security.crimson.viewer.ui.screen.netman.auth;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.Date;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
-import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH;
 import com.subterranean_security.crimson.viewer.ui.common.components.DataViewer;
 
 public class GroupInfo extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public GroupInfo(AuthMethod am) {
+	public static final AK_AUTH[] defaultHeaders = new AK_AUTH[] { AK_AUTH.TYPE, AK_AUTH.ID, AK_AUTH.NAME,
+			AK_AUTH.CREATION_DATE };
+
+	public GroupInfo(AttributeGroup am) {
 		setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
@@ -46,15 +49,13 @@ public class GroupInfo extends JPanel {
 		panel_2.setLayout(new BorderLayout(0, 0));
 
 		DataViewer dv = new DataViewer();
-		dv.addRow(new String[] { "Authentication Type", "GROUP" });
-		dv.addRow(new String[] { "ID", "" + am.getId() });
-		dv.addRow(new String[] { "Name", am.getName() });
-		dv.addRow(new String[] { "Key", am.getGroupSeedPrefix() });
-		dv.addRow(new String[] { "Creation Date", new Date(am.getCreation()).toString() });
+		for (AK_AUTH auth : defaultHeaders) {
+			dv.addRow(new String[] { auth.toString(), am.getStr(auth) });
+		}
 
 		panel_2.add(dv, BorderLayout.CENTER);
 
-		JLabel lblGroupKeyfbddefca = new JLabel("Group Key: " + am.getGroupSeedPrefix());
+		JLabel lblGroupKeyfbddefca = new JLabel("Group Key: ");
 		lblGroupKeyfbddefca.setFont(new Font("Dialog", Font.BOLD, 9));
 		add(lblGroupKeyfbddefca, BorderLayout.NORTH);
 

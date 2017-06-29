@@ -35,36 +35,28 @@ message ProfileTimestamp {
 
 message EV_ProfileDelta {
 
+	// The CVID of the Profile to update
 	int32 cvid = 1;
-	int64 departure_time = 2;
 	
 	// String attributes
-	map<int32, string> str_attr = 3;
+	map<int32, string> str_attr = 2;
 	
-	// int attributes
-	map<int32, int32> int_attr = 4;
+	// Integer attributes
+	map<int32, int32> int_attr = 3;
 	
-	// long attributes
-	map<int32, int64> long_attr = 5;
+	// Long attributes
+	map<int32, int64> long_attr = 4;
 	
-	// boolean attributes
-	map<int32, bool> boolean_attr = 6;
+	// Boolean attributes
+	map<int32, bool> boolean_attr = 5;
 	
-	// Nonstring attributes
-	bool fig = 10;
+	// Double attributes
+	map<int32, double> Double = 6;
 	
 }
 
-message EV_ServerProfileDelta {
-	EV_ProfileDelta pd = 1;
+message EV_PermissionDelta {
 
-	repeated ListenerConfig listener = 2;
-	repeated AuthMethod auth_method = 3;
-}
-
-message EV_ViewerProfileDelta {
-	EV_ProfileDelta pd = 1;
-	repeated int64 viewer_permissions = 2;
 }
 
 message EV_NetworkDelta {

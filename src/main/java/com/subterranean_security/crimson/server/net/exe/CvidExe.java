@@ -18,31 +18,33 @@
 package com.subterranean_security.crimson.server.net.exe;
 
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
+import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.net.sequences.CVID.RS_Cvid;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 
-public final class CvidExe {
-	private CvidExe() {
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
+public final class CvidExe extends Exelet implements ExeI {
+
+	public CvidExe(Connector connector) {
+		super(connector);
 	}
 
-	/**
-	 * Respond to a request for a cvid. If the server is not familiar with one
-	 * of the supplied long-cvids, respond with a new lcvid-cvid pair.
-	 * 
-	 * @param c
-	 * @param m
-	 */
-	public static void rq_cvid(Connector c, Message m) {
+	@Override
+	public void rq_cvid(Message m) {
 		for (String lcvid : m.getRqCvid().getLcvidList()) {
 			if (LcvidStore.contains(lcvid)) {
 				int cvid = LcvidStore.get(lcvid);
 
-				c.setCvid(cvid);
-				ConnectionStore.add(c);
-				c.write(Message.newBuilder().setId(m.getId())
+				connector.setCvid(cvid);
+				ConnectionStore.add(connector);
+				connector.write(Message.newBuilder().setId(m.getId())
 						.setRsCvid(RS_Cvid.newBuilder().setCvid(cvid).setLcvid(lcvid)).build());
 				return;
 			}
@@ -62,9 +64,9 @@ public final class CvidExe {
 			// ServerProfileStore.addClient(cp);
 		}
 
-		c.setCvid(cvid);
-		ConnectionStore.add(c);
-		c.write(Message.newBuilder().setId(m.getId()).setRsCvid(RS_Cvid.newBuilder().setCvid(cvid).setLcvid(lcvid))
-				.build());
+		connector.setCvid(cvid);
+		ConnectionStore.add(connector);
+		connector.write(Message.newBuilder().setId(m.getId())
+				.setRsCvid(RS_Cvid.newBuilder().setCvid(cvid).setLcvid(lcvid)).build());
 	}
 }

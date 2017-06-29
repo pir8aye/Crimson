@@ -33,6 +33,7 @@ enum AuthType {
 	GROUP = 0; PASSWORD = 1; NO_AUTH = 2;
 }
 
+// move to AK_AUTH
 message AuthMethod {
 	int32 id = 1;
 	int64 creation = 2;

@@ -1,6 +1,6 @@
 /******************************************************************************
  *                                                                            *
- *                    Copyright 2016 Subterranean Security                    *
+ *                    Copyright 2017 Subterranean Security                    *
  *                                                                            *
  *  Licensed under the Apache License, Version 2.0 (the "License");           *
  *  you may not use this file except in compliance with the License.          *
@@ -15,27 +15,33 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.net.stream;
+package com.subterranean_security.crimson.sv.profile.set.filter;
 
-import com.subterranean_security.crimson.core.stream.info.InfoSlave;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ServerProfileDelta;
-import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-import com.subterranean_security.crimson.proto.core.net.sequences.Stream.Param;
+import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
+import com.subterranean_security.crimson.sv.profile.Profile;
 
-public class SInfoSlave extends InfoSlave {
+/**
+ * @author cilki
+ * @since 5.0.0
+ */
+public class AttributeFilter implements ProfileFilter {
 
-	public SInfoSlave(Param p) {
-		super(p, p.getVID());
+	private AttributeKey key;
+	private Object value;
+
+	public AttributeFilter(AttributeKey key, Object value) {
+		if (key == null)
+			throw new IllegalArgumentException();
+		if (value == null)
+			throw new IllegalArgumentException();
+
+		this.key = key;
+		this.value = value;
 	}
 
 	@Override
-	public void send() {
-		write(Message.newBuilder().setRid(param().getCID()).setSid(param().getVID())
-				.setEvServerProfileDelta(gatherServerInfo()));
-	}
-
-	private EV_ServerProfileDelta gatherServerInfo() {
-		return EV_ServerProfileDelta.newBuilder().setPd(gather()).build();
+	public boolean check(Profile profile) {
+		return value.equals(profile.getAttribute(key).get());
 	}
 
 }
