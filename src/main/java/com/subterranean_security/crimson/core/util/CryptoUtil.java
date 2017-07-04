@@ -47,7 +47,7 @@ import java.util.Base64;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
-import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
+import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 
@@ -193,7 +193,7 @@ public final class CryptoUtil {
 
 	private static final int seedSuffixLength = 128;
 
-	public static AuthenticationGroup generateGroup(String name, byte[] seedPrefix) {
+	public static KeyAuthGroup generateGroup(String name, byte[] seedPrefix) {
 
 		try {
 			KeyPairGenerator generator = KeyPairGenerator.getInstance("DSA", "SUN");
@@ -214,7 +214,7 @@ public final class CryptoUtil {
 			generator.initialize(1024, random);
 
 			KeyPair pair = generator.generateKeyPair();
-			return new AuthenticationGroup(name, pair.getPrivate(), pair.getPublic());
+			return new KeyAuthGroup(name, pair.getPrivate(), pair.getPublic());
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

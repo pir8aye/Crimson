@@ -29,7 +29,7 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Stream.Param;
 
 /**
  * @author cilki
- * @since 4.0.0
+ * @since 3.0.0
  */
 public abstract class Stream implements Observer {
 	protected Param param;

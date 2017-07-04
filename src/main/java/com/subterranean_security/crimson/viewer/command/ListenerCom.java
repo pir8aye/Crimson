@@ -15,51 +15,75 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.viewer.net.command;
+package com.subterranean_security.crimson.viewer.command;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
-import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
+import com.subterranean_security.crimson.proto.core.net.sequences.Listener.ListenerConfig;
+import com.subterranean_security.crimson.proto.core.net.sequences.Listener.RQ_AddListener;
+import com.subterranean_security.crimson.proto.core.net.sequences.Listener.RQ_RemoveListener;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-import com.subterranean_security.crimson.proto.core.net.sequences.Torrent.RQ_AddTorrent;
 
-public final class TorrentCom {
-	private TorrentCom() {
+public final class ListenerCom {
+	private ListenerCom() {
 	}
 
-	public static Outcome addTorrent(int cid, File torrent, String destination) {
-		Outcome.Builder outcome = Outcome.newBuilder();
+	/**
+	 * Start a new listener on the server
+	 * 
+	 * @param lf
+	 * @return
+	 */
+	public static Outcome addListener(ListenerConfig lf) {
+		long t1 = System.currentTimeMillis();
+		Outcome.Builder outcome = Outcome.newBuilder().setResult(false);
 
 		try {
 			Message m = NetworkStore.route(
-					Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
-							.setRqAddTorrent(RQ_AddTorrent.newBuilder().setDestintation(destination)
-									.setTorrentFile(ByteString.readFrom(new FileInputStream(torrent)))),
+					Message.newBuilder().setId(IDGen.msg()).setRqAddListener(RQ_AddListener.newBuilder().setConfig(lf)),
 					TimeoutConstants.DEFAULT);
+			if (m.getRsOutcome() != null) {
+				outcome.setResult(m.getRsOutcome().getResult());
+				if (!m.getRsOutcome().getComment().isEmpty())
+					outcome.setComment(m.getRsOutcome().getComment());
 
-			if (m == null) {
-				outcome.setResult(false).setComment("Request timed out");
-			} else {
-				outcome.setResult(m.getRsAddTorrent().getOutcome().getResult());
 			}
-
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
-		} catch (IOException e1) {
-			outcome.setResult(false).setComment("Torrent file not found");
 		} catch (MessageTimeout e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			outcome.setResult(false).setComment("Request Timeout");
 		}
-		return outcome.build();
+
+		return outcome.setTime(System.currentTimeMillis() - t1).build();
 	}
 
+	/**
+	 * Stop and remove a listener on the server
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Outcome removeListener(int id) {
+		long t1 = System.currentTimeMillis();
+		Outcome.Builder outcome = Outcome.newBuilder();
+		try {
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg())
+					.setRqRemoveListener(RQ_RemoveListener.newBuilder().setId(id)), TimeoutConstants.DEFAULT);
+			if (m.getRsOutcome() != null) {
+				outcome.setResult(m.getRsOutcome().getResult());
+				if (!m.getRsOutcome().getComment().isEmpty())
+					outcome.setComment(m.getRsOutcome().getComment());
+
+			}
+		} catch (InterruptedException e) {
+			outcome.setResult(false).setComment("Interrupted");
+		} catch (MessageTimeout e) {
+			outcome.setResult(false).setComment("Request Timeout");
+		}
+
+		return outcome.setTime(System.currentTimeMillis() - t1).build();
+	}
 }

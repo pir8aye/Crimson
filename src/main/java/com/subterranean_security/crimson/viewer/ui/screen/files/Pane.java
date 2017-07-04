@@ -41,7 +41,7 @@ import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS
 import com.subterranean_security.crimson.sv.profile.Profile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.viewer.net.command.FileManagerCom;
+import com.subterranean_security.crimson.viewer.command.FileManagerCom;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.screen.files.ep.AdvancedFileInfo;
 import com.subterranean_security.crimson.viewer.ui.screen.files.ep.DeleteConfirmation;

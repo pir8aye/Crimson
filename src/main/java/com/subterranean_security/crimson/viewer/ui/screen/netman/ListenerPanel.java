@@ -27,7 +27,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_LISTENER;
-import com.subterranean_security.crimson.viewer.net.command.ListenerCom;
+import com.subterranean_security.crimson.viewer.command.ListenerCom;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;

@@ -35,7 +35,7 @@ import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
-import com.subterranean_security.crimson.viewer.net.command.FileManagerCom;
+import com.subterranean_security.crimson.viewer.command.FileManagerCom;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.files.Pane;
 import com.subterranean_security.crimson.viewer.ui.screen.files.Pane.TYPE;

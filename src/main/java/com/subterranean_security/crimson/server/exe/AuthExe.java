@@ -15,17 +15,17 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.net.exe;
+package com.subterranean_security.crimson.server.exe;
 
 import javax.security.auth.DestroyFailedException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
+import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
@@ -34,10 +34,13 @@ import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
+import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.MI_GroupChallengeResult;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_GroupChallenge;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_CreateAuthMethod;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_GroupChallenge;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_RemoveAuthMethod;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.server.store.AuthStore;
 import com.subterranean_security.crimson.universal.Universal;
@@ -102,7 +105,7 @@ public final class AuthExe extends Exelet implements ExeI {
 		case GROUP:
 			currentStage = AuthStage.GROUP_STAGE1;
 
-			AuthenticationGroup group = AuthStore.getGroup(auth.getGroupName());
+			KeyAuthGroup group = AuthStore.getGroup(auth.getGroupName());
 			if (group == null) {
 				log.debug("Authentication failed because the client supplied an unknown group: {}",
 						auth.getGroupName());
@@ -189,6 +192,21 @@ public final class AuthExe extends Exelet implements ExeI {
 	private void rejectClient() {
 		currentStage = AuthStage.UNAUTHENTICATED;
 		connector.setState(ConnectionState.CONNECTED);
+	}
+
+	public void rq_create_auth_method(Message m) {
+		Outcome outcome = AuthStore.create(m.getRqCreateAuthMethod().getAuthMethod());
+
+		connector.write(Message.newBuilder().setId(m.getId())
+				.setRsCreateAuthMethod(RS_CreateAuthMethod.newBuilder().setOutcome(outcome)).build());
+
+	}
+
+	public void rq_remove_auth_method(Message m) {
+		AuthStore.remove(m.getRqRemoveAuthMethod().getId());
+		// TODO check if removed
+		connector.write(
+				Message.newBuilder().setRsRemoveAuthMethod(RS_RemoveAuthMethod.newBuilder().setResult(true)).build());
 	}
 
 }

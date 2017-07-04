@@ -52,7 +52,7 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Login.RQ_Ping;
 import com.subterranean_security.crimson.proto.core.net.sequences.Login.RS_ServerInfo;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.net.command.LoginCom;
+import com.subterranean_security.crimson.viewer.command.LoginCom;
 import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.FieldLimiter;

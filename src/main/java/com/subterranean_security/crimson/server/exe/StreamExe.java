@@ -1,4 +1,4 @@
-package com.subterranean_security.crimson.server.net.exe;
+package com.subterranean_security.crimson.server.exe;
 
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;

@@ -15,58 +15,53 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.net.exe;
+package com.subterranean_security.crimson.client.command;
 
+import javax.security.auth.DestroyFailedException;
+
+import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
-import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
-import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
+import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.proto.core.net.sequences.CVID.RS_Cvid;
+import com.subterranean_security.crimson.proto.core.Misc.AuthType;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.MI_AuthRequest;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 
-/**
- * @author cilki
- * @since 4.0.0
- */
-public final class CvidExe extends Exelet implements ExeI {
-
-	public CvidExe(Connector connector) {
-		super(connector);
+public final class AuthCom {
+	private AuthCom() {
 	}
 
-	@Override
-	public void rq_cvid(Message m) {
-		for (String lcvid : m.getRqCvid().getLcvidList()) {
-			if (LcvidStore.contains(lcvid)) {
-				int cvid = LcvidStore.get(lcvid);
+	public static void auth(Connector c) {
+		AuthType authType = ConfigStore.getConfig().getAuthType();
 
-				connector.setCvid(cvid);
-				ConnectionStore.add(connector);
-				connector.write(Message.newBuilder().setId(m.getId())
-						.setRsCvid(RS_Cvid.newBuilder().setCvid(cvid).setLcvid(lcvid)).build());
-				return;
+		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(LcvidStore.cvid).setType(authType);
+
+		switch (authType) {
+		case GROUP:
+			KeyAuthGroup group = Client.getGroup();
+			auth.setGroupName(group.getName());
+			try {
+				group.destroy();
+			} catch (DestroyFailedException e) {
 			}
+			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());
+			break;
+		case NO_AUTH:
+			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth.setPd(Platform.fig())).build());
+
+			break;
+		case PASSWORD:
+			auth.setPassword(ConfigStore.getConfig().getPassword());
+
+			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());
+			break;
+		default:
+			break;
+
 		}
-
-		// create a new cvid and lcvid
-		int cvid = IDGen.cvid();
-		String lcvid = IDGen.lcvid();
-		LcvidStore.addLcvid(lcvid, cvid);
-
-		// create a new profile for this cvid
-		if (m.getRqCvid().getViewer()) {
-			// ViewerProfile vp = new ViewerProfile(cvid);
-			// ProfileStore.addViewer(vp);
-		} else {
-			// ClientProfile cp = new ClientProfile(cvid);
-			// ServerProfileStore.addClient(cp);
-		}
-
-		connector.setCvid(cvid);
-		ConnectionStore.add(connector);
-		connector.write(Message.newBuilder().setId(m.getId())
-				.setRsCvid(RS_Cvid.newBuilder().setCvid(cvid).setLcvid(lcvid)).build());
 	}
+
 }

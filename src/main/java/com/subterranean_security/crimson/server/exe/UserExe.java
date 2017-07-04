@@ -1,7 +1,8 @@
-package com.subterranean_security.crimson.server.net.exe;
+package com.subterranean_security.crimson.server.exe;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
@@ -16,13 +17,17 @@ import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
 
-public class UserExe extends Exelet {
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
+public class UserExe extends Exelet implements ExeI {
 
 	public UserExe(Connector connector) {
 		super(connector);
 	}
 
-	public static void rq_add_user(Connector connector, Message m) {
+	public void rq_add_user(Message m) {
 		// TODO check permissions
 		connector.write(
 				Message.newBuilder().setId(m.getId()).setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
@@ -38,7 +43,7 @@ public class UserExe extends Exelet {
 	}
 
 	// TODO REWRITE!!
-	public static void rq_edit_user(Connector connector, Message m) {
+	public void rq_edit_user(Message m) {
 		// TODO check permissions
 		connector.write(
 				Message.newBuilder().setId(m.getId()).setRsEditUser(RS_EditUser.newBuilder().setResult(true)).build());

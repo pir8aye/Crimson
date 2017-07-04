@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.net.exe;
+package com.subterranean_security.crimson.server.exe;
 
 import java.io.IOException;
 
@@ -37,6 +37,10 @@ import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public final class FileManagerExe extends Exelet {
 
 	private static final Logger log = LoggerFactory.getLogger(FileManagerExe.class);
@@ -45,11 +49,11 @@ public final class FileManagerExe extends Exelet {
 		super(connector);
 	}
 
-	public static void rq_file_listing(Connector receptor, Message m) {
-		ViewerProfile vp = ServerProfileStore.getViewer(receptor.getCvid());
+	public void rq_file_listing(Message m) {
+		ViewerProfile vp = ServerProfileStore.getViewer(connector.getCvid());
 
 		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
-			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
+			log.warn("Denied unauthorized file access to server from viewer: {}", connector.getCvid());
 			return;
 		}
 
@@ -62,7 +66,7 @@ public final class FileManagerExe extends Exelet {
 		}
 
 		try {
-			receptor.write(Message.newBuilder().setId(m.getId())
+			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsFileListing(RS_FileListing.newBuilder().setPath(lf.pwd()).addAllListing(lf.list())).build());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -71,47 +75,47 @@ public final class FileManagerExe extends Exelet {
 		}
 	}
 
-	public static void rs_file_listing(Connector receptor, Message m) {
+	public void rs_file_listing(Message m) {
 
 	}
 
-	public static void rs_file_handle(Connector receptor, Message m) {
+	public void rs_file_handle(Message m) {
 
 	}
 
-	public static void rq_file_handle(Connector receptor, Message m) {
-		ViewerProfile vp = ServerProfileStore.getViewer(receptor.getCvid());
+	public void rq_file_handle(Message m) {
+		ViewerProfile vp = ServerProfileStore.getViewer(connector.getCvid());
 
 		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
-			log.warn("Denied unauthorized file access to server from viewer: {}", receptor.getCvid());
+			log.warn("Denied unauthorized file access to server from viewer: {}", connector.getCvid());
 			return;
 		}
-		receptor.write(Message.newBuilder().setId(m.getId())
+		connector.write(Message.newBuilder().setId(m.getId())
 				.setRsFileHandle(RS_FileHandle.newBuilder().setFmid(FileManagerStore.add(new LocalFS(true, true))))
 				.build());
 
 	}
 
-	public static void rq_delete(Connector receptor, Message m) {
+	public void rq_delete(Message m) {
 
 		// check permissions
-		if (!ServerProfileStore.getViewer(receptor.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
-			receptor.write(Message.newBuilder().setId(m.getId())
+		if (!ServerProfileStore.getViewer(connector.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
+			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsDelete(RS_Delete.newBuilder()
 							.setOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions")))
 					.build());
 			return;
 		}
 
-		receptor.write(
-				Message.newBuilder().setId(m.getId())
+		connector
+				.write(Message.newBuilder().setId(m.getId())
 						.setRsDelete(RS_Delete.newBuilder().setOutcome(
 								FileUtil.deleteAll(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
 						.build());
 	}
 
-	public static void rq_advanced_file_info(Connector receptor, Message m) {
-		receptor.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+	public void rq_advanced_file_info(Message m) {
+		connector.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
 				.setRsAdvancedFileInfo(FileUtil.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
 	}
 

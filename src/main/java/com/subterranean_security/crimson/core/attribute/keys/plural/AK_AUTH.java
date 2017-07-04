@@ -3,7 +3,13 @@ package com.subterranean_security.crimson.core.attribute.keys.plural;
 import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
 
 public enum AK_AUTH implements PluralKey {
-	ID, NAME, TYPE, CREATION_DATE;
+	ID, NAME, TYPE, CREATION_DATE,
+
+	// Key authentication
+	KEY_SEED,
+
+	// Password authentication
+	PASSWORD;
 
 	@Override
 	public Object query() {

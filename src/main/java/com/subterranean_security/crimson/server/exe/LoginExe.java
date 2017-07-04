@@ -15,7 +15,7 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.net.exe;
+package com.subterranean_security.crimson.server.exe;
 
 import java.util.Date;
 
@@ -27,6 +27,7 @@ import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.MessageFuture;
+import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
@@ -41,7 +42,11 @@ import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
 
-public final class LoginExe extends Exelet {
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
+public final class LoginExe extends Exelet implements ExeI {
 
 	private static final Logger log = LoggerFactory.getLogger(LoginExe.class);
 
@@ -49,30 +54,30 @@ public final class LoginExe extends Exelet {
 		super(connector);
 	}
 
-	public static void rq_login(Connector receptor, Message m) {
+	public void rq_login(Message m) {
 		Outcome.Builder outcome = Outcome.newBuilder().setTime(System.currentTimeMillis());
 
-		log.debug("Processing login request from: {} (CVID: {})", receptor.getRemoteIP(), receptor.getCvid());
+		log.debug("Processing login request from: {} (CVID: {})", connector.getRemoteIP(), connector.getCvid());
 		ViewerProfile vp = null;
 		RS_CloudUser cloud = null;
 
-		// by attempting to login, this receptor has revealed it is a viewer
-		receptor.setInstance(Universal.Instance.VIEWER);
+		// by attempting to login, this connector has revealed it is a viewer
+		connector.setInstance(Universal.Instance.VIEWER);
 
 		// validate username
 		String user = m.getRqLogin().getUsername();
 		if (!ValidationUtil.username(user)) {
 			log.debug("The username ({}) is invalid", user);
-			passOrFail(receptor, m.getId(), vp, outcome.setResult(false).setComment("Invalid username"));
+			passOrFail(m.getId(), vp, outcome.setResult(false).setComment("Invalid username"));
 			return;
 		}
 
 		// pass if server is in example mode
 		if (Boolean.parseBoolean(System.getProperty("mode.example", "false"))) {
-			vp = new ViewerProfile(receptor.getCvid());
+			vp = new ViewerProfile(connector.getCvid());
 			user = "user_" + Math.abs(RandomUtil.nextInt());
 
-			passOrFail(receptor, m.getId(), vp, outcome.setResult(true));
+			passOrFail(m.getId(), vp, outcome.setResult(true));
 			return;
 		}
 
@@ -89,7 +94,7 @@ public final class LoginExe extends Exelet {
 			cloud = CloudLoginExe.getCloudUser(user);
 			if (cloud != null) {
 				// create ViewerProfile
-				vp = new ViewerProfile(receptor.getCvid());
+				vp = new ViewerProfile(connector.getCvid());
 				vp.set(AK_VIEWER.USER, user);
 				vp.getPermissions().addFlag(Perm.server.generator.generate_jar).addFlag(Perm.server.fs.read);
 				ServerProfileStore.addViewer(vp);
@@ -100,20 +105,19 @@ public final class LoginExe extends Exelet {
 		// if profile is still not found
 		if (vp == null) {
 			log.debug("The user ({}) could not be found", user);
-			passOrFail(receptor, m.getId(), vp, outcome.setResult(false).setComment("User does not exist"));
+			passOrFail(m.getId(), vp, outcome.setResult(false).setComment("User does not exist"));
 			return;
 		} else {
-			vp.setCvid(receptor.getCvid());
+			vp.setCvid(connector.getCvid());
 		}
 
-		Outcome authOutcome = (cloud == null) ? handleAuthentication(receptor, m, user)
-				: handleCloudAuthentication(receptor, m, cloud);
+		Outcome authOutcome = (cloud == null) ? handleAuthentication(m, user) : handleCloudAuthentication(m, cloud);
 
-		passOrFail(receptor, m.getId(), vp, outcome.setResult(authOutcome.getResult()));
+		passOrFail(m.getId(), vp, outcome.setResult(authOutcome.getResult()));
 
 	}
 
-	private static Outcome handleAuthentication(Connector receptor, Message m, String user) {
+	private Outcome handleAuthentication(Message m, String user) {
 		long t1 = System.currentTimeMillis();
 		Outcome.Builder outcome = Outcome.newBuilder().setResult(false);
 
@@ -126,7 +130,7 @@ public final class LoginExe extends Exelet {
 				throw new Exception("Provided user could not be found");
 			}
 
-			MessageFuture future = receptor
+			MessageFuture future = connector
 					.writeAndGetResponse(Message.newBuilder().setId(m.getId()).setRqLoginChallenge(challenge).build());
 
 			outcome.setResult(ServerDatabaseStore.getDatabase().validLogin(user,
@@ -138,13 +142,13 @@ public final class LoginExe extends Exelet {
 		return outcome.setTime(System.currentTimeMillis() - t1).build();
 	}
 
-	private static Outcome handleCloudAuthentication(Connector receptor, Message m, RS_CloudUser cloud) {
+	private Outcome handleCloudAuthentication(Message m, RS_CloudUser cloud) {
 		long t1 = System.currentTimeMillis();
 		Outcome.Builder outcome = Outcome.newBuilder().setResult(false);
 
 		try {
 			log.debug("Issuing cloud user challenge");
-			MessageFuture future = receptor.writeAndGetResponse(Message.newBuilder().setId(m.getId())
+			MessageFuture future = connector.writeAndGetResponse(Message.newBuilder().setId(m.getId())
 					.setRqLoginChallenge(RQ_LoginChallenge.newBuilder().setCloud(true).setSalt(cloud.getSalt()))
 					.build());
 
@@ -156,19 +160,19 @@ public final class LoginExe extends Exelet {
 		return outcome.setTime(System.currentTimeMillis() - t1).build();
 	}
 
-	private static void passLogin(Connector receptor, int id, ViewerProfile vp, Outcome outcome) {
+	private void passLogin(int id, ViewerProfile vp, Outcome outcome) {
 		log.debug("Accepting login: " + vp.get(AK_VIEWER.USER) + " (" + vp.getCvid() + ")");
 
 		// this connection is now authenticated
-		receptor.setState(ConnectionState.AUTHENTICATED);
-		// ConnectionStore.add(receptor);
+		connector.setState(ConnectionState.AUTHENTICATED);
+		// ConnectionStore.add(connector);
 
-		updateViewerProfile(receptor, vp);
+		updateViewerProfile(vp);
 
 		long lastLogin = vp.getLastLoginTime();
 
 		try {
-			receptor.write(Message.newBuilder().setId(id)
+			connector.write(Message.newBuilder().setId(id)
 					.setRsLogin(RS_Login.newBuilder().setResponse(outcome)
 							.setSpd(ServerProfileStore.getServer().getUpdates(lastLogin, vp))
 							.setVpd(vp.getViewerUpdates(lastLogin)))
@@ -180,25 +184,25 @@ public final class LoginExe extends Exelet {
 
 	}
 
-	private static void updateViewerProfile(Connector receptor, ViewerProfile vp) {
-		vp.set(AK_VIEWER.LOGIN_IP, receptor.getRemoteIP());
+	private void updateViewerProfile(ViewerProfile vp) {
+		vp.set(AK_VIEWER.LOGIN_IP, connector.getRemoteIP());
 		vp.set(AK_VIEWER.LOGIN_TIME, new Date().toString());
 	}
 
-	private static void failLogin(Connector receptor, int id, Outcome outcome) {
-		log.debug("Rejecting login from: {} ", receptor.getRemoteIP());
-		receptor.write(Message.newBuilder().setId(id).setRsLogin(RS_Login.newBuilder().setResponse(outcome)).build());
-		receptor.close();
+	private void failLogin(int id, Outcome outcome) {
+		log.debug("Rejecting login from: {} ", connector.getRemoteIP());
+		connector.write(Message.newBuilder().setId(id).setRsLogin(RS_Login.newBuilder().setResponse(outcome)).build());
+		connector.close();
 	}
 
-	private static void passOrFail(Connector receptor, int id, ViewerProfile vp, Outcome.Builder outcome) {
+	private void passOrFail(int id, ViewerProfile vp, Outcome.Builder outcome) {
 		// set time
 		outcome.setTime(System.currentTimeMillis() - outcome.getTime());
 
 		if (outcome.getResult()) {
-			passLogin(receptor, id, vp, outcome.build());
+			passLogin(id, vp, outcome.build());
 		} else {
-			failLogin(receptor, id, outcome.build());
+			failLogin(id, outcome.build());
 		}
 	}
 

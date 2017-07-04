@@ -15,28 +15,46 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.server.net.exe;
+package com.subterranean_security.crimson.server.exe;
+
+import java.util.NoSuchElementException;
 
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
-import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.proto.core.net.sequences.Login.RS_ServerInfo;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-import com.subterranean_security.crimson.proto.core.net.sequences.Network.RQ_DirectConnection;
-import com.subterranean_security.crimson.proto.core.net.sequences.Network.RQ_MakeDirectConnection;
+import com.subterranean_security.crimson.universal.Universal;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
-public class NetworkExe extends Exelet {
+public final class ServerInfoExe extends Exelet {
 
-	public NetworkExe(Connector connector) {
+	public ServerInfoExe(Connector connector) {
 		super(connector);
 	}
 
-	public static void rq_direct_connection(Connector connector, Message msg) {
-		RQ_DirectConnection rq = msg.getRqDirectConnection();
-		if (rq.getListenerPort() == 0) {
+	private RS_ServerInfo.Builder rs_server_info;
 
-		} else {
-			NetworkStore.route(Message.newBuilder().setRqMakeDirectConnection(RQ_MakeDirectConnection.newBuilder()
-					.setHost(connector.getRemoteIP()).setPort(rq.getListenerPort())));
+	public void rq_server_info(Connector connector) {
+		if (rs_server_info == null)
+			refreshServerInfo();
+
+		connector.write(Message.newBuilder().setRsServerInfo(rs_server_info).build());
+	}
+
+	public void refreshServerInfo() {
+		rs_server_info = RS_ServerInfo.newBuilder().setVersion(Universal.version);
+
+		try {
+			rs_server_info.setBanner(DatabaseStore.getDatabase().getString("banner.text"));
+		} catch (NoSuchElementException e) {
+			rs_server_info.clearBanner();
 		}
+
+		try {
+			rs_server_info.setBannerImage(DatabaseStore.getDatabase().getString("banner.image"));
+		} catch (NoSuchElementException e) {
+			rs_server_info.clearBannerImage();
+		}
+
 	}
 }

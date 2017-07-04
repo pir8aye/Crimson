@@ -15,53 +15,51 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.client.net.command;
+package com.subterranean_security.crimson.viewer.command;
 
-import javax.security.auth.DestroyFailedException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
-import com.subterranean_security.crimson.client.Client;
-import com.subterranean_security.crimson.client.store.ConfigStore;
-import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
-import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.platform.Platform;
+import com.google.protobuf.ByteString;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
+import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.proto.core.Misc.AuthType;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.MI_AuthRequest;
+import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
+import com.subterranean_security.crimson.proto.core.net.sequences.Torrent.RQ_AddTorrent;
 
-public final class AuthCom {
-	private AuthCom() {
+public final class TorrentCom {
+	private TorrentCom() {
 	}
 
-	public static void auth(Connector c) {
-		AuthType authType = ConfigStore.getConfig().getAuthType();
+	public static Outcome addTorrent(int cid, File torrent, String destination) {
+		Outcome.Builder outcome = Outcome.newBuilder();
 
-		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(LcvidStore.cvid).setType(authType);
+		try {
+			Message m = NetworkStore.route(
+					Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+							.setRqAddTorrent(RQ_AddTorrent.newBuilder().setDestintation(destination)
+									.setTorrentFile(ByteString.readFrom(new FileInputStream(torrent)))),
+					TimeoutConstants.DEFAULT);
 
-		switch (authType) {
-		case GROUP:
-			AuthenticationGroup group = Client.getGroup();
-			auth.setGroupName(group.getName());
-			try {
-				group.destroy();
-			} catch (DestroyFailedException e) {
+			if (m == null) {
+				outcome.setResult(false).setComment("Request timed out");
+			} else {
+				outcome.setResult(m.getRsAddTorrent().getOutcome().getResult());
 			}
-			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());
-			break;
-		case NO_AUTH:
-			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth.setPd(Platform.fig())).build());
 
-			break;
-		case PASSWORD:
-			auth.setPassword(ConfigStore.getConfig().getPassword());
-
-			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());
-			break;
-		default:
-			break;
-
+		} catch (InterruptedException e) {
+			outcome.setResult(false).setComment("Interrupted");
+		} catch (IOException e1) {
+			outcome.setResult(false).setComment("Torrent file not found");
+		} catch (MessageTimeout e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		return outcome.build();
 	}
 
 }

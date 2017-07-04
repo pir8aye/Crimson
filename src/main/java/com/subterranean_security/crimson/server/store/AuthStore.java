@@ -25,8 +25,9 @@ import javax.security.auth.DestroyFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
-import com.subterranean_security.crimson.core.misc.AuthenticationGroup;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.auth.AuthGroup;
 import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
@@ -61,8 +62,7 @@ public class AuthStore {
 
 	static {
 		try {
-			methods = (CachedList<AuthMethod>) DatabaseStore.getDatabase().getObject("auth.methods");
-			methods.setDatabase(DatabaseStore.getDatabase());
+			methods = (CachedList<AuthMethod>) DatabaseStore.getDatabase().getCachedCollection("auth.methods");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,9 +80,9 @@ public class AuthStore {
 		return null;
 	}
 
-	public static AuthenticationGroup getGroup(String name) {
+	public static KeyAuthGroup getGroup(String name) {
 		try {
-			return (AuthenticationGroup) DatabaseStore.getDatabase().getObject(getGroupMethod(name).getGroup());
+			return (KeyAuthGroup) DatabaseStore.getDatabase().getObject(getGroupMethod(name).getGroup());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -90,20 +90,25 @@ public class AuthStore {
 		return null;
 	}
 
-	public static Outcome create(AuthMethod am) {
-		Outcome.Builder outcome = Outcome.newBuilder();
-		remove(am.getId());
+	public static Outcome create(AttributeGroup am) {
+		Outcome.Builder outcome = Outcome.newBuilder().setResult(true).setTime(System.currentTimeMillis());
+
+		if (getContainer(am.getInt(AK_AUTH.ID)) != null) {
+			return outcome.setResult(false).setComment("The AuthID is already taken").build();
+		}
 
 		if (am.getType() == AuthType.GROUP) {
-			AuthenticationGroup group = CryptoUtil.generateGroup(am.getName(), am.getGroupSeedPrefix().getBytes());
+			KeyAuthGroup group = CryptoUtil.generateGroup(am.getName(), am.getGroupSeedPrefix().getBytes());
 			am = AuthMethod.newBuilder().mergeFrom(am).setGroup(DatabaseStore.getDatabase().store(group)).build();
+			groups.add(group);
+		} else {
+			PasswordAuthGroup group;
 		}
-		methods.add(am);
 
 		// update viewers
 		NetworkStore.broadcastTo(Universal.Instance.VIEWER, Message.newBuilder()
 				.setEvServerProfileDelta(EV_ServerProfileDelta.newBuilder().addAuthMethod(am)).build());
-		return outcome.setResult(true).build();
+		return outcome.setTime(System.currentTimeMillis() - outcome.getTime()).build();
 	}
 
 	public static void remove(int id) {
@@ -130,6 +135,7 @@ public class AuthStore {
 		}
 	}
 
+	// TODO do only when auth is created and client/viewer is added
 	public static void refreshVisibilityPermissions(int cid) {
 		ClientProfile cp = ServerProfileStore.getClient(cid);
 		if (cp == null) {
@@ -205,7 +211,7 @@ public class AuthStore {
 
 	private static List<PasswordAuthGroup> passwords;
 
-	public static PasswordAuthGroup getPasswordContainer(String password) {
+	public static PasswordAuthGroup getPasswordGroup(String password) {
 		for (PasswordAuthGroup container : passwords) {
 			if (container.getPassword().equals(password))
 				return container;
@@ -215,7 +221,7 @@ public class AuthStore {
 
 	private static List<KeyAuthGroup> groups;
 
-	public static KeyAuthGroup getGroupContainer(String name) {
+	public static KeyAuthGroup getKeyGroup(String name) {
 		for (KeyAuthGroup container : groups) {
 			if (container.getName().equals(name))
 				return container;
@@ -223,6 +229,9 @@ public class AuthStore {
 		return null;
 	}
 
+	/**
+	 * Close the store and destroy the groups.
+	 */
 	public static void close() {
 		for (KeyAuthGroup container : groups) {
 			try {
