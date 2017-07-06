@@ -15,54 +15,38 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.attribute.keys.singular;
+package com.subterranean_security.crimson.core.exe;
 
-import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
-import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
-import com.subterranean_security.crimson.core.platform.collect.singular.MOBO;
+import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
+import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
+import com.subterranean_security.crimson.core.stream.StreamStore;
+import com.subterranean_security.crimson.core.stream.info.InfoSlave;
+import com.subterranean_security.crimson.core.stream.subscriber.SubscriberSlave;
+import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
+import com.subterranean_security.crimson.proto.core.net.sequences.Stream.Param;
 
 /**
- * Motherboard attribute keys
- * 
- * @author
- * @since 4.0.0
+ * @author cilki
+ * @since 5.0.0
  */
-public enum AK_MOBO implements SingularKey {
-	VENDOR, MODEL, TEMP;
+public class StreamExe extends Exelet implements ExeI {
 
-	@Override
-	public String toString() {
-		switch (this) {
-		}
-		return super.toString();
+	public StreamExe(Connector connector) {
+		super(connector);
 	}
 
-	@Override
-	public Object query() {
-		switch (this) {
-		case MODEL:
-			return MOBO.getModel();
-		case VENDOR:
-			return MOBO.getManufacturer();
-		case TEMP:
-		default:
-			throw new UnsupportedOperationException("Cannot query: " + this);
+	public void m1_stream_start(Message m) {
+		Param p = m.getMiStreamStart().getParam();
+		if (p.hasInfoParam()) {
+			StreamStore.addStream(new InfoSlave(p));
+		}
+		if (p.hasSubscriberParam()) {
+			StreamStore.addStream(new SubscriberSlave(p));
 		}
 	}
 
-	@Override
-	public String toSuperString() {
-		return super.toString();
+	public void m1_stream_stop(Message m) {
+		StreamStore.removeStreamBySID(m.getMiStreamStop().getStreamID());
 	}
-
-	@Override
-	public int getConstID() {
-		return this.ordinal();
-	}
-
-	@Override
-	public int getTypeID() {
-		return TypeIndex.MOBO.ordinal();
-	}
-
 }

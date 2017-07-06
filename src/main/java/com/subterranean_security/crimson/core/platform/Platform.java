@@ -20,6 +20,7 @@ package com.subterranean_security.crimson.core.platform;
 
 import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.platform.collect.singular.JVM;
 import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
@@ -47,7 +48,7 @@ public final class Platform {
 	public static EV_ProfileDelta fig() {
 		PDFactory pd = new PDFactory(LcvidStore.cvid);
 
-		for (SingularKey key : SingularKey.keys) {
+		for (SingularKey key : TypeIndex.keys) {
 
 			if (!key.isCompatible(osFamily, Universal.instance)) {
 				continue;

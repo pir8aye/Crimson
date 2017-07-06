@@ -26,12 +26,12 @@ import java.util.ArrayList;
 import org.hyperic.sigar.Cpu;
 import org.hyperic.sigar.CpuInfo;
 import org.hyperic.sigar.CpuPerc;
-import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_CPU;
 import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.platform.collect.Collector;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.Native;
@@ -53,15 +53,6 @@ public final class CPU extends Collector {
 		this.timing = timing;
 		this.info = cpuInfo;
 		this.percentage = cpuPerc;
-	}
-
-	public void refreshPercentages() {
-		try {
-			percentage = SigarStore.getSigar().getCpuPercList();
-		} catch (SigarException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -112,7 +103,7 @@ public final class CPU extends Collector {
 	}
 
 	public double getTotalUsage() {
-		refreshPercentages();
+		// refreshPercentages();
 		return percentage.getCombined() * 100;
 	}
 
@@ -133,6 +124,14 @@ public final class CPU extends Collector {
 
 		}
 
+	}
+
+	public boolean isSame(AttributeGroup cpu) {
+		return getModel().equals(cpu.getStr(AK_CPU.MODEL)) && getCache() == cpu.getLong(AK_CPU.CACHE);
+	}
+
+	public boolean isSame(CPU cpu) {
+		return getModel().equals(cpu.getModel()) && getCache() == cpu.getCache();
 	}
 
 	public static class LinuxTemperature {

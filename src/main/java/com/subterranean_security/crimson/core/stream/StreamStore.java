@@ -55,7 +55,7 @@ public final class StreamStore {
 		Iterator<Stream> it = streams.values().iterator();
 		while (it.hasNext()) {
 			Stream s = it.next();
-			if (s.param().getVID() == cvid || s.param().getCID() == cvid) {
+			if (s.param().getMasterID() == cvid || s.param().getSlaveID() == cvid) {
 				log.debug("Removed half-open stream");
 				StreamStore.removeStreamBySID(s.getStreamID());
 			}

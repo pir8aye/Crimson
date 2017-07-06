@@ -34,11 +34,10 @@ import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.LocationUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
-import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.Profile;
 import com.subterranean_security.crimson.sv.profile.set.ProfileSetFactory;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
@@ -98,21 +97,21 @@ public final class DeltaExe extends Exelet implements ExeI {
 		return update.build();
 	}
 
-	public void mi_trigger_profile_delta(Message m) {
+	public void m1_trigger_profile_delta(Message m) {
 
-		for (ClientProfile cp : ServerProfileStore.getClientsUnderAuthorityOfViewer(connector.getCvid())) {
-			boolean flag = true;
-			for (ProfileTimestamp pt : m.getMiTriggerProfileDelta().getProfileTimestampList()) {
-				if (pt.getCvid() == cp.getCvid()) {
-					log.debug("Updating client in viewer");
-					connector.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(pt.getTimestamp())).build());
-					flag = false;
-					continue;
-				}
-			}
-			if (flag) {
+		if (m.getMiTriggerProfileDelta() == null)
+			return;// TODO throw something
+
+		Map<Integer, Long> timestamps = m.getMiTriggerProfileDelta().getUpdateTimestampMap();
+		for (Profile cp : new ProfileSetFactory().addFilter(Instance.CLIENT)
+				.addFilter(connector.getCvid(), Perm.client.visibility).build()) {
+
+			if (timestamps.containsKey(cp.getCvid())) {
+				log.debug("Updating client in viewer");
+				connector.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(timestamps.get(cp.getCvid()))));
+			} else {
 				log.debug("Sending new client to viewer");
-				connector.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(0)).build());
+				connector.write(Message.newBuilder().setEvProfileDelta(cp.getUpdates(0)));
 			}
 
 		}

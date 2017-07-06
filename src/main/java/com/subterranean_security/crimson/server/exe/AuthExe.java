@@ -25,9 +25,10 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
-import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.core.net.TimeoutConstants;
+import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
+import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
@@ -55,10 +56,6 @@ public final class AuthExe extends Exelet implements ExeI {
 
 	private static final Logger log = LoggerFactory.getLogger(AuthExe.class);
 
-	public AuthExe(Connector connector) {
-		super(connector);
-	}
-
 	/**
 	 * The size of the random String used in Key authentication
 	 */
@@ -71,7 +68,12 @@ public final class AuthExe extends Exelet implements ExeI {
 		UNAUTHENTICATED, GROUP_STAGE1, GROUP_STAGE2, AUTHENTICATED;
 	}
 
-	public void mi_challenge_result(Message m) {
+	public AuthExe(Connector connector, BasicExecutor parent) {
+		super(connector, parent);
+	}
+
+	@Override
+	public void m1_challenge_result(Message m) {
 		if (currentStage != AuthStage.GROUP_STAGE2) {
 			log.debug("Rejecting authorization challenge result for connector: {} due to invalid state: {}",
 					connector.getCvid(), currentStage);
@@ -91,7 +93,8 @@ public final class AuthExe extends Exelet implements ExeI {
 
 	}
 
-	public void mi_auth_request(Message m) {
+	@Override
+	public void m1_auth_request(Message m) {
 		if (currentStage != AuthStage.UNAUTHENTICATED) {
 			log.debug("Rejecting authorization request for connector: {} due to invalid state: {}", connector.getCvid(),
 					currentStage);
@@ -180,6 +183,8 @@ public final class AuthExe extends Exelet implements ExeI {
 	}
 
 	private void acceptClient() {
+		parent.initAuth();
+
 		currentStage = AuthStage.AUTHENTICATED;
 		connector.setState(ConnectionState.AUTHENTICATED);
 		connector.setInstance(Universal.Instance.CLIENT);
@@ -194,6 +199,7 @@ public final class AuthExe extends Exelet implements ExeI {
 		connector.setState(ConnectionState.CONNECTED);
 	}
 
+	@Override
 	public void rq_create_auth_method(Message m) {
 		Outcome outcome = AuthStore.create(m.getRqCreateAuthMethod().getAuthMethod());
 
@@ -202,6 +208,7 @@ public final class AuthExe extends Exelet implements ExeI {
 
 	}
 
+	@Override
 	public void rq_remove_auth_method(Message m) {
 		AuthStore.remove(m.getRqRemoveAuthMethod().getId());
 		// TODO check if removed

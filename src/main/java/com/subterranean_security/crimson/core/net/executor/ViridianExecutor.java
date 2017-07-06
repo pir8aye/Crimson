@@ -17,43 +17,25 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.net.executor;
 
-import static com.subterranean_security.crimson.universal.Flags.LOG_NET;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-
-import io.netty.util.ReferenceCountUtil;
 
 public class ViridianExecutor extends BasicExecutor {
 	private static final Logger log = LoggerFactory.getLogger(ViridianExecutor.class);
 
 	public ViridianExecutor() {
 		super();
+	}
 
-		dispatchThread = new Thread(() -> {
-			while (!Thread.currentThread().isInterrupted()) {
-				Message m;
-				try {
-					m = connector.msgQueue.take();
-				} catch (InterruptedException e) {
-					log.error("Message dispatch thread interrupted");
-					return;
-				}
+	@Override
+	public void initUnauth() {
+		// TODO Auto-generated method stub
 
-				pool.submit(() -> {
-					if (LOG_NET) {
-						log.debug("Received: {}", m.toString());
-					}
+	}
 
-					connector.addNewResponse(m);
-
-					ReferenceCountUtil.release(m);
-				});
-
-			}
-		});
+	@Override
+	public void initAuth() {
+		// TODO Auto-generated method stub
 
 	}
 }

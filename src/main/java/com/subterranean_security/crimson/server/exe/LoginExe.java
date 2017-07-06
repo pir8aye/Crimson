@@ -27,6 +27,7 @@ import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.MessageFuture;
+import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.util.RandomUtil;
@@ -50,8 +51,8 @@ public final class LoginExe extends Exelet implements ExeI {
 
 	private static final Logger log = LoggerFactory.getLogger(LoginExe.class);
 
-	public LoginExe(Connector connector) {
-		super(connector);
+	public LoginExe(Connector connector, BasicExecutor parent) {
+		super(connector, parent);
 	}
 
 	public void rq_login(Message m) {
@@ -162,6 +163,8 @@ public final class LoginExe extends Exelet implements ExeI {
 
 	private void passLogin(int id, ViewerProfile vp, Outcome outcome) {
 		log.debug("Accepting login: " + vp.get(AK_VIEWER.USER) + " (" + vp.getCvid() + ")");
+
+		parent.initAuth();
 
 		// this connection is now authenticated
 		connector.setState(ConnectionState.AUTHENTICATED);

@@ -31,8 +31,8 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Stream.Subscri
 public class SubscriberMaster extends PeriodicStream {
 
 	public SubscriberMaster(SubscriberParam sp, int CID) {
-		super(Param.newBuilder().setSubscriberParam(sp).setStreamID(new Random().nextInt()).setCID(CID)
-				.setVID(LcvidStore.cvid).build());
+		super(Param.newBuilder().setSubscriberParam(sp).setStreamID(new Random().nextInt()).setSlaveID(CID)
+				.setMasterID(LcvidStore.cvid).build());
 		start();
 	}
 
@@ -50,7 +50,7 @@ public class SubscriberMaster extends PeriodicStream {
 
 	@Override
 	public void start() {
-		NetworkStore.route(Message.newBuilder().setSid(param().getVID()).setRid(Reserved.SERVER)
+		NetworkStore.route(Message.newBuilder().setSid(param().getMasterID()).setRid(Reserved.SERVER)
 				.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param())));
 
 	}

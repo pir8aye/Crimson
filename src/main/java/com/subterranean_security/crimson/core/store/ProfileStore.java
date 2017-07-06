@@ -67,10 +67,10 @@ public abstract class ProfileStore {
 	protected static CachedMap<Integer, ServerProfile> serverProfiles;
 
 	public static void initialize(CachedMap<Integer, ClientProfile> clientMap,
-			CachedMap<Integer, ViewerProfile> viewerMap, ServerProfile serverProf) {
+			CachedMap<Integer, ViewerProfile> viewerMap, CachedMap<Integer, ServerProfile> serverMap) {
 		clientProfiles = clientMap;
 		viewerProfiles = viewerMap;
-		serverProfile = serverProf;
+		serverProfiles = serverMap;
 
 		if (DEV_MODE) {
 			// charcoal
@@ -188,7 +188,8 @@ public abstract class ProfileStore {
 	}
 
 	public static ServerProfile getServer() {
-		return serverProfile;
+		// TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+		return serverProfiles.values().iterator().next();
 	}
 
 	/**

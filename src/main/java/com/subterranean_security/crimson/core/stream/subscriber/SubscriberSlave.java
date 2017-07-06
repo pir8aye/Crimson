@@ -39,19 +39,20 @@ public class SubscriberSlave extends Stream implements Observer {
 	private static final Logger log = LoggerFactory.getLogger(SubscriberSlave.class);
 
 	public SubscriberSlave(Param p) {
-		super(p, p.getVID());
+		super(p, p.getMasterID());
 		start();
 	}
 
 	public SubscriberSlave(SubscriberParam sp) {
-		this(Param.newBuilder().setSubscriberParam(sp).setStreamID(IDGen.stream()).setVID(LcvidStore.cvid).build());
+		this(Param.newBuilder().setSubscriberParam(sp).setStreamID(IDGen.stream()).setMasterID(LcvidStore.cvid)
+				.build());
 	}
 
 	@Override
 	public void start() {
 
 		if (param().getSubscriberParam().getKeylog()) {
-			ClientProfile cp = ServerProfileStore.getClient(param().getCID());
+			ClientProfile cp = ServerProfileStore.getClient(param().getSlaveID());
 
 			if (cp != null) {
 				cp.getKeylog().addObserver(this);
@@ -65,7 +66,7 @@ public class SubscriberSlave extends Stream implements Observer {
 	@Override
 	public void stop() {
 		if (param().getSubscriberParam().getKeylog()) {
-			ClientProfile cp = ServerProfileStore.getClient(param().getCID());
+			ClientProfile cp = ServerProfileStore.getClient(param().getSlaveID());
 
 			if (cp != null) {
 				cp.getKeylog().deleteObserver(this);
@@ -77,7 +78,7 @@ public class SubscriberSlave extends Stream implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Log) {
 			EV_KEvent ev = (EV_KEvent) arg1;
-			write(Message.newBuilder().setEvKevent(ev).setSid(param().getCID()));
+			write(Message.newBuilder().setEvKevent(ev).setSid(param().getSlaveID()));
 		}
 
 	}

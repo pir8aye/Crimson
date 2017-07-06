@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.net.Connector;
+import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.store.FileManagerStore;
@@ -41,7 +42,7 @@ import com.subterranean_security.crimson.sv.profile.ViewerProfile;
  * @author cilki
  * @since 4.0.0
  */
-public final class FileManagerExe extends Exelet {
+public final class FileManagerExe extends Exelet implements ExeI {
 
 	private static final Logger log = LoggerFactory.getLogger(FileManagerExe.class);
 

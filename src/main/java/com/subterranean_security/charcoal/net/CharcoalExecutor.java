@@ -86,4 +86,16 @@ public class CharcoalExecutor extends BasicExecutor {
 
 		connector.write(Message.newBuilder().setRsDebugSession(RS_DebugSession.newBuilder().setResult(pass)).build());
 	}
+
+	@Override
+	public void initUnauth() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void initAuth() {
+		// TODO Auto-generated method stub
+
+	}
 }

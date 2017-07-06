@@ -65,6 +65,10 @@ public class AttributeGroup extends Updatable implements Serializable {
 		return (int) getAttribute(key).get();
 	}
 
+	public long getLong(AttributeKey key) {
+		return (long) getAttribute(key).get();
+	}
+
 	public void set(AttributeKey key, Object value) {
 		getAttribute(key).set(value);
 	}

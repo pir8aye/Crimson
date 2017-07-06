@@ -21,16 +21,10 @@ package core.net.sequences;
 
 option java_package = "com.subterranean_security.crimson.proto.core.net.sequences";
 
-import "com/subterranean_security/crimson/core/net/sequences/Listener.proto";
-import "com/subterranean_security/crimson/core/Misc.proto";
 
 message MI_TriggerProfileDelta {
-	repeated ProfileTimestamp profile_timestamp = 1;
-}
-
-message ProfileTimestamp {
-	int32 cvid = 1;
-	int64 timestamp = 2;
+	// <CVID, timestamp>
+	map<int32, int64> update_timestamp = 1;
 }
 
 message EV_ProfileDelta {
@@ -38,19 +32,19 @@ message EV_ProfileDelta {
 	// The CVID of the Profile to update
 	int32 cvid = 1;
 	
-	// String attributes
+	// <WireID, String attribute>
 	map<int32, string> str_attr = 2;
 	
-	// Integer attributes
+	// <WireID, Integer attribute>
 	map<int32, int32> int_attr = 3;
 	
-	// Long attributes
+	// <WireID, Long attribute>
 	map<int32, int64> long_attr = 4;
 	
-	// Boolean attributes
+	// <WireID, Boolean attribute>
 	map<int32, bool> boolean_attr = 5;
 	
-	// Double attributes
+	// <WireID, Double attribute>
 	map<int32, double> Double = 6;
 	
 }

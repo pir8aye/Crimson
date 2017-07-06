@@ -78,7 +78,7 @@ public class InfoSlave extends PeriodicStream {
 	}
 
 	public InfoSlave(InfoParam ip) {
-		this(Param.newBuilder().setInfoParam(ip).setStreamID(IDGen.stream()).setVID(LcvidStore.cvid).build());
+		this(Param.newBuilder().setInfoParam(ip).setStreamID(IDGen.stream()).setMasterID(LcvidStore.cvid).build());
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class InfoSlave extends PeriodicStream {
 	}
 
 	/**
-	 * Gather the information 
+	 * Gather the information
 	 * 
 	 * @return A new {@code EV_ProfileDelta}
 	 */
@@ -149,7 +149,8 @@ public class InfoSlave extends PeriodicStream {
 
 		if (pd.getIntAttrCount() > 0 || pd.getStrAttrCount() > 0 || pd.getBooleanAttrCount() > 0
 				|| pd.getLongAttrCount() > 0) {
-			write(Message.newBuilder().setRid(param().getCID()).setSid(param().getVID()).setEvProfileDelta(pd));
+			write(Message.newBuilder().setRid(param().getSlaveID()).setSid(param().getMasterID())
+					.setEvProfileDelta(pd));
 		}
 	}
 

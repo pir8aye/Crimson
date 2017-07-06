@@ -53,8 +53,8 @@ public class RemoteMaster extends PeriodicStream {
 	});
 
 	public RemoteMaster(RemoteParam rp, int cid, RDArea rda) {
-		super(Param.newBuilder().setPeriod(100).setRemoteParam(rp).setStreamID(IDGen.stream()).setCID(cid)
-				.setVID(LcvidStore.cvid).build());
+		super(Param.newBuilder().setPeriod(100).setRemoteParam(rp).setStreamID(IDGen.stream()).setSlaveID(cid)
+				.setMasterID(LcvidStore.cvid).build());
 		this.rda = rda;
 		this.cid = cid;
 

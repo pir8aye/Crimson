@@ -54,7 +54,7 @@ public abstract class PeriodicStream extends Stream {
 	public void start() {
 		running = true;
 		if (Universal.instance == Universal.Instance.VIEWER) {
-			NetworkStore.route(Message.newBuilder().setSid(param().getVID()).setRid(param().getCID())
+			NetworkStore.route(Message.newBuilder().setSid(param().getMasterID()).setRid(param().getSlaveID())
 					.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param())));
 		}
 
@@ -64,7 +64,7 @@ public abstract class PeriodicStream extends Stream {
 		running = false;
 		timer.cancel();
 		if (Universal.instance == Universal.Instance.VIEWER) {
-			NetworkStore.route(Message.newBuilder().setSid(param().getVID()).setRid(param().getCID())
+			NetworkStore.route(Message.newBuilder().setSid(param().getMasterID()).setRid(param().getSlaveID())
 					.setMiStreamStop(MI_StreamStop.newBuilder().setStreamID(param().getStreamID())));
 		}
 	}

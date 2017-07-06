@@ -17,15 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.sv.profile;
 
-import java.util.Date;
-
 import com.subterranean_security.crimson.core.attribute.TrackedAttribute;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
-import com.subterranean_security.crimson.core.attribute.keys.singular.AKeySimple;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.AttributeGroupContainer;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ViewerProfileDelta;
-import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
@@ -72,21 +65,6 @@ public class ViewerProfile extends Profile {
 
 	@Override
 	public void merge(Object updates) {
-		merge((EV_ViewerProfileDelta) updates);
-	}
-
-	public EV_ViewerProfileDelta gatherForServer(ViewerPermissions p) {
-		EV_ViewerProfileDelta.Builder vpd = EV_ViewerProfileDelta.newBuilder()
-				.addAllViewerPermissions(getPermissions().getFlags());
-
-		AttributeGroupContainer.Builder general = AttributeGroupContainer.newBuilder()
-				.putAttribute(AKeySimple.VIEWER_USER.getWireID(), getStr(AKeySimple.VIEWER_USER))
-				.putAttribute(AKeySimple.VIEWER_LOGIN_IP.getWireID(),
-						p == null || p.getFlag(Perm.Super) ? getStr(AKeySimple.VIEWER_LOGIN_IP) : "<hidden>")
-				.putAttribute(AKeySimple.VIEWER_LOGIN_TIME.getWireID(),
-						p == null || p.getFlag(Perm.Super) ? getStr(AKeySimple.VIEWER_LOGIN_IP) : "0");
-
-		return vpd.setPd(EV_ProfileDelta.newBuilder().addGroup(general)).build();
 	}
 
 	@Override

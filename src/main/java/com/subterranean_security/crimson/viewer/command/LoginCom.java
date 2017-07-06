@@ -29,7 +29,6 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.MI_TriggerProfileDelta;
-import com.subterranean_security.crimson.proto.core.net.sequences.Delta.ProfileTimestamp;
 import com.subterranean_security.crimson.proto.core.net.sequences.Login.RQ_Login;
 import com.subterranean_security.crimson.proto.core.net.sequences.Login.RQ_LoginChallenge;
 import com.subterranean_security.crimson.proto.core.net.sequences.Login.RS_Login;
@@ -125,8 +124,7 @@ public final class LoginCom {
 		// report last update timestamps for current clients
 		MI_TriggerProfileDelta.Builder mi = MI_TriggerProfileDelta.newBuilder();
 		for (Profile cp : ViewerProfileStore.getProfiles()) {
-			System.out.println("Triggering for cvid: " + cp.getCvid());
-			mi.addProfileTimestamp(ProfileTimestamp.newBuilder().setCvid(cp.getCvid()).setTimestamp(cp.getTimestamp()));
+			mi.putUpdateTimestamp(cp.getCvid(), cp.getTimestamp());
 		}
 		NetworkStore.route(Message.newBuilder().setMiTriggerProfileDelta(mi));
 

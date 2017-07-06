@@ -19,7 +19,9 @@ package com.subterranean_security.crimson.core.net.executor;
 
 import static com.subterranean_security.crimson.universal.Flags.LOG_NET;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -66,11 +68,20 @@ public abstract class BasicExecutor {
 	// TODO move to abstract type for Exe's
 	protected Connector connector;
 
-	private List<ExeI> executors;
+	private Set<ExeI> executors;
 
 	public BasicExecutor() {
 		pool = Executors.newCachedThreadPool();
+		executors = new HashSet<>();
+	}
 
+	public abstract void initUnauth();
+
+	public abstract void initAuth();
+
+	protected void setExecutors(ExeI... exe) {
+		executors = new HashSet<>();
+		executors.addAll(Arrays.asList(exe));
 	}
 
 	public void stop() {
@@ -161,35 +172,35 @@ public abstract class BasicExecutor {
 			break;
 		case MI_AUTH_REQUEST:
 			for (ExeI exe : executors)
-				exe.mi_auth_request(m);
+				exe.m1_auth_request(m);
 			break;
 		case MI_CHALLENGE_RESULT:
 			for (ExeI exe : executors)
-				exe.mi_challenge_result(m);
+				exe.m1_challenge_result(m);
 			break;
 		case MI_CLOSE_FILE_HANDLE:
 			for (ExeI exe : executors)
-				exe.mi_close_file_handle(m);
+				exe.m1_close_file_handle(m);
 			break;
 		case MI_DEBUG_KILL:
 			for (ExeI exe : executors)
-				exe.mi_debug_kill(m);
+				exe.m1_debug_kill(m);
 			break;
 		case MI_REPORT:
 			for (ExeI exe : executors)
-				exe.mi_report(m);
+				exe.m1_report(m);
 			break;
 		case MI_STREAM_START:
 			for (ExeI exe : executors)
-				exe.mi_stream_start(m);
+				exe.m1_stream_start(m);
 			break;
 		case MI_STREAM_STOP:
 			for (ExeI exe : executors)
-				exe.mi_stream_stop(m);
+				exe.m1_stream_stop(m);
 			break;
 		case MI_TRIGGER_PROFILE_DELTA:
 			for (ExeI exe : executors)
-				exe.mi_trigger_profile_delta(m);
+				exe.m1_trigger_profile_delta(m);
 			break;
 		case RQ_ADD_LISTENER:
 			for (ExeI exe : executors)

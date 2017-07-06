@@ -200,6 +200,10 @@ public class Connector extends Observable {
 		handler.write(m);
 	}
 
+	public void write(Message.Builder m) {
+		write(m.build());
+	}
+
 	public String getRemoteIP() {
 		return handler.getRemoteIP();
 	}

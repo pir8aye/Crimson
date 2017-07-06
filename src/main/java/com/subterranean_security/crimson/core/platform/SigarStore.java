@@ -23,8 +23,6 @@ import org.hyperic.sigar.Sigar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.platform.collect.plural.CPU;
-import com.subterranean_security.crimson.core.platform.collect.plural.NIC;
 import com.subterranean_security.crimson.core.platform.collect.singular.CRIMSON;
 import com.subterranean_security.crimson.core.platform.collect.singular.NET;
 import com.subterranean_security.crimson.core.platform.collect.singular.OS;
@@ -54,10 +52,10 @@ public final class SigarStore {
 	}
 
 	public static void initialize() {
-		CPU.initialize();
+		// CPU.initialize();
 		CRIMSON.initialize();
 		NET.initialize();
-		NIC.initialize();
+		// NIC.initialize();
 		OS.initialize();
 		RAM.initialize();
 	}

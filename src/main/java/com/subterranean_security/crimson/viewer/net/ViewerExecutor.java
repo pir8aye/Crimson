@@ -93,4 +93,16 @@ public class ViewerExecutor extends BasicExecutor {
 		}
 	}
 
+	@Override
+	public void initUnauth() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void initAuth() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

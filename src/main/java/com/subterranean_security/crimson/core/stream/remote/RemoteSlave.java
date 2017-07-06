@@ -41,7 +41,7 @@ public class RemoteSlave extends PeriodicStream {
 			Date iterationStart;
 			while (!Thread.interrupted()) {
 				iterationStart = new Date();
-				ScreenInterface.captureDelta(param().getVID(), getStreamID());
+				ScreenInterface.captureDelta(param().getMasterID(), getStreamID());
 
 				// dynamic wait
 				try {
@@ -56,8 +56,8 @@ public class RemoteSlave extends PeriodicStream {
 	});
 
 	public RemoteSlave(Param p) {
-		// TODO VID or CID depends on instance
-		super(p, p.getVID());
+		// TODO MasterID or SlaveID depends on instance
+		super(p, p.getMasterID());
 
 		RemoteStore.setSlave(this);
 
@@ -136,7 +136,8 @@ public class RemoteSlave extends PeriodicStream {
 	public void send() {
 
 		if (uQueue.size() != 0) {
-			write(Message.newBuilder().setSid(LcvidStore.cvid).setRid(param().getVID()).setEvStreamData(uQueue.poll()));
+			write(Message.newBuilder().setSid(LcvidStore.cvid).setRid(param().getMasterID())
+					.setEvStreamData(uQueue.poll()));
 		}
 
 	}

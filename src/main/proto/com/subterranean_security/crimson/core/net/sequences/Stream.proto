@@ -74,8 +74,8 @@ message DirtyBlock {
 
 message Param {
 	required int32 streamID = 1;
-	required int32 VID = 2;
-	optional int32 CID = 3;
+	required int32 masterID = 2;
+	optional int32 slaveID = 3;
 	optional int32 period = 4;
 	
 	optional InfoParam info_param = 5;

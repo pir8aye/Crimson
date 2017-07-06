@@ -28,8 +28,8 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Stream.Param;
 public class InfoMaster extends PeriodicStream {
 
 	public InfoMaster(InfoParam ip, int CID, int period) {
-		super(Param.newBuilder().setPeriod(period).setInfoParam(ip).setStreamID(new Random().nextInt()).setCID(CID)
-				.setVID(LcvidStore.cvid).build());
+		super(Param.newBuilder().setPeriod(period).setInfoParam(ip).setStreamID(new Random().nextInt()).setSlaveID(CID)
+				.setMasterID(LcvidStore.cvid).build());
 		start();
 	}
 

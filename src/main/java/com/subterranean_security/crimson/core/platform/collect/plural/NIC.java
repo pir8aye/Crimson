@@ -17,16 +17,12 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.platform.collect.plural;
 
-import java.util.ArrayList;
-
 import org.hyperic.sigar.NetInterfaceConfig;
 import org.hyperic.sigar.NetInterfaceStat;
 import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
-import com.subterranean_security.crimson.core.attribute.keys.plural.AK_NIC;
 import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.core.platform.collect.Collector;
 import com.subterranean_security.crimson.core.struct.stat_stream.StatStream;
@@ -63,22 +59,22 @@ public final class NIC extends Collector {
 	}
 
 	public long getTxBytes() {
-		refresh(i);
+		// refresh(i);
 		return stat.getTxBytes();
 	}
 
 	public long getTxPackets() {
-		refresh(i);
+		// refresh(i);
 		return stat.getTxPackets();
 	}
 
 	public long getRxBytes() {
-		refresh(i);
+		// refresh(i);
 		return stat.getRxBytes();
 	}
 
 	public long getRxPackets() {
-		refresh(i);
+		// refresh(i);
 		return stat.getRxPackets();
 	}
 
