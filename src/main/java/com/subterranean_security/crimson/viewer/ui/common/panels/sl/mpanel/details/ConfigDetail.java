@@ -21,9 +21,9 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.mpanel.MConstants;
@@ -59,7 +59,7 @@ public class ConfigDetail extends MDetail {
 		btn_users.addActionListener(e -> {
 			if (!ViewerState.isOnline()) {
 				MainFrame.main.np.addNote("error", "Offline mode is enabled!");
-			} else if (ViewerProfileStore.getLocalViewer().getPermissions().getFlag(Perm.server.users.view)) {
+			} else if (ProfileStore.getLocalViewer().getPermissions().getFlag(Perm.server.users.view)) {
 				if (UIStore.userMan == null) {
 					UIStore.userMan = new UserMan();
 					UIStore.userMan.setLocationRelativeTo(null);

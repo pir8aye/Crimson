@@ -23,11 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 
 import io.netty.util.ReferenceCountUtil;
 
@@ -61,7 +61,7 @@ public class ViewerExecutor extends BasicExecutor {
 						ev_kevent(m);
 						break;
 					case EV_PROFILE_DELTA:
-						ViewerProfileStore.update(m.getEvProfileDelta());
+						ProfileStore.update(m.getEvProfileDelta());
 						break;
 					case EV_STREAM_DATA:
 						System.out.println("Got stream data");
@@ -85,11 +85,11 @@ public class ViewerExecutor extends BasicExecutor {
 	}
 
 	private void ev_kevent(Message m) {
-		ClientProfile cp = ViewerProfileStore.getClient(m.getSid());
+		ClientProfile cp = ProfileStore.getClient(m.getFrom());
 		if (cp != null) {
 			cp.getKeylog().addEvent(m.getEvKevent());
 		} else {
-			log.debug("Failed to find client: " + m.getSid());
+			log.debug("Failed to find client: " + m.getFrom());
 		}
 	}
 

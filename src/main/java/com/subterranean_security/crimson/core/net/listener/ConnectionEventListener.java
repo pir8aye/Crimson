@@ -75,7 +75,7 @@ public abstract class ConnectionEventListener implements Observer {
 		charcoalUpdater = new Thread(() -> {
 			try (BufferedReader br = new BufferedReader(new InputStreamReader(CharcoalAppender.in))) {
 				while (!Thread.interrupted()) {
-					NetworkStore.route(Message.newBuilder().setSid(LcvidStore.cvid).setRid(Reserved.CHARCOAL)
+					NetworkStore.route(Message.newBuilder().setFrom(LcvidStore.cvid).setTo(Reserved.CHARCOAL)
 							.setEvDebugLogEvent(EV_DebugLogEvent.newBuilder().setLine(br.readLine())));
 				}
 			} catch (IOException e) {

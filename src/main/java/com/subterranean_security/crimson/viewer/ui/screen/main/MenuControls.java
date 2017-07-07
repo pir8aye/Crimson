@@ -35,6 +35,7 @@ import com.subterranean_security.crimson.core.attribute.keys.singular.AK_CLIENT;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_SERVER;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.info.InfoMaster;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
@@ -44,7 +45,6 @@ import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.net.stream.VInfoSlave;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class MenuControls extends JPanel {
@@ -247,8 +247,8 @@ public class MenuControls extends JPanel {
 	}
 
 	public void refresh() {
-		ServerProfile sp = ViewerProfileStore.getServer();
-		ViewerProfile vp = ViewerProfileStore.getLocalViewer();
+		ServerProfile sp = ProfileStore.getServer();
+		ViewerProfile vp = ProfileStore.getLocalViewer();
 
 		valViewerRamUsage.setText(vp.get(AK_CLIENT.RAM_USAGE));
 		// valViewerCpuTemp.setText(ProfileStore.getLocalClient().getPrimaryCPU().getAttribute(AKeyCPU.CPU_TEMP).get());

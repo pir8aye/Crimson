@@ -30,6 +30,7 @@ import com.subterranean_security.crimson.core.net.MessageFuture;
 import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
@@ -83,7 +84,7 @@ public final class LoginExe extends Exelet implements ExeI {
 		}
 
 		// find user
-		vp = ServerProfileStore.getViewer(user);
+		vp = ProfileStore.getViewer(user);
 		if (vp == null)
 			log.debug("No ViewerProfile was found in the local database");
 		else
@@ -98,7 +99,7 @@ public final class LoginExe extends Exelet implements ExeI {
 				vp = new ViewerProfile(connector.getCvid());
 				vp.set(AK_VIEWER.USER, user);
 				vp.getPermissions().addFlag(Perm.server.generator.generate_jar).addFlag(Perm.server.fs.read);
-				ServerProfileStore.addViewer(vp);
+				ProfileStore.addViewer(vp);
 			}
 
 		}

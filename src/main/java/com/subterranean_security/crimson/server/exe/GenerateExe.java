@@ -25,11 +25,11 @@ import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.proto.core.Generator.GenReport;
 import com.subterranean_security.crimson.proto.core.net.sequences.Generator.RS_Generate;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.server.Generator;
-import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 
 /**
@@ -47,7 +47,7 @@ public class GenerateExe extends Exelet implements ExeI {
 	public void rq_generate(Message m) {
 
 		// check permissions
-		if (!ServerProfileStore.getViewer(connector.getCvid()).getPermissions()
+		if (!ProfileStore.getViewer(connector.getCvid()).getPermissions()
 				.getFlag(Perm.server.generator.generate_jar)) {
 			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsGenerate(RS_Generate.newBuilder()

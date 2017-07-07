@@ -22,6 +22,7 @@ import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,8 @@ import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.platform.Environment;
 import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
+import com.subterranean_security.crimson.core.struct.collections.cached.CachedMap;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
@@ -42,6 +45,9 @@ import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.Trigger;
 import com.subterranean_security.crimson.server.storage.ServerDatabase;
 import com.subterranean_security.crimson.server.store.ListenerStore;
+import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ServerProfile;
+import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
@@ -105,6 +111,8 @@ public final class Server {
 		// initialize server database
 		initializeDatabase();
 
+		initializeProfiles();
+
 		if (Boolean.parseBoolean(System.getProperty("debug-client", "false"))) {
 			installDebugClient();
 		}
@@ -135,6 +143,40 @@ public final class Server {
 		}
 
 		DatabaseStore.setFacility(sf);
+	}
+
+	private static void initializeProfiles() {
+		CachedMap<Integer, ViewerProfile> viewerProfiles = null;
+		try {
+			viewerProfiles = (CachedMap<Integer, ViewerProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.viewers");
+		} catch (NoSuchElementException e) {
+			DatabaseStore.getDatabase().store("profiles.viewers", new CachedMap<Integer, ViewerProfile>());
+			viewerProfiles = (CachedMap<Integer, ViewerProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.viewers");
+		}
+
+		CachedMap<Integer, ClientProfile> clientProfiles = null;
+		try {
+			clientProfiles = (CachedMap<Integer, ClientProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.clients");
+		} catch (NoSuchElementException e) {
+			DatabaseStore.getDatabase().store("profiles.clients", new CachedMap<Integer, ClientProfile>());
+			clientProfiles = (CachedMap<Integer, ClientProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.clients");
+		}
+
+		CachedMap<Integer, ServerProfile> serverProfiles = null;
+		try {
+			serverProfiles = (CachedMap<Integer, ServerProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.servers");
+		} catch (NoSuchElementException e) {
+			DatabaseStore.getDatabase().store("profiles.servers", new CachedMap<Integer, ServerProfile>());
+			serverProfiles = (CachedMap<Integer, ServerProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.servers");
+		}
+
+		ProfileStore.initialize(clientProfiles, viewerProfiles, serverProfiles);
 	}
 
 	private static void initializePreferences() {

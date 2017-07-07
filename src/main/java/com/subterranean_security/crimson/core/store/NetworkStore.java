@@ -67,8 +67,8 @@ public final class NetworkStore {
 	 * @param m
 	 */
 	public static void route(Message m) {
-		if (ConnectionStore.connectedDirectly(m.getRid())) {
-			ConnectionStore.get(m.getRid()).write(m);
+		if (ConnectionStore.connectedDirectly(m.getTo())) {
+			ConnectionStore.get(m.getTo()).write(m);
 		} else {
 			if (ConnectionStore.connectedDirectly(Reserved.SERVER)) {
 				ConnectionStore.get(Reserved.SERVER).write(m);
@@ -85,7 +85,7 @@ public final class NetworkStore {
 
 	public static Message route(Message.Builder m, int timeout) throws InterruptedException, MessageTimeout {
 		route(m);
-		return getResponse(m.getRid(), m.getId(), timeout);
+		return getResponse(m.getTo(), m.getId(), timeout);
 	}
 
 	public static Message getResponse(int cvid, int id, int timeout) throws InterruptedException, MessageTimeout {

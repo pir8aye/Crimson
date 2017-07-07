@@ -29,7 +29,7 @@ import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_LISTENER;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 
 public class ListenerTable extends JScrollPane {
 
@@ -85,7 +85,7 @@ class TM extends AbstractTableModel {
 	private List<AttributeGroup> listeners;
 
 	public TM() {
-		listeners = ViewerProfileStore.getServer().getGroupsOfType(TypeIndex.LISTENER);
+		listeners = ProfileStore.getServer().getGroupsOfType(TypeIndex.LISTENER);
 	}
 
 	@Override

@@ -149,7 +149,7 @@ public class InfoSlave extends PeriodicStream {
 
 		if (pd.getIntAttrCount() > 0 || pd.getStrAttrCount() > 0 || pd.getBooleanAttrCount() > 0
 				|| pd.getLongAttrCount() > 0) {
-			write(Message.newBuilder().setRid(param().getSlaveID()).setSid(param().getMasterID())
+			write(Message.newBuilder().setTo(param().getSlaveID()).setFrom(param().getMasterID())
 					.setEvProfileDelta(pd));
 		}
 	}

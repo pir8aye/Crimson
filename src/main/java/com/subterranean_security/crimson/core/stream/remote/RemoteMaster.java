@@ -40,7 +40,7 @@ public class RemoteMaster extends PeriodicStream {
 
 			while (!Thread.interrupted()) {
 				try {
-					NetworkStore.route(Message.newBuilder().setRid(cid)
+					NetworkStore.route(Message.newBuilder().setTo(cid)
 							.setEvStreamData(
 									EV_StreamData.newBuilder().setStreamID(getStreamID()).setEventData(queue.take()))
 							.build());

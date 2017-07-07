@@ -21,6 +21,7 @@ import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.misc.CVID;
@@ -243,6 +244,14 @@ public abstract class ProfileStore {
 		return clients;
 	}
 
+	public static Set<Integer> getViewerKeyset() {
+		return viewerProfiles.keySet();
+	}
+
+	public static Set<Integer> getClientKeyset() {
+		return clientProfiles.keySet();
+	}
+
 	public static List<Profile> getProfiles() {
 		List<Profile> all = new ArrayList<Profile>();
 		all.addAll(clientProfiles.values());
@@ -304,6 +313,15 @@ public abstract class ProfileStore {
 		public void clientOffline(ClientProfile cp);
 
 		public void viewerOffline(ViewerProfile vp);
+	}
+
+	/**
+	 * Retrieve the local profile
+	 * 
+	 * @return The ViewerProfile associated with the current cvid
+	 */
+	public static ViewerProfile getLocalViewer() {
+		return getViewer(LcvidStore.cvid);
 	}
 
 }

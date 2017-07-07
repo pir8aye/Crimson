@@ -22,14 +22,13 @@ import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
+import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Users.RQ_AddUser;
-import com.subterranean_security.crimson.proto.core.net.sequences.Users.RS_AddUser;
-import com.subterranean_security.crimson.proto.core.net.sequences.Users.RS_EditUser;
 import com.subterranean_security.crimson.server.store.ServerDatabaseStore;
-import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.Universal;
@@ -47,7 +46,7 @@ public class UserExe extends Exelet implements ExeI {
 	public void rq_add_user(Message m) {
 		// TODO check permissions
 		connector.write(
-				Message.newBuilder().setId(m.getId()).setRsAddUser(RS_AddUser.newBuilder().setResult(true)).build());
+				Message.newBuilder().setId(m.getId()).setRsOutcome(Outcome.newBuilder().setResult(true)).build());
 
 		ServerDatabaseStore.getDatabase().addLocalUser(m.getRqAddUser().getUser(), m.getRqAddUser().getPassword(),
 				new ViewerPermissions(m.getRqAddUser().getPermissionsList()));
@@ -63,14 +62,14 @@ public class UserExe extends Exelet implements ExeI {
 	public void rq_edit_user(Message m) {
 		// TODO check permissions
 		connector.write(
-				Message.newBuilder().setId(m.getId()).setRsEditUser(RS_EditUser.newBuilder().setResult(true)).build());
+				Message.newBuilder().setId(m.getId()).setRsOutcome(Outcome.newBuilder().setResult(true)).build());
 
 		RQ_AddUser rqad = m.getRqEditUser().getUser();
 
 		ViewerProfile vp = null;
 
 		try {
-			vp = ServerProfileStore.getViewer(rqad.getUser());
+			vp = ProfileStore.getViewer(rqad.getUser());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

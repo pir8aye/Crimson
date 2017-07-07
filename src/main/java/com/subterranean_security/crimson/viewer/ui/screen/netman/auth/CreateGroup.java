@@ -46,6 +46,7 @@ import javax.swing.border.EtchedBorder;
 import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
@@ -54,7 +55,6 @@ import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
 import com.subterranean_security.crimson.proto.core.Misc.AuthType;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.common.components.EntropyHarvester;
 import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
@@ -121,7 +121,7 @@ public class CreateGroup extends JPanel {
 						timer.cancel();
 						Outcome outcome = ViewerCommands.createAuthMethod(
 								AuthMethod.newBuilder().setId(IDGen.auth()).setCreation(new Date().getTime())
-										.addOwner(ViewerProfileStore.getLocalViewer().get(AK_VIEWER.USER))
+										.addOwner(ProfileStore.getLocalViewer().get(AK_VIEWER.USER))
 										.setType(AuthType.GROUP).setName(textField.getText())
 										.setGroupSeedPrefix(key_prefix.getText() + RandomUtil.randString(32)).build());
 						if (outcome.getResult()) {
@@ -228,7 +228,7 @@ public class CreateGroup extends JPanel {
 			sl.setBad("Invalid group name");
 			return false;
 		}
-		for (AttributeGroup authMethod : ViewerProfileStore.getServer().getAuthMethods()) {
+		for (AttributeGroup authMethod : ProfileStore.getServer().getAuthMethods()) {
 			if (authMethod.getStr(AK_AUTH.NAME).equals(textField.getText())) {
 				sl.setBad("Group name in use");
 				return false;

@@ -108,7 +108,7 @@ public final class Reporter {
 	public static boolean sendReport(MI_Report report) {
 		if (ConnectionStore.connectViridian()) {
 			NetworkStore.route(Message.newBuilder()
-					.setRid(com.subterranean_security.crimson.core.util.IDGen.Reserved.VIRIDIAN).setMiReport(report));
+					.setTo(com.subterranean_security.crimson.core.util.IDGen.Reserved.VIRIDIAN).setMiReport(report));
 			return true;
 		}
 		return false;

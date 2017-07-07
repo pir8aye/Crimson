@@ -26,7 +26,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_USER;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class RDFrame extends JFrame {
@@ -40,8 +40,8 @@ public class RDFrame extends JFrame {
 		setMinimumSize(new Dimension(450, 300));
 		setSize(new Dimension(450, 300));
 		setIconImages(UIUtil.getAppIcons());
-		setTitle("Remote Desktop (" + ViewerProfileStore.getClient(cvid).get(AK_USER.NAME) + "@"
-				+ ViewerProfileStore.getClient(cvid).get(AK_NET.EXTERNAL_IPV4) + ")");
+		setTitle("Remote Desktop (" + ProfileStore.getClient(cvid).get(AK_USER.NAME) + "@"
+				+ ProfileStore.getClient(cvid).get(AK_NET.EXTERNAL_IPV4) + ")");
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));

@@ -27,13 +27,13 @@ import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.listener.ConnectionEventListener;
 import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkAdded;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkRemoved;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.server.store.AuthStore;
-import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.set.ProfileSetFactory;
 import com.subterranean_security.crimson.universal.Universal.Instance;
@@ -74,14 +74,14 @@ public class ServerConnectionEventListener extends ConnectionEventListener {
 
 	private void clientAuthenticated(Connector connector) {
 		AuthStore.refreshVisibilityPermissions(connector.getCvid());
-		ServerProfileStore.getClient(connector.getCvid()).setOnline(true);
+		ProfileStore.getClient(connector.getCvid()).setOnline(true);
 		NetworkStore.broadcastTo(new PDFactory(connector.getCvid()).add(AK_META.ONLINE, true).buildMsg(),
 				new ProfileSetFactory().addFilter(Instance.VIEWER).addFilter(connector.getCvid(),
 						Perm.client.visibility));
 	}
 
 	private void clientNotConnected(Connector connector) {
-		ServerProfileStore.getClient(connector.getCvid()).setOnline(false);
+		ProfileStore.getClient(connector.getCvid()).setOnline(false);
 		NetworkStore.broadcastTo(new PDFactory(connector.getCvid()).add(AK_META.ONLINE, false).buildMsg(),
 				new ProfileSetFactory().addFilter(Instance.VIEWER).addFilter(connector.getCvid(),
 						Perm.client.visibility));

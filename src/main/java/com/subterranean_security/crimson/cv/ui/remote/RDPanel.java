@@ -37,11 +37,11 @@ import javax.swing.border.EtchedBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_DISP;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.stream.StreamStore;
 import com.subterranean_security.crimson.core.stream.remote.RemoteMaster;
 import com.subterranean_security.crimson.cv.ui.remote.ep.Settings;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.RemoteParam;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 
@@ -68,7 +68,7 @@ public class RDPanel extends JPanel {
 		this.fullSettings = fullSettings;
 		this.cvid = cvid;
 
-		settings = new Settings(ViewerProfileStore.getClient(cvid).getGroupsOfType(TypeIndex.DISP), this,
+		settings = new Settings(ProfileStore.getClient(cvid).getGroupsOfType(TypeIndex.DISP), this,
 				fullSettings);
 		init();
 

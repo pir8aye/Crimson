@@ -45,7 +45,7 @@ public interface ExeI {
 	default public void ev_stream_data(Message m) {
 	}
 
-	default public void m1_auth_request(Message m) {
+	default public void m1_auth_attempt(Message m) {
 	}
 
 	default public void m1_challenge_result(Message m) {
@@ -93,7 +93,7 @@ public interface ExeI {
 	default public void rq_chat(Message m) {
 	}
 
-	default public void rq_create_auth_method(Message m) {
+	default public void rq_create_auth_group(Message m) {
 	}
 
 	/**
@@ -129,7 +129,7 @@ public interface ExeI {
 	default public void rq_get_client_config(Message m) {
 	}
 
-	default public void rq_group_challenge(Message m) {
+	default public void rq_key_challenge(Message m) {
 	}
 
 	default public void rq_key_update(Message m) {
@@ -165,7 +165,7 @@ public interface ExeI {
 	default public void rq_quick_screenshot(Message m) {
 	}
 
-	default public void rq_remove_auth_method(Message m) {
+	default public void rq_remove_auth_group(Message m) {
 	}
 
 	default public void rq_remove_listener(Message m) {

@@ -24,6 +24,7 @@ import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
 import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
@@ -35,7 +36,6 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Login.RS_Login
 import com.subterranean_security.crimson.proto.core.net.sequences.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.sv.profile.Profile;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public final class LoginCom {
@@ -94,7 +94,7 @@ public final class LoginCom {
 		}
 
 		for (EV_ProfileDelta pd : rsLogin.getUpdateList()) {
-			ViewerProfileStore.update(pd);
+			ProfileStore.update(pd);
 		}
 	}
 
@@ -123,7 +123,7 @@ public final class LoginCom {
 
 		// report last update timestamps for current clients
 		MI_TriggerProfileDelta.Builder mi = MI_TriggerProfileDelta.newBuilder();
-		for (Profile cp : ViewerProfileStore.getProfiles()) {
+		for (Profile cp : ProfileStore.getProfiles()) {
 			mi.putUpdateTimestamp(cp.getCvid(), cp.getTimestamp());
 		}
 		NetworkStore.route(Message.newBuilder().setMiTriggerProfileDelta(mi));

@@ -50,7 +50,7 @@ public class SubscriberMaster extends PeriodicStream {
 
 	@Override
 	public void start() {
-		NetworkStore.route(Message.newBuilder().setSid(param().getMasterID()).setRid(Reserved.SERVER)
+		NetworkStore.route(Message.newBuilder().setFrom(param().getMasterID()).setTo(Reserved.SERVER)
 				.setMiStreamStart(MI_StreamStart.newBuilder().setParam(param())));
 
 	}

@@ -48,13 +48,13 @@ import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_LISTENER;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.proto.core.net.sequences.Listener.ListenerConfig;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.viewer.command.ListenerCom;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
@@ -289,7 +289,7 @@ public class AddListener extends JPanel {
 			return false;
 		}
 
-		for (AttributeGroup listener : ViewerProfileStore.getServer().getGroupsOfType(TypeIndex.LISTENER)) {
+		for (AttributeGroup listener : ProfileStore.getServer().getGroupsOfType(TypeIndex.LISTENER)) {
 			if (listener.getInt(AK_LISTENER.PORT) == Integer.parseInt(fld_port.getText())) {
 				sl.setBad("Port in use");
 				return false;
@@ -321,14 +321,14 @@ public class AddListener extends JPanel {
 
 	public void updateOwners() {
 		String[] o = null;
-		if (ViewerProfileStore.getLocalViewer().getPermissions().getFlag(Perm.Super)) {
-			List<ViewerProfile> viewers = ViewerProfileStore.getViewers();
+		if (ProfileStore.getLocalViewer().getPermissions().getFlag(Perm.Super)) {
+			List<ViewerProfile> viewers = ProfileStore.getViewers();
 			o = new String[viewers.size()];
 			for (int i = 0; i < o.length; i++) {
 				o[i] = viewers.get(i).get(AK_VIEWER.USER);
 			}
 		} else {
-			o = new String[] { ViewerProfileStore.getLocalViewer().get(AK_VIEWER.USER) };
+			o = new String[] { ProfileStore.getLocalViewer().get(AK_VIEWER.USER) };
 		}
 		owner.setModel(new DefaultComboBoxModel<String>(o));
 	}

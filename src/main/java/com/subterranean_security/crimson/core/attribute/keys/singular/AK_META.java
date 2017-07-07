@@ -17,8 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
-import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.IDGen.Reserved;

@@ -44,6 +44,7 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.CertUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.cv.net.command.CvidCom;
@@ -53,7 +54,6 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Login.RS_Serve
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.viewer.ViewerState;
 import com.subterranean_security.crimson.viewer.command.LoginCom;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.FieldLimiter;
 import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
@@ -271,7 +271,7 @@ public class UserSelectionPanel extends JPanel {
 					Outcome.Builder outcome = Outcome.newBuilder().setTime(System.currentTimeMillis()).setResult(false);
 
 					CvidCom.getCvid(connection);
-					ViewerProfileStore.initialize(LcvidStore.lcvid);
+					ProfileStore.initialize(LcvidStore.lcvid);
 
 					// request login from server
 					Outcome loginOutcome = LoginCom.login(fld_user.getText(), UIUtil.getPassword(fld_pass));

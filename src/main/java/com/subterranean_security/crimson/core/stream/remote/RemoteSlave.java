@@ -136,7 +136,7 @@ public class RemoteSlave extends PeriodicStream {
 	public void send() {
 
 		if (uQueue.size() != 0) {
-			write(Message.newBuilder().setSid(LcvidStore.cvid).setRid(param().getMasterID())
+			write(Message.newBuilder().setFrom(LcvidStore.cvid).setTo(param().getMasterID())
 					.setEvStreamData(uQueue.poll()));
 		}
 

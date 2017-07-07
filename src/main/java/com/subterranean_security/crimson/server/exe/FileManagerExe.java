@@ -27,6 +27,7 @@ import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.store.FileManagerStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RQ_FileListing;
@@ -34,7 +35,6 @@ import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS
 import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
@@ -51,7 +51,7 @@ public final class FileManagerExe extends Exelet implements ExeI {
 	}
 
 	public void rq_file_listing(Message m) {
-		ViewerProfile vp = ServerProfileStore.getViewer(connector.getCvid());
+		ViewerProfile vp = ProfileStore.getViewer(connector.getCvid());
 
 		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
 			log.warn("Denied unauthorized file access to server from viewer: {}", connector.getCvid());
@@ -85,7 +85,7 @@ public final class FileManagerExe extends Exelet implements ExeI {
 	}
 
 	public void rq_file_handle(Message m) {
-		ViewerProfile vp = ServerProfileStore.getViewer(connector.getCvid());
+		ViewerProfile vp = ProfileStore.getViewer(connector.getCvid());
 
 		if (!vp.getPermissions().getFlag(Perm.server.fs.read)) {
 			log.warn("Denied unauthorized file access to server from viewer: {}", connector.getCvid());
@@ -100,7 +100,7 @@ public final class FileManagerExe extends Exelet implements ExeI {
 	public void rq_delete(Message m) {
 
 		// check permissions
-		if (!ServerProfileStore.getViewer(connector.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
+		if (!ProfileStore.getViewer(connector.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
 			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsDelete(RS_Delete.newBuilder()
 							.setOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions")))
@@ -116,7 +116,7 @@ public final class FileManagerExe extends Exelet implements ExeI {
 	}
 
 	public void rq_advanced_file_info(Message m) {
-		connector.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+		connector.write(Message.newBuilder().setId(m.getId()).setTo(m.getFrom()).setFrom(m.getTo())
 				.setRsAdvancedFileInfo(FileUtil.getInfo(m.getRqAdvancedFileInfo().getFile())).build());
 	}
 

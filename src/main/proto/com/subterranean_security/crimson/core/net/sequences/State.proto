@@ -40,14 +40,6 @@ message RQ_ChangeServerState {
 	required StateType new_state = 1;
 }
 
-message RS_ChangeServerState {
-	required Outcome outcome = 1;
-}
-
 message RQ_ChangeClientState {
 	required StateType new_state = 1;
-}
-
-message RS_ChangeClientState {
-	required Outcome outcome = 1;
 }

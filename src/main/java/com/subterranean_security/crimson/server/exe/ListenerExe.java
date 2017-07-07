@@ -20,10 +20,10 @@ package com.subterranean_security.crimson.server.exe;
 import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.server.store.ListenerStore;
-import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 
 /**
@@ -38,7 +38,7 @@ public class ListenerExe extends Exelet implements ExeI {
 
 	public void rq_add_listener(Message m) {
 		// check permissions
-		if (!ServerProfileStore.getViewer(connector.getCvid()).getPermissions()
+		if (!ProfileStore.getViewer(connector.getCvid()).getPermissions()
 				.getFlag(Perm.server.network.create_listener)) {
 			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions"))

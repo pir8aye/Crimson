@@ -24,6 +24,7 @@ option java_package = "com.subterranean_security.crimson.proto.core.net.sequence
 import "com/subterranean_security/crimson/core/net/sequences/Keylogger.proto";
 import "com/subterranean_security/crimson/core/Misc.proto";
 
+// Uses generic rs_outcome rather than a new RS_* type
 message RQ_ChangeSetting {
 
 	// keylogger options
@@ -31,8 +32,4 @@ message RQ_ChangeSetting {
 	optional int32 flush_value = 2;
 	optional State keylogger_state = 3;
 
-}
-
-message RS_ChangeSetting {
-	required Outcome result = 1;
 }

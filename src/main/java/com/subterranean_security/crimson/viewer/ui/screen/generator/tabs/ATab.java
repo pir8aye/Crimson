@@ -57,10 +57,10 @@ import javax.swing.border.TitledBorder;
 import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.proto.core.Misc.AuthType;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 import com.subterranean_security.crimson.viewer.ui.common.components.EntropyHarvester;
@@ -272,7 +272,7 @@ public class ATab extends JPanel {
 	private void loadGroups() {
 		List<String> groups = new ArrayList<>();
 		groups.add("Create Group");
-		for (AttributeGroup auth : ViewerProfileStore.getServer().getGroupsOfType(TypeIndex.AUTH)) {
+		for (AttributeGroup auth : ProfileStore.getServer().getGroupsOfType(TypeIndex.AUTH)) {
 			if (AuthType.GROUP.toString().equals(auth.getStr(AK_AUTH.TYPE))) {
 				groups.add(auth.getStr(AK_AUTH.NAME));
 			}

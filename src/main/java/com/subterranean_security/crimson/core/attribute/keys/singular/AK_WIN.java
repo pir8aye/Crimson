@@ -17,10 +17,10 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.attribute.keys.singular;
 
-import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
-import com.subterranean_security.crimson.core.platform.collect.singular.WIN;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
+import com.subterranean_security.crimson.core.platform.collect.singular.WIN;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
 /**

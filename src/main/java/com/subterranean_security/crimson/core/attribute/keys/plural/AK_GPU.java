@@ -19,8 +19,8 @@ package com.subterranean_security.crimson.core.attribute.keys.plural;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.UntrackedAttribute;
-import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.platform.collect.plural.GPU;
 import com.subterranean_security.crimson.core.platform.collect.singular.OS.OSFAMILY;
 import com.subterranean_security.crimson.core.store.CollectorStore;

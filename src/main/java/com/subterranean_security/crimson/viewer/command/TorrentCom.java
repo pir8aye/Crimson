@@ -22,8 +22,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import com.google.protobuf.ByteString;
-import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -40,7 +40,7 @@ public final class TorrentCom {
 
 		try {
 			Message m = NetworkStore.route(
-					Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+					Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 							.setRqAddTorrent(RQ_AddTorrent.newBuilder().setDestintation(destination)
 									.setTorrentFile(ByteString.readFrom(new FileInputStream(torrent)))),
 					TimeoutConstants.DEFAULT);

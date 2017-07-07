@@ -21,6 +21,7 @@ package core.net.sequences;
 
 option java_package = "com.subterranean_security.crimson.proto.core.net.sequences";
 
+// Uses generic rs_outcome rather than a new RS_* type
 message RQ_AddUser {
 	required string user = 1;
 	optional string password = 2;
@@ -28,19 +29,8 @@ message RQ_AddUser {
 
 }
 
-message RS_AddUser {
-	required bool result = 1;
-	optional string comment = 2;
-
-}
-
+// Uses generic rs_outcome rather than a new RS_* type
 message RQ_EditUser {
 	required RQ_AddUser user = 1;
 	optional string old_password = 2;
-}
-
-message RS_EditUser {
-	required bool result = 1;
-	optional string comment = 2;
-
 }

@@ -19,7 +19,6 @@ package com.subterranean_security.crimson.viewer.ui.screen.netman.auth;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.JMenuItem;
@@ -32,9 +31,8 @@ import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH;
-import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.proto.core.Misc.AuthType;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class AuthTable extends JScrollPane {
@@ -123,7 +121,7 @@ class TM extends AbstractTableModel {
 	private List<AttributeGroup> authList;
 
 	public TM() {
-		authList = ViewerProfileStore.getServer().getGroupsOfType(TypeIndex.AUTH);
+		authList = ProfileStore.getServer().getGroupsOfType(TypeIndex.AUTH);
 	}
 
 	@Override

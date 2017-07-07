@@ -47,14 +47,14 @@ public class ServerExecutor extends BasicExecutor {
 	@Override
 	public void execute(Message m) {
 		// perform redirections
-		if (m.getRid() != 0) {
+		if (m.getTo() != 0) {
 			// route
 			try {
-				ConnectionStore.get(m.getRid()).write(m);
+				ConnectionStore.get(m.getTo()).write(m);
 			} catch (NullPointerException e) {
-				log.debug("Could not forward message to CVID: {}", m.getRid());
+				log.debug("Could not forward message to CVID: {}", m.getTo());
 				connector.write(Message.newBuilder()
-						.setEvEndpointClosed(EV_EndpointClosed.newBuilder().setCVID(m.getRid())).build());
+						.setEvEndpointClosed(EV_EndpointClosed.newBuilder().setCVID(m.getTo())).build());
 			}
 		} else {
 			super.execute(m);

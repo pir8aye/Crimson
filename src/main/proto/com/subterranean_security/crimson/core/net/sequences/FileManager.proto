@@ -62,10 +62,6 @@ message RQ_Delete {
 	optional bool overwrite = 2;
 }
 
-message RS_Delete {
-	required Outcome outcome = 1;
-}
-
 message RQ_FileHandle {
 }
 

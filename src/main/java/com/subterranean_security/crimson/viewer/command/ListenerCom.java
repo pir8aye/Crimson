@@ -17,8 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.command;
 
-import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;

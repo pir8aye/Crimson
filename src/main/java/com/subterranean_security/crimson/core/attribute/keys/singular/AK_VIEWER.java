@@ -19,8 +19,8 @@ package com.subterranean_security.crimson.core.attribute.keys.singular;
 
 import com.subterranean_security.crimson.core.attribute.Attribute;
 import com.subterranean_security.crimson.core.attribute.TrackedAttribute;
-import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.SingularKey;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 
 /**
  * Viewer attribute keys

@@ -44,6 +44,7 @@ import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_OS;
 import com.subterranean_security.crimson.core.net.NetworkNode;
 import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkAdded;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkRemoved;
@@ -52,7 +53,6 @@ import com.subterranean_security.crimson.sv.profile.Profile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.universal.util.JarUtil;
 import com.subterranean_security.crimson.viewer.ViewerState;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.main.ContextMenuFactory;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
@@ -84,7 +84,7 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 			addInitialClients();
 		}
 
-		addViewer(ViewerProfileStore.getLocalViewer());
+		addViewer(ProfileStore.getLocalViewer());
 
 		NetworkStore.getNetworkTree().addObserver(this);
 
@@ -132,7 +132,7 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 				if (cell != null && cell != serverVertex && vertices.containsKey(cell)) {
 
 					// get profile
-					ClientProfile selected = ViewerProfileStore.getClient(vertices.get(cell));
+					ClientProfile selected = ProfileStore.getClient(vertices.get(cell));
 
 					if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
 
@@ -208,7 +208,7 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 	}
 
 	private void addInitialClients() {
-		for (ClientProfile client : ViewerProfileStore.getClients()) {
+		for (ClientProfile client : ProfileStore.getClients()) {
 			addClient(client);
 		}
 	}
@@ -357,7 +357,7 @@ public class HostGraph extends JPanel implements MouseWheelListener, Observer {
 		EV_NetworkDelta nd = (EV_NetworkDelta) arg1;
 
 		if (nd.getNodeAdded() != null) {
-			Profile profile = ViewerProfileStore.getProfile(nd.getNodeAdded().getCvid());
+			Profile profile = ProfileStore.getProfile(nd.getNodeAdded().getCvid());
 			if (profile instanceof ClientProfile) {
 				addClient((ClientProfile) profile);
 			} else if (profile instanceof ViewerProfile) {

@@ -44,99 +44,124 @@ import "com/subterranean_security/crimson/core/net/sequences/Debug.proto";
 import "com/subterranean_security/crimson/core/Misc.proto";
 
 message Message {
-	int32 id = 2;
+	int32 id = 1;
 	
-	int32 rid = 3;
-	int32 sid = 4;
+	int32 to = 2;
+	int32 from = 3;
 
 	oneof msg_oneof {
-		// highest frequency first
-		EV_StreamData 			ev_stream_data 				= 5;
-		EV_EndpointClosed 		ev_endpoint_closed 			= 6;
-		EV_ProfileDelta 		ev_profile_delta 			= 7;
-		EV_KEvent 				ev_kevent 					= 10;
-		EV_ChatMessage 			ev_chat_message 			= 11;
-		EV_NetworkDelta 		ev_network_delta 			= 12;
+		// high frequency messages
+		EV_StreamData 			ev_stream_data 				= 4;
+		EV_EndpointClosed 		ev_endpoint_closed 			= 5;
+		EV_ProfileDelta 		ev_profile_delta 			= 6;
+		EV_KEvent 				ev_kevent 					= 7;
+		EV_ChatMessage 			ev_chat_message 			= 8;
+		EV_NetworkDelta 		ev_network_delta 			= 9;
 		
 		// generic response for RS types which contain only a result and a comment
-		Outcome rs_outcome = 99;
+		Outcome 				rs_outcome 					= 10;
 		
+		// Login.proto
 		RQ_Login 				rq_login 					= 100;
 		RS_Login 				rs_login 					= 101;
 		RQ_LoginChallenge 		rq_login_challenge 			= 102;
 		RS_LoginChallenge 		rs_login_challenge 			= 103;
-		RQ_GroupChallenge 		rq_group_challenge 			= 104;
-		RS_GroupChallenge 		rs_group_challenge 			= 105;
-		MI_GroupChallengeResult mi_challenge_result 		= 106;
-		RQ_Generate 			rq_generate					= 107;
-		RS_Generate 			rs_generate 				= 108;
-		RQ_FileListing 			rq_file_listing 			= 109;
-		RS_FileListing 			rs_file_listing 			= 110;
-		RQ_FileHandle 			rq_file_handle 				= 111;
-		RS_FileHandle 			rs_file_handle 				= 112;
-		RQ_AdvancedFileInfo 	rq_advanced_file_info 		= 113;
-		RS_AdvancedFileInfo 	rs_advanced_file_info 		= 114;
-		MI_CloseFileHandle 		mi_close_file_handle 		= 115;
-		RQ_ChangeServerState 	rq_change_server_state 		= 116;
-		RS_ChangeServerState	 rs_change_server_state 	= 117;
-		RQ_ChangeClientState 	rq_change_client_state 		= 118;
-		RS_ChangeClientState 	rs_change_client_state		= 119;
-		RQ_AddListener 			rq_add_listener 			= 120;
-		RQ_RemoveListener 		rq_remove_listener 			= 122;
-		RQ_AddUser 				rq_add_user 				= 124;
-		RS_AddUser 				rs_add_user 				= 125;
-		RQ_EditUser 			rq_edit_user				= 126;
-		RS_EditUser 			rs_edit_user				= 127;
-		RQ_KeyUpdate 			rq_key_update 				= 128;
-		RS_KeyUpdate 			rs_key_update 				= 129;
-		RQ_ChangeSetting 		rq_change_setting 			= 142;
-		RS_ChangeSetting 		rs_change_setting 			= 143;
-		RQ_CreateAuthMethod 	rq_create_auth_method 		= 130;
-		RS_CreateAuthMethod 	rs_create_auth_method 		= 131;
-		RQ_RemoveAuthMethod 	rq_remove_auth_method 		= 132;
-		RS_RemoveAuthMethod 	rs_remove_auth_method 		= 133;
-		RQ_GetClientConfig 		rq_get_client_config 		= 134;
-		RS_GetClientConfig 		rs_get_client_config 		= 135;
-		RQ_QuickScreenshot 		rq_quick_screenshot 		= 136;
-		RS_QuickScreenshot 		rs_quick_screenshot 		= 137;
-		RQ_Delete 				rq_delete 					= 138;
-		RS_Delete 				rs_delete 					= 139;
-		RQ_Logs 				rq_logs 					= 140;
-		RS_Logs 				rs_logs 					= 141;
-		RQ_Chat 				rq_chat						= 144;
-		RS_Chat 				rs_chat 					= 145;
-		RQ_AddTorrent 			rq_add_torrent 				= 146;
-		RS_AddTorrent 			rs_add_torrent 				= 147;
+		
+		// ClientAuth.proto
+		M1_AuthAttempt 			m1_auth_attempt 			= 200;
+		RQ_KeyChallenge 		rq_key_challenge 			= 201;
+		RS_KeyChallenge 		rs_key_challenge 			= 202;
+		RQ_PassChallenge 		rq_pass_challenge 			= 203;
+		RS_PassChallenge 		rs_pass_challenge 			= 204;
+		RQ_CreateAuthGroup 		rq_create_auth_group 		= 205;
+		RQ_RemoveAuthGroup 		rq_remove_auth_group 		= 206;
+		
+		// Generator.proto
+		RQ_Generate 			rq_generate					= 300;
+		RS_Generate 			rs_generate 				= 301;
+		
+		// FileManager.proto
+		RQ_FileListing 			rq_file_listing 			= 400;
+		RS_FileListing 			rs_file_listing 			= 401;
+		RQ_FileHandle 			rq_file_handle 				= 402;
+		RS_FileHandle 			rs_file_handle 				= 403;
+		RQ_AdvancedFileInfo 	rq_advanced_file_info 		= 404;
+		RS_AdvancedFileInfo 	rs_advanced_file_info 		= 405;
+		MI_CloseFileHandle 		mi_close_file_handle 		= 406;
+		RQ_Delete 				rq_delete 					= 407;
+		
+		// Users.proto
+		RQ_AddUser 				rq_add_user 				= 500;
+		RQ_EditUser 			rq_edit_user				= 501;
+		
+		// State.proto
+		RQ_ChangeServerState 	rq_change_server_state 		= 600;
+		RQ_ChangeClientState 	rq_change_client_state 		= 601;
+		
+		// Listener.proto
+		RQ_AddListener 			rq_add_listener 			= 700;
+		RQ_RemoveListener 		rq_remove_listener 			= 701;
+		
+		// Torrents.proto
+		RQ_AddTorrent 			rq_add_torrent 				= 800;
+		RS_AddTorrent 			rs_add_torrent 				= 801;
+		
+		// Keylogger.proto
+		RQ_KeyUpdate 			rq_key_update 				= 900;
+		RS_KeyUpdate 			rs_key_update 				= 901;
+		
+		// ClientControl.proto
+		RQ_ChangeSetting 		rq_change_setting 			= 1000;
+		RQ_GetClientConfig 		rq_get_client_config 		= 1001;
+		RS_GetClientConfig 		rs_get_client_config 		= 1002;
+		
+		// Screenshot.proto
+		RQ_QuickScreenshot 		rq_quick_screenshot 		= 1100;
+		RS_QuickScreenshot 		rs_quick_screenshot 		= 1101;
+		
+		// Log.proto
+		RQ_Logs 				rq_logs 					= 1200;
+		RS_Logs 				rs_logs 					= 1201;
+		
+		// Chat.proto
+		RQ_Chat 				rq_chat						= 1300;
+		RS_Chat 				rs_chat 					= 1301;
 		
 		// Network.proto
-		RQ_DirectConnection 	rq_direct_connection 		= 148;
-		RS_DirectConnection 	rs_direct_connection 		= 149;
-		RQ_MakeDirectConnection rq_make_direct_connection 	= 150;
-		RS_MakeDirectConnection rs_make_direct_connection 	= 151;
+		RQ_DirectConnection 	rq_direct_connection 		= 1400;
+		RS_DirectConnection 	rs_direct_connection 		= 1401;
+		RQ_MakeDirectConnection rq_make_direct_connection 	= 1402;
+		RS_MakeDirectConnection rs_make_direct_connection 	= 1403;
 	
-		MI_TriggerProfileDelta 	mi_trigger_profile_delta 	= 199;
-		MI_StreamStart 			mi_stream_start 			= 200;
-		MI_StreamStop 			mi_stream_stop 				= 201;
-		MI_AuthRequest 			mi_auth_request 			= 202;
-		MI_Report 				mi_report 					= 203;
+		// Delta.proto
+		MI_TriggerProfileDelta 	mi_trigger_profile_delta 	= 1500;
+		
+		// Stream.proto
+		MI_StreamStart 			mi_stream_start 			= 1600;
+		MI_StreamStop 			mi_stream_stop 				= 1601;
+		
+		// Report.proto
+		MI_Report 				mi_report 					= 1700;
 		
 		// CVID.proto
-		RQ_Cvid 				rq_cvid 					= 204;
-		RS_Cvid 				rs_cvid 					= 205;
-		
-		RQ_ServerInfo 			rq_server_info 				= 301;
-		RS_ServerInfo 			rs_server_info 				= 302;
-		RQ_CloudUser 			rq_cloud_user 				= 305;
-		RS_CloudUser 			rs_cloud_user 				= 306;
-		
-		RQ_Ping 				rq_ping 					= 307;
-		RS_Ping 				rs_ping 					= 308;
+		RQ_Cvid 				rq_cvid 					= 1800;
+		RS_Cvid 				rs_cvid 					= 1801;
 		
 		// Debug.proto
-		EV_DebugLogEvent 		ev_debug_log_event 			= 400;
-		MI_DebugKill 			mi_debug_kill 				= 401;
-		RQ_DebugSession 		rq_debug_session 			= 402;
-		RS_DebugSession 		rs_debug_session 			= 403;
+		EV_DebugLogEvent 		ev_debug_log_event 			= 1900;
+		MI_DebugKill 			mi_debug_kill 				= 1901;
+		RQ_DebugSession 		rq_debug_session 			= 1902;
+		RS_DebugSession 		rs_debug_session 			= 1903;
+		
+		RQ_ServerInfo 			rq_server_info 				= 2000;
+		RS_ServerInfo 			rs_server_info 				= 2001;
+		RQ_CloudUser 			rq_cloud_user 				= 2002;
+		RS_CloudUser 			rs_cloud_user 				= 2003;
+		
+		RQ_Ping 				rq_ping 					= 2004;
+		RS_Ping 				rs_ping 					= 2005;
+		
+		
 	}
 
 }

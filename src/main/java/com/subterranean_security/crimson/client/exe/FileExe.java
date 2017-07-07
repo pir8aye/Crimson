@@ -30,7 +30,6 @@ import com.subterranean_security.crimson.core.store.FileManagerStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RQ_FileListing;
-import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS_Delete;
 import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
@@ -61,7 +60,7 @@ public class FileExe extends Exelet implements ExeI {
 		try {
 			NetworkStore.route(Message.newBuilder().setId(m.getId())
 					.setRsFileListing(RS_FileListing.newBuilder().setPath(lf.pwd()).addAllListing(lf.list()))
-					.setSid(m.getRid()).setRid(m.getSid()));
+					.setFrom(m.getTo()).setTo(m.getFrom()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,21 +69,20 @@ public class FileExe extends Exelet implements ExeI {
 
 	public void rq_file_handle(Message m) {
 		log.debug("rq_file_handle");
-		NetworkStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+		NetworkStore.route(Message.newBuilder().setId(m.getId()).setTo(m.getFrom()).setFrom(m.getTo())
 				.setRsFileHandle(RS_FileHandle.newBuilder().setFmid(FileManagerStore.add(new LocalFS(true, true)))));
 	}
 
 	public void rq_advanced_file_info(Message m) {
 		log.debug("rq_advance_file_info");
-		NetworkStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
+		NetworkStore.route(Message.newBuilder().setId(m.getId()).setTo(m.getFrom()).setFrom(m.getTo())
 				.setRsAdvancedFileInfo(FileUtil.getInfo(m.getRqAdvancedFileInfo().getFile())));
 	}
 
 	public void rq_delete(Message m) {
 		log.debug("rq_delete");
-		NetworkStore.route(Message.newBuilder().setId(m.getId()).setRid(m.getSid()).setSid(m.getRid())
-				.setRsDelete(RS_Delete.newBuilder().setOutcome(
-						FileUtil.deleteAll(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))));
+		NetworkStore.route(Message.newBuilder().setId(m.getId()).setTo(m.getFrom()).setFrom(m.getTo())
+				.setRsOutcome(FileUtil.deleteAll(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())));
 	}
 
 }

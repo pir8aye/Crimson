@@ -34,6 +34,7 @@ import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.core.net.auth.PasswordAuthGroup;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
@@ -130,14 +131,14 @@ public class AuthStore {
 	}
 
 	public static void refreshAllVisibilityPermissions() {
-		for (Integer i : ServerProfileStore.getClientKeyset()) {
+		for (Integer i : ProfileStore.getClientKeyset()) {
 			refreshVisibilityPermissions(i);
 		}
 	}
 
 	// TODO do only when auth is created and client/viewer is added
 	public static void refreshVisibilityPermissions(int cid) {
-		ClientProfile cp = ServerProfileStore.getClient(cid);
+		ClientProfile cp = ProfileStore.getClient(cid);
 		if (cp == null) {
 			log.warn("Could not refresh permissions for nonexistant client: {}", cid);
 			return;
@@ -156,8 +157,8 @@ public class AuthStore {
 
 		if (clientAuth == null) {
 			// no auth; append all viewers
-			for (Integer i : ServerProfileStore.getViewerKeyset()) {
-				ViewerProfile vp = ServerProfileStore.getViewer(i);
+			for (Integer i : ProfileStore.getViewerKeyset()) {
+				ViewerProfile vp = ProfileStore.getViewer(i);
 				log.debug("Adding visibility flag to viewer {} for client {}", vp.getCvid(), cid);
 				vp.getPermissions().addFlag(cid, Perm.client.visibility);
 
@@ -165,8 +166,8 @@ public class AuthStore {
 				changed.add(vp.getCvid());
 			}
 		} else {
-			for (Integer i : ServerProfileStore.getViewerKeyset()) {
-				ViewerProfile vp = ServerProfileStore.getViewer(i);
+			for (Integer i : ProfileStore.getViewerKeyset()) {
+				ViewerProfile vp = ProfileStore.getViewer(i);
 				if (clientAuth.getOwnerList().contains(vp.get(AK_VIEWER.USER))
 						|| clientAuth.getMemberList().contains(vp.get(AK_VIEWER.USER))) {
 					// this viewer has authority over this client

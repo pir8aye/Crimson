@@ -12,7 +12,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import com.subterranean_security.charcoal.ui.components.IPanel.State;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 

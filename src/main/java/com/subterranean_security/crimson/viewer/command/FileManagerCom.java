@@ -19,8 +19,8 @@ package com.subterranean_security.crimson.viewer.command;
 
 import java.util.ArrayList;
 
-import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -37,7 +37,7 @@ import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 public class FileManagerCom {
 	public static int getFileHandle(int cid) {
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqFileHandle(RQ_FileHandle.newBuilder()), TimeoutConstants.DEFAULT);
 			if (m != null) {
 				return m.getRsFileHandle().getFmid();
@@ -56,13 +56,13 @@ public class FileManagerCom {
 	public static void closeFileHandle(int cid, int fmid) {
 
 		NetworkStore.route(
-				Message.newBuilder().setRid(cid).setMiCloseFileHandle(MI_CloseFileHandle.newBuilder().setFmid(fmid)));
+				Message.newBuilder().setTo(cid).setMiCloseFileHandle(MI_CloseFileHandle.newBuilder().setFmid(fmid)));
 
 	}
 
 	public static RS_FileListing fm_down(int cid, int fmid, String name, boolean mtime, boolean size) {
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqFileListing(RQ_FileListing.newBuilder().setDown(name).setFmid(fmid)),
 					TimeoutConstants.DEFAULT);
 			return m.getRsFileListing();
@@ -73,7 +73,7 @@ public class FileManagerCom {
 
 	public static RS_FileListing fm_up(int cid, int fmid, boolean mtime, boolean size) {
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqFileListing(RQ_FileListing.newBuilder().setUp(true).setFmid(fmid)), TimeoutConstants.DEFAULT);
 			return m.getRsFileListing();
 		} catch (Exception e) {
@@ -83,7 +83,7 @@ public class FileManagerCom {
 
 	public static RS_FileListing fm_list(int cid, int fmid, boolean mtime, boolean size) {
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqFileListing(RQ_FileListing.newBuilder().setFmid(fmid)), TimeoutConstants.DEFAULT);
 			return m.getRsFileListing();
 		} catch (Exception e) {
@@ -93,7 +93,7 @@ public class FileManagerCom {
 
 	public static RS_AdvancedFileInfo fm_file_info(int cid, String path) {
 		try {
-			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 					.setRqAdvancedFileInfo(RQ_AdvancedFileInfo.newBuilder().setFile(path)), TimeoutConstants.DEFAULT);
 			return m.getRsAdvancedFileInfo();
 		} catch (InterruptedException e) {
@@ -110,14 +110,14 @@ public class FileManagerCom {
 		Outcome.Builder outcome = Outcome.newBuilder();
 		try {
 			Message m = NetworkStore.route(
-					Message.newBuilder().setId(IDGen.msg()).setRid(cid).setSid(LcvidStore.cvid)
+					Message.newBuilder().setId(IDGen.msg()).setTo(cid).setFrom(LcvidStore.cvid)
 							.setRqDelete(RQ_Delete.newBuilder().addAllTarget(targets).setOverwrite(overwrite)),
 					TimeoutConstants.DEFAULT);
 
 			if (m == null) {
 				outcome.setResult(false).setComment("No response");
 			} else {
-				return m.getRsDelete().getOutcome();
+				return m.getRsOutcome();
 			}
 
 		} catch (InterruptedException e) {

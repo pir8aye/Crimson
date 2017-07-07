@@ -76,7 +76,7 @@ public abstract class Stream implements Observer {
 	 * @param msg
 	 */
 	protected void write(Message.Builder msg) {
-		NetworkStore.route(msg.setRid(endpointCvid).setSid(LcvidStore.cvid));
+		NetworkStore.route(msg.setTo(endpointCvid).setFrom(LcvidStore.cvid));
 	}
 
 	@Override

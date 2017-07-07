@@ -30,9 +30,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
+import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
-import com.subterranean_security.crimson.viewer.store.ViewerProfileStore;
 
 public class UserTable extends JScrollPane {
 
@@ -61,7 +61,7 @@ public class UserTable extends JScrollPane {
 				}
 
 				ViewerProfile selected = tm.getAt(sourceRow);
-				if (ViewerProfileStore.getLocalViewer().get(AK_VIEWER.USER).equals(selected.get(AK_VIEWER.USER))) {
+				if (ProfileStore.getLocalViewer().get(AK_VIEWER.USER).equals(selected.get(AK_VIEWER.USER))) {
 					parent.btnRemove.setEnabled(false);
 				}
 
@@ -118,7 +118,7 @@ class TM extends AbstractTableModel {
 	private List<ViewerProfile> users;
 
 	public TM() {
-		users = ViewerProfileStore.getViewers();
+		users = ProfileStore.getViewers();
 	}
 
 	@Override

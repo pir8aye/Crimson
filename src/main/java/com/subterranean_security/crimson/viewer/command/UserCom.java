@@ -17,8 +17,8 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.command;
 
-import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
 import com.subterranean_security.crimson.core.store.NetworkStore;
 import com.subterranean_security.crimson.core.util.IDGen;
@@ -42,13 +42,10 @@ public final class UserCom {
 		try {
 			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRqAddUser(add),
 					TimeoutConstants.DEFAULT);
-			if (m.getRsAddUser() == null)
+			if (m.getRsOutcome() == null)
 				throw new MessageFlowException(RQ_AddUser.class, m);
 
-			outcome.setResult(m.getRsAddUser().getResult());
-			if (m.getRsAddUser().hasComment())
-				outcome.setComment(m.getRsAddUser().getComment());
-
+			outcome = outcome.mergeFrom(m.getRsOutcome());
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");
 		} catch (MessageTimeout e) {
@@ -73,12 +70,10 @@ public final class UserCom {
 		try {
 			Message m = NetworkStore.route(Message.newBuilder().setId(IDGen.msg()).setRqEditUser(rqeu.setUser(rqau)),
 					TimeoutConstants.DEFAULT);
-			if (m.getRsEditUser() == null)
+			if (m.getRsOutcome() == null)
 				throw new MessageFlowException(RQ_EditUser.class, m);
 
-			outcome.setResult(m.getRsEditUser().getResult());
-			if (m.getRsEditUser().hasComment())
-				outcome.setComment(m.getRsEditUser().getComment());
+			outcome = outcome.mergeFrom(m.getRsOutcome());
 
 		} catch (InterruptedException e) {
 			outcome.setResult(false).setComment("Interrupted");

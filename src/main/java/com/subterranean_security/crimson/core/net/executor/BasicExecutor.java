@@ -170,13 +170,9 @@ public abstract class BasicExecutor {
 			for (ExeI exe : executors)
 				exe.ev_stream_data(m);
 			break;
-		case MI_AUTH_REQUEST:
+		case M1_AUTH_ATTEMPT:
 			for (ExeI exe : executors)
-				exe.m1_auth_request(m);
-			break;
-		case MI_CHALLENGE_RESULT:
-			for (ExeI exe : executors)
-				exe.m1_challenge_result(m);
+				exe.m1_auth_attempt(m);
 			break;
 		case MI_CLOSE_FILE_HANDLE:
 			for (ExeI exe : executors)
@@ -234,9 +230,9 @@ public abstract class BasicExecutor {
 			for (ExeI exe : executors)
 				exe.rq_chat(m);
 			break;
-		case RQ_CREATE_AUTH_METHOD:
+		case RQ_CREATE_AUTH_GROUP:
 			for (ExeI exe : executors)
-				exe.rq_create_auth_method(m);
+				exe.rq_create_auth_group(m);
 			break;
 		case RQ_CVID:
 			for (ExeI exe : executors)
@@ -274,9 +270,9 @@ public abstract class BasicExecutor {
 			for (ExeI exe : executors)
 				exe.rq_get_client_config(m);
 			break;
-		case RQ_GROUP_CHALLENGE:
+		case RQ_KEY_CHALLENGE:
 			for (ExeI exe : executors)
-				exe.rq_group_challenge(m);
+				exe.rq_key_challenge(m);
 			break;
 		case RQ_KEY_UPDATE:
 			for (ExeI exe : executors)
@@ -306,9 +302,9 @@ public abstract class BasicExecutor {
 			for (ExeI exe : executors)
 				exe.rq_quick_screenshot(m);
 			break;
-		case RQ_REMOVE_AUTH_METHOD:
+		case RQ_REMOVE_AUTH_GROUP:
 			for (ExeI exe : executors)
-				exe.rq_remove_auth_method(m);
+				exe.rq_remove_auth_group(m);
 			break;
 		case RQ_REMOVE_LISTENER:
 			for (ExeI exe : executors)

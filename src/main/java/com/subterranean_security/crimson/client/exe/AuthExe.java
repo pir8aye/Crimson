@@ -34,11 +34,15 @@ import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.MI_GroupChallengeResult;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_GroupChallenge;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_GroupChallenge;
+import com.subterranean_security.crimson.proto.core.Misc.Outcome;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_KeyChallenge;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_KeyChallenge;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public class AuthExe extends Exelet implements ExeI {
 
 	private static final Logger log = LoggerFactory.getLogger(AuthExe.class);
@@ -52,7 +56,7 @@ public class AuthExe extends Exelet implements ExeI {
 		super(connector, parent);
 	}
 
-	public void rq_group_challenge(Message m) {
+	public void rq_key_challenge(Message m) {
 		if (connector.getState() != ConnectionState.AUTH_STAGE1) {
 			return;
 		}
@@ -64,9 +68,9 @@ public class AuthExe extends Exelet implements ExeI {
 		} catch (DestroyFailedException e1) {
 		}
 
-		String result = CryptoUtil.hashSign(m.getRqGroupChallenge().getMagic(), groupKey);
-		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder().setResult(result).build();
-		connector.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
+		String result = CryptoUtil.hashSign(m.getRqKeyChallenge().getMagic(), groupKey);
+		RS_KeyChallenge rs = RS_KeyChallenge.newBuilder().setResult(result).build();
+		connector.write(Message.newBuilder().setId(m.getId()).setRsKeyChallenge(rs).build());
 	}
 
 	public void m1_challengeResult(Message m) {
@@ -74,7 +78,7 @@ public class AuthExe extends Exelet implements ExeI {
 		if (connector.getState() != ConnectionState.AUTH_STAGE1) {
 			return;
 		}
-		if (!m.getMiChallengeResult().getResult()) {
+		if (!m.getRsOutcome().getResult()) {
 			log.debug("Authentication with server failed");
 			connector.setState(ConnectionState.CONNECTED);
 			return;
@@ -93,9 +97,10 @@ public class AuthExe extends Exelet implements ExeI {
 		final int id = IDGen.msg();
 
 		final String magic = RandomUtil.randString(MAGIC_LENGTH);
-		RQ_GroupChallenge rq = RQ_GroupChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
-		connector.write(Message.newBuilder().setId(id).setRqGroupChallenge(rq).build());
+		RQ_KeyChallenge rq = RQ_KeyChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
+		connector.write(Message.newBuilder().setId(id).setRqKeyChallenge(rq).build());
 
+		// TODO
 		new Thread(new Runnable() {
 			public void run() {
 				boolean flag = true;
@@ -103,7 +108,7 @@ public class AuthExe extends Exelet implements ExeI {
 					Message rs = connector.getResponse(id).get(7000);
 
 					if (rs != null) {
-						if (!CryptoUtil.verifyGroupChallenge(magic, groupKey, rs.getRsGroupChallenge().getResult())) {
+						if (!CryptoUtil.verifyGroupChallenge(magic, groupKey, rs.getRsKeyChallenge().getResult())) {
 							log.info("Server challenge failed");
 							flag = false;
 						}
@@ -120,8 +125,6 @@ public class AuthExe extends Exelet implements ExeI {
 					e.printStackTrace();
 				}
 
-				MI_GroupChallengeResult.Builder oneway = MI_GroupChallengeResult.newBuilder().setResult(flag);
-
 				if (flag) {
 					connector.setState(ConnectionState.AUTHENTICATED);
 
@@ -130,7 +133,7 @@ public class AuthExe extends Exelet implements ExeI {
 					// TODO handle more
 					connector.setState(ConnectionState.CONNECTED);
 				}
-				connector.write(Message.newBuilder().setId(id).setMiChallengeResult(oneway.build()).build());
+				connector.write(Message.newBuilder().setId(id).setRsOutcome(Outcome.newBuilder().setResult(flag)));
 
 			}
 		}).start();
