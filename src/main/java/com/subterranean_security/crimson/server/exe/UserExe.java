@@ -22,7 +22,6 @@ import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.store.NetworkStore;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
@@ -31,6 +30,7 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Users.RQ_AddUs
 import com.subterranean_security.crimson.server.store.ServerDatabaseStore;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.universal.Universal;
 
 /**

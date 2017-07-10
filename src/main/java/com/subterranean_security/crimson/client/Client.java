@@ -31,7 +31,6 @@ import com.subterranean_security.crimson.client.modules.Keylogger;
 import com.subterranean_security.crimson.client.net.ClientExecutor;
 import com.subterranean_security.crimson.client.store.ConfigStore;
 import com.subterranean_security.crimson.core.misc.EH;
-import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.core.net.factory.ExecutorFactory;
 import com.subterranean_security.crimson.core.net.thread.ConnectionPeriod;
 import com.subterranean_security.crimson.core.platform.Environment;
@@ -149,16 +148,6 @@ public final class Client {
 
 	private static void initializePreferences() {
 		PrefStore.loadPreferences(Instance.CLIENT);
-	}
-
-	public static KeyAuthGroup getGroup() {
-		try {
-			return (KeyAuthGroup) DatabaseStore.getDatabase().getObject("auth.group");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 }

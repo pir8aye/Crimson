@@ -27,8 +27,8 @@ import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.common.panels.sl.epanel.EPanel;
 import com.subterranean_security.crimson.viewer.ui.screen.users.ep.EditUser;
 

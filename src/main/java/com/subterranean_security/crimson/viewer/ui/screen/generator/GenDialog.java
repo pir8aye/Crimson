@@ -29,12 +29,12 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH.AuthType;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
-import com.subterranean_security.crimson.proto.core.Misc.AuthType;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.net.ViewerCommands;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
@@ -90,27 +90,36 @@ public class GenDialog extends JDialog {
 							UINotification.addConsoleInfo("Generating target on server...");
 							dispose();
 
-							if (config.getAuthType() == AuthType.GROUP
-									&& ((String) gp.atab.groupSelectionBox.getSelectedItem()).equals("Create Group")) {
-								if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
-										.addOwner(ProfileStore.getLocalViewer().get(AK_VIEWER.USER))
-										.setId(IDGen.auth()).setCreation(new Date().getTime()).setType(AuthType.GROUP)
-										.setName(config.getGroupName()).setGroupSeedPrefix(gp.getGroupPrefix()).build())
-										.getResult()) {
-									UINotification.addConsoleBad("Failed to create authentication group");
-									return;
+							switch (AuthType.valueOf(config.getGroupType())) {
+							case KEY:
+								if (((String) gp.atab.groupSelectionBox.getSelectedItem()).equals("Create Group")) {
+									if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
+											.addOwner(ProfileStore.getLocalViewer().get(AK_VIEWER.USER))
+											.setId(IDGen.auth()).setCreation(new Date().getTime())
+											.setType(AuthType.GROUP).setName(config.getGroupName())
+											.setGroupSeedPrefix(gp.getGroupPrefix()).build()).getResult()) {
+										UINotification.addConsoleBad("Failed to create authentication group");
+										return;
+									}
 								}
-							} else if (config.getAuthType() == AuthType.PASSWORD
-									&& !gp.atab.chckbxDontInstallPassword.isSelected()) {
-								if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
-										.addOwner(ProfileStore.getLocalViewer().get(AK_VIEWER.USER))
-										.setId(IDGen.auth()).setCreation(new Date().getTime())
-										.setType(AuthType.PASSWORD).setName(gp.atab.fld_password_name.getText())
-										.setPassword(gp.atab.getPassword()).build()).getResult()) {
-									UINotification.addConsoleBad("Failed to create password");
-									return;
+								break;
+							case PASSWORD:
+								if (!gp.atab.chckbxDontInstallPassword.isSelected()) {
+									if (!ViewerCommands.createAuthMethod(AuthMethod.newBuilder()
+											.addOwner(ProfileStore.getLocalViewer().get(AK_VIEWER.USER))
+											.setId(IDGen.auth()).setCreation(new Date().getTime())
+											.setType(AuthType.PASSWORD).setName(gp.atab.fld_password_name.getText())
+											.setPassword(gp.atab.getPassword()).build()).getResult()) {
+										UINotification.addConsoleBad("Failed to create password");
+										return;
+									}
 								}
+								break;
+							default:
+								break;
+
 							}
+
 							ViewerCommands.generate(config, out, creation);
 
 						} else {

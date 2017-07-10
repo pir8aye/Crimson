@@ -147,7 +147,7 @@ public final class CPU extends Collector {
 				// get core hwmon directory
 				for (File probe : new File("/sys/class/hwmon").listFiles()) {
 					try {
-						if (FileUtil.readFileString(new File(probe.getAbsolutePath() + "/name")).contains("coretemp")) {
+						if (FileUtil.readString(new File(probe.getAbsolutePath() + "/name")).contains("coretemp")) {
 							core = probe;
 							break;
 						}

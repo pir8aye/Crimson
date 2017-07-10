@@ -22,17 +22,15 @@ import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH.AuthType;
 import com.subterranean_security.crimson.core.misc.EH;
 import com.subterranean_security.crimson.core.platform.Environment;
 import com.subterranean_security.crimson.core.storage.BasicStorageFacility;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.store.ProfileStore;
-import com.subterranean_security.crimson.core.struct.collections.cached.CachedMap;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.LogUtil;
 import com.subterranean_security.crimson.core.util.Native;
@@ -40,14 +38,11 @@ import com.subterranean_security.crimson.core.util.TempUtil;
 import com.subterranean_security.crimson.debug.CharcoalAppender;
 import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
 import com.subterranean_security.crimson.proto.core.Generator.NetworkTarget;
-import com.subterranean_security.crimson.proto.core.Misc.AuthType;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.Trigger;
 import com.subterranean_security.crimson.server.storage.ServerDatabase;
 import com.subterranean_security.crimson.server.store.ListenerStore;
-import com.subterranean_security.crimson.sv.profile.ClientProfile;
-import com.subterranean_security.crimson.sv.profile.ServerProfile;
-import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
@@ -111,7 +106,7 @@ public final class Server {
 		// initialize server database
 		initializeDatabase();
 
-		initializeProfiles();
+		ProfileStore.initialize();
 
 		if (Boolean.parseBoolean(System.getProperty("debug-client", "false"))) {
 			installDebugClient();
@@ -145,40 +140,6 @@ public final class Server {
 		DatabaseStore.setFacility(sf);
 	}
 
-	private static void initializeProfiles() {
-		CachedMap<Integer, ViewerProfile> viewerProfiles = null;
-		try {
-			viewerProfiles = (CachedMap<Integer, ViewerProfile>) DatabaseStore.getDatabase()
-					.getCachedCollection("profiles.viewers");
-		} catch (NoSuchElementException e) {
-			DatabaseStore.getDatabase().store("profiles.viewers", new CachedMap<Integer, ViewerProfile>());
-			viewerProfiles = (CachedMap<Integer, ViewerProfile>) DatabaseStore.getDatabase()
-					.getCachedCollection("profiles.viewers");
-		}
-
-		CachedMap<Integer, ClientProfile> clientProfiles = null;
-		try {
-			clientProfiles = (CachedMap<Integer, ClientProfile>) DatabaseStore.getDatabase()
-					.getCachedCollection("profiles.clients");
-		} catch (NoSuchElementException e) {
-			DatabaseStore.getDatabase().store("profiles.clients", new CachedMap<Integer, ClientProfile>());
-			clientProfiles = (CachedMap<Integer, ClientProfile>) DatabaseStore.getDatabase()
-					.getCachedCollection("profiles.clients");
-		}
-
-		CachedMap<Integer, ServerProfile> serverProfiles = null;
-		try {
-			serverProfiles = (CachedMap<Integer, ServerProfile>) DatabaseStore.getDatabase()
-					.getCachedCollection("profiles.servers");
-		} catch (NoSuchElementException e) {
-			DatabaseStore.getDatabase().store("profiles.servers", new CachedMap<Integer, ServerProfile>());
-			serverProfiles = (CachedMap<Integer, ServerProfile>) DatabaseStore.getDatabase()
-					.getCachedCollection("profiles.servers");
-		}
-
-		ProfileStore.initialize(clientProfiles, viewerProfiles, serverProfiles);
-	}
-
 	private static void initializePreferences() {
 		PrefStore.loadPreferences(Instance.SERVER);
 	}
@@ -191,16 +152,16 @@ public final class Server {
 	private static Outcome installDebugClient() {
 		Outcome.Builder outcome = Outcome.newBuilder().setResult(true);
 
-		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setAuthType(AuthType.NO_AUTH)
+		ClientConfig cc = ClientConfig.newBuilder().setOutputType("Java (.jar)").setGroupType(AuthType.NONE.toString())
 				.addTarget(NetworkTarget.newBuilder().setServer(System.getProperty("debug-client.server", "127.0.0.1"))
-						.setPort(Integer.parseInt(System.getProperty("debug-client.port", "10101"))).build())
+						.setPort(Integer.parseInt(System.getProperty("debug-client.port", "10101"))))
 				.setPathWin(System.getProperty("debug-client.path.windows", "%USERHOME%/.crimson/client.jar"))
 				.setPathBsd(System.getProperty("debug-client.path.bsd", "%USERHOME%/.crimson/client.jar"))
 				.setPathLin(System.getProperty("debug-client.path.linux", "%USERHOME%/.crimson/client.jar"))
 				.setPathOsx(System.getProperty("debug-client.path.osx", "%USERHOME%/.crimson/client.jar"))
 				.setPathSol(System.getProperty("debug-client.path.solaris", "%USERHOME%/.crimson/client.jar"))
 				.setReconnectPeriod(Integer.parseInt(System.getProperty("debug-client.connection_period", "3000")))
-				.setBuildNumber(Universal.build).setAutostart(false).setKeylogger(true)
+				.setBuiltByServerVersion(Universal.version).setAutostart(false).setKeylogger(true)
 				.setKeyloggerFlushMethod(Trigger.EVENT).setKeyloggerFlushValue(15).build();
 		try {
 			// Generate installer
@@ -210,7 +171,7 @@ public final class Server {
 			// Write installer
 			byte[] res = g.getResult();
 			File installer = new File(System.getProperty("user.home") + "/Desktop/crimson/client-installer.jar");
-			FileUtil.writeFile(res, installer);
+			FileUtil.write(res, installer);
 
 			// TODO fix
 			// Run installer

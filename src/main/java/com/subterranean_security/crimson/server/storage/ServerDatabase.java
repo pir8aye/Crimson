@@ -29,13 +29,11 @@ import org.slf4j.LoggerFactory;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.storage.BasicDatabase;
 import com.subterranean_security.crimson.core.storage.ServerStorageFacility;
-import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedMap;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
-import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
-import com.subterranean_security.crimson.proto.core.net.sequences.Listener.ListenerConfig;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 
 public class ServerDatabase extends BasicDatabase implements ServerStorageFacility {
@@ -181,10 +179,9 @@ public class ServerDatabase extends BasicDatabase implements ServerStorageFacili
 	public void resetServer() {
 		resetBasic();
 
-		store("auth.methods", new CachedList<AuthMethod>());
-		store("listeners", new CachedList<ListenerConfig>());
 		store("profiles.clients", new CachedMap<Integer, ClientProfile>());
 		store("profiles.viewers", new CachedMap<Integer, ViewerProfile>());
+		store("profiles.servers", new CachedMap<Integer, ServerProfile>());
 		store("profiles.idcount", 0);
 	}
 

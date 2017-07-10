@@ -229,14 +229,14 @@ public final class Reporter {
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setLogCrimson(FileUtil.readFileString(new File(
+			rb.setLogCrimson(FileUtil.readString(new File(
 					Environment.log.getAbsolutePath() + "/" + Universal.instance.toString().toLowerCase() + ".log")));
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query instance log: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));
 		}
 		try {
-			rb.setLogNetty(FileUtil.readFileString(new File(Environment.log.getAbsolutePath() + "/netty.log")));
+			rb.setLogNetty(FileUtil.readString(new File(Environment.log.getAbsolutePath() + "/netty.log")));
 		} catch (Exception e) {
 			rb.setCrComment("Failed to query netty log: " + e.getMessage() + "\n"
 					+ (rb.hasCrComment() ? rb.getCrComment() : ""));

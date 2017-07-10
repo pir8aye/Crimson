@@ -25,8 +25,8 @@ import javax.swing.ComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.event.ListDataListener;
 
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.sv.profile.Profile;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class HostBoxModel extends AbstractListModel<Profile> implements ComboBoxModel<Profile> {

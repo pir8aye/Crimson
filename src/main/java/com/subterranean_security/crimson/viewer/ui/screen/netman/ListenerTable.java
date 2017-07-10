@@ -29,7 +29,7 @@ import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_LISTENER;
-import com.subterranean_security.crimson.core.store.ProfileStore;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 
 public class ListenerTable extends JScrollPane {
 

@@ -24,7 +24,6 @@ import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
 import com.subterranean_security.crimson.core.store.NetworkStore;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
@@ -36,6 +35,7 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Login.RS_Login
 import com.subterranean_security.crimson.proto.core.net.sequences.Login.RS_LoginChallenge;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.sv.profile.Profile;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
 
 public final class LoginCom {

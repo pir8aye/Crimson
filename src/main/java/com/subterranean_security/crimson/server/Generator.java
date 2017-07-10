@@ -33,8 +33,6 @@ import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.TempUtil;
 import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
 import com.subterranean_security.crimson.proto.core.Generator.GenReport;
-import com.subterranean_security.crimson.proto.core.Misc.AuthType;
-import com.subterranean_security.crimson.server.store.AuthStore;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.util.JarUtil;
 
@@ -76,7 +74,7 @@ public class Generator {
 	}
 
 	public byte[] getResult() throws IOException {
-		byte[] result = FileUtil.readFile(new File(temp.getAbsolutePath() + "/installer.jar"));
+		byte[] result = FileUtil.read(new File(temp.getAbsolutePath() + "/installer.jar"));
 		FileUtil.delete(temp);
 		return result;
 	}
@@ -96,9 +94,6 @@ public class Generator {
 			database.resetClient();
 			database.store("cvid", cvid);
 			database.store("ic", Base64.getEncoder().encodeToString(ic.toByteArray()));
-			if (ic.getAuthType() == AuthType.GROUP) {
-				database.store("auth.group", AuthStore.getGroup(ic.getGroupName()));
-			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -180,8 +175,8 @@ public class Generator {
 		// delete jars
 		// CUtil.Files.delete(clientJar);
 
-		gReport.setHashMd5(FileUtil.getHash(clientJar.getAbsolutePath(), "MD5"));
-		gReport.setHashSha256(FileUtil.getHash(clientJar.getAbsolutePath(), "SHA-256"));
+		gReport.setHashMd5(FileUtil.hash(clientJar.getAbsolutePath(), "MD5"));
+		gReport.setHashSha256(FileUtil.hash(clientJar.getAbsolutePath(), "SHA-256"));
 		gReport.setFileSize((int) clientJar.length());
 		gReport.setResult(true);
 		gReport.setGenTime((int) (new Date().getTime() - start.getTime()));

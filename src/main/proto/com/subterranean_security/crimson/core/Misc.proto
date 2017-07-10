@@ -21,32 +21,10 @@ package core;
 
 option java_package = "com.subterranean_security.crimson.proto.core";
 
-
+// An Outcome represents the final result of some generic action. It can 
+// optionally specify a comment on the action and the duration of the action.
 message Outcome {
 	bool result = 1;
 	string comment = 2;
 	int64 time = 3;
-
-}
-
-enum AuthType {
-	GROUP = 0; PASSWORD = 1; NO_AUTH = 2;
-}
-
-// move to AK_AUTH
-message AuthMethod {
-	int32 id = 1;
-	int64 creation = 2;
-	AuthType type = 3;
-	string name = 7;
-	
-	repeated string owner = 4;
-	repeated string member = 5;
-	
-	// if group auth
-	int32 group = 6;
-	string group_seed_prefix = 8;
-	
-	// if password auth
-	string password = 9;
 }

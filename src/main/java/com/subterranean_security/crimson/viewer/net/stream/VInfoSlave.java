@@ -17,9 +17,9 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.viewer.net.stream;
 
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.stream.info.InfoSlave;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.InfoParam;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MenuControls;
 
 public class VInfoSlave extends InfoSlave {

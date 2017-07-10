@@ -151,7 +151,7 @@ public class MiscExe extends Exelet implements ExeI {
 		// update client
 		File temp = TempUtil.getDir();
 		try {
-			FileUtil.writeFile(m.getRsGenerate().getInstaller().toByteArray(),
+			FileUtil.write(m.getRsGenerate().getInstaller().toByteArray(),
 					new File(temp.getAbsolutePath() + "/installer.jar"));
 
 			HCP.update(new File(temp.getAbsolutePath() + "/installer.jar").getAbsolutePath(), new String[] {},

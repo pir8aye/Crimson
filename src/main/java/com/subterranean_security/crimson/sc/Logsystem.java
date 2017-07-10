@@ -35,7 +35,7 @@ public enum Logsystem {
 		}
 		System.out.println("Reading log at location: " + location);
 		try {
-			return FileUtil.readFileString(new File(location));
+			return FileUtil.readString(new File(location));
 		} catch (IOException e) {
 			return null;
 		}

@@ -32,7 +32,6 @@ import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
@@ -54,6 +53,7 @@ import com.subterranean_security.crimson.proto.core.net.sequences.State.RQ_Chang
 import com.subterranean_security.crimson.proto.core.net.sequences.State.RQ_ChangeServerState;
 import com.subterranean_security.crimson.proto.core.net.sequences.State.StateType;
 import com.subterranean_security.crimson.proto.core.net.sequences.Update.RQ_GetClientConfig;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.ui.screen.generator.Report;
 import com.subterranean_security.crimson.viewer.ui.screen.main.MainFrame;
@@ -175,7 +175,7 @@ public final class ViewerCommands {
 
 			if (gr.getResult()) {
 				MainFrame.main.np.addNote("info", "Generation complete!", "Click for report", r);
-				FileUtil.writeFile(rs.getRsGenerate().getInstaller().toByteArray(), new File(output));
+				FileUtil.write(rs.getRsGenerate().getInstaller().toByteArray(), new File(output));
 			} else {
 				MainFrame.main.np.addNote("error", "Generation failed!", "Click for report", r);
 				log.error("Could not generate an installer");
@@ -277,7 +277,7 @@ public final class ViewerCommands {
 			file.getParentFile().mkdirs();
 			if (m != null) {
 				outcome.setComment(file.getAbsolutePath());
-				FileUtil.writeFile(m.getRsQuickScreenshot().getBin().toByteArray(), file);
+				FileUtil.write(m.getRsQuickScreenshot().getBin().toByteArray(), file);
 				outcome.setResult(file.exists());
 
 			} else {

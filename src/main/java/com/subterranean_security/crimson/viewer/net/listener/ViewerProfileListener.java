@@ -1,9 +1,9 @@
 package com.subterranean_security.crimson.viewer.net.listener;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
-import com.subterranean_security.crimson.core.store.ProfileStore.ProfileListener;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.sv.store.ProfileStore.ProfileListener;
 import com.subterranean_security.crimson.viewer.ui.UIStore;
 import com.subterranean_security.crimson.viewer.ui.common.UINotification;
 import com.subterranean_security.crimson.viewer.ui.screen.controlpanels.client.ClientCPFrame;

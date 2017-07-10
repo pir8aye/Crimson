@@ -30,7 +30,6 @@ import com.subterranean_security.crimson.core.net.MessageFuture;
 import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
@@ -42,6 +41,7 @@ import com.subterranean_security.crimson.server.store.ServerDatabaseStore;
 import com.subterranean_security.crimson.server.store.ServerProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.universal.Universal;
 
 /**

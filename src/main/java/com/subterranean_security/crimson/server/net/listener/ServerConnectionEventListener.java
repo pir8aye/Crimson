@@ -27,7 +27,6 @@ import com.subterranean_security.crimson.core.net.Connector;
 import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.listener.ConnectionEventListener;
 import com.subterranean_security.crimson.core.store.NetworkStore;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.ProtoUtil.PDFactory;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_NetworkDelta.LinkAdded;
@@ -36,6 +35,7 @@ import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.server.store.AuthStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.set.ProfileSetFactory;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
 public class ServerConnectionEventListener extends ConnectionEventListener {

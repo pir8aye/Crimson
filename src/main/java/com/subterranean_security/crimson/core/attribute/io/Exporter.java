@@ -15,26 +15,29 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.net.auth;
+package com.subterranean_security.crimson.core.attribute.io;
 
-import java.io.Serializable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Base64;
 
-import javax.security.auth.Destroyable;
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.util.SerialUtil;
+import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 
-import com.subterranean_security.crimson.core.util.IDGen;
+/**
+ * @author cilki
+ * @since 5.0.0
+ */
+public class Exporter {
+	public static Outcome exportGroup(AttributeGroup am, File output) {
 
-public class AuthGroup implements Serializable, Destroyable {
-
-	private static final long serialVersionUID = 1L;
-
-	private int id;
-
-	public int getId() {
-		return id;
+		try (PrintWriter pw = new PrintWriter(output)) {
+			pw.println(Base64.getEncoder().encodeToString(SerialUtil.serialize(am)));
+		} catch (FileNotFoundException e) {
+			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
+		}
+		return Outcome.newBuilder().setResult(true).build();
 	}
-
-	public AuthGroup() {
-		id = IDGen.auth();
-	}
-
 }

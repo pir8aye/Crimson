@@ -65,7 +65,7 @@ public final class LIN {
 
 		if (os_release.exists() && os_release.canRead()) {
 			try {
-				for (String s : FileUtil.readFileLines(os_release)) {
+				for (String s : FileUtil.readLines(os_release)) {
 					s = s.trim();
 					if (s.toUpperCase().startsWith("PRETTY_NAME")) {
 						return s.substring(s.indexOf("\"") + 1, s.lastIndexOf("\""));
@@ -80,7 +80,7 @@ public final class LIN {
 
 		if (issue.exists() && issue.canRead()) {
 			try {
-				for (String s : FileUtil.readFileLines(issue)) {
+				for (String s : FileUtil.readLines(issue)) {
 					return s.trim();
 				}
 			} catch (IOException e) {

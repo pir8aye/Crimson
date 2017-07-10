@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import com.subterranean_security.crimson.core.store.ProfileStore;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.universal.stores.PrefStore;
 import com.subterranean_security.crimson.universal.util.JarUtil;
 import com.subterranean_security.crimson.viewer.ui.UICommon;

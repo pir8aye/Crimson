@@ -27,16 +27,15 @@ import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
 import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.platform.LocalFS;
 import com.subterranean_security.crimson.core.store.FileManagerStore;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.FileUtil;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RQ_FileListing;
-import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS_Delete;
 import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS_FileHandle;
 import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS_FileListing;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 
 /**
  * @author cilki
@@ -102,17 +101,13 @@ public final class FileManagerExe extends Exelet implements ExeI {
 		// check permissions
 		if (!ProfileStore.getViewer(connector.getCvid()).getPermissions().getFlag(Perm.server.fs.write)) {
 			connector.write(Message.newBuilder().setId(m.getId())
-					.setRsDelete(RS_Delete.newBuilder()
-							.setOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions")))
-					.build());
+					.setRsOutcome(Outcome.newBuilder().setResult(false).setComment("Insufficient permissions")));
 			return;
 		}
 
-		connector
-				.write(Message.newBuilder().setId(m.getId())
-						.setRsDelete(RS_Delete.newBuilder().setOutcome(
-								FileUtil.deleteAll(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite())))
-						.build());
+		connector.write(Message.newBuilder().setId(m.getId())
+				.setRsOutcome(FileUtil.deleteAll(m.getRqDelete().getTargetList(), m.getRqDelete().getOverwrite()))
+				.build());
 	}
 
 	public void rq_advanced_file_info(Message m) {

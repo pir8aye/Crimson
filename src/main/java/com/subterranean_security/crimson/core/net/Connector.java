@@ -196,6 +196,10 @@ public class Connector extends Observable {
 		return getResponse(m.getId());
 	}
 
+	public MessageFuture writeAndGetResponse(Message.Builder m) {
+		return writeAndGetResponse(m.build());
+	}
+
 	public void write(Message m) {
 		handler.write(m);
 	}

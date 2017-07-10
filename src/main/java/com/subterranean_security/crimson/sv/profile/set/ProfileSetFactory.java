@@ -25,13 +25,13 @@ import java.util.Set;
 
 import com.subterranean_security.crimson.core.attribute.keys.AttributeKey;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.Profile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
 import com.subterranean_security.crimson.sv.profile.set.filter.AttributeFilter;
 import com.subterranean_security.crimson.sv.profile.set.filter.PermissionFilter;
 import com.subterranean_security.crimson.sv.profile.set.filter.ProfileFilter;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.universal.Universal.Instance;
 
 /**

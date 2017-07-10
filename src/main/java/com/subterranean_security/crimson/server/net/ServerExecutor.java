@@ -25,7 +25,7 @@ import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.proto.core.net.sequences.Stream.EV_EndpointClosed;
-import com.subterranean_security.crimson.server.exe.AuthExe;
+import com.subterranean_security.crimson.server.exe.S_AuthExe;
 import com.subterranean_security.crimson.server.exe.DeltaExe;
 import com.subterranean_security.crimson.server.exe.FileManagerExe;
 import com.subterranean_security.crimson.server.exe.GenerateExe;
@@ -64,7 +64,7 @@ public class ServerExecutor extends BasicExecutor {
 
 	@Override
 	public void initUnauth() {
-		setExecutors(new AuthExe(connector, this), new LoginExe(connector, this), new ServerInfoExe(connector));
+		setExecutors(new S_AuthExe(connector, this), new LoginExe(connector, this), new ServerInfoExe(connector));
 	}
 
 	@Override

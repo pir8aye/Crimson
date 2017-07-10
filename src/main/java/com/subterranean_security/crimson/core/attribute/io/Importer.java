@@ -15,58 +15,38 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.net.auth;
+package com.subterranean_security.crimson.core.attribute.io;
 
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Base64;
 
-import javax.security.auth.DestroyFailedException;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
- * 
- * The group key-pair authentication mechanism is the strongest out of the
- * supported authentication schemes, utilizing DSA keys to verify client and
- * server identities. Upon installer generation, the public key is embedded in
- * the installer.<br>
- * <br>
- * <div align="center"><img src="../../../../../files/client_auth.png" /></div>
- * 
- * @author Tyler Cook
- *
+ * @author cilki
+ * @since 5.0.0
  */
-public class KeyAuthGroup extends AuthGroup {
-
-	private static final long serialVersionUID = 1L;
-
-	private String name;
-	private PrivateKey privateKey;
-	private PublicKey groupKey;
-
-	@Override
-	public void destroy() throws DestroyFailedException {
-		privateKey.destroy();
-	}
-
-	public KeyAuthGroup(String name, PrivateKey privateKey, PublicKey groupKey) {
-		setName(name);
-		this.privateKey = privateKey;
-		this.groupKey = groupKey;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String n) {
-		this.name = n;
-	}
-
-	public byte[] getPrivateKey() {
-		return privateKey.getEncoded();
-	}
-
-	public byte[] getGroupKey() {
-		return groupKey.getEncoded();
-	}
-
+public class Importer {
+//	public static AuthMethod importGroup(File input) {
+//
+//		try (BufferedReader br = new BufferedReader(new FileReader(input))) {
+//			// TODO AttributeGroup not AuthMethod!
+//			return AuthMethod.parseFrom(Base64.getDecoder().decode(br.readLine()));
+//
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvalidProtocolBufferException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 }

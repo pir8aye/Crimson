@@ -20,13 +20,17 @@ package com.subterranean_security.crimson.core.attribute.keys.plural;
 import com.subterranean_security.crimson.core.attribute.keys.PluralKey;
 
 public enum AK_AUTH implements PluralKey {
-	ID, NAME, TYPE, CREATION_DATE,
+	ID, NAME, TYPE, CREATION_DATE, OWNER, MEMBERS,
 
-	// Key authentication
-	KEY_SEED,
+	// For key-groups only
+	KEY_SEED, PRIVATE_KEY, PUBLIC_KEY,
 
-	// Password authentication
+	// For password-groups only
 	PASSWORD;
+
+	public enum AuthType {
+		NONE, KEY, PASSWORD;
+	}
 
 	@Override
 	public Object query() {
@@ -62,5 +66,27 @@ public enum AK_AUTH implements PluralKey {
 	public int getConstID() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public Class<?> getJavaType() {
+		switch (this) {
+		case CREATION_DATE:
+			return long.class;
+		case ID:
+			return int.class;
+		case KEY_SEED:
+		case NAME:
+		case PASSWORD:
+		case OWNER:
+			return String.class;
+		case PRIVATE_KEY:
+		case PUBLIC_KEY:
+			return byte[].class;
+		case TYPE:
+			return AuthType.class;
+		default:
+			return PluralKey.super.getJavaType();
+		}
 	}
 }

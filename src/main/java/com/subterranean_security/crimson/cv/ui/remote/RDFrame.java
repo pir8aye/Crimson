@@ -26,7 +26,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_NET;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_USER;
-import com.subterranean_security.crimson.core.store.ProfileStore;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.viewer.ui.UIUtil;
 
 public class RDFrame extends JFrame {

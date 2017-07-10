@@ -20,7 +20,7 @@ package com.subterranean_security.crimson.client.net;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.client.exe.AuthExe;
+import com.subterranean_security.crimson.client.exe.C_AuthExe;
 import com.subterranean_security.crimson.client.exe.FileExe;
 import com.subterranean_security.crimson.client.exe.MiscExe;
 import com.subterranean_security.crimson.client.exe.TorrentExe;
@@ -35,7 +35,7 @@ public class ClientExecutor extends BasicExecutor {
 	}
 
 	public void initUnauth() {
-		setExecutors(new AuthExe(connector, this));
+		setExecutors(new C_AuthExe(connector, this));
 	}
 
 	public void initAuth() {

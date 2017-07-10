@@ -15,28 +15,31 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.store;
+package com.subterranean_security.crimson.sv.store;
 
 import static com.subterranean_security.crimson.universal.Flags.DEV_MODE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.misc.CVID;
+import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedMap;
 import com.subterranean_security.crimson.proto.core.net.sequences.Delta.EV_ProfileDelta;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.Profile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 /**
  * @author cilki
  * @since 4.0.0
  */
-public abstract class ProfileStore {
+public final class ProfileStore {
 
 	/**
 	 * The listener which handles profile events
@@ -76,6 +79,52 @@ public abstract class ProfileStore {
 		if (DEV_MODE) {
 			// charcoal
 		}
+	}
+
+	private static void initializeProfiles(String serverMap, String viewerMap, String clientMap) {
+		try {
+			viewerProfiles = (CachedMap<Integer, ViewerProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.viewers");
+		} catch (NoSuchElementException e) {
+			DatabaseStore.getDatabase().store("profiles.viewers", new CachedMap<Integer, ViewerProfile>());
+			viewerProfiles = (CachedMap<Integer, ViewerProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.viewers");
+		}
+
+		try {
+			clientProfiles = (CachedMap<Integer, ClientProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.clients");
+		} catch (NoSuchElementException e) {
+			DatabaseStore.getDatabase().store("profiles.clients", new CachedMap<Integer, ClientProfile>());
+			clientProfiles = (CachedMap<Integer, ClientProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.clients");
+		}
+
+		try {
+			serverProfiles = (CachedMap<Integer, ServerProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.servers");
+		} catch (NoSuchElementException e) {
+			DatabaseStore.getDatabase().store("profiles.servers", new CachedMap<Integer, ServerProfile>());
+			serverProfiles = (CachedMap<Integer, ServerProfile>) DatabaseStore.getDatabase()
+					.getCachedCollection("profiles.servers");
+		}
+
+	}
+
+	/**
+	 * Initialize ProfileStore for a viewer instance
+	 * 
+	 * @param lcvid
+	 */
+	public static void initialize(String lcvid) {
+		initializeProfiles(lcvid + ".servers", lcvid + ".viewers", lcvid + ".clients");
+	}
+
+	/**
+	 * Initialize ProfileStore for a server instance
+	 */
+	public static void initialize() {
+		initialize("profiles");
 	}
 
 	/**

@@ -72,9 +72,9 @@ public class JarUtilTest {
 	public void testExtractInputStreamString() throws FileNotFoundException, IOException {
 		JarUtil.extract(new FileInputStream(res.getAbsolutePath() + "/test.zip"), temp.getAbsolutePath());
 
-		assertEquals("8d1b69dd9bdc9df4a8073c7a8193c7af", FileUtil.getHash(temp.getAbsolutePath() + "/test5", "MD5"));
+		assertEquals("8d1b69dd9bdc9df4a8073c7a8193c7af", FileUtil.hash(temp.getAbsolutePath() + "/test5", "MD5"));
 		assertEquals("247585e773d4ba881b225e135893a35e",
-				FileUtil.getHash(temp.getAbsolutePath() + "/test1/random.bin", "MD5"));
+				FileUtil.hash(temp.getAbsolutePath() + "/test1/random.bin", "MD5"));
 		assertTrue(
 				new File(temp.getAbsolutePath() + "/test1/test/test/test/test/test/test/test/test/test/test/test/test")
 						.exists());

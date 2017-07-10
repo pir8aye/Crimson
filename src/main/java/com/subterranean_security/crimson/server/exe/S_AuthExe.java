@@ -22,28 +22,28 @@ import javax.security.auth.DestroyFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH.AuthType;
+import com.subterranean_security.crimson.core.exe.AuthExe;
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
 import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.core.net.exception.MessageFlowException;
 import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
-import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.M1_AuthAttempt;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.MI_GroupChallengeResult;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.M1_ChallengeResult;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RQ_KeyChallenge;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_CreateAuthMethod;
 import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.RS_KeyChallenge;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 import com.subterranean_security.crimson.server.store.AuthStore;
-import com.subterranean_security.crimson.universal.Universal;
 
 /**
  * Client authentication handlers.
@@ -51,28 +51,15 @@ import com.subterranean_security.crimson.universal.Universal;
  * @author cilki
  * @since 4.0.0
  */
-public final class AuthExe extends Exelet implements ExeI {
+public final class S_AuthExe extends AuthExe implements ExeI {
 
-	private static final Logger log = LoggerFactory.getLogger(AuthExe.class);
+	private static final Logger log = LoggerFactory.getLogger(S_AuthExe.class);
 
-	/**
-	 * The size of the random String used in Key authentication
-	 */
-	public static final int MAGIC_LENGTH = 128;
-
-	private int authID;
-	private AuthStage currentStage = AuthStage.UNAUTHENTICATED;
-
-	private enum AuthStage {
-		UNAUTHENTICATED, GROUP_STAGE1, GROUP_STAGE2, AUTHENTICATED;
-	}
-
-	public AuthExe(Connector connector, BasicExecutor parent) {
+	public S_AuthExe(Connector connector, BasicExecutor parent) {
 		super(connector, parent);
 	}
 
 	@Override
-	// TODO put this back
 	public void m1_challenge_result(Message m) {
 		if (currentStage != AuthStage.GROUP_STAGE2) {
 			log.debug("Rejecting authorization challenge result for connector: {} due to invalid state: {}",
@@ -81,11 +68,10 @@ public final class AuthExe extends Exelet implements ExeI {
 			return;
 		}
 
-		if (m.getMiChallengeResult() == null) {
+		if (m.getM1ChallengeResult() == null) {
 			throw new MessageFlowException(null, m);
-		} else if (m.getMiChallengeResult().getResult()) {
+		} else if (m.getM1ChallengeResult().getResult()) {
 			acceptClient();
-			DeltaExe.ev_profileDelta(connector, m.getMiChallengeResult().getPd());
 		} else {
 			log.debug("The client refused to authenticate");
 			connector.close();
@@ -98,25 +84,23 @@ public final class AuthExe extends Exelet implements ExeI {
 		if (currentStage != AuthStage.UNAUTHENTICATED) {
 			log.debug("Rejecting authorization request for connector: {} due to invalid state: {}", connector.getCvid(),
 					currentStage);
-			rejectClient();
 			return;
 		}
 
-		M1_AuthAttempt auth = m.getM1AuthAttempt();
+		M1_AuthAttempt m1 = m.getM1AuthAttempt();
 
-		switch (auth.getType()) {
-		case GROUP:
+		switch (AuthType.valueOf(m1.getAuthType())) {
+		case KEY:
 			currentStage = AuthStage.GROUP_STAGE1;
 
-			KeyAuthGroup group = AuthStore.getGroup(auth.getGroupName());
-			if (group == null) {
-				log.debug("Authentication failed because the client supplied an unknown group: {}",
-						auth.getGroupName());
+			AttributeGroup keyGroup = AuthStore.getKeyGroup(m1.getGroupName());
+			if (keyGroup == null) {
+				log.debug("Authentication failed because the client supplied an unknown group: {}", m1.getGroupName());
 				rejectClient();
 				return;
 			}
 
-			authID = AuthStore.getGroupMethod(auth.getGroupName()).getId();
+			authID = keyGroup.getInt(AK_AUTH.ID);
 
 			int mSeqID = IDGen.msg();
 
@@ -124,9 +108,10 @@ public final class AuthExe extends Exelet implements ExeI {
 
 			RS_KeyChallenge response = null;
 			try {
-				Message rs = connector.writeAndGetResponse(Message.newBuilder().setId(mSeqID)
-						.setRqKeyChallenge(RQ_KeyChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic))
-						.build()).get(TimeoutConstants.DEFAULT);
+				Message rs = connector
+						.writeAndGetResponse(Message.newBuilder().setId(mSeqID).setRqKeyChallenge(
+								RQ_KeyChallenge.newBuilder().setGroupName(keyGroup.getName()).setMagic(magic)))
+						.get(TimeoutConstants.DEFAULT);
 
 				if (rs.getRsKeyChallenge() == null)
 					throw new MessageFlowException(RQ_KeyChallenge.class, rs);
@@ -137,11 +122,7 @@ public final class AuthExe extends Exelet implements ExeI {
 				rejectClient();
 			}
 
-			boolean flag = response.getResult().equals(CryptoUtil.hashSign(magic, group.getGroupKey()));
-			try {
-				group.destroy();
-			} catch (DestroyFailedException e) {
-			}
+			boolean flag = response.getResult().equals(CryptoUtil.hashSign(magic, keyGroup.getGroupKey()));
 
 			if (flag) {
 				currentStage = AuthStage.GROUP_STAGE2;
@@ -150,67 +131,51 @@ public final class AuthExe extends Exelet implements ExeI {
 				rejectClient();
 			}
 			connector.write(Message.newBuilder().setId(mSeqID)
-					.setMiChallengeResult(MI_GroupChallengeResult.newBuilder().setResult(flag)).build());
+					.setM1ChallengeResult(M1_ChallengeResult.newBuilder().setResult(flag)));
 
 			break;
 
 		case PASSWORD:
-			AuthMethod am = AuthStore.getPassword(auth.getPassword());
-			if (am == null) {
-				log.debug("Password authentication failed");
-				rejectClient();
 
-			} else {
-				authID = am.getId();
-				acceptClient();
-				DeltaExe.ev_profileDelta(connector, auth.getPd());
-			}
+			// TODO implement
+			rejectClient();
 			break;
-		case NO_AUTH:
+		case NONE:
 			// come on in
 			authID = 0;
 
 			acceptClient();
-			DeltaExe.ev_profileDelta(connector, auth.getPd());
 			break;
 		default:
-			log.error("Unsupported authentication type: {}", auth.getType());
+			log.error("Unsupported authentication type: {}", m1.getAuthType());
 			break;
 
 		}
 
 	}
 
-	private void acceptClient() {
-		parent.initAuth();
+	@Override
+	public void rq_key_challenge(Message m) {
+		if (currentStage != AuthStage.GROUP_STAGE2) {
+			return;
+		}
+		RQ_KeyChallenge rq = m.getRqKeyChallenge();
 
-		currentStage = AuthStage.AUTHENTICATED;
-		connector.setState(ConnectionState.AUTHENTICATED);
-		connector.setInstance(Universal.Instance.CLIENT);
+		connector.write(Message.newBuilder().setId(m.getId())
+				.setRsKeyChallenge(RS_KeyChallenge.newBuilder().setResult(CryptoUtil.signGroupChallenge(rq.getMagic(),
+						AuthStore.getKeyGroup(rq.getGroupName()).getBytes(AK_AUTH.PRIVATE_KEY)))));
 
-		// ProfileStore.getClient(receptor.getCvid()).setAuthID(authID);
-
-		// ConnectionStore.add(receptor);
-	}
-
-	private void rejectClient() {
-		currentStage = AuthStage.UNAUTHENTICATED;
-		connector.setState(ConnectionState.CONNECTED);
 	}
 
 	@Override
 	public void rq_create_auth_group(Message m) {
-		Outcome outcome = AuthStore.create(m.getRqCreateAuthGroup().getAuthMethod());
-
-		connector.write(Message.newBuilder().setId(m.getId()).setRsOutcome(outcome));
-
+		connector.write(Message.newBuilder().setId(m.getId())
+				.setRsOutcome(AuthStore.create(m.getRqCreateAuthGroup().getAuthMethod())));
 	}
 
 	@Override
 	public void rq_remove_auth_group(Message m) {
-		AuthStore.remove(m.getRqRemoveAuthGroup().getId());
-		// TODO check if removed
-		connector.write(Message.newBuilder().setRsOutcome(Outcome.newBuilder().setResult(true)));
+		connector.write(Message.newBuilder().setRsOutcome(AuthStore.remove(m.getRqRemoveAuthGroup().getId())));
 	}
 
 }

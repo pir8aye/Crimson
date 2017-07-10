@@ -17,12 +17,6 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.core.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -45,12 +39,12 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
-import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
-import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
-import com.subterranean_security.crimson.proto.core.Misc.Outcome;
-
+/**
+ * Cryptographic utilities.
+ * 
+ * @author cilki
+ * @since 4.0.0
+ */
 public final class CryptoUtil {
 	private CryptoUtil() {
 	}
@@ -165,7 +159,7 @@ public final class CryptoUtil {
 		return null;
 	}
 
-	public static boolean verifyGroupChallenge(String magic, byte[] key, String signature) {
+	public static boolean verifyKeyChallenge(String magic, byte[] key, String signature) {
 		try {
 			PublicKey pkey = KeyFactory.getInstance("DSA").generatePublic(new X509EncodedKeySpec(key));
 			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
@@ -191,63 +185,43 @@ public final class CryptoUtil {
 		return false;
 	}
 
-	private static final int seedSuffixLength = 128;
+	private static final int SEED_SUFFIX_LENGTH = 128;
 
-	public static KeyAuthGroup generateGroup(String name, byte[] seedPrefix) {
+	/**
+	 * Generate a new KeyPair for use in key authentication.
+	 * 
+	 * @param seedPrefix
+	 *            A mini-seed to prefix to the final seed.
+	 * @return A brand new KeyPair.
+	 */
+	public static KeyPair generateGroupKeys(byte[] seedPrefix) {
 
 		try {
 			KeyPairGenerator generator = KeyPairGenerator.getInstance("DSA", "SUN");
 			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
 
-			byte[] seed = new byte[seedPrefix.length + seedSuffixLength];
+			byte[] seed = new byte[seedPrefix.length + SEED_SUFFIX_LENGTH];
+			byte[] seedSuffix = SecureRandom.getSeed(SEED_SUFFIX_LENGTH);
+
+			// concatenate prefix and suffix
 			for (int i = 0; i < seedPrefix.length; i++) {
 				seed[i] = seedPrefix[i];
 			}
-			byte[] seedSuffix = SecureRandom.getSeed(seedSuffixLength);
 			for (int i = 0; i < seedSuffix.length; i++) {
 				seed[seedPrefix.length + i] = seedSuffix[i];
 			}
-			RandomUtil.clearByte(seedSuffix);
-			RandomUtil.clearByte(seedPrefix);
+
 			random.setSeed(seed);
 
-			generator.initialize(1024, random);
+			RandomUtil.clearByte(seedSuffix);
+			RandomUtil.clearByte(seed);
 
-			KeyPair pair = generator.generateKeyPair();
-			return new KeyAuthGroup(name, pair.getPrivate(), pair.getPublic());
+			generator.initialize(1024, random);
+			return generator.generateKeyPair();
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchProviderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static Outcome exportGroup(AttributeGroup am, File output) {
-
-		try (PrintWriter pw = new PrintWriter(output)) {
-			pw.println(Base64.getEncoder().encodeToString(SerialUtil.serialize(am)));
-		} catch (FileNotFoundException e) {
-			return Outcome.newBuilder().setResult(false).setComment(e.getMessage()).build();
-		}
-		return Outcome.newBuilder().setResult(true).build();
-	}
-
-	public static AuthMethod importGroup(File input) {
-
-		try (BufferedReader br = new BufferedReader(new FileReader(input))) {
-			// TODO AttributeGroup not AuthMethod!
-			return AuthMethod.parseFrom(Base64.getDecoder().decode(br.readLine()));
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidProtocolBufferException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

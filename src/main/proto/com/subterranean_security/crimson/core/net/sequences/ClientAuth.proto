@@ -41,20 +41,23 @@ message RS_PassChallenge {
 	string result = 1;
 }
 
+message M1_ChallengeResult {
+	bool result = 1;
+}
+
+// Initiates an authentication attempt
 message M1_AuthAttempt {
-	AuthType type = 1;
+
+	// The type of authentication being requested
+	string auth_type = 1;
 	
-	// for group auth only
-	string group_name = 3;
-	
-	// for password auth only
-	string password = 4;
-	
+	// The name of the authentication group if auth_type is key authentication
+	string group_name = 2;
 }
 
 // Uses generic rs_outcome rather than a new RS_* type
 message RQ_CreateAuthGroup {
-	AuthMethod auth_method = 1;
+	EV_ProfileDelta pd = 1;
 }
 
 // Uses generic rs_outcome rather than a new RS_* type

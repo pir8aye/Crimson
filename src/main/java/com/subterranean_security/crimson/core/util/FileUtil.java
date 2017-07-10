@@ -27,10 +27,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 import javax.swing.filechooser.FileSystemView;
 
@@ -41,29 +44,59 @@ import com.subterranean_security.crimson.core.platform.SigarStore;
 import com.subterranean_security.crimson.proto.core.Misc.Outcome;
 import com.subterranean_security.crimson.proto.core.net.sequences.FileManager.RS_AdvancedFileInfo;
 
+/**
+ * Utilities for manipulating files on the local system.
+ * 
+ * @author cilki
+ * @since 3.0.0
+ */
 public final class FileUtil {
-	public static FileInfo fileInfo = new FileInfo();
 
 	private FileUtil() {
 	}
 
 	/**
-	 * Copies sourceFile to destFile
+	 * Copies the source file or directory to the destination file or directory.
+	 * This method should only be used for small copy jobs.
 	 *
-	 * @param sourceFile
-	 * @param destFile
+	 * @param source
+	 *            The source file or directory
+	 * @param dest
+	 *            The destination file or directory
 	 * @throws IOException
 	 */
-	public static void copy(File sourceFile, File destFile) throws IOException {
-		if (sourceFile == null)
+	public static void copy(File source, File dest) throws IOException {
+		if (source == null)
 			throw new IllegalArgumentException();
-		if (destFile == null)
+		if (!source.exists())
+			throw new FileNotFoundException();
+		if (dest == null)
 			throw new IllegalArgumentException();
 
-		Files.copy(sourceFile.toPath(), destFile.toPath());
+		recursiveCopy(source, dest);
 	}
 
-	public static String getHash(String filename, String type) {
+	private static void recursiveCopy(File source, File dest) throws IOException {
+		if (source.isFile()) {
+			if (dest.isFile())
+				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+			else
+				Files.copy(source.toPath(), Paths.get(dest.getAbsolutePath(), source.getName()),
+						StandardCopyOption.COPY_ATTRIBUTES);
+		} else {
+			if (!dest.exists())
+				dest.mkdir();
+			else if (!dest.isDirectory()) {
+				throw new IllegalArgumentException("Cannot copy a directory to a file");
+			}
+
+			for (String child : source.list()) {
+				recursiveCopy(new File(source, child), new File(dest, child));
+			}
+		}
+	}
+
+	public static String hash(String filename, String type) {
 		MessageDigest complete = null;
 		try (InputStream fis = new FileInputStream(filename)) {
 			byte[] buffer = new byte[1024];
@@ -89,7 +122,7 @@ public final class FileUtil {
 	}
 
 	/**
-	 * Recursively delete a file or directory
+	 * Delete a file or directory
 	 *
 	 * @param f
 	 *            the file or directory to delete
@@ -100,28 +133,30 @@ public final class FileUtil {
 	}
 
 	/**
-	 * Recursively delete a file or directory
+	 * Alias for delete(file, false)
 	 *
-	 * @param f
-	 *            the file or directory to delete
+	 * @param file
 	 * @return true on success false on failure
 	 */
-	public static boolean delete(File f) {
-		return delete(f, false);
+	public static boolean delete(File file) {
+		return delete(file, false);
 	}
 
 	/**
-	 * Recursively delete a file or directory
+	 * Recursively delete a file or directory. This method should only be used for
+	 * small directory trees.
 	 *
-	 * @param f
-	 *            the file or directory to delete
+	 * @param file
+	 *            The file or directory to delete.
+	 * @param overwrite
+	 *            If true, attempt to overwrite the file.
+	 * 
 	 * @return true on success false on failure
 	 */
-	public static boolean delete(File f, boolean overwrite) {
-
-		if (f.exists()) {
-			File[] files = f.listFiles();
-			if (null != files) {
+	public static boolean delete(File file, boolean overwrite) {
+		if (file.exists()) {
+			File[] files = file.listFiles();
+			if (files != null) {
 				for (int i = 0; i < files.length; i++) {
 					if (files[i].isDirectory()) {
 						delete(files[i]);
@@ -134,13 +169,41 @@ public final class FileUtil {
 				}
 			}
 		}
-		return (f.delete());
+		return (file.delete());
 	}
 
 	/**
-	 * Attempt to overwrite a file. There is no guarantee that bytes will be
-	 * written to their original physical locations, so this method may not be
-	 * effective.
+	 * Alias for deleteAll(targets, false)
+	 * 
+	 * @param targets
+	 * @return
+	 */
+	public static Outcome deleteAll(Iterable<String> targets) {
+		return deleteAll(targets, false);
+	}
+
+	/**
+	 * Delete multiple files.
+	 * 
+	 * @param targets
+	 *            Files and directories to be deleted.
+	 * @param overwrite
+	 *            When true, a (futile) attempt is made to overwrite deleted files.
+	 * @return Result is true if every files was deleted.
+	 */
+	public static Outcome deleteAll(Iterable<String> targets, boolean overwrite) {
+		Outcome.Builder outcome = Outcome.newBuilder().setResult(true);
+		for (String s : targets) {
+			if (!delete(new File(s), overwrite)) {
+				outcome.setResult(false);
+			}
+		}
+		return outcome.build();
+	}
+
+	/**
+	 * Attempt to overwrite a file. There is no guarantee that bytes will be written
+	 * to their original physical locations, so this method may not be effective.
 	 * 
 	 * @param f
 	 * @return
@@ -164,39 +227,74 @@ public final class FileUtil {
 	}
 
 	/**
-	 * Writes the byte array at the given location
+	 * Writes a byte array to the given file.
 	 * 
-	 * @param b
+	 * @param bytes
+	 *            Bytes to write.
 	 * @param target
+	 *            Where the byte array will be written.
 	 * @throws IOException
 	 */
-	public static void writeFile(byte[] b, File target) throws IOException {
-		try (FileOutputStream fileOuputStream = new FileOutputStream(target)) {
-			fileOuputStream.write(b);
+	public static void write(byte[] bytes, File target) throws IOException {
+		try (FileOutputStream out = new FileOutputStream(target)) {
+			out.write(bytes);
 		}
 	}
 
-	public static byte[] readFile(File f) throws IOException {
-
-		java.nio.file.Path path = Paths.get(f.getAbsolutePath());
-		return java.nio.file.Files.readAllBytes(path);
-
+	/**
+	 * Read a file into memory.
+	 * 
+	 * @param file
+	 *            The target File.
+	 * @return A byte[] containing the contents of file.
+	 * @throws IOException
+	 */
+	public static byte[] read(File file) throws IOException {
+		return read(Paths.get(file.getAbsolutePath()));
 	}
 
-	public static ArrayList<String> readFileLines(File f) throws IOException {
-		ArrayList<String> a = new ArrayList<String>();
-		try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+	/**
+	 * Read a file into memory.
+	 * 
+	 * @param path
+	 *            The target File.
+	 * @return A byte[] containing the contents of file.
+	 * @throws IOException
+	 */
+	public static byte[] read(Path path) throws IOException {
+		return Files.readAllBytes(path);
+	}
+
+	/**
+	 * Read a file as a series of lines.
+	 * 
+	 * @param file
+	 *            The target File.
+	 * @return A list of lines in the target File.
+	 * @throws IOException
+	 */
+	public static List<String> readLines(File file) throws IOException {
+		ArrayList<String> list = new ArrayList<>();
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = br.readLine()) != null) {
-				a.add(line);
+				list.add(line);
 			}
 		}
-		return a;
+		return list;
 	}
 
-	public static String readFileString(File f) throws IOException {
+	/**
+	 * Read a file as a single String.
+	 * 
+	 * @param file
+	 *            The target File.
+	 * @return A String representing the entire contents of the target File.
+	 * @throws IOException
+	 */
+	public static String readString(File file) throws IOException {
 		StringBuffer sb = new StringBuffer();
-		try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = br.readLine()) != null) {
 				sb.append(line);
@@ -234,6 +332,8 @@ public final class FileUtil {
 		rs.setPath(f.getParent());
 		rs.setSize(f.length());
 		rs.setMtime(f.lastModified());
+
+		FileInfo fileInfo = new FileInfo();
 		try {
 			fileInfo.gather(SigarStore.getSigar(), f.getAbsolutePath());
 			rs.setAtime(fileInfo.getAtime());
@@ -244,17 +344,6 @@ public final class FileUtil {
 		}
 
 		return rs.build();
-	}
-
-	public static Outcome deleteAll(Iterable<String> targets, boolean overwrite) {
-		Outcome.Builder outcome = Outcome.newBuilder().setResult(true);
-		for (String s : targets) {
-			if (!delete(new File(s), overwrite)) {
-				outcome.setResult(false);
-			}
-		}
-
-		return outcome.build();
 	}
 
 }

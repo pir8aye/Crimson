@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.subterranean_security.crimson.core.attribute.group.AttributeGroup;
+import com.subterranean_security.crimson.core.attribute.keys.TypeIndex;
 import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
 import com.subterranean_security.crimson.core.net.Connector;
@@ -34,7 +35,6 @@ import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
 import com.subterranean_security.crimson.core.net.auth.PasswordAuthGroup;
 import com.subterranean_security.crimson.core.store.ConnectionStore;
 import com.subterranean_security.crimson.core.store.NetworkStore;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.struct.collections.cached.CachedList;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.proto.core.Misc.AuthMethod;
@@ -47,49 +47,19 @@ import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.permissions.ViewerPermissions;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
 /**
- * Manages the creation and retrieval of authentication schemes
+ * @author cilki
+ * @since 4.0.0
  */
 public class AuthStore {
 	private AuthStore() {
 	}
 
 	private static final Logger log = LoggerFactory.getLogger(AuthStore.class);
-
-	private static CachedList<AuthMethod> methods = null;
-
-	static {
-		try {
-			methods = (CachedList<AuthMethod>) DatabaseStore.getDatabase().getCachedCollection("auth.methods");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	public static AuthMethod getGroupMethod(String groupname) {
-		for (int i = 0; i < methods.size(); i++) {
-			AuthMethod m = methods.get(i);
-			if (m.getName().equals(groupname)) {
-				return m;
-			}
-		}
-
-		return null;
-	}
-
-	public static KeyAuthGroup getGroup(String name) {
-		try {
-			return (KeyAuthGroup) DatabaseStore.getDatabase().getObject(getGroupMethod(name).getGroup());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
 
 	public static Outcome create(AttributeGroup am) {
 		Outcome.Builder outcome = Outcome.newBuilder().setResult(true).setTime(System.currentTimeMillis());
@@ -112,22 +82,17 @@ public class AuthStore {
 		return outcome.setTime(System.currentTimeMillis() - outcome.getTime()).build();
 	}
 
-	public static void remove(int id) {
-		for (int i = 0; i < methods.size(); i++) {
-			if (methods.get(i).getId() == id) {
-				methods.remove(i);
-				return;
-			}
-		}
-	}
-
-	public static AuthMethod getPassword(String s) {
-		for (int i = 0; i < methods.size(); i++) {
-			if (s.equals(methods.get(i).getPassword())) {
-				return methods.get(i);
-			}
-		}
-		return null;
+	/**
+	 * Remove an authentication group.
+	 * 
+	 * @param authID
+	 *            The authID of the group to remove
+	 * @return The result of this action
+	 */
+	public static Outcome remove(int authID) {
+		Outcome.Builder outcome = Outcome.newBuilder().setResult(true).setTime(System.currentTimeMillis());
+		// TODO
+		return outcome.setTime(System.currentTimeMillis() - outcome.getTime()).build();
 	}
 
 	public static void refreshAllVisibilityPermissions() {
@@ -192,64 +157,51 @@ public class AuthStore {
 	}
 
 	/**
-	 * Get a general authentication container. Searches through group containers
-	 * before password containers.
+	 * Retrieve an authentication group.
 	 * 
-	 * @param authId
-	 * @return The requested authentication container or null if not found
+	 * @param authID
+	 *            The ID of the group to find.
+	 * @return The requested authentication group or null if not found.
 	 */
-	public static AuthGroup getContainer(int authId) {
-		for (KeyAuthGroup container : groups) {
-			if (container.getId() == authId)
-				return container;
-		}
-		for (PasswordAuthGroup container : passwords) {
-			if (container.getId() == authId)
-				return container;
-		}
-		return null;
-	}
-
-	private static List<PasswordAuthGroup> passwords;
-
-	public static PasswordAuthGroup getPasswordGroup(String password) {
-		for (PasswordAuthGroup container : passwords) {
-			if (container.getPassword().equals(password))
-				return container;
-		}
-		return null;
-	}
-
-	private static List<KeyAuthGroup> groups;
-
-	public static KeyAuthGroup getKeyGroup(String name) {
-		for (KeyAuthGroup container : groups) {
-			if (container.getName().equals(name))
-				return container;
+	public static AttributeGroup getGroup(int authID) {
+		for (AttributeGroup authGroup : ProfileStore.getServer().getGroupsOfType(TypeIndex.AUTH)) {
+			if (authGroup.getInt(AK_AUTH.ID) == authID) {
+				return authGroup;
+			}
 		}
 		return null;
 	}
 
 	/**
-	 * Close the store and destroy the groups.
+	 * Retrieve a password authentication group.
+	 * 
+	 * @param password
+	 *            The password of the group to find.
+	 * @return The requested password authentication group or null if not found.
 	 */
-	public static void close() {
-		for (KeyAuthGroup container : groups) {
-			try {
-				container.destroy();
-			} catch (DestroyFailedException e) {
-				log.error("Failed to destroy a group auth container: {}", container.getName());
+	public static AttributeGroup getPasswordGroup(String password) {
+		for (AttributeGroup authGroup : ProfileStore.getServer().getGroupsOfType(TypeIndex.AUTH)) {
+			if (authGroup.getStr(AK_AUTH.PASSWORD).equals(password)) {
+				return authGroup;
 			}
 		}
-		groups.clear();
-
-		for (PasswordAuthGroup container : passwords) {
-			try {
-				container.destroy();
-			} catch (DestroyFailedException e) {
-				log.error("Failed to destroy a password auth container: {}", container.getId());
-			}
-		}
-		passwords.clear();
+		return null;
 	}
+
+	/**
+	 * Retrieve a key authentication group.
+	 * 
+	 * @param name
+	 *            The name of the key authentication group.
+	 * @return The requested key authentication group or null if not found.
+	 */
+	public static AttributeGroup getKeyGroup(String name) {
+		for (AttributeGroup authGroup : ProfileStore.getServer().getGroupsOfType(TypeIndex.AUTH)) {
+			if (authGroup.getStr(AK_AUTH.NAME).equals(name)) {
+				return authGroup;
+			}
+		}
+		return null;
+	}
+
 }

@@ -17,51 +17,38 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.command;
 
-import javax.security.auth.DestroyFailedException;
-
-import com.subterranean_security.crimson.client.Client;
 import com.subterranean_security.crimson.client.store.ConfigStore;
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH.AuthType;
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
-import com.subterranean_security.crimson.core.platform.Platform;
-import com.subterranean_security.crimson.core.store.LcvidStore;
 import com.subterranean_security.crimson.core.util.IDGen;
-import com.subterranean_security.crimson.proto.core.Misc.AuthType;
-import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.MI_AuthRequest;
+import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
+import com.subterranean_security.crimson.proto.core.net.sequences.ClientAuth.M1_AuthAttempt;
 import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
 
+/**
+ * @author cilki
+ * @since 4.0.0
+ */
 public final class AuthCom {
 	private AuthCom() {
 	}
 
 	public static void auth(Connector c) {
-		AuthType authType = ConfigStore.getConfig().getAuthType();
+		ClientConfig cc = ConfigStore.getConfig();
 
-		MI_AuthRequest.Builder auth = MI_AuthRequest.newBuilder().setCvid(LcvidStore.cvid).setType(authType);
+		AuthType authType = AuthType.valueOf(cc.getGroupType());
+
+		M1_AuthAttempt.Builder auth = M1_AuthAttempt.newBuilder().setAuthType(authType.toString());
 
 		switch (authType) {
-		case GROUP:
-			KeyAuthGroup group = Client.getGroup();
-			auth.setGroupName(group.getName());
-			try {
-				group.destroy();
-			} catch (DestroyFailedException e) {
-			}
-			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());
-			break;
-		case NO_AUTH:
-			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth.setPd(Platform.fig())).build());
-
-			break;
-		case PASSWORD:
-			auth.setPassword(ConfigStore.getConfig().getPassword());
-
-			c.write(Message.newBuilder().setId(IDGen.msg()).setMiAuthRequest(auth).build());
+		case KEY:
+			auth.setGroupName(cc.getGroupName());
 			break;
 		default:
 			break;
-
 		}
+
+		c.write(Message.newBuilder().setId(IDGen.msg()).setM1AuthAttempt(auth));
 	}
 
 }

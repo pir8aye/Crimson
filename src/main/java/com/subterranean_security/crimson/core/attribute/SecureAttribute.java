@@ -15,21 +15,17 @@
  *  limitations under the License.                                            *
  *                                                                            *
  *****************************************************************************/
-package com.subterranean_security.crimson.core.net.auth;
+package com.subterranean_security.crimson.core.attribute;
 
-public class PasswordAuthGroup extends AuthGroup {
+/**
+ * A SecureAttribute is reserved for sensitive content like passwords and keys.
+ * 
+ * @author cilki
+ * @since 5.0.0
+ * @param <E>
+ */
+public class SecureAttribute<E> extends UntrackedAttribute<E> {
 
 	private static final long serialVersionUID = 1L;
-
-	private String password;
-
-	public PasswordAuthGroup(String password) {
-		super();
-		this.password = password;
-	}
-
-	public String getPassword() {
-		return password;
-	}
 
 }

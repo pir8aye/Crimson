@@ -30,9 +30,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.sv.permissions.Perm;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 
 public class UserTable extends JScrollPane {
 

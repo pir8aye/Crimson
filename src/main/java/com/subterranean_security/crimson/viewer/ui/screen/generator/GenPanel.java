@@ -55,14 +55,14 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+import com.subterranean_security.crimson.core.attribute.keys.plural.AK_AUTH.AuthType;
 import com.subterranean_security.crimson.core.attribute.keys.singular.AK_VIEWER;
-import com.subterranean_security.crimson.core.store.ProfileStore;
 import com.subterranean_security.crimson.core.util.RandomUtil;
 import com.subterranean_security.crimson.core.util.ValidationUtil;
 import com.subterranean_security.crimson.proto.core.Generator.ClientConfig;
 import com.subterranean_security.crimson.proto.core.Generator.NetworkTarget;
-import com.subterranean_security.crimson.proto.core.Misc.AuthType;
 import com.subterranean_security.crimson.proto.core.net.sequences.Keylogger.Trigger;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.universal.Universal;
 import com.subterranean_security.crimson.viewer.ui.UICommon;
 import com.subterranean_security.crimson.viewer.ui.common.components.labels.StatusLabel;
@@ -566,7 +566,7 @@ public class GenPanel extends JPanel {
 
 		// general
 		ic.setOutputType((String) type_comboBox.getSelectedItem());
-		ic.setBuildNumber(Universal.build);
+		ic.setBuiltByServerVersion(Universal.version);
 
 		// network
 		for (NetworkTarget nt : ntab.table.getTargets()) {
@@ -576,12 +576,12 @@ public class GenPanel extends JPanel {
 		}
 
 		// execution
-		ic.setAlwaysImsg(false);
-		ic.setImsg(fld_install_message.getText());
+		ic.setMsgAlways(false);
+		ic.setMsg(fld_install_message.getText());
 
 		ic.setMelt(chckbxDeleteInstaller.isSelected());
 		ic.setAutostart(chckbxInstallAutostartModule.isSelected());
-		ic.setViewerUser(ProfileStore.getLocalViewer().get(AK_VIEWER.USER));
+		ic.setBuiltByUser(ProfileStore.getLocalViewer().get(AK_VIEWER.USER));
 
 		ic.setDelay((int) fld_delay.getValue());
 		ic.setReconnectPeriod((int) ntab.fld_connect_period.getValue());
@@ -591,7 +591,7 @@ public class GenPanel extends JPanel {
 
 		switch (((ImageIcon) atab.authType.getSelectedItem()).getDescription()) {
 		case "Group": {
-			ic.setAuthType(AuthType.GROUP);
+			ic.setGroupType(AuthType.KEY.toString());
 			String group = (String) atab.groupSelectionBox.getSelectedItem();
 			if (group.equals("Create Group")) {
 				ic.setGroupName(atab.fld_group_name.getText());
@@ -602,12 +602,12 @@ public class GenPanel extends JPanel {
 			break;
 		}
 		case "Password": {
-			ic.setAuthType(AuthType.PASSWORD);
+			ic.setGroupType(AuthType.PASSWORD.toString());
 			ic.setPassword(atab.getPassword());
 			break;
 		}
 		case "None": {
-			ic.setAuthType(AuthType.NO_AUTH);
+			ic.setGroupType(AuthType.NONE.toString());
 			break;
 		}
 		}

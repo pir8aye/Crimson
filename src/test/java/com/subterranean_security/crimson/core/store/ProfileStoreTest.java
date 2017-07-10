@@ -28,6 +28,7 @@ import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.sv.profile.ClientProfile;
 import com.subterranean_security.crimson.sv.profile.ServerProfile;
 import com.subterranean_security.crimson.sv.profile.ViewerProfile;
+import com.subterranean_security.crimson.sv.store.ProfileStore;
 import com.subterranean_security.crimson.test.TestUtil;
 import com.subterranean_security.crimson.universal.stores.DatabaseStore;
 
@@ -37,10 +38,11 @@ public class ProfileStoreTest {
 		TestUtil.setupDatabaseStore();
 		DatabaseStore.getDatabase().store("clients", new CachedMap<Integer, ClientProfile>());
 		DatabaseStore.getDatabase().store("viewers", new CachedMap<Integer, ViewerProfile>());
+		DatabaseStore.getDatabase().store("servers", new CachedMap<Integer, ServerProfile>());
 		ProfileStore.initialize(
 				(CachedMap<Integer, ClientProfile>) DatabaseStore.getDatabase().getCachedCollection("clients"),
 				(CachedMap<Integer, ViewerProfile>) DatabaseStore.getDatabase().getCachedCollection("viewers"),
-				new ServerProfile());
+				(CachedMap<Integer, ServerProfile>) DatabaseStore.getDatabase().getCachedCollection("servers"));
 	}
 
 	private ViewerProfile getRandomViewer() {

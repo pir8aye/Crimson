@@ -17,20 +17,16 @@
  *****************************************************************************/
 package com.subterranean_security.crimson.client.exe;
 
-import javax.security.auth.DestroyFailedException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subterranean_security.crimson.client.Client;
+import com.subterranean_security.crimson.client.store.ConfigStore;
+import com.subterranean_security.crimson.core.exe.AuthExe;
 import com.subterranean_security.crimson.core.net.Connector;
-import com.subterranean_security.crimson.core.net.Connector.ConnectionState;
 import com.subterranean_security.crimson.core.net.MessageFuture.MessageTimeout;
-import com.subterranean_security.crimson.core.net.auth.KeyAuthGroup;
+import com.subterranean_security.crimson.core.net.TimeoutConstants;
 import com.subterranean_security.crimson.core.net.executor.BasicExecutor;
 import com.subterranean_security.crimson.core.net.executor.temp.ExeI;
-import com.subterranean_security.crimson.core.net.executor.temp.Exelet;
-import com.subterranean_security.crimson.core.platform.Platform;
 import com.subterranean_security.crimson.core.util.CryptoUtil;
 import com.subterranean_security.crimson.core.util.IDGen;
 import com.subterranean_security.crimson.core.util.RandomUtil;
@@ -43,100 +39,86 @@ import com.subterranean_security.crimson.proto.core.net.sequences.MSG.Message;
  * @author cilki
  * @since 4.0.0
  */
-public class AuthExe extends Exelet implements ExeI {
+public class C_AuthExe extends AuthExe implements ExeI {
 
-	private static final Logger log = LoggerFactory.getLogger(AuthExe.class);
+	private static final Logger log = LoggerFactory.getLogger(C_AuthExe.class);
 
 	/**
 	 * The size of the random String used in Key authentication
 	 */
 	public static final int MAGIC_LENGTH = 128;
 
-	public AuthExe(Connector connector, BasicExecutor parent) {
+	public C_AuthExe(Connector connector, BasicExecutor parent) {
 		super(connector, parent);
 	}
 
+	@Override
 	public void rq_key_challenge(Message m) {
-		if (connector.getState() != ConnectionState.AUTH_STAGE1) {
+		if (currentStage != AuthStage.GROUP_STAGE1) {
 			return;
 		}
 
-		KeyAuthGroup group = Client.getGroup();
-		final byte[] groupKey = group.getGroupKey();
-		try {
-			group.destroy();
-		} catch (DestroyFailedException e1) {
-		}
+		byte[] key = ConfigStore.getConfig().getPublicKey().toByteArray();
 
-		String result = CryptoUtil.hashSign(m.getRqKeyChallenge().getMagic(), groupKey);
-		RS_KeyChallenge rs = RS_KeyChallenge.newBuilder().setResult(result).build();
-		connector.write(Message.newBuilder().setId(m.getId()).setRsKeyChallenge(rs).build());
+		String result = CryptoUtil.hashSign(m.getRqKeyChallenge().getMagic(), key);
+		connector.write(Message.newBuilder().setId(m.getId())
+				.setRsKeyChallenge(RS_KeyChallenge.newBuilder().setResult(result)));
 	}
 
-	public void m1_challengeResult(Message m) {
-
-		if (connector.getState() != ConnectionState.AUTH_STAGE1) {
+	@Override
+	public void m1_challenge_result(Message m) {
+		if (currentStage != AuthStage.GROUP_STAGE1) {
 			return;
 		}
+
 		if (!m.getRsOutcome().getResult()) {
 			log.debug("Authentication with server failed");
-			connector.setState(ConnectionState.CONNECTED);
+			rejectClient();
 			return;
 		} else {
-			connector.setState(ConnectionState.AUTH_STAGE2);
+			currentStage = AuthStage.GROUP_STAGE2;
 		}
 
-		KeyAuthGroup group = Client.getGroup();
-		final byte[] groupKey = group.getGroupKey();
-		try {
-			group.destroy();
-		} catch (DestroyFailedException e1) {
-		}
+		byte[] key = ConfigStore.getConfig().getPublicKey().toByteArray();
 
 		// Send authentication challenge
-		final int id = IDGen.msg();
+		int id = IDGen.msg();
 
-		final String magic = RandomUtil.randString(MAGIC_LENGTH);
-		RQ_KeyChallenge rq = RQ_KeyChallenge.newBuilder().setGroupName(group.getName()).setMagic(magic).build();
-		connector.write(Message.newBuilder().setId(id).setRqKeyChallenge(rq).build());
+		String magic = RandomUtil.randString(MAGIC_LENGTH);
 
-		// TODO
-		new Thread(new Runnable() {
-			public void run() {
-				boolean flag = true;
-				try {
-					Message rs = connector.getResponse(id).get(7000);
+		boolean flag = true;
+		try {
 
-					if (rs != null) {
-						if (!CryptoUtil.verifyGroupChallenge(magic, groupKey, rs.getRsKeyChallenge().getResult())) {
-							log.info("Server challenge failed");
-							flag = false;
-						}
+			Message rs = connector
+					.writeAndGetResponse(Message.newBuilder().setId(id)
+							.setRqKeyChallenge(RQ_KeyChallenge.newBuilder()
+									.setGroupName(ConfigStore.getConfig().getGroupName()).setMagic(magic)))
+					.get(TimeoutConstants.DEFAULT);
 
-					} else {
-						log.debug("No response to challenge");
-						flag = false;
-					}
-				} catch (InterruptedException e) {
-					log.debug("No response to challenge");
+			if (rs != null) {
+				if (!CryptoUtil.verifyKeyChallenge(magic, key, rs.getRsKeyChallenge().getResult())) {
+					log.info("Server challenge failed");
 					flag = false;
-				} catch (MessageTimeout e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 
-				if (flag) {
-					connector.setState(ConnectionState.AUTHENTICATED);
-
-					oneway.setPd(Platform.fig());
-				} else {
-					// TODO handle more
-					connector.setState(ConnectionState.CONNECTED);
-				}
-				connector.write(Message.newBuilder().setId(id).setRsOutcome(Outcome.newBuilder().setResult(flag)));
-
+			} else {
+				log.debug("No response to challenge");
+				flag = false;
 			}
-		}).start();
+		} catch (InterruptedException e) {
+			log.debug("No response to challenge");
+			flag = false;
+		} catch (MessageTimeout e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (flag) {
+			acceptClient();
+		} else {
+			rejectClient();
+		}
+		connector.write(Message.newBuilder().setId(id).setRsOutcome(Outcome.newBuilder().setResult(flag)));
 
 	}
 

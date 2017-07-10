@@ -45,6 +45,25 @@ public interface ExeI {
 	default public void ev_stream_data(Message m) {
 	}
 
+	/**
+	 * <pre>
+	 * {@code
+	 * 
+	 * KEY AUTHENTICATION
+	 * [Server]                                                        [Client]
+	 * |  <-  M1_AuthAttempt      [group name]                                |
+	 * |  ->  RQ_KeyChallenge     [nonce]                                     |
+	 * |  <-  RS_KeyChallenge     [signed nonce with public key]              |
+	 * |  ->  M1_ChallengeResult                                              |
+	 * |  <-  RQ_KeyChallenge     [nonce]                                     |
+	 * |  ->  RS_KeyChallenge     [signed nonce with private key]             |
+	 * |  <-  M1_ChallengeResult                                              |
+	 * 
+	 * }
+	 * </pre>
+	 * 
+	 * @param m
+	 */
 	default public void m1_auth_attempt(Message m) {
 	}
 
@@ -136,6 +155,7 @@ public interface ExeI {
 	}
 
 	/**
+	 * <pre>
 	 * {@code
 	 * [Server]                                                        [Viewer]
 	 * |  <-  RQ_Login           [username]                                   |
@@ -144,6 +164,7 @@ public interface ExeI {
 	 * |  ->  RS_Login           [result, profile updates]                    |
 	 * 
 	 * }
+	 * </pre>
 	 * 
 	 * @param m
 	 */
